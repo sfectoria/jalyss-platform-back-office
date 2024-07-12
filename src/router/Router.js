@@ -23,7 +23,7 @@ export default function Router() {
       ) : (
         <Routes>
           <Route path="/" element={<Auth />}>
-            <Route index element={<AuthModule />}>
+            <Route path=""  element={<AuthModule />}>
               <Route index element={<Login />} />
               <Route path="forget-password" element={<ForgetPassword />} />
               <Route path="confirm-password" element={<ConfirmPassword />} />
