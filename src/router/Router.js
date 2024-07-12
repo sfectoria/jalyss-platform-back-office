@@ -7,10 +7,10 @@ import Auth from "../apps/Auth";
 import AuthModule from "../modules/auth/AuthModule";
 import Login from "../modules/auth/views/Login";
 import ForgetPassword from "../modules/auth/views/ForgetPassword";
-import ConfirmPassword from "../modules/auth/views/confirmPassword";
+import ConfirmPassword from "../modules/auth/views/ConfirmPassword";
 
 export default function Router() {
-  const user = useSelector((state) => state.auth.me);
+  const user = useSelector((state) => state.authSlice.me);
 
   return (
     <BrowserRouter>
