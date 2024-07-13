@@ -22,7 +22,6 @@ const lightTheme = createTheme({ palette: { mode: 'light' } });
 export default function ForgetPassword() {
 
   const [email,setEmail]=useState("")
-  const [step,setStep]=useState(1)
 
   const navigate = useNavigate()
   const handleSubmit = (event) => {
@@ -33,12 +32,9 @@ export default function ForgetPassword() {
       password: info.get('password'),
     });
   };
-  const cancelClicked = ()=>{
-    navigate('/')
-  }
 
-  const getCodeClicked = ()=>{
-    navigate('/confirmation-code')
+  const nextClicked = ()=>{
+    navigate('/confirm-password')
   }
 
   const handelChange = (event)=>{
@@ -86,48 +82,41 @@ export default function ForgetPassword() {
           width:500
         }}
       >
-      
-        <Typography variant="h6" color="info.main" mb={3} gutterBottom sx={{ fontWeight: 'bold' }}>
-         Step 1 
+                <Typography variant="h6" color="info.main" mb={3} gutterBottom sx={{ fontWeight: 'bold' }}>
+         Step 2
         </Typography>
         <Typography variant="h4" mb={1} sx={{ fontWeight: 'bold' }}>
-          Forget Password ?
+          Check your email ?
         </Typography>
         <Typography variant="h6">
-          we'll send you reset instructions
+          Please enter your 6-digit code !
         </Typography>
         <Box component="form" noValidate sx={{ mt: 2 }}>
         <TextField 
-        label="Email Address "
+        label="Code "
         name="email"  
-        placeholder='Please Enter Your Email Here '
+        placeholder=' X   X   X   X   X   X '
         focused
-        sx={{ width:290 }}
+        sx={{ width:150 ,mx:10 }}
         onChange={(event)=>{handelChange(event)}}
         />
         </Box>
         <Box sx={{
           marginTop: 2,
           display: 'flex',
-          gap:2
+          justifyContent:"center",
+          width:310
         }} >
-        <Button
-                    type="submit"
-                    variant="outlined"
-                    sx={{ mt: 1, mb: 2, width:80 ,borderRadius:6 }}
-                    onClick={()=>{cancelClicked()}}
-                  >
-                    Cancel
-                  </Button>
                   <Button
                     type="submit"
                     variant="contained"
                     sx={{ mt: 1, mb: 2,width:200 ,borderRadius:6 }}
-                    onClick={()=>{getCodeClicked()}}
+                    onClick={()=>{nextClicked()}}
                   >
-                    Get Code
+                    bla bla
                   </Button>
                   </Box>
+       
       </Box>
               </Item>
           </Box> 

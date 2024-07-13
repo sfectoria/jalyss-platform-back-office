@@ -17,20 +17,32 @@ import FormControl from '@mui/material/FormControl';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Alert from '@mui/material/Alert';
+
 
 
 const defaultTheme = createTheme();
+const possibelErrors= ['Please enter your email address and your password',"OOPS you froget to enter your Email","OOPS you froget to enter your Password",""]
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
-
+  const [errorMsg,setErrorMessage] = useState('')
     const handleSubmit = (event) => {
     event.preventDefault();
     const info = new FormData(event.currentTarget);
-    console.log({
-      email: info.get('email'),
-      password: info.get('password'),
-    });
+    let email=info.get('email')
+    let password= info.get('password')
+    console.log(email);
+    if (password===""&&email===""){
+      setErrorMessage(possibelErrors[0])
+    }
+    else if (email===""){
+      setErrorMessage(possibelErrors[1])
+    }
+    else if (password===""){
+      setErrorMessage(possibelErrors[2])
+    }
+    
   };
 
   const handleClickShowPassword = () => setShowPassword((show) =>
@@ -56,8 +68,14 @@ export default function Login() {
                 <Typography component="h1" variant="h5">
                   Sign in
                 </Typography>
-                <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-                  <TextField
+                <Box component="form" onSubmit={handleSubmit}  noValidate sx={{ mt: 1 }}>
+                {errorMsg&&<Alert severity="error" sx={{ mt: 3, mb: 2 }} >{errorMsg}</Alert>}
+                 {(errorMsg===possibelErrors[0] || errorMsg===possibelErrors[1] )?          <TextField
+          error
+          id="outlined-error"
+          label="Email Address"
+          fullWidth
+        />:<TextField
                     margin="normal"
                     required
                     fullWidth
@@ -67,8 +85,10 @@ export default function Login() {
                     autoComplete="email"
                     autoFocus
                   />
-                  <FormControl
+          }
+                 {(errorMsg===possibelErrors[0] || errorMsg===possibelErrors[2] )?<FormControl
                   margin="normal"
+                  error
                   required
                   fullWidth
                   type="password"
@@ -77,7 +97,8 @@ export default function Login() {
                   variant="outlined"
                      >
                       <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
-                      <OutlinedInput
+                      <OutlinedInput 
+                      onChange={(event)=>{console.log(event.target.value)}}
                       id="outlined-adornment-password"
                       type={showPassword ? 'text' : 'password'}
                       endAdornment={
@@ -95,7 +116,38 @@ export default function Login() {
             label="Password"
             name="password"
           />
-        </FormControl>
+        </FormControl>:<FormControl
+                
+                  margin="normal"
+                  required
+                  fullWidth
+                  type="password"
+                  id="password"
+                  autoComplete="current-password"
+                  variant="outlined"
+                  
+                     >
+                      <InputLabel  htmlFor="outlined-adornment-password">Password</InputLabel>
+                      <OutlinedInput
+                       onChange={(event)=>{console.log(event.target.value);}}
+                      id="outlined-adornment-password"
+                      type={showPassword ? 'text' : 'password'}
+                      endAdornment={
+                      <InputAdornment position="end">
+                      <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={handleClickShowPassword}
+                  onMouseDown={handleMouseDownPassword}
+                  edge="end"
+                >
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            }
+            label="Password"
+            name="password"
+          />
+        </FormControl>}
                   
                   <Button
                     type="submit"
