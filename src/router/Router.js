@@ -8,7 +8,9 @@ import AuthModule from "../modules/auth/AuthModule";
 import Login from "../modules/auth/views/Login";
 import ForgetPassword from "../modules/auth/views/ForgetPassword";
 import ConfirmPassword from "../modules/auth/views/ConfirmPassword";
-import SixDigitCode from "../modules/auth/views/SixDigitCode"
+import SixDigitCode from "../modules/auth/views/SixDigitCode";
+import StockModule from "../modules/stocks/StockModule";
+import StockList from "../modules/stocks/views/StockList";
 
 export default function Router() {
   const user = useSelector((state) => state.authSlice.me);
@@ -29,6 +31,9 @@ export default function Router() {
               <Route path="forget-password" element={<ForgetPassword />} />
               <Route path="confirmation-code" element={<SixDigitCode />} />
               <Route path="confirm-password" element={<ConfirmPassword />} />
+            </Route>
+            <Route path="stock"  element={<StockModule />}>
+              <Route index element={<StockList />} />
             </Route>
           </Route>
         </Routes>
