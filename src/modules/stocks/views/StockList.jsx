@@ -87,6 +87,7 @@ export default function PaginationCommunityNoSnap() {
         </Typography>
     <div style={{height:500 }}>
       <DataGrid
+      pageSizeOptions={[7, 10,20]}
        sx={{
         boxShadow: 0,
         border: 0,
@@ -101,6 +102,7 @@ export default function PaginationCommunityNoSnap() {
       }} 
       initialState={{
         ...data.initialState,
+        pagination: { paginationModel: { pageSize: 7 } },
         filter: {
           filterModel: {
             items: [],
