@@ -24,21 +24,26 @@ export default function EmployersList() {
     { field: 'id', headerName: 'ID', width: 90 },
     {
       field: 'fullName',
-      headerName: 'Client Name',
+      headerName: 'Employer Name',
       width: 200,
     },
     {
-      field: 'companyName',
-      headerName: 'Company Name',
+      field: 'post',
+      headerName: 'Post',
       width: 200,
     },
     {
-      field: 'clientEmail',
-      headerName: 'Client Email',
+      field: 'postLocation',
+      headerName: 'Post Location',
+      width: 200,
+    },
+    {
+      field: 'empEmail',
+      headerName: 'Email',
       width: 220,
     },
     {
-      field: 'clientNumber',
+      field: 'empNumber',
       headerName: 'Phone Number',
       width: 150,
     },
@@ -60,15 +65,15 @@ export default function EmployersList() {
   ];
   
   const rows = [
-    { id: 1, fullName: 'Sfax1', companyName: 'Sfax1/Sfax', clientEmail: "Salim sfexi" , details:"fff"},
-    { id: 2, fullName: 'Stock l mida', companyName: 'Mida/menzel tmim/Nabeul', clientEmail: "Hamida midawi" },
-    { id: 3, fullName: 'Stock sahlin', companyName: 'Sahlin/Sousse', clientEmail: "Wael ben sahloul" },
-    { id: 4, fullName: 'Stock alia', companyName: 'Alia/bizerte', clientEmail: "Mouhamed Amin ben yahya" },
-    { id: 5, fullName: 'Targaryen', companyName: 'Daenerys', clientEmail: "houssem ben ammar" },
-    { id: 6, fullName: 'Melisandre', companyName: null, clientEmail: 150 },
-    { id: 7, fullName: 'Clifford', companyName: 'Ferrara', clientEmail: 44 },
-    { id: 8, fullName: 'Frances', companyName: 'Rossini', clientEmail: 36 },
-    { id: 9, fullName: 'Roxie', companyName: 'Harvey', clientEmail: 65 },
+    { id: 1, post: 'Manager', postLocation: 'Sfax1/Sfax', fullName: "Salim sfexi" ,empEmail:"slouma@gmail.com", details:"fff"},
+    { id: 2, post: 'Vendure', postLocation: 'Boutique Nabeul',empEmail:"hamidamidawi@gmail.com", fullName: "Hamida midawi" },
+    { id: 3, post: 'Manager', postLocation: 'Stock Sahlin',empEmail:"waelbensahloul@gmail.com", fullName: "Wael ben sahloul" },
+    { id: 4, post: '', postLocation: 'Stock alia', fullName: "Mouhamed Amin ben yahya" },
+    { id: 5, post: 'Targaryen', postLocation: 'Daenerys', fullName: "houssem ben ammar" },
+    { id: 6, post: 'Melisandre', postLocation: null, fullName: 150 },
+    { id: 7, post: 'Clifford', postLocation: 'Ferrara', fullName: 44 },
+    { id: 8, post: 'Frances', postLocation: 'Rossini', fullName: 36 },
+    { id: 9, post: 'Roxie', postLocation: 'Harvey', fullName: 65 },
   ];
   const StyledGridOverlay = styled('div')(({ theme }) => ({
     display: 'flex',

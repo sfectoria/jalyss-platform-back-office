@@ -3,7 +3,6 @@ import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import { DataGrid,GridToolbar,GridActionsCellItem  } from '@mui/x-data-grid';
-import { useDemoData } from '@mui/x-data-grid-generator';
 import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -11,11 +10,6 @@ import { useNavigate } from 'react-router-dom';
 
 
 export default function StockList() {
-  const { data } = useDemoData({
-    dataSet: 'Commodity',
-    rowLength: 500,
-    maxColumns: 6,
-  });
   const navigate = useNavigate()
   const handelDetails = (ids)=>{
     navigate('/admin/stock/location',{state:{id:ids}})
@@ -158,7 +152,6 @@ export default function StockList() {
         toolbar: GridToolbar,
       }} 
       initialState={{
-        ...data.initialState,
         pagination: { paginationModel: { pageSize: 7 } },
         filter: {
           filterModel: {
