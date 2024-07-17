@@ -10,7 +10,13 @@ import ForgetPassword from "../modules/auth/views/ForgetPassword";
 import ConfirmPassword from "../modules/auth/views/ConfirmPassword";
 import SixDigitCode from "../modules/auth/views/SixDigitCode";
 import StockModule from "../modules/stocks/StockModule";
+import ChannelModule from "../modules/channels/ChannelModule";
 import StockList from "../modules/stocks/views/StockList";
+import StockDetails from "../modules/stocks/views/StockDetails";
+import Admin from "../apps/Admin";
+import ClientsList from "../modules/clients/views/ClientsList";
+import EmployerModule from "../modules/employers/EmployerModule";
+import EmployersList from "../modules/employers/views/EmployersList";
 
 export default function Router() {
   const user = useSelector((state) => state.authSlice.me);
@@ -32,8 +38,20 @@ export default function Router() {
               <Route path="confirmation-code" element={<SixDigitCode />} />
               <Route path="confirm-password" element={<ConfirmPassword />} />
             </Route>
+            <Route path="admin"  element={<Admin />}>
             <Route path="stock"  element={<StockModule />}>
               <Route index element={<StockList />} />
+              <Route path="location" element={<StockDetails />} />
+            </Route>
+            <Route path="clients"  element={<ClientModule />}>
+              <Route index element={<ClientsList />} />
+            </Route>
+            <Route path="employers"  element={<EmployerModule />}>
+              <Route index element={<EmployersList />} />
+            </Route>
+            <Route path="channels"  element={<ChannelModule />}>
+              {/* <Route index element={<ClientsList />} /> */}
+            </Route>
             </Route>
           </Route>
         </Routes>

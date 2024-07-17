@@ -10,7 +10,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useNavigate } from 'react-router-dom';
 
 
-export default function StockList() {
+export default function EmployersList() {
   const { data } = useDemoData({
     dataSet: 'Commodity',
     rowLength: 500,
@@ -18,38 +18,38 @@ export default function StockList() {
   });
   const navigate = useNavigate()
   const handelDetails = (ids)=>{
-    navigate('/admin/stock/location',{state:{id:ids}})
+    navigate('/stock/location',{state:{id:ids}})
   }
   const columns = [
     { field: 'id', headerName: 'ID', width: 90 },
     {
-      field: 'stockName',
-      headerName: 'Stock name',
-      width: 180,
+      field: 'fullName',
+      headerName: 'Client Name',
+      width: 200,
+    },
+    {
+      field: 'companyName',
+      headerName: 'Company Name',
+      width: 200,
+    },
+    {
+      field: 'clientEmail',
+      headerName: 'Client Email',
+      width: 220,
+    },
+    {
+      field: 'clientNumber',
+      headerName: 'Phone Number',
+      width: 150,
     },
     {
       field: 'address',
       headerName: 'Address',
-      width: 270,
+      width: 200,
     },
-    {
-      field: 'managerName',
-      headerName: 'Manager name',
-      width: 270,
-    },
-    {
-      field: 'managerNumber',
-      headerName: 'Manager Tel number',
-      width: 270,
-    },
-    // {
-    //   field: 'details',
-    //   headerName: 'Details',
-    //   width: 160,
-    // },
     {
       field: 'details',
-      headerName: 'Details',
+      headerName: 'More Details',
       width: 110,
       type: 'actions',
       getActions: ({id}) => [
@@ -60,15 +60,15 @@ export default function StockList() {
   ];
   
   const rows = [
-    { id: 1, stockName: 'Sfax1', address: 'Sfax1/Sfax', managerName: "Salim sfexi" , details:"fff"},
-    { id: 2, stockName: 'Stock l mida', address: 'Mida/menzel tmim/Nabeul', managerName: "Hamida midawi" },
-    { id: 3, stockName: 'Stock sahlin', address: 'Sahlin/Sousse', managerName: "Wael ben sahloul" },
-    { id: 4, stockName: 'Stock alia', address: 'Alia/bizerte', managerName: "Mouhamed Amin ben yahya" },
-    { id: 5, stockName: 'Targaryen', address: 'Daenerys', managerName: "houssem ben ammar" },
-    { id: 6, stockName: 'Melisandre', address: null, managerName: 150 },
-    { id: 7, stockName: 'Clifford', address: 'Ferrara', managerName: 44 },
-    { id: 8, stockName: 'Frances', address: 'Rossini', managerName: 36 },
-    { id: 9, stockName: 'Roxie', address: 'Harvey', managerName: 65 },
+    { id: 1, fullName: 'Sfax1', companyName: 'Sfax1/Sfax', clientEmail: "Salim sfexi" , details:"fff"},
+    { id: 2, fullName: 'Stock l mida', companyName: 'Mida/menzel tmim/Nabeul', clientEmail: "Hamida midawi" },
+    { id: 3, fullName: 'Stock sahlin', companyName: 'Sahlin/Sousse', clientEmail: "Wael ben sahloul" },
+    { id: 4, fullName: 'Stock alia', companyName: 'Alia/bizerte', clientEmail: "Mouhamed Amin ben yahya" },
+    { id: 5, fullName: 'Targaryen', companyName: 'Daenerys', clientEmail: "houssem ben ammar" },
+    { id: 6, fullName: 'Melisandre', companyName: null, clientEmail: 150 },
+    { id: 7, fullName: 'Clifford', companyName: 'Ferrara', clientEmail: 44 },
+    { id: 8, fullName: 'Frances', companyName: 'Rossini', clientEmail: 36 },
+    { id: 9, fullName: 'Roxie', companyName: 'Harvey', clientEmail: 65 },
   ];
   const StyledGridOverlay = styled('div')(({ theme }) => ({
     display: 'flex',
@@ -139,7 +139,7 @@ export default function StockList() {
         >   
             <Item sx={{pt:7,pb:1,px:7,borderRadius:10}} elevation={5}>
             <Typography variant="h5" mb={3} gutterBottom sx={{ fontWeight: 'bold' }}>
-         Stock
+         Employers
         </Typography>
     <div style={{height:500 }}>
       <DataGrid
