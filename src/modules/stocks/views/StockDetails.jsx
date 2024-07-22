@@ -1,110 +1,245 @@
-import React from 'react'
-import { useLocation } from 'react-router-dom'
+import React ,{useState} from 'react'
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
-import { DataGrid,GridToolbar,GridActionsCellItem  } from '@mui/x-data-grid';
+import {  ThemeProvider, styled } from '@mui/material/styles';
+import { DataGrid,GridToolbar  } from '@mui/x-data-grid';
+import CustomNoResultsOverlay from '../../../style/NoResultStyle'
+import lightTheme from '../../../style/lightTheme';
+import Item from '../../../style/ItemStyle';
+import PropTypes from 'prop-types';
+import SwipeableViews from 'react-swipeable-views';
+import { useTheme } from '@mui/material/styles';
+import AppBar from '@mui/material/AppBar';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import HistoryIcon from '@mui/icons-material/History';
+import ArticleIcon from '@mui/icons-material/Article';
+import { purple,indigo } from '@mui/material/colors';
+import StockArticles from '../component/StockArticleTable';
+import StockHistory from '../component/StockHistory';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Link from '@mui/material/Link';
+import { useNavigate } from 'react-router-dom';
+import Zoom from '@mui/material/Zoom';
+import Fab from '@mui/material/Fab';
+import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
 
 
-const StyledGridOverlay = styled('div')(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  height: '100%',
-  '& .no-results-primary': {
-    fill: theme.palette.mode === 'light' ? '#AEB8C2' : '#3D4751',
+
+const columns = [
+  {
+    field: 'boImage',
+    headerName: 'Image',
+    width: 100,
   },
-  '& .no-results-secondary': {
-    fill: theme.palette.mode === 'light' ? '#E8EAED' : '#1D2126',
+  {
+    field: 'boTitle',
+    headerName: 'Title',
+    width: 180,
   },
-}));
+  // {
+  //   field: 'description',
+  //   headerName: 'Description',
+  //   width: 270,
+  // },
+  {
+    field: 'category',
+    headerName: 'Category',
+    width: 270,
+  },
+  {
+    field: 'publisher',
+    headerName: 'Publisher',
+    width: 270,
+  },
+  {
+    field: 'quantity',
+    headerName: 'Quantity',
+    width: 90,
+    type:'number'
+  },
 
-function CustomNoResultsOverlay() {
+];
+
+const rows = [
+  { id: 1, boTitle: 'Halima', publisher: '', Category: "Salim sfexi" , details:"fff"},
+  { id: 2, boTitle: 'sendibad', publisher: '', Category: "Hamida midawi" },
+  { id: 3, boTitle: '', publisher: 'Sahlin/Sousse', Category: "Wael ben sahloul" },
+  { id: 4, boTitle: 'Stock alia', publisher: 'Alia/bizerte', Category: "Mouhamed Amin ben yahya" },
+  { id: 5, boTitle: 'Targaryen', publisher: 'Daenerys', Category: "houssem ben ammar" },
+  { id: 6, boTitle: 'Melisandre', publisher: null, Category: 150 },
+  { id: 7, boTitle: 'Clifford', publisher: 'Ferrara', Category: 44 },
+  { id: 8, boTitle: 'Frances', publisher: 'Rossini', Category: 36 },
+  { id: 9, boTitle: 'Roxie', publisher: 'Harvey', Category: 65 },
+  { id: 10, boTitle: 'Roxie', publisher: 'Harvey', Category: 65 },
+  { id: 11, boTitle: 'Roxie', publisher: 'Harvey', Category: 65 },
+  { id: 12, boTitle: 'Roxie', publisher: 'Harvey', Category: 65 },
+];
+
+const fabStyle = {
+  position: 'absolute',
+  bottom: 40,
+  right: 100,
+};
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
   return (
-    <StyledGridOverlay>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        width={96}
-        viewBox="0 0 523 299"
-        aria-hidden
-        focusable="false"
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`full-width-tabpanel-${index}`}
+      aria-labelledby={`full-width-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
+}
+
+TabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.number.isRequired,
+  value: PropTypes.number.isRequired,
+};
+
+function a11yProps(index) {
+  return {
+    id: `full-width-tab-${index}`,
+    'aria-controls': `full-width-tabpanel-${index}`,
+  };
+}
+
+function FullWidthTabs() {
+  const theme = useTheme();
+  const [value, setValue] = useState(0);
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
+  const handleChangeIndex = (index) => {
+    setValue(index);
+  };
+  const fabs = [
+    {
+     
+    },
+    {
+      color: 'primary',
+      sx: fabStyle,
+      icon: <AddIcon />,
+      label: 'Add',
+    },
+    ]
+    const transitionDuration = {
+    enter: theme.transitions.duration.enteringScreen,
+    exit: theme.transitions.duration.leavingScreen,
+  };
+
+  return (
+    <Box sx={{ bgcolor: 'background.paper',mx:4 ,display:'flex',flexDirection:'column', justifyContent:"center" }}>
+      <AppBar position="static"  sx={{mx:4,height:60,border:0,boxShadow:0,bgcolor:'white'}}>
+        <Tabs
+          value={value}
+          onChange={handleChange}
+          variant="fullWidth"
+          aria-label="full width tabs example"
+        >   
+          <Tab icon={<ArticleIcon/>} iconPosition="start" label="Articles" sx={{}} {...a11yProps(0)} />
+          <Tab icon={<HistoryIcon/>} iconPosition="start" label="History" {...a11yProps(1)} />
+        </Tabs>
+      </AppBar>
+      <SwipeableViews
+        axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
+        index={value}
+        onChangeIndex={handleChangeIndex}
       >
-        <path
-          className="no-results-primary"
-          d="M262 20c-63.513 0-115 51.487-115 115s51.487 115 115 115 115-51.487 115-115S325.513 20 262 20ZM127 135C127 60.442 187.442 0 262 0c74.558 0 135 60.442 135 135 0 74.558-60.442 135-135 135-74.558 0-135-60.442-135-135Z"
-        />
-        <path
-          className="no-results-primary"
-          d="M348.929 224.929c3.905-3.905 10.237-3.905 14.142 0l56.569 56.568c3.905 3.906 3.905 10.237 0 14.143-3.906 3.905-10.237 3.905-14.143 0l-56.568-56.569c-3.905-3.905-3.905-10.237 0-14.142ZM212.929 85.929c3.905-3.905 10.237-3.905 14.142 0l84.853 84.853c3.905 3.905 3.905 10.237 0 14.142-3.905 3.905-10.237 3.905-14.142 0l-84.853-84.853c-3.905-3.905-3.905-10.237 0-14.142Z"
-        />
-        <path
-          className="no-results-primary"
-          d="M212.929 185.071c-3.905-3.905-3.905-10.237 0-14.142l84.853-84.853c3.905-3.905 10.237-3.905 14.142 0 3.905 3.905 3.905 10.237 0 14.142l-84.853 84.853c-3.905 3.905-10.237 3.905-14.142 0Z"
-        />
-        <path
-          className="no-results-secondary"
-          d="M0 43c0-5.523 4.477-10 10-10h100c5.523 0 10 4.477 10 10s-4.477 10-10 10H10C4.477 53 0 48.523 0 43ZM0 89c0-5.523 4.477-10 10-10h80c5.523 0 10 4.477 10 10s-4.477 10-10 10H10C4.477 99 0 94.523 0 89ZM0 135c0-5.523 4.477-10 10-10h74c5.523 0 10 4.477 10 10s-4.477 10-10 10H10c-5.523 0-10-4.477-10-10ZM0 181c0-5.523 4.477-10 10-10h80c5.523 0 10 4.477 10 10s-4.477 10-10 10H10c-5.523 0-10-4.477-10-10ZM0 227c0-5.523 4.477-10 10-10h100c5.523 0 10 4.477 10 10s-4.477 10-10 10H10c-5.523 0-10-4.477-10-10ZM523 227c0 5.523-4.477 10-10 10H413c-5.523 0-10-4.477-10-10s4.477-10 10-10h100c5.523 0 10 4.477 10 10ZM523 181c0 5.523-4.477 10-10 10h-80c-5.523 0-10-4.477-10-10s4.477-10 10-10h80c5.523 0 10 4.477 10 10ZM523 135c0 5.523-4.477 10-10 10h-74c-5.523 0-10-4.477-10-10s4.477-10 10-10h74c5.523 0 10 4.477 10 10ZM523 89c0 5.523-4.477 10-10 10h-80c-5.523 0-10-4.477-10-10s4.477-10 10-10h80c5.523 0 10 4.477 10 10ZM523 43c0 5.523-4.477 10-10 10H413c-5.523 0-10-4.477-10-10s4.477-10 10-10h100c5.523 0 10 4.477 10 10Z"
-        />
-      </svg>
-      <Box sx={{ mt: 2 }}>No results found.</Box>
-    </StyledGridOverlay>
+        <TabPanel value={value} index={0} dir={theme.direction}>
+          <StockArticles/>
+        </TabPanel>
+        <TabPanel value={value} index={1} dir={theme.direction}>
+          <StockHistory/>
+        </TabPanel>
+      </SwipeableViews>
+      {fabs.map((fab, index) => (
+        <Zoom
+          key={fab.color}
+          in={value === index}
+          timeout={transitionDuration}
+          style={{
+            transitionDelay: `${value === index ? transitionDuration.exit : 0}ms`,
+          }}
+          unmountOnExit
+        >
+          <Fab sx={fab.sx} aria-label={fab.label} color={fab.color}>
+            {fab.icon}
+          </Fab>
+        </Zoom>
+      ))}
+    </Box>
   );
 }
 
 export default function StockDetails() {
-    const {state}=useLocation()
-    const {id}= state
-    const lightTheme = createTheme({ palette: { mode: 'light' } });
-    
-      const Item = styled(Paper)(({ theme }) => ({
-        ...theme.typography.body2,
-        color: theme.palette.text.secondary,
-        lineHeight: '60px',
-      }));
+
+  const navigate=useNavigate()
+  function handleClick(event) {
+    event.preventDefault();
+    navigate('/stock')
+  }
       const columns = [
-        { field: 'id', headerName: 'ID', width: 90 },
         {
-          field: 'stockName',
-          headerName: 'Stock name',
+          field: 'boImage',
+          headerName: 'Image',
           width: 180,
         },
         {
-          field: 'address',
-          headerName: 'Address',
+          field: 'boTitle',
+          headerName: 'Title',
+          width: 180,
+        },
+        {
+          field: 'description',
+          headerName: 'Description',
           width: 270,
         },
         {
-          field: 'managerName',
-          headerName: 'Manager name',
+          field: 'category',
+          headerName: 'Category',
           width: 270,
         },
         {
-          field: 'managerNumber',
-          headerName: 'Manager Tel number',
+          field: 'publisher',
+          headerName: 'Publisher',
           width: 270,
         },
-        // {
-        //   field: 'details',
-        //   headerName: 'Details',
-        //   width: 160,
-        // },
+        {
+          field: 'quantity',
+          headerName: 'Quantity',
+          width: 90,
+          type:'number'
+        },
   
       ];
       
       const rows = [
-        { id: 1, stockName: 'Halima', address: 'Sfax1/Sfax', managerName: "Salim sfexi" , details:"fff"},
-        { id: 2, stockName: 'sendibad', address: 'Mida/menzel tmim/Nabeul', managerName: "Hamida midawi" },
-        { id: 3, stockName: 'Stock sahlin', address: 'Sahlin/Sousse', managerName: "Wael ben sahloul" },
-        { id: 4, stockName: 'Stock alia', address: 'Alia/bizerte', managerName: "Mouhamed Amin ben yahya" },
-        { id: 5, stockName: 'Targaryen', address: 'Daenerys', managerName: "houssem ben ammar" },
-        { id: 6, stockName: 'Melisandre', address: null, managerName: 150 },
-        { id: 7, stockName: 'Clifford', address: 'Ferrara', managerName: 44 },
-        { id: 8, stockName: 'Frances', address: 'Rossini', managerName: 36 },
-        { id: 9, stockName: 'Roxie', address: 'Harvey', managerName: 65 },
+        { id: 1, boTitle: 'Halima', publisher: '', Category: "Salim sfexi" , details:"fff"},
+        { id: 2, boTitle: 'sendibad', publisher: '', Category: "Hamida midawi" },
+        { id: 3, boTitle: '', publisher: 'Sahlin/Sousse', Category: "Wael ben sahloul" },
+        { id: 4, boTitle: 'Stock alia', publisher: 'Alia/bizerte', Category: "Mouhamed Amin ben yahya" },
+        { id: 5, boTitle: 'Targaryen', publisher: 'Daenerys', Category: "houssem ben ammar" },
+        { id: 6, boTitle: 'Melisandre', publisher: null, Category: 150 },
+        { id: 7, boTitle: 'Clifford', publisher: 'Ferrara', Category: 44 },
+        { id: 8, boTitle: 'Frances', publisher: 'Rossini', Category: 36 },
+        { id: 9, boTitle: 'Roxie', publisher: 'Harvey', Category: 65 },
       ];
   return (
     <Grid    >
@@ -120,43 +255,19 @@ export default function StockDetails() {
         }}
       >   
           <Item sx={{pt:7,pb:1,px:7,borderRadius:10}} elevation={5}>
-          <Typography variant="h5" mb={3} gutterBottom sx={{ fontWeight: 'bold' }}>
-         Stock / Sfax 1 
-        </Typography>
-        <div style={{height:500 }}>
-      <DataGrid
-      pageSizeOptions={[7, 10,20]}
-       sx={{
-        boxShadow: 0,
-        border: 0,
-        borderColor: 'primary.light',
-        '& .MuiDataGrid-cell:hover': {
-          color: 'primary.main',
-        }}}
-        rows={rows}
-        columns={columns}
-       slots={{
-        noResultsOverlay: CustomNoResultsOverlay,
-        toolbar: GridToolbar,
-      }} 
-      initialState={{
-        pagination: { paginationModel: { pageSize: 7 } },
-        filter: {
-          filterModel: {
-            items: [],
-            quickFilterValues: [''],
-          },
-        },
-      }}
-      slotProps={{
-        toolbar: {
-          showQuickFilter: true,
-        },
-      }}
-      />
+          <div role="presentation" onClick={handleClick}>
+      <Breadcrumbs aria-label="breadcrumb">
+        <Link underline="hover" variant="h5" sx={{ fontWeight: 'bold' }} color="inherit" href="/stock">
+          Stock
+        </Link>
+        <Typography variant="h5" sx={{ fontWeight: 'bold' }} color="text.primary">Stock Sfax</Typography>
+      </Breadcrumbs>
     </div>
+        <FullWidthTabs/>    
+
     </Item>
-                
+
+
          </Box>
        </ThemeProvider>
      </Grid>
