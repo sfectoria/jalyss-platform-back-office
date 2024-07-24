@@ -1,27 +1,11 @@
-.file-uploader {
-  border: 1px solid #ced4da;
-  border-radius: 3px;
-  display: flex;
-  justify-content: space-between;
+button {
+  justify-content: center;
 }
 
-.file-div {
-  display: flex;
-  width: 85%;
-}
-
-.file-div > button {
-  justify-content: left;
-}
-
-/* .disabled {
-  background-color: #e9ecef;
-} */
-
-.file-name {
-  margin-left: 0.5rem;
-}
-
-.attachment-icon {
-  width: 100%;
+#upload-btn{ /* Equal to the width to make it circular */
+  border-radius: 50%;
+  height: 60px;
+  background-color: #42a5f5;
+  justify-content: center; /* Assuming you want to center content inside the button */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
