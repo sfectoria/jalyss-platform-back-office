@@ -58,7 +58,7 @@ import { Logout, PersonAdd, Settings } from "@mui/icons-material";
 //   },
 // }));
 
-export default function Header() {
+export default function Header({isCollapsed, setIsCollapsed}) {
   const [profileAnchorEl, setProfileAnchorEl] = React.useState(null);
   const [messagesAnchorEl, setMessagesAnchorEl] = React.useState(null);
   const [notificationsAnchorEl, setNotificationsAnchorEl] =
@@ -71,6 +71,10 @@ export default function Header() {
   const isNotificationsMenuOpen = Boolean(notificationsAnchorEl);
 
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
+
+  const [messagesCount, setMessagesCount] = React.useState(4)
+  const [notificationCount, setNotificationCount] = React.useState(15)
 
   const handleProfileMenuOpen = (event) => {
     setProfileAnchorEl(event.currentTarget);
@@ -122,7 +126,12 @@ export default function Header() {
     >
       <MenuItem>Profile</MenuItem>
       <MenuItem>My account</MenuItem>
-      <Divider />
+      <Divider
+        sx={{
+          height: "3px",
+          backgroundColor: "black",
+        }}
+      />
       <MenuItem>
         <ListItemIcon>
           <PersonAdd fontSize="small" />
@@ -162,19 +171,21 @@ export default function Header() {
       <MenuItem>
         <Stack>
           <Typography variant="h6">Messages</Typography>
-          <Typography variant="body2">You have 4 new messages</Typography>
-        </Stack>
-        <Divider />
-        <Stack>
+          <Typography variant="body2">You have {messagesCount} new messages</Typography>
+          <Divider sx={{
+            height: '3px',
+            backgroundColor: 'black'
+        }} />
           <Typography variant="body1">Message 1</Typography>
-          <Typography variant="body2">Message 2</Typography>
-          <Typography variant="body2">Message 3</Typography>
+          <Typography variant="body1">Message 2</Typography>
+          <Typography variant="body1">Message 3</Typography>
+        
         </Stack>
       </MenuItem>
     </Menu>
   );
 
-  
+
   const renderNotificationsMenu = (
     <Menu
       anchorEl={notificationsAnchorEl}
@@ -191,30 +202,26 @@ export default function Header() {
       open={isNotificationsMenuOpen}
       onClose={handleNotificationsMenuClose}
     >
-      <MenuItem>Profile</MenuItem>
-      <MenuItem>My account</MenuItem>
-      <Divider />
       <MenuItem>
-        <ListItemIcon>
-          <PersonAdd fontSize="small" />
-        </ListItemIcon>
-        Add another account
-      </MenuItem>
-      <MenuItem>
-        <ListItemIcon>
-          <Settings fontSize="small" />
-        </ListItemIcon>
-        Settings
-      </MenuItem>
-      <MenuItem>
-        <ListItemIcon>
-          <Logout fontSize="small" />
-        </ListItemIcon>
-        Logout
+        <Stack>
+          <Typography variant="h6">Notifications</Typography>
+          <Typography variant="body2">You have {notificationCount} new notifications</Typography>
+          <Divider
+            sx={{
+              height: "3px",
+              backgroundColor: "black",
+            }}
+          />
+          <Typography variant="body1">Notification 1</Typography>
+          <Typography variant="body1">Notification 2</Typography>
+          <Typography variant="body1">Notification 3</Typography>
+        </Stack>
       </MenuItem>
     </Menu>
   );
-  const mobileMenuId = "primary-search-account-menu-mobile";
+
+
+  // const mobileMenuId = "primary-search-account-menu-mobile";
   // const renderMobileMenu = (
   //   <Menu
   //     anchorEl={mobileMoreAnchorEl}
@@ -276,6 +283,7 @@ export default function Header() {
             color="inherit"
             aria-label="open drawer"
             sx={{ mr: 2 }}
+            onClick={() => setIsCollapsed(!isCollapsed)}
           >
             <MenuIcon />
           </IconButton>
@@ -304,7 +312,7 @@ export default function Header() {
               color="inherit"
               onClick={handleMessagesMenuOpen}
             >
-              <Badge badgeContent={4} color="error">
+              <Badge badgeContent={messagesCount} color="error">
                 <MailIcon />
               </Badge>
             </IconButton>
@@ -314,7 +322,7 @@ export default function Header() {
               color="inherit"
               onClick={handleNotificationsMenuOpen}
             >
-              <Badge badgeContent={17} color="error">
+              <Badge badgeContent={notificationCount} color="error">
                 <NotificationsIcon />
               </Badge>
             </IconButton>
