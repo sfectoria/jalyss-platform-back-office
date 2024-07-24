@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import TextField from '@mui/material/TextField';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -31,8 +30,6 @@ const possibelErrors= ['Please confirm your password',"Passwords do not match","
 const lightTheme = createTheme({ palette: { mode: 'light' } });
 export default function ConfirmPassword() {
 
-  const [email,setEmail]=useState("")
-  const [step,setStep]=useState(1)
   const [pass,setPass]=useState("")
   const [coPass,setCoPass]=useState("")
   const [showPassword, setShowPassword] = useState(false);
@@ -58,11 +55,10 @@ export default function ConfirmPassword() {
   
   }
 
-
   const handleClickShowPassword = () => setShowPassword((show) =>
   !show);
 
- const handleMouseDownPassword = (event) => {
+  const handleMouseDownPassword = (event) => {
    event.preventDefault();
  };
 

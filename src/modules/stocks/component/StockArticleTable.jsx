@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
@@ -14,9 +14,10 @@ import Paper from '@mui/material/Paper';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import Link from '@mui/material/Link';
-import { blue } from '@mui/material/colors';
 import Popover from "@mui/material/Popover";
 import PopupState, { bindTrigger, bindPopover } from "material-ui-popup-state";
+import DoneIcon from '@mui/icons-material/Done';
+import ClearIcon from '@mui/icons-material/Clear';
 
 
 
@@ -31,7 +32,32 @@ function createData(image, title, quantity, author, publisher, price) {
     history: [
       {
         date: '2020-01-05',
-        customerName: 'Dar el kiteb',
+        customerName: null,
+        fournisseurName:'Dar el kiteb',
+        type: 'BR',
+        transfer:false,
+        quantity: 40,
+        price:5.5
+      },
+      {
+        date: '2020-01-02',
+        customerName: 'Canaux sfax',
+        fournisseurName:null,
+        type: 'BS',
+        transfer:false,
+        quantity: 40,
+        price:6
+      },
+      {
+        date: '2020-01-02',
+        customerName: 'Canaux sfax',
+        type: 'BS',
+        transfer:true,
+        quantity: 70,
+      },
+      {
+        date: '2020-01-05',
+        customerName: 'canaux gafsa',
         type: 'BR',
         quantity: 40,
         price:5.5
@@ -46,7 +72,8 @@ function createData(image, title, quantity, author, publisher, price) {
       {
         date: '2020-01-02',
         customerName: 'Canaux sfax',
-        type: 'BST',
+        type: 'BR',
+        transfer:true,
         quantity: 70,
       },
       {
@@ -66,39 +93,20 @@ function createData(image, title, quantity, author, publisher, price) {
       {
         date: '2020-01-02',
         customerName: 'Canaux sfax',
-        type: 'BST',
+        type: 'BS',
+        transfer:true,
         quantity: 70,
-      },
-      {
-        date: '2020-01-05',
-        customerName: 'Dar el kiteb',
-        type: 'BR',
-        quantity: 40,
-        price:5.5
       },
       {
         date: '2020-01-02',
         customerName: 'Canaux sfax',
         type: 'BS',
-        quantity: 40,
-        price:6
-      },
-      {
-        date: '2020-01-02',
-        customerName: 'Canaux sfax',
-        type: 'BST',
         quantity: 70,
       },
       {
         date: '2020-01-02',
         customerName: 'Canaux sfax',
-        type: 'BST',
-        quantity: 70,
-      },
-      {
-        date: '2020-01-02',
-        customerName: 'Canaux sfax',
-        type: 'BST',
+        type: 'BS',
         quantity: 70,
       },
     ],
@@ -174,7 +182,9 @@ function Row(props) {
                   <TableRow>
                     <TableCell>Date</TableCell>
                     <TableCell>Customer</TableCell>
+                    <TableCell>Fournisseur</TableCell>
                     <TableCell>Type</TableCell>
+                    <TableCell align='center'>Transfer</TableCell>
                     <TableCell >Quantity</TableCell>
                     <TableCell >Price</TableCell>
                     <TableCell >Total price ($)</TableCell>
@@ -188,13 +198,16 @@ function Row(props) {
                           {historyRow.date}
                         </TableCell>
                         <TableCell>{historyRow.customerName}</TableCell>
+                        <TableCell>{historyRow.fournisseurName}</TableCell>
                         <TableCell >{historyRow.type}</TableCell>
+                        <TableCell align='center' >{historyRow.transfer?<DoneIcon color='success'/>:<ClearIcon color='error'/>}</TableCell>
                         <TableCell >{historyRow.quantity}</TableCell>
                         <TableCell >{historyRow.price}</TableCell>
                         <TableCell >
                           {(historyRow.price * historyRow.quantity * 100) / 100}
                         </TableCell>
                       </TableRow>}
+                      else return '';
                         
                     }
                     
@@ -210,6 +223,7 @@ function Row(props) {
                           {historyRow.date}
                         </TableCell>
                         <TableCell>{historyRow.customerName}</TableCell>
+                        <TableCell>{historyRow.fournisseurName}</TableCell>
                         <TableCell >{historyRow.type}</TableCell>
                         <TableCell >{historyRow.quantity}</TableCell>
                         <TableCell >{historyRow.price}</TableCell>
@@ -239,7 +253,6 @@ Row.propTypes = {
     quantity: PropTypes.number.isRequired,
     history: PropTypes.arrayOf(
       PropTypes.shape({
-        customerName: PropTypes.number.isRequired,
         type: PropTypes.number.isRequired,
         quantity: PropTypes.number.isRequired,
         price: PropTypes.number.isRequired,
@@ -275,8 +288,8 @@ export default function StockArticles() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
-            <Row key={row.name} row={row} />
+          {rows.map((row,i) => (
+            <Row key={i} row={row} />
           ))}
         </TableBody>
       </Table>

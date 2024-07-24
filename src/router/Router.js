@@ -13,7 +13,6 @@ import StockModule from "../modules/stocks/StockModule";
 import ChannelModule from "../modules/channels/ChannelModule";
 import StockList from "../modules/stocks/views/StockList";
 import StockDetails from "../modules/stocks/views/StockDetails";
-import Admin from "../apps/Admin";
 import ClientsList from "../modules/clients/views/ClientsList";
 import EmployerModule from "../modules/employers/EmployerModule";
 import EmployersList from "../modules/employers/views/EmployersList";
