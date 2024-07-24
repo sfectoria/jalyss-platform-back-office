@@ -16,9 +16,11 @@ import StockDetails from "../modules/stocks/views/StockDetails";
 import ClientsList from "../modules/clients/views/ClientsList";
 import EmployerModule from "../modules/employers/EmployerModule";
 import EmployersList from "../modules/employers/views/EmployersList";
-import InvoiceContainer from "../component/InvoiceContainer"
+import InvoiceContainer from "../component/InvoiceContainer";
 import ArticleModule from "../modules/articles/ArticleModule";
 import ArticlesList from "../modules/articles/views/ArticlesList";
+import ProfileView from "../modules/profile/views/ProfileView";
+import ProfileModule from "../modules/profile/ProfileModule";
 
 export default function Router() {
   const user = useSelector((state) => state.authSlice.me);
@@ -28,29 +30,30 @@ export default function Router() {
       {user ? (
         <Routes>
           <Route path="/" element={<Main />}>
-          <Route path="stock"  element={<StockModule />}>
+            <Route path="stock" element={<StockModule />}>
               <Route index element={<StockList />} />
               <Route path=":id" element={<StockDetails />} />
             </Route>
-            <Route path="clients"  element={<ClientModule />}>
+            <Route path="clients" element={<ClientModule />}>
               <Route index element={<ClientsList />} />
             </Route>
-            <Route path="employers"  element={<EmployerModule />}>
+            <Route path="employers" element={<EmployerModule />}>
               <Route index element={<EmployersList />} />
             </Route>
-            <Route path="articles"  element={<ArticleModule />}>
+            <Route path="profile" element={<ProfileModule />}>
+              <Route index element={<ProfileView />} />
+            </Route>
+            <Route path="articles" element={<ArticleModule />}>
               <Route index element={<ArticlesList />} />
             </Route>
-            <Route path="channels"  element={<ChannelModule />}>
-            </Route>
-            <Route path="invoice"  element={<InvoiceContainer />}>
-            </Route>
+            <Route path="channels" element={<ChannelModule />}></Route>
+            <Route path="invoice" element={<InvoiceContainer />}></Route>
           </Route>
         </Routes>
       ) : (
         <Routes>
           <Route path="/" element={<Auth />}>
-            <Route path=""  element={<AuthModule />}>
+            <Route path="" element={<AuthModule />}>
               <Route index element={<Login />} />
               <Route path="forget-password" element={<ForgetPassword />} />
               <Route path="confirmation-code" element={<SixDigitCode />} />

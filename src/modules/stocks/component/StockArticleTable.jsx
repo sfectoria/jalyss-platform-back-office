@@ -154,7 +154,7 @@ function Row(props) {
               vertical: "top",
               horizontal: "center"
             }}
-          >
+          > 
             <img
               width={500}
               src={row.image}
