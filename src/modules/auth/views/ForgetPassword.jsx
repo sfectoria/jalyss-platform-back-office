@@ -22,22 +22,15 @@ const lightTheme = createTheme({ palette: { mode: 'light' } });
 export default function ForgetPassword() {
 
   const [email,setEmail]=useState("")
-  const [step,setStep]=useState(1)
 
   const navigate = useNavigate()
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const info = new FormData(event.currentTarget);
-    console.log({
-      email: info.get('email'),
-      password: info.get('password'),
-    });
-  };
+
   const cancelClicked = ()=>{
     navigate('/')
   }
 
   const getCodeClicked = ()=>{
+    console.log(email);
     navigate('/confirmation-code')
   }
 

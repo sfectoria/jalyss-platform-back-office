@@ -21,25 +21,18 @@ const Item = styled(Paper)(({ theme }) => ({
 const lightTheme = createTheme({ palette: { mode: 'light' } });
 export default function ForgetPassword() {
 
-  const [email,setEmail]=useState("")
+  const [code,setCode]=useState("")
 
   const navigate = useNavigate()
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const info = new FormData(event.currentTarget);
-    console.log({
-      email: info.get('email'),
-      password: info.get('password'),
-    });
-  };
 
   const nextClicked = ()=>{
+    console.log(code);
     navigate('/confirm-password')
   }
 
   const handelChange = (event)=>{
     const emailChange = event.target.value
-    setEmail(emailChange)
+    setCode(emailChange)
   }
 
 
@@ -94,7 +87,7 @@ export default function ForgetPassword() {
         <Box component="form" noValidate sx={{ mt: 2 }}>
         <TextField 
         label="Code "
-        name="email"  
+        name="code"  
         placeholder=' X   X   X   X   X   X '
         focused
         sx={{ width:150 ,mx:10 }}
