@@ -19,7 +19,7 @@ import Avatar from "@mui/material/Avatar";
 
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Grid from "@mui/material/Unstable_Grid2";
 import Item from "../../../style/ItemStyle";
 import FileUploader from "../../../component/FileUploader";
@@ -32,6 +32,36 @@ const ProfileView = () => {
   const [file, setFile] = useState(null);
   const [fileName, setFileName] = useState("");
   const [username, setUsername] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+
+  const [form, setForm] = useState({});
+
+  useEffect(
+    () => {
+      setForm({
+        'username': username,
+        'currentPassword': currentPassword,
+        'newPassword': newPassword,
+        'fileName': fileName,
+        'fileUrl': file,
+      });
+    },
+    [username,  currentPassword, newPassword, fileName, file]
+  );
+  const handleSubmit = () => {
+    console.log(form);
+
+    handleCancel();
+  };
+
+  const handleCancel = () => {
+    setUsername("");
+    setCurrentPassword("");
+    setNewPassword("");
+    setFile(null);
+    setFileName("");
+  };
 
   const onSelectFileHandler = (e) => {
     const uploadedFile = e.target.files[0];
@@ -67,19 +97,21 @@ const ProfileView = () => {
                     autoFocus
                     onChange={(e) => {
                       setUsername(e.target.value);
-                      console.log(e.target.value);
+                      // console.log(e.target.value);
                     }}
                     inputProps={{
                       maxLength: 20,
                     }}
+                    value={username}
                   />
                   <FormControl margin="normal" fullWidth variant="outlined">
                     <InputLabel htmlFor="currentPassword" variant="outlined">
                       Current Password
                     </InputLabel>
                     <OutlinedInput
+                      value={currentPassword}
                       onChange={(event) => {
-                        console.log(event.target.value);
+                        setCurrentPassword(event.target.value);
                       }}
                       id="currentPassword"
                       type={showPassword ? "text" : "password"}
@@ -106,15 +138,16 @@ const ProfileView = () => {
                       New Password
                     </InputLabel>
                     <OutlinedInput
+                      value={newPassword}
                       onChange={(event) => {
-                        console.log(event.target.value); // Handle new password change
+                        setNewPassword(event.target.value);
                       }}
                       id="newPassword"
-                      type={showNewPassword ? "text" : "password"} // Use a separate state variable for the new password visibility
+                      type={showNewPassword ? "text" : "password"}
                       endAdornment={
                         <InputAdornment position="end">
                           <IconButton
-                            onClick={() => setShowNewPassword((show) => !show)} // Adjust the state function for new password visibility
+                            onClick={() => setShowNewPassword((show) => !show)}
                             onMouseDown={(event) => {
                               event.preventDefault();
                             }}
@@ -173,14 +206,27 @@ const ProfileView = () => {
                   />
                 </>
                 <Item>
-                  <Typography variant="h6" color="initial" m={"3px"}>
+                  <Typography
+                    variant="h6"
+                    color="initial"
+                    m={"3px"}
+                    sx={{ textAlign: "center" }}
+                  >
                     {username}
                   </Typography>
                 </Item>
-                <Button variant="contained" color="primary">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleSubmit}
+                >
                   Confirm
                 </Button>
-                <Button variant="contained" color="error">
+                <Button
+                  variant="contained"
+                  color="error"
+                  onClick={handleCancel}
+                >
                   Cancel
                 </Button>
               </Stack>
