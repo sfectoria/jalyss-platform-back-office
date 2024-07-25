@@ -11,6 +11,7 @@ import {
   IconButton,
   Stack,
   Button,
+  Badge,
 } from "@mui/material";
 
 import Divider from "@mui/material/Divider";
@@ -23,10 +24,18 @@ import React, { useEffect, useState } from "react";
 import Grid from "@mui/material/Unstable_Grid2";
 import Item from "../../../style/ItemStyle";
 import FileUploader from "../../../component/FileUploader";
-
-const defaultTheme = createTheme();
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 
 const ProfileView = () => {
+  const defaultTheme = createTheme();
+
+
+
+
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [file, setFile] = useState(null);
@@ -35,33 +44,48 @@ const ProfileView = () => {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
 
-  const [form, setForm] = useState({});
+  const [open, setOpen] = React.useState(false);
+  const [isCancelled, setIsCancelled] = useState(false);
 
-  useEffect(
-    () => {
-      setForm({
-        'username': username,
-        'currentPassword': currentPassword,
-        'newPassword': newPassword,
-        'fileName': fileName,
-        'fileUrl': file,
-      });
-    },
-    [username,  currentPassword, newPassword, fileName, file]
-  );
-  const handleSubmit = () => {
-    console.log(form);
-
-    handleCancel();
+  const handleClose = () => {
+    setOpen(false);
   };
 
-  const handleCancel = () => {
+  const resetForm = () => {
     setUsername("");
     setCurrentPassword("");
     setNewPassword("");
     setFile(null);
     setFileName("");
   };
+
+  const handleSubmit = () => {
+    setIsCancelled(false);
+    setOpen(true);
+    console.log(form);
+
+    setOpen(true);
+    resetForm();
+  };
+
+  const handleCancel = () => {
+    setIsCancelled(true);
+    setOpen(true);
+    resetForm();
+  };
+
+  const [form, setForm] = useState({});
+
+  useEffect(() => {
+    setForm({
+      username: username,
+      currentPassword: currentPassword,
+      newPassword: newPassword,
+      fileName: fileName,
+      fileUrl: file,
+    });
+  }, [username, currentPassword, newPassword, fileName, file]);
+
 
   const onSelectFileHandler = (e) => {
     const uploadedFile = e.target.files[0];
@@ -167,14 +191,6 @@ const ProfileView = () => {
                     />
                   </FormControl>
 
-                  <InputLabel htmlFor="imgUploader">Profile Picture</InputLabel>
-                  <FileUploader
-                    onSelectFile={onSelectFileHandler}
-                    onDeleteFile={onDeleteFileHandler}
-                    file={file}
-                    setFile={setFile}
-                    fileName={fileName}
-                  />
                 </form>
               </Box>
             </Item>
@@ -200,10 +216,22 @@ const ProfileView = () => {
                 spacing={2}
               >
                 <>
-                  <Avatar
-                    src={file}
-                    sx={{ width: "200px  ", height: "200px" }}
-                  />
+                  <Badge
+                    overlap="circular"
+                    anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                    badgeContent={
+                      <FileUploader
+                        onSelectFile={onSelectFileHandler}
+                        onDeleteFile={onDeleteFileHandler}
+                        setFile={setFile}
+                      />
+                    }
+                  >
+                    <Avatar
+                      src={file}
+                      sx={{ width: "200px  ", height: "200px" }}
+                    />
+                  </Badge>
                 </>
                 <Item>
                   <Typography
@@ -217,14 +245,24 @@ const ProfileView = () => {
                 </Item>
                 <Button
                   variant="contained"
-                  color="primary"
+                  sx={{
+                    backgroundColor: (theme) => theme.palette.success.light,
+                    "&:hover": {
+                      backgroundColor: (theme) => theme.palette.success.main,
+                    },
+                  }}
                   onClick={handleSubmit}
                 >
                   Confirm
                 </Button>
                 <Button
                   variant="contained"
-                  color="error"
+                  sx={{
+                    backgroundColor: (theme) => theme.palette.error.light,
+                    "&:hover": {
+                      backgroundColor: (theme) => theme.palette.error.main,
+                    },
+                  }}
                   onClick={handleCancel}
                 >
                   Cancel
@@ -234,6 +272,35 @@ const ProfileView = () => {
           </Grid>
         </Grid>
       </Box>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        sx={{
+          "& .MuiPaper-root": {
+            borderColor: isCancelled ? "error.main" : "success.main",
+            borderWidth: 3,
+            borderStyle: "solid",
+            bgcolor: isCancelled ? "error.light" : "success.light",
+          },
+        }}
+      >
+        <DialogTitle
+          id="alert-dialog-title"
+          color={"white"}
+          sx={{ fontWeight: "bold" }}
+        >
+          {isCancelled ? "Changes cancelled!" : "Submitted successfully!"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description" color={"white"}>
+            {isCancelled
+              ? "The changes you have made are not saved"
+              : "The changes you have made are saved "}
+          </DialogContentText>
+        </DialogContent>
+      </Dialog>
     </ThemeProvider>
     // username password pfp
   );
