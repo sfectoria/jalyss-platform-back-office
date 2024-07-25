@@ -1,206 +1,163 @@
-import * as React from 'react';
-import PropTypes from 'prop-types';
-import Box from '@mui/material/Box';
-import Collapse from '@mui/material/Collapse';
-import IconButton from '@mui/material/IconButton';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-
-function createData(image, title, quantity, author, publisher, price) {
-  return {
-    image,
-    title,
-    quantity,
-    author,
-    publisher,
-    price,
-    history: [
-      {
-        date: '2020-01-05',
-        customerName: 'Dar el kiteb',
-        type: 'BR',
-        quantity: 40,
-        price:5.5
-      },
-      {
-        date: '2020-01-02',
-        customerName: 'Canaux sfax',
-        type: 'BS',
-        quantity: 40,
-        price:6
-      },
-      {
-        date: '2020-01-02',
-        customerName: 'Canaux sfax',
-        type: 'BST',
-        quantity: 70,
-      },
-      {
-        date: '2020-01-05',
-        customerName: 'Dar el kiteb',
-        type: 'BR',
-        quantity: 40,
-        price:5.5
-      },
-      {
-        date: '2020-01-02',
-        customerName: 'Canaux sfax',
-        type: 'BS',
-        quantity: 40,
-        price:6
-      },
-      {
-        date: '2020-01-02',
-        customerName: 'Canaux sfax',
-        type: 'BST',
-        quantity: 70,
-      },
-      {
-        date: '2020-01-05',
-        customerName: 'Dar el kiteb',
-        type: 'BR',
-        quantity: 40,
-        price:5.5
-      },
-      {
-        date: '2020-01-02',
-        customerName: 'Canaux sfax',
-        type: 'BS',
-        quantity: 40,
-        price:6
-      },
-      {
-        date: '2020-01-02',
-        customerName: 'Canaux sfax',
-        type: 'BST',
-        quantity: 70,
-      },
-    ],
-  };
-}
-
-function Row(props) {
-  const { row } = props;
-  const [open, setOpen] = React.useState(false);
-
-  return (
-    <React.Fragment>
-      <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
-        <TableCell>
-          <IconButton
-            aria-label="expand row"
-            size="small"
-            onClick={() => setOpen(!open)}
-          >
-            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-          </IconButton>
-        </TableCell>
-        <TableCell component="th" scope="row">
-          {row.image}
-        </TableCell>
-        <TableCell align="left">{row.title}</TableCell>
-        <TableCell align="left">{row.quantity}</TableCell>
-        <TableCell align="left">{row.author}</TableCell>
-        <TableCell align="left">{row.publisher}</TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1 }}>
-              <Typography variant="h6" gutterBottom component="div">
-                History
-              </Typography>
-              <Table size="small" aria-label="purchases">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Date</TableCell>
-                    <TableCell>Customer</TableCell>
-                    <TableCell>Type</TableCell>
-                    <TableCell >Quantity</TableCell>
-                    <TableCell >Price</TableCell>
-                    <TableCell >Total price ($)</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {row.history.map((historyRow) => (
-                    <TableRow key={historyRow.date}>
-                      <TableCell component="th" scope="row">
-                        {historyRow.date}
-                      </TableCell>
-                      <TableCell>{historyRow.customerName}</TableCell>
-                      <TableCell >{historyRow.type}</TableCell>
-                      <TableCell >{historyRow.quantity}</TableCell>
-                      <TableCell >{historyRow.price}</TableCell>
-                      <TableCell >
-                        {(historyRow.price * historyRow.quantity * 100) / 100}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </Box>
-          </Collapse>
-        </TableCell>
-      </TableRow>
-    </React.Fragment>
-  );
-}
-
-Row.propTypes = {
-  row: PropTypes.shape({
-    image: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-    quantity: PropTypes.number.isRequired,
-    history: PropTypes.arrayOf(
-      PropTypes.shape({
-        customerName: PropTypes.number.isRequired,
-        type: PropTypes.number.isRequired,
-        quantity: PropTypes.number.isRequired,
-        price: PropTypes.number.isRequired,
-        date: PropTypes.string.isRequired,
-      }),
-    ).isRequired,
-    auther: PropTypes.string.isRequired,
-    publisher: PropTypes.string.isRequired,
-  }).isRequired,
-};
-
-const rows = [
-  createData('image1', 'mawsem el hejra ela e chamal', 24, 'abderra7men mounif', 'dar el kiteb' ),
-  createData('image2', 'halima',120, 'mouhamed la3roussi lmetwi', 'dar dra chnouwa'),
-  createData('image3', 'el sodd', 160, 'mahmoud l mesa3di','dar el yamama'),
-  createData('image4', 'tot l morr', 123, 'mouhamed la3roussi lmetwi', 'dar e takwa'),
-  createData('image5', 'e sindibad l ba7ri', 49, 'sindibad','dar l 9alam'),
-];
+import React , {useState} from 'react';
+import { DataGrid, GridToolbar, GridActionsCellItem } from '@mui/x-data-grid';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { useNavigate } from 'react-router-dom';
+import CustomNoResultsOverlay from '../../../style/NoResultStyle';
+import DoneIcon from '@mui/icons-material/Done';
+import ClearIcon from '@mui/icons-material/Clear';
+import InvoiceModal from '../../../component/InvoiceModal';
+import MouseOverPopover from './cosOrForPopUp';
 
 export default function StockHistory() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [items, setItems] = useState([
+    {
+      id: (+ new Date() + Math.floor(Math.random() * 999999)).toString(36),
+      name: 'hhhh',
+      description: 'a  book',
+      price: '1.00',
+      quantity: 7
+    },
+    {
+      id: (+ new Date() + Math.floor(Math.random() * 999999)).toString(36),
+      name: 'halima',
+      description: 'a  book',
+      price: '1.00',
+      quantity: 1
+    },
+    {
+      id: (+ new Date() + Math.floor(Math.random() * 999999)).toString(36),
+      name: 'nooo',
+      description: 'a  book',
+      price: '4.00',
+      quantity: 5
+    }
+  ]);
+  
+  const openModal = (event) => {
+    event.preventDefault();
+    setIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsOpen(false);
+  };
+
+  const columns = [
+    { field: 'date', headerName: 'Date', width: 200 },
+    { field: 'customerName', headerName: 'Customer', width: 270,renderCell: (params) => (
+      <MouseOverPopover name={params.row.customerName}/> 
+    )
+  },
+    { field: 'fournisseurName', headerName: 'Fournisseur', width: 250 , renderCell: (params) => (
+      <MouseOverPopover name={params.row.fournisseurName}/>
+    )
+  },
+    { field: 'br',
+      headerName: 'BR', 
+      width: 50,
+      renderCell: (params) => (
+        params.row.br ? <DoneIcon color="success"/> : <ClearIcon color="error" /> 
+      ),
+      },
+    { field: 'bs', 
+      headerName: 'BS', 
+      width: 50,
+      renderCell: (params) => (
+        params.row.bs ? <DoneIcon color="success"/> : <ClearIcon color="error" /> 
+      ),
+    },
+    { field: 'bt', 
+      headerName: 'BT', 
+      width: 50,
+      renderCell: (params) => (
+        params.row.bt ? <DoneIcon color="success"/> : <ClearIcon color="error" /> 
+      ),
+     },
+     {
+      field: 'details',
+      headerName: 'Details',
+      width: 90,
+      type: 'actions',
+      getActions: ({ id }) => [
+        <GridActionsCellItem icon={<VisibilityIcon />} onClick={openModal} label="" />,
+      ],
+    },
+  ];
+
+  const rows = [
+    { id: 1, date:'07/23/2024 6:56 PM', customerName: null, fournisseurName: 'Salim sfexi', managerNumber: '+216 28527345', details: 'fff',br:true },
+    { id: 2, date: '07/23/2024 6:56 PM', customerName:  'Hamida midawi' , fournisseurName:null,bs:true},
+    { id: 3, date: '07/23/2024 6:56 PM', customerName: null, fournisseurName: 'Wael ben sahloul',br:true },
+    { id: 4, date: '07/23/2024 6:56 PM', customerName: null, fournisseurName: 'Stock Gabes',br:true,bt:true },
+    { id: 5, date: '07/23/2024 6:56 PM', customerName: 'Daenerys', fournisseurName:null ,bs:true},
+    { id: 6, date: '07/23/2024 6:56 PM', customerName:  'houssem ben ammar', fournisseurName:null,bs:true },
+    { id: 7, date: '07/23/2024 6:56 PM', customerName: null, fournisseurName: 'Ferrara',br:true },
+    { id: 8, date: '07/23/2024 6:56 PM', customerName: 'Stock Nabeul', fournisseurName: null,bs:true,bt:true },
+    { id: 9, date: '07/23/2024 6:56 PM', customerName: 'Harvey', fournisseurName:null ,bs:true },
+  ];
+
   return (
-    <TableContainer component={Paper}>
-      <Table aria-label="collapsible table">
-        <TableHead>
-          <TableRow>
-            <TableCell />
-            <TableCell>Image</TableCell>
-            <TableCell align="left">Title</TableCell>
-            <TableCell align="left">Quantity</TableCell>
-            <TableCell align="left">Author</TableCell>
-            <TableCell align="left">Publisher</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row) => (
-            <Row key={row.name} row={row} />
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+              <div style={{ width: '100%' }}>
+               
+                  <DataGrid
+                    pageSizeOptions={[7, 10, 20]}
+                    sx={{
+                      boxShadow: 0,
+                      border: 0,
+                      borderColor: 'primary.light',
+                      '& .MuiDataGrid-cell:hover': {
+                        color: 'primary.main',
+                      },
+                    }}
+                    rows={rows}
+                    columns={columns}
+                    slots={{
+                      noResultsOverlay: CustomNoResultsOverlay,
+                      toolbar: GridToolbar,
+                    }}
+                    initialState={{
+                      pagination: { paginationModel: { pageSize: 7 } },
+                      filter: {
+                        filterModel: {
+                          items: [],
+                          quickFilterValues: [''],
+                        },
+                      },
+                    }}
+                    slotProps={{
+                      toolbar: {
+                        showQuickFilter: true,
+                      },
+                    }}
+                  />
+                  <InvoiceModal
+              showModal={isOpen}
+              closeModal={closeModal}
+              info={{
+                // currentDate,
+                // dateOfIssue,
+                invoiceNumber:1,
+                billTo:'hamadi',
+                billToEmail:'hamadi@gmail.com',
+                billToAddress:'win',
+                // billFrom,
+                // billFromEmail,
+                // billFromAddress,
+                // notes,
+                // total,
+                // subTotal,
+                // taxAmount,
+                // discountAmount
+              }}
+              items={items}
+              currency={0}
+              subTotal={0}
+              taxAmount={0}
+              discountAmount={0}
+              total={0}
+            />
+             
+              </div>
   );
 }
