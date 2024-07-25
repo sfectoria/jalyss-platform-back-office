@@ -16,13 +16,6 @@ import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
 import { useNavigate } from 'react-router-dom';
 import AddButton from '../component/AddOp';
-
-
-const fabStyle = {
-  position: 'fixed',
-  bottom: 40,
-  right: 100,
-};
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 

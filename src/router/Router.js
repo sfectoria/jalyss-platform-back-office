@@ -19,6 +19,7 @@ import EmployersList from "../modules/employers/views/EmployersList";
 import InvoiceContainer from "../component/InvoiceContainer";
 import ArticleModule from "../modules/articles/ArticleModule";
 import ArticlesList from "../modules/articles/views/ArticlesList";
+import ArticleDetails from "../modules/articles/views/ArticleDetails";
 import ProfileView from "../modules/profile/views/ProfileView";
 import ProfileModule from "../modules/profile/ProfileModule";
 
@@ -45,6 +46,8 @@ export default function Router() {
             </Route>
             <Route path="articles" element={<ArticleModule />}>
               <Route index element={<ArticlesList />} />
+              <Route path=":id" element={< ArticleDetails/>} />
+
             </Route>
             <Route path="channels" element={<ChannelModule />}></Route>
             <Route path="invoice" element={<InvoiceContainer />}></Route>

@@ -14,10 +14,9 @@ import Paper from '@mui/material/Paper';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import Link from '@mui/material/Link';
-import Popover from "@mui/material/Popover";
-import PopupState, { bindTrigger, bindPopover } from "material-ui-popup-state";
 import DoneIcon from '@mui/icons-material/Done';
 import ClearIcon from '@mui/icons-material/Clear';
+import ImagePopUp from '../../../component/ImagePopUp';
 
 
 
@@ -113,10 +112,6 @@ function createData(image, title, quantity, author, publisher, price) {
   };
 }
 
-
-
-
-
 function Row(props) {
   const { row } = props;
   const [open, setOpen] = React.useState(false);
@@ -134,36 +129,7 @@ function Row(props) {
           </IconButton>
         </TableCell>
         <TableCell component="th" scope="row" >
-        <PopupState variant="popover" popupId="demo-popup-popover">
-      {(popupState) => (
-        <div>
-          <img
-            {...bindTrigger(popupState)}
-            width={50}
-            src={row.image}
-            alt=""
-          />
-
-          <Popover
-            {...bindPopover(popupState)}
-            anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "center"
-            }}
-            transformOrigin={{
-              vertical: "top",
-              horizontal: "center"
-            }}
-          > 
-            <img
-              width={500}
-              src={row.image}
-              alt=""
-            />
-          </Popover>
-        </div>
-      )}
-    </PopupState>
+        <ImagePopUp image={row.image} />
         </TableCell>
         <TableCell align="left">{row.title}</TableCell>
         <TableCell align="left">{row.quantity}</TableCell>
