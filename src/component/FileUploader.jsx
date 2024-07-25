@@ -1,10 +1,9 @@
 import { Button, IconButton } from "@mui/material";
 import React, { useRef, useState } from "react";
-import AttachmentIcon from "@mui/icons-material/Attachment";
-import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 
 function FileUploader(props) {
-  const { onSelectFile, onDeleteFile, disabled ,file, setFile, fileName} = props;
+  const { onSelectFile,  disabled , setFile} = props;
   const hiddenFileInput = useRef(null);
 
   const handleClick = (event) => {
@@ -16,47 +15,22 @@ function FileUploader(props) {
     onSelectFile(event);
   };
 
-  const onDeleteFileHandler = () => {
-    setFile(null);
-    hiddenFileInput.current.value = null;
-    onDeleteFile();
-  };
+  
 
   return (
-    <div className="file-uploader">
-      <div className={`file-div ${disabled && "disabled"}`}>
-        <Button
-          className="attachment-icon"
-          onClick={handleClick}
-          disabled={disabled}
-        >
-          <AttachmentIcon />
-          <input
-            type="file"
-            id="actual-btn"
-            accept={'image/*'}
-            ref={hiddenFileInput}
-            onChange={handleChange}
-            hidden
-            disabled={disabled}
-            data-testid="file-upload-input"
-          />
-          <div className="file-name">
-            {file ? <div>{fileName}</div> : <div>Choose file</div>}
-          </div>
-        </Button>
-      </div>
-      <div className={`${disabled && "disabled"}`}>
-        <IconButton
-          aria-label="delete"
-          disabled={disabled}
-          color="primary"
-          onClick={onDeleteFileHandler}
-        >
-          <DeleteIcon />
-        </IconButton>
-      </div>
-    </div>
+    <Button id="upload-btn" onClick={handleClick} disabled={disabled}>
+      <EditIcon sx={{ color: "white" }} />
+      <input
+        type="file"
+        id="actual-btn"
+        accept={"image/*"}
+        ref={hiddenFileInput}
+        onChange={handleChange}
+        hidden
+        disabled={disabled}
+        data-testid="file-upload-input"
+      />
+    </Button>
   );
 }
 
