@@ -13,13 +13,7 @@ function App() {
   const [isCollapsed, setIsCollapsed] = useState(false)
   return (
     <Provider store={store}>
-      <Box>
-        <Header isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
-        <Stack direction="row">
-          <Navbar isCollapsed={isCollapsed} />
           <Router />
-        </Stack>
-      </Box>
     </Provider>
   );
 }

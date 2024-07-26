@@ -47,17 +47,16 @@ export default function ArticlesList() {
   return (
           <Box
             sx={{
-              pt: 7,
               bgcolor: 'background.default',
-              marginLeft: '20%',
-              marginRight: 2,
+              marginLeft: '2%',
+              marginRight: '2%',
             }}
           >
             <Item sx={{ pt: 7, pb: 1, px: 7, borderRadius: 10 }} elevation={5}>
               <Typography variant="h5" mb={3} gutterBottom sx={{ fontWeight: 'bold' }}>
                 Articles
               </Typography>
-              <div style={{ width: '100%' }}>
+              <div style={{ width: '100%', color:'red' }}>
                
                   <DataGrid
                     pageSizeOptions={[7, 10, 20]}

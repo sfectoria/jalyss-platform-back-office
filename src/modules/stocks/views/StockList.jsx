@@ -44,13 +44,12 @@ export default function StockList() {
   return (
           <Box
             sx={{
-              pt: 7,
+              pt: 2,
+              pl:2,
               bgcolor: 'background.default',
-              marginLeft: '20%',
-              marginRight: 2,
             }}
           >
-            <Item sx={{ pt: 7, pb: 1, px: 7, borderRadius: 10 }} elevation={5}>
+            <Item sx={{ py:5, px: 7, borderRadius: 10 }} elevation={5}>
               <Typography variant="h5" mb={3} gutterBottom sx={{ fontWeight: 'bold' }}>
                 Stock
               </Typography>
