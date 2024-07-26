@@ -2,6 +2,7 @@ import React from "react";
 
 import { Sidebar, Menu, MenuItem } from "react-pro-sidebar";
 import { sidebarData } from "../constants/sidebarData";
+import { Link } from "react-router-dom";
 
 const Navbar = ({ isCollapsed }) => {
   return (
@@ -25,8 +26,9 @@ const Navbar = ({ isCollapsed }) => {
       >
         {sidebarData.map((element) => {
           return (
-            <MenuItem key={element.title} icon={element.icon}>
+            <MenuItem component={<Link to={element.link}/>} key={element.title} icon={element.icon}>
               {element.title}
+              
             </MenuItem>
           );
         })}
