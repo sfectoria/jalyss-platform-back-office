@@ -8,6 +8,18 @@ import CustomNoResultsOverlay from '../../../style/NoResultStyle';
 import Item from '../../../style/ItemStyle';
 import ImagePopUp from '../../../component/ImagePopUp';
 
+function createData(id,image, title, quantity, author, publisher, price) {
+  return {
+    id,
+    image,
+    title,
+    quantity,
+    author,
+    publisher,
+    price,
+  };
+}
+
 export default function ArticlesList() {
   const navigate = useNavigate();
   const handleDetails = (ids) => {
@@ -15,12 +27,14 @@ export default function ArticlesList() {
   };
 
   const columns = [
-    { field: 'articleImage', headerName: 'Image', width: 90 ,renderCell: (params) => (
-      <ImagePopUp image={params.row.articleImage} />
-    ) },
-    { field: 'address', headerName: 'Address', width: 270 },
-    { field: 'managerName', headerName: 'Manager name', width: 250 },
-    { field: 'managerNumber', headerName: 'Manager Tel number', width: 250 },
+    { field: 'image', headerName: 'Image', width: 90 ,renderCell: (params) => {
+      console.log(params);
+      return<ImagePopUp image={params.value} />}
+    },
+    { field: 'title', headerName: 'Titel', width: 270 },
+    { field: 'quantity', headerName: 'Quantity', width: 90 },
+    { field: 'author', headerName: 'Author', width: 250 },
+    { field: 'publisher', headerName: 'Publisher', width: 250 },
     {
       field: 'details',
       headerName: 'Details',
@@ -33,15 +47,12 @@ export default function ArticlesList() {
   ];
 
   const rows = [
-    { id: 1, articleImage: 'https://jalyss.com/520-large_default/alabe-alghani-alabe-alfaker.jpg', address: 'Sfax1/Sfax', managerName: 'Salim sfexi', managerNumber: '+216 28527345', details: 'fff' },
-    { id: 2, articleImage: 'Stock l mida', address: 'Mida/menzel tmim/Nabeul', managerName: 'Hamida midawi' },
-    { id: 3, articleImage: 'Stock sahlin', address: 'Sahlin/Sousse', managerName: 'Wael ben sahloul' },
-    { id: 4, articleImage: 'Stock alia', address: 'Alia/bizerte', managerName: 'Mouhamed Amin ben yahya' },
-    { id: 5, articleImage: 'Targaryen', address: 'Daenerys', managerName: 'houssem ben ammar' },
-    { id: 6, articleImage: 'Melisandre', address: null, managerName: 150 },
-    { id: 7, articleImage: 'Clifford', address: 'Ferrara', managerName: 44 },
-    { id: 8, articleImage: 'Frances', address: 'Rossini', managerName: 36 },
-    { id: 9, articleImage: 'Roxie', address: 'Harvey', managerName: 65 },
+    createData(1,'https://jalyss.com/520-large_default/alabe-alghani-alabe-alfaker.jpg', 'الرجل الغني و الرجل الفقير', 24, 'robert ti kyosaki', 'maktabat jarir' ),
+    createData(2,'https://jalyss.com/899-large_default/The-Subtle-Art-of-Not-Giving.jpg', 'فن اللامبالات',120, 'mark manson', 'attanwir'),
+    createData(3,'https://jalyss.com/1064-home_default/-kon-ant.jpg', 'كن انت', 160, 'iheb hamarna','molhimon'),
+    createData(4,'https://jalyss.com/2759-large_default/-.jpg', 'خلق الكون في القران الكريم', 123, 'walid mohyi e din al asghar', 'dar e salam'),
+    createData(5,'https://jalyss.com/423-home_default/min-ajl-annajah.jpg', 'من أجل النجاح', 49, 'abd el karim bakkar','dar e salam'),
+    createData(6,'https://jalyss.com/1170-large_default/-.jpg', 'اولاد حارتنا', 49, 'najib mahfoudh','dar e chourouk'),
   ];
 
   return (
@@ -59,6 +70,7 @@ export default function ArticlesList() {
               <div style={{ width: '100%', color:'red' }}>
                
                   <DataGrid
+                  rowHeight={70}
                     pageSizeOptions={[7, 10, 20]}
                     sx={{
                       boxShadow: 0,
