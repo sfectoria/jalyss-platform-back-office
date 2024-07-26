@@ -23,8 +23,8 @@ export default function AddButton() {
   return (
     <Box sx={{ height: 330, transform: 'translateZ(0px)', flexGrow: 1 , position: 'fixed',bottom: 40, right: 100,}}>
       <SpeedDial
-        ariaLabel="SpeedDial tooltip example"
-        sx={{ position: 'absolute', bottom: 16, right: 16 }}
+        ariaLabel="SpeedDial tooltip example" 
+        sx={{ position: 'absolute', bottom: 11, right: 1 }}
         icon={<SpeedDialIcon />}
         onClose={handleClose}
         onOpen={handleOpen}

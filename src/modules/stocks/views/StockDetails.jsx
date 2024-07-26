@@ -103,10 +103,9 @@ export default function StockDetails() {
   return (
       <Box
         sx={{
-          pt:7,
           bgcolor: 'background.default',
-          marginLeft:'20%',
-          marginRight:2
+          mx:3,
+          mt:3
         }}
       >   
           <Item sx={{pt:7,pb:1,px:7,borderRadius:10}} elevation={5}>
