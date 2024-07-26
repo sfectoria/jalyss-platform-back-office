@@ -1,14 +1,11 @@
 import React from 'react';
 import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
 import { DataGrid,GridToolbar,GridActionsCellItem  } from '@mui/x-data-grid';
 import { useDemoData } from '@mui/x-data-grid-generator';
-import {ThemeProvider } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useNavigate } from 'react-router-dom';
 import CustomNoResultsOverlay from '../../../style/NoResultStyle'
-import lightTheme from '../../../style/lightTheme';
 import Item from '../../../style/ItemStyle';
 
 
@@ -77,16 +74,12 @@ export default function EmployersList() {
     { id: 9, post: 'Roxie', postLocation: 'Harvey', fullName: 65 },
   ];
 
-  return (<Grid    >
-    <Grid item  >
-      <ThemeProvider theme={lightTheme}>
+  return (
         <Box
           sx={{
-            pt:7,
             bgcolor: 'background.default',
-            display: 'grid',
-            marginLeft:'20%',
-            marginRight:2
+            mx:3,
+            mt:3
           }}
         >   
             <Item sx={{pt:7,pb:1,px:7,borderRadius:10}} elevation={5}>
@@ -126,11 +119,7 @@ export default function EmployersList() {
       }}
       />
     </div>
-         </Item>
-                
+         </Item>               
          </Box>
-       </ThemeProvider>
-     </Grid>
- </Grid>
   );
 }

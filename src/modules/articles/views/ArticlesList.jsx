@@ -48,8 +48,8 @@ export default function ArticlesList() {
           <Box
             sx={{
               bgcolor: 'background.default',
-              marginLeft: '2%',
-              marginRight: '2%',
+              mx:3,
+              mt:3
             }}
           >
             <Item sx={{ pt: 7, pb: 1, px: 7, borderRadius: 10 }} elevation={5}>

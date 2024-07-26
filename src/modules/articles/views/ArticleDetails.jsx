@@ -10,10 +10,9 @@ export default function ArticleDetails() {
   return (
           <Box
             sx={{
-              pt: 7,
               bgcolor: 'background.default',
-              marginLeft: '20%',
-              marginRight: 2,
+              mx:3,
+              mt:3
             }}
           >
             <Item sx={{ py: 5, px: 10, borderRadius: 10 }} elevation={5}>

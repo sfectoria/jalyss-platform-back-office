@@ -44,9 +44,9 @@ export default function StockList() {
   return (
           <Box
             sx={{
-              pt: 2,
-              pl:2,
               bgcolor: 'background.default',
+              mx:3,
+              mt:3
             }}
           >
             <Item sx={{ py:5, px: 7, borderRadius: 10 }} elevation={5}>
