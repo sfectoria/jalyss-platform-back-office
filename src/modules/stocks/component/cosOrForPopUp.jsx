@@ -3,7 +3,7 @@ import Popover from '@mui/material/Popover';
 import Typography from '@mui/material/Typography';
 import Avatar from '@mui/material/Avatar';
 import Stack from '@mui/material/Stack';
-import { deepOrange, deepPurple } from '@mui/material/colors';
+import { deepOrange } from '@mui/material/colors';
 import { Box } from '@mui/material';
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 import EmailIcon from '@mui/icons-material/Email';
