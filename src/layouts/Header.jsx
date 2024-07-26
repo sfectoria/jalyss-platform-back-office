@@ -17,6 +17,7 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import { Divider, ListItemIcon, Stack } from "@mui/material";
 import { Logout, PersonAdd, Settings } from "@mui/icons-material";
+import {  useNavigate } from "react-router-dom";
 
 // const Search = styled("div")(({ theme }) => ({
 //   position: "relative",
@@ -58,7 +59,9 @@ import { Logout, PersonAdd, Settings } from "@mui/icons-material";
 //   },
 // }));
 
-export default function Header({isCollapsed, setIsCollapsed}) {
+export default function Header({ isCollapsed, setIsCollapsed }) {
+  const navigate = useNavigate();
+
   const [profileAnchorEl, setProfileAnchorEl] = React.useState(null);
   const [messagesAnchorEl, setMessagesAnchorEl] = React.useState(null);
   const [notificationsAnchorEl, setNotificationsAnchorEl] =
@@ -124,7 +127,7 @@ export default function Header({isCollapsed, setIsCollapsed}) {
       open={isProfileMenuOpen}
       onClose={handleProfileMenuClose}
     >
-      <MenuItem>Profile</MenuItem>
+      <MenuItem onClick={() => navigate("/profile")}>Profile</MenuItem>
       <MenuItem>My account</MenuItem>
       <Divider
         sx={{

@@ -20,25 +20,29 @@ export const sidebarData = [
   {
     title: "Employer",
     icon: <BadgeIcon />,
+    link: "/employers",
   },
   {
     title: "Client",
     icon: <AssignmentIndIcon />,
+    link: "/clients",
   },
   {
-    title: "Storage",
+    title: "Stock",
     icon: <WarehouseIcon />,
+    link: "/stock",
   },
   {
     title: "Channels",
     icon: <HubIcon />,
   },
   {
-    title: "Reports",
+    title: "Article",
     icon: <ForumIcon />,
+    link: '/articles'
   },
   {
-    title: "Administration",
+    title: "Fournisseur",
     icon: <BusinessIcon />,
   },
   {
