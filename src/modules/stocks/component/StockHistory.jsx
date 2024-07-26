@@ -76,7 +76,7 @@ export default function StockHistory() {
      {
       field: 'details',
       headerName: 'Details',
-      width: 90,
+      width: 110,
       type: 'actions',
       getActions: ({ id }) => [
         <GridActionsCellItem icon={<VisibilityIcon />} onClick={openModal} label="" />,

@@ -22,6 +22,7 @@ import ArticlesList from "../modules/articles/views/ArticlesList";
 import ArticleDetails from "../modules/articles/views/ArticleDetails";
 import ProfileView from "../modules/profile/views/ProfileView";
 import ProfileModule from "../modules/profile/ProfileModule";
+import ChannelsList from "../modules/channels/views/ChannelsList";
 
 export default function Router() {
   const user = useSelector((state) => state.authSlice.me);
@@ -49,7 +50,9 @@ export default function Router() {
               <Route path=":id" element={< ArticleDetails/>} />
 
             </Route>
-            <Route path="channels" element={<ChannelModule />}></Route>
+            <Route path="channels" element={<ChannelModule />}>
+            <Route index element={<ChannelsList/>} />
+            </Route>
             <Route path="invoice" element={<InvoiceContainer />}></Route>
           </Route>
         </Routes>
