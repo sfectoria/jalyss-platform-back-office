@@ -1,7 +1,6 @@
 import React , {useState} from 'react';
 import { DataGrid, GridToolbar, GridActionsCellItem } from '@mui/x-data-grid';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import { useNavigate } from 'react-router-dom';
 import CustomNoResultsOverlay from '../../../style/NoResultStyle';
 import DoneIcon from '@mui/icons-material/Done';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -10,7 +9,7 @@ import MouseOverPopover from './cosOrForPopUp';
 
 export default function StockHistory() {
   const [isOpen, setIsOpen] = useState(false);
-  const [items, setItems] = useState([
+  const items=[
     {
       id: (+ new Date() + Math.floor(Math.random() * 999999)).toString(36),
       name: 'hhhh',
@@ -32,7 +31,7 @@ export default function StockHistory() {
       price: '4.00',
       quantity: 5
     }
-  ]);
+  ]
   
   const openModal = (event) => {
     event.preventDefault();
@@ -99,7 +98,6 @@ export default function StockHistory() {
 
   return (
               <div style={{ width: '100%' }}>
-               
                   <DataGrid
                     pageSizeOptions={[7, 10, 20]}
                     sx={{
@@ -157,7 +155,6 @@ export default function StockHistory() {
               discountAmount={0}
               total={0}
             />
-             
               </div>
   );
 }
