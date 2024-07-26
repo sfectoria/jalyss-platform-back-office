@@ -8,19 +8,21 @@ const Navbar = ({ isCollapsed }) => {
     <Sidebar
       collapsedWidth="0"
       collapsed={isCollapsed}
-      style={{ height: "100vh" }}
+      style={{
+        height: "100vh",
+      }}
     >
       <Menu
-        menuItemStyles={{
-          button: {
-            // the active class will be added automatically by react router
-            // so we can use it to style the active menu item
-            [`&.active`]: {
-              backgroundColor: "#13395e",
-              color: "#b6c8d9",
-            },
+      menuItemStyles={{
+        button: {
+          // the active class will be added automatically by react router
+          // so we can use it to style the active menu item
+          [`&.active`]: {
+            backgroundColor: "#13395e",
+            color: "#b6c8d9",
           },
-        }}
+        },
+      }}
       >
         {sidebarData.map((element) => {
           return (
