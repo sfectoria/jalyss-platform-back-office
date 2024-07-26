@@ -6,7 +6,7 @@ import { sidebarData } from "../constants/sidebarData";
 const Navbar = ({ isCollapsed }) => {
   return (
     <Sidebar
-      // collapsedWidth="0"
+      collapsedWidth="0"
       collapsed={isCollapsed}
       style={{ height: "100vh" }}
     >
