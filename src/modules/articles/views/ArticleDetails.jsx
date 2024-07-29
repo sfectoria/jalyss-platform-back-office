@@ -1,6 +1,5 @@
 import React from 'react';
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 import Item from '../../../style/ItemStyle';
 import ArticleDescription from '../component/ArticleDescription';
 import ArticleInStocks from '../component/ArticleInStocks';

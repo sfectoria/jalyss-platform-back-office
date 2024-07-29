@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Sidebar, Menu, MenuItem } from "react-pro-sidebar";
+import { Sidebar, Menu, MenuItem ,SubMenu} from "react-pro-sidebar";
 import { sidebarData } from "../constants/sidebarData";
 import { Link } from "react-router-dom";
 
@@ -24,14 +24,18 @@ const Navbar = ({ isCollapsed }) => {
         },
       }}
       >
-        {sidebarData.map((element) => {
-          return (
+        {sidebarData.map((element) => (
+          ['Client','Employer'].includes(element.title)?<SubMenu component={<Link to={element.link}/>} key={element.title} icon={element.icon} label={element.title}>
+          {element.children.map((el)=><MenuItem component={<Link to={el.link}/>} >{el.title}</MenuItem>)}
+          
+        </SubMenu>:
             <MenuItem component={<Link to={element.link}/>} key={element.title} icon={element.icon}>
               {element.title}
               
             </MenuItem>
-          );
-        })}
+          
+        ))}
+        
       </Menu>
     </Sidebar>
   );

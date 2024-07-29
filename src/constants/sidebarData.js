@@ -20,13 +20,34 @@ export const sidebarData = [
   {
     title: "Employer",
     icon: <BadgeIcon />,
+    children:[
+      {
+      title: "All Employers",
+    // icon: <BadgeIcon />,
     link: "/employers",
+    },
+    {
+      title: "Add Employer",
+    // icon: <BadgeIcon />,
+    link: "/employers/add-employer",
+    }
+  ]
   },
   {
     title: "Client",
     icon: <AssignmentIndIcon />,
+    children:[
+      {
+      title: "All Clients",
+    // icon: <BadgeIcon />,
     link: "/clients",
-  },
+    },
+    {
+      title: "Add Client",
+    // icon: <BadgeIcon />,
+    link: "/clients/add-client",
+    }
+  ]  },
   {
     title: "Stock",
     icon: <WarehouseIcon />,
