@@ -25,6 +25,8 @@ import ProfileModule from "../modules/profile/ProfileModule";
 import ChannelsList from "../modules/channels/views/ChannelsList";
 import AddClient from "../modules/clients/views/AddClient";
 import AddEmployer from "../modules/employers/views/AddEmployer";
+import NewSale from "../modules/channels/views/NewSale";
+import ChannelDetails from "../modules/channels/views/ChannelDetails";
 
 export default function Router() {
   const user = useSelector((state) => state.authSlice.me);
@@ -57,6 +59,7 @@ export default function Router() {
             </Route>
             <Route path="channels" element={<ChannelModule />}>
             <Route index element={<ChannelsList/>} />
+            <Route path="new-sale" element={<NewSale/>}/>
             </Route>
             <Route path="invoice" element={<InvoiceContainer />}></Route>
           </Route>
