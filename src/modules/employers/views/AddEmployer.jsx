@@ -29,8 +29,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 export default function AddEmployer() {
   const defaultTheme = createTheme();
 
-  const roleData = [ "admin", "manager", "seller"];
-  const locationData = [ "Sfax", "Tunis", "Sousse"];
+  const roleData = ["admin", "manager", "seller"];
+  const locationData = ["Sfax", "Tunis", "Sousse"];
   const names = ["iyed", "oussema", "khalil", "meycem", "yassmine"];
   const emails = [
     "iyediyedammari@gmail.com",
@@ -39,6 +39,7 @@ export default function AddEmployer() {
     "yassmine@gmail.com",
     "meycem@gmail.com",
   ];
+  const phoneNumbers = ["12345678", "50712106", "28283596", "87654321"];
 
   const [firstName, setFirstName] = useState("");
   const handleFirstNameChange = (e) => {
@@ -118,9 +119,13 @@ export default function AddEmployer() {
     if (phoneNumber.toString().length != 8) {
       setErrors({
         phoneNumber: "Phone number must be 8 digits",
-      })
+      });
+      return false;
+    } else if (phoneNumbers.includes(form.phoneNumber)) {
+      setErrors({ phoneNumber: "Phone number already exists" });
       return false;
     }
+
     if (emails.includes(form.email)) {
       setErrors({ email: "Email already exists" });
       return false;
@@ -177,8 +182,6 @@ export default function AddEmployer() {
     setOpen(false);
   };
 
- 
-
   return (
     <ThemeProvider theme={defaultTheme}>
       <Paper elevation={3} sx={{ m: "5%" }}>
@@ -197,7 +200,6 @@ export default function AddEmployer() {
                     id="firstName"
                     label="First Name"
                     name="firstName"
-                    autoFocus
                     onChange={handleFirstNameChange}
                     inputProps={{
                       maxLength: 20,
@@ -218,7 +220,6 @@ export default function AddEmployer() {
                     id="lastName"
                     label="Last Name"
                     name="lastName"
-                    autoFocus
                     onChange={handleLastNameChange}
                     inputProps={{
                       maxLength: 20,
@@ -239,7 +240,6 @@ export default function AddEmployer() {
                     id="phoneNumber"
                     label="Phone Number"
                     name="phoneNumber"
-                    autoFocus
                     onChange={handlePhoneNumberChange}
                     value={phoneNumber}
                     error={!!errors.phoneNumber}
@@ -257,7 +257,6 @@ export default function AddEmployer() {
                     id="email"
                     label="Email"
                     name="email"
-                    autoFocus
                     onChange={handleEmailChange}
                     value={email}
                     error={!!errors.email}
