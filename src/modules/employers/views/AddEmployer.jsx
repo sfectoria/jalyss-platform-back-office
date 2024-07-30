@@ -1,9 +1,14 @@
 import {
+  Alert,
   Avatar,
   Badge,
   Box,
   Button,
   createTheme,
+  Dialog,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Divider,
   Grid,
   IconButton,
@@ -14,17 +19,26 @@ import {
   ThemeProvider,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Item from "../../../style/ItemStyle";
 import Autocomplete from "@mui/material/Autocomplete";
 import FileUploader from "../../../component/FileUploader";
 import { EditNotifications } from "@mui/icons-material";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 export default function AddEmployer() {
   const defaultTheme = createTheme();
+
   const roleData = ["admin", "manager", "seller"];
   const locationData = ["Sfax", "Tunis", "Sousse"];
   const names = ["iyed", "oussema", "khalil", "meycem", "yassmine"];
+  const emails = [
+    "iyediyedammari@gmail.com",
+    "khalil@gmail.com",
+    "oussema@gmail.com",
+    "yassmine@gmail.com",
+    "meycem@gmail.com"
+  ];
 
   const [firstName, setFirstName] = useState("");
   const handleFirstNameChange = (e) => {
@@ -66,6 +80,99 @@ export default function AddEmployer() {
     console.log(newValue);
   };
 
+  const [file, setFile] = useState(null);
+  const [fileName, setFileName] = useState("");
+  const onSelectFileHandler = (e) => {
+    const uploadedFile = e.target.files[0];
+    setFileName(uploadedFile?.name);
+    if (uploadedFile) {
+      setFile(URL.createObjectURL(uploadedFile));
+    }
+  };
+
+  const onDeleteFileHandler = () => {
+    setFile(null);
+    setFileName("");
+  };
+
+  const resetForm = () => {
+    setFirstName("");
+    setLastName("");
+    setPhoneNumber("");
+    setEmail("");
+    setRole("");
+    setLocation("");
+    setFile(null);
+    setFileName("");
+    console.log(form)
+  };
+
+  const [errors, setErrors] = useState({});
+
+  const isVerified = (form) => {
+    
+    if (names.includes(form.firstName.toLowerCase())) {
+      setErrors({ firstName: "First Name already exists" });
+      return false;
+    }
+
+    if (emails.includes(form.email)) {
+      setErrors({ email: "Email already exists" });
+      return false;
+    }
+    return true;
+
+  }
+
+  const [form, setForm] = useState({});
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const newErrors = {};
+
+    if (!firstName) newErrors.firstName = "First Name is required";
+    if (!lastName) newErrors.lastName = "Last Name is required";
+    if (!phoneNumber) newErrors.phoneNumber = "Phone Number is required";
+    if (!email) newErrors.email = "Email is required";
+    if (!role) newErrors.role = "Role is required";
+    if (!location) newErrors.location = "Location is required";
+
+    setErrors(newErrors);
+    
+    if (Object.keys(newErrors).length === 0 && isVerified(form)) {
+     console.log(form);
+      setIsCancelled(false)
+      setOpen(true);
+      resetForm()
+    }
+  
+  };
+
+  const [isCancelled, setIsCancelled] = useState(false);
+  const handleCancel = () => {
+    setIsCancelled(true);
+    setOpen(true);
+    resetForm();
+  };
+
+  useEffect(() => {
+    setForm({
+      firstName: firstName,
+      lastName: lastName,
+      phoneNumber: phoneNumber,
+      email: email,
+      role: role,
+      location: location,
+      fileName: fileName,
+      fileUrl: file,
+    });
+  }, [firstName, lastName, phoneNumber, email, role, location, fileName, file]);
+
+  const [open, setOpen] = useState(false);
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   return (
     <ThemeProvider theme={defaultTheme}>
       <Paper elevation={3} sx={{ m: "5%" }}>
@@ -73,7 +180,7 @@ export default function AddEmployer() {
           <Typography variant="h2" color="initial" gutterBottom>
             Employee's informations
           </Typography>
-          <form action="" className="emp-form">
+          <form onSubmit={handleSubmit} className="emp-form">
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <Item elevation={0}>
@@ -90,6 +197,8 @@ export default function AddEmployer() {
                       maxLength: 20,
                     }}
                     value={firstName}
+                    error={!!errors.firstName}
+                    helperText={errors.firstName}
                   />
                 </Item>
               </Grid>
@@ -109,6 +218,8 @@ export default function AddEmployer() {
                       maxLength: 20,
                     }}
                     value={lastName}
+                    error={!!errors.lastName}
+                    helperText={errors.lastName}
                   />
                 </Item>
               </Grid>
@@ -125,6 +236,8 @@ export default function AddEmployer() {
                     autoFocus
                     onChange={handlePhoneNumberChange}
                     value={phoneNumber}
+                    error={!!errors.phoneNumber}
+                    helperText={errors.phoneNumber}
                   />
                 </Item>
               </Grid>
@@ -141,33 +254,43 @@ export default function AddEmployer() {
                     autoFocus
                     onChange={handleEmailChange}
                     value={email}
+                    error={!!errors.email}
+                    helperText={errors.email}
                   />
                 </Item>
               </Grid>
               <Grid item xs={12}>
                 <Item elevation={0}>
                   <Autocomplete
-                    onChange={handleRoleChange}
+                    onInputChange={handleRoleChange}
+                    inputValue={role}
+                    value={role}
                     sx={{ mt: "1.5%" }}
                     disablePortal
                     id="role"
                     options={roleData}
-                    renderInput={(params) => (
+                    renderInput={(params) => {
+                      console.log(params)
+                      return (
+                      
                       <TextField
-                        value={role}
                         {...params}
                         label="Role"
                         required
                         fullWidth
+                        error={!!errors.role}
+                        helperText={errors.role}
                       />
-                    )}
+                    )}}
                   />
                 </Item>
               </Grid>
               <Grid item xs={12}>
                 <Item elevation={0}>
                   <Autocomplete
-                    onChange={handleLocationChange}
+                    onInputChange={handleLocationChange}
+                    value={location}
+                    inputValue={location}
                     sx={{ mt: "2%" }}
                     disablePortal
                     id="role"
@@ -178,10 +301,18 @@ export default function AddEmployer() {
                         label="Location"
                         required
                         fullWidth
-                        value={location}
+                        error={!!errors.location}
+                        helperText={errors.location}
                       />
                     )}
                   />
+                </Item>
+              </Grid>
+              <Grid item xs={12}>
+                <Item elevation={0}>
+                  <Alert severity="info">
+                    Choosing a profile picture is optional.
+                  </Alert>
                 </Item>
               </Grid>
             </Grid>
@@ -194,10 +325,33 @@ export default function AddEmployer() {
                 <Item elevation={0}>
                   <Badge
                     overlap="circular"
-                    anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                    badgeContent={<FileUploader icon={"upload"} />}
+                    anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+                    badgeContent={
+                      <IconButton
+                        id="delete-btn"
+                        sx={{ height: "60px", width: "60px" }}
+                        onClick={onDeleteFileHandler}
+                      >
+                        <DeleteIcon sx={{ color: "white" }} />
+                      </IconButton>
+                    }
                   >
-                    <Avatar sx={{ width: "300px  ", height: "300px" }} />
+                    <Badge
+                      overlap="circular"
+                      anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                      badgeContent={
+                        <FileUploader
+                          onSelectFile={onSelectFileHandler}
+                          setFile={setFile}
+                          icon={"upload"}
+                        />
+                      }
+                    >
+                      <Avatar
+                        src={file}
+                        sx={{ width: "300px  ", height: "300px" }}
+                      />
+                    </Badge>
                   </Badge>
                   <Box mt mb>
                     <Typography
@@ -268,6 +422,19 @@ export default function AddEmployer() {
                     }}
                   >
                     <Button
+                      onClick={handleCancel}
+                      variant="contained"
+                      sx={{
+                        backgroundColor: (theme) => theme.palette.error.light,
+                        "&:hover": {
+                          backgroundColor: (theme) => theme.palette.error.main,
+                        },
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
                       variant="contained"
                       sx={{
                         backgroundColor: (theme) => theme.palette.success.light,
@@ -279,17 +446,6 @@ export default function AddEmployer() {
                     >
                       Confirm
                     </Button>
-                    <Button
-                      variant="contained"
-                      sx={{
-                        backgroundColor: (theme) => theme.palette.error.light,
-                        "&:hover": {
-                          backgroundColor: (theme) => theme.palette.error.main,
-                        },
-                      }}
-                    >
-                      Cancel
-                    </Button>
                   </Box>
                 </Item>
               </Grid>
@@ -297,6 +453,35 @@ export default function AddEmployer() {
           </form>
         </Box>
       </Paper>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        sx={{
+          "& .MuiPaper-root": {
+            borderColor: isCancelled ? "error.main" : "success.main",
+            borderWidth: 3,
+            borderStyle: "solid",
+            bgcolor: isCancelled ? "error.light" : "success.light",
+          },
+        }}
+      >
+        <DialogTitle
+          id="alert-dialog-title"
+          color={"white"}
+          sx={{ fontWeight: "bold" }}
+        >
+          {isCancelled ? "Changes cancelled!" : "Submitted successfully!"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description" color={"white"}>
+            {isCancelled
+              ? "The changes you have made are not saved"
+              : "The changes you have made are saved "}
+          </DialogContentText>
+        </DialogContent>
+      </Dialog>
     </ThemeProvider>
   );
 }

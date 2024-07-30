@@ -9,6 +9,13 @@ button {
   justify-content: center; /* Assuming you want to center content inside the button */
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
+#delete-btn{ /* Equal to the width to make it circular */
+  border-radius: 50%;
+  height: 60px;
+  background-color: #ef5350;
+  justify-content: center; /* Assuming you want to center content inside the button */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
 
 
 .emp-form{
