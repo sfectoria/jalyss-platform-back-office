@@ -115,10 +115,17 @@ export default function AddEmployer() {
       return false;
     }
 
+    if (phoneNumber.toString().length != 8) {
+      setErrors({
+        phoneNumber: "Phone number must be 8 digits",
+      })
+      return false;
+    }
     if (emails.includes(form.email)) {
       setErrors({ email: "Email already exists" });
       return false;
     }
+
     return true;
   };
 
