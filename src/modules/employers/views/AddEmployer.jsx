@@ -270,9 +270,6 @@ export default function AddEmployer() {
                     id="role"
                     options={roleData}
                     renderInput={(params) => {
-                      console.log(params)
-                      return (
-                      
                       <TextField
                         {...params}
                         label="Role"
@@ -281,7 +278,7 @@ export default function AddEmployer() {
                         error={!!errors.role}
                         helperText={errors.role}
                       />
-                    )}}
+                    }}
                   />
                 </Item>
               </Grid>
