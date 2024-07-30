@@ -67,7 +67,6 @@ const ProfileView = () => {
     e.preventDefault();
     const newErrors = {};
 
-    if (!username) newErrors.username = "Username is required";
     if (!currentPassword) newErrors.currentPassword = "Current password is required";
     setErrors(newErrors);
     if (Object.keys(newErrors).length === 0 ) {
@@ -122,7 +121,6 @@ const ProfileView = () => {
               <Box>
                 <form>
                   <TextField
-                    required
                     margin="normal"
                     fullWidth
                     id="username"
@@ -138,8 +136,6 @@ const ProfileView = () => {
                       maxLength: 20,
                     }}
                     value={username}
-                    error={!!errors.username}
-                    helperText={errors.username}
                   />
                   <FormControl
                     margin="normal"

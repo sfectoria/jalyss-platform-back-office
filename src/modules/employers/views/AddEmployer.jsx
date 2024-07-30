@@ -29,15 +29,15 @@ import DeleteIcon from "@mui/icons-material/Delete";
 export default function AddEmployer() {
   const defaultTheme = createTheme();
 
-  const roleData = ["admin", "manager", "seller"];
-  const locationData = ["Sfax", "Tunis", "Sousse"];
+  const roleData = [ "admin", "manager", "seller"];
+  const locationData = [ "Sfax", "Tunis", "Sousse"];
   const names = ["iyed", "oussema", "khalil", "meycem", "yassmine"];
   const emails = [
     "iyediyedammari@gmail.com",
     "khalil@gmail.com",
     "oussema@gmail.com",
     "yassmine@gmail.com",
-    "meycem@gmail.com"
+    "meycem@gmail.com",
   ];
 
   const [firstName, setFirstName] = useState("");
@@ -104,13 +104,12 @@ export default function AddEmployer() {
     setLocation("");
     setFile(null);
     setFileName("");
-    console.log(form)
+    console.log(form);
   };
 
   const [errors, setErrors] = useState({});
 
   const isVerified = (form) => {
-    
     if (names.includes(form.firstName.toLowerCase())) {
       setErrors({ firstName: "First Name already exists" });
       return false;
@@ -121,8 +120,7 @@ export default function AddEmployer() {
       return false;
     }
     return true;
-
-  }
+  };
 
   const [form, setForm] = useState({});
   const handleSubmit = (e) => {
@@ -137,14 +135,13 @@ export default function AddEmployer() {
     if (!location) newErrors.location = "Location is required";
 
     setErrors(newErrors);
-    
+
     if (Object.keys(newErrors).length === 0 && isVerified(form)) {
-     console.log(form);
-      setIsCancelled(false)
+      console.log(form);
+      setIsCancelled(false);
       setOpen(true);
-      resetForm()
+      resetForm();
     }
-  
   };
 
   const [isCancelled, setIsCancelled] = useState(false);
@@ -172,6 +169,8 @@ export default function AddEmployer() {
   const handleClose = () => {
     setOpen(false);
   };
+
+ 
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -269,7 +268,9 @@ export default function AddEmployer() {
                     disablePortal
                     id="role"
                     options={roleData}
-                    renderInput={(params) => {
+                    isOptionEqualToValue={(option, value) => option === value}
+                    // getOptionDisabled={(option) => option === roleData[0]}
+                    renderInput={(params) => (
                       <TextField
                         {...params}
                         label="Role"
@@ -278,7 +279,7 @@ export default function AddEmployer() {
                         error={!!errors.role}
                         helperText={errors.role}
                       />
-                    }}
+                    )}
                   />
                 </Item>
               </Grid>
@@ -292,6 +293,7 @@ export default function AddEmployer() {
                     disablePortal
                     id="role"
                     options={locationData}
+                    isOptionEqualToValue={(option, value) => option === value}
                     renderInput={(params) => (
                       <TextField
                         {...params}
@@ -317,47 +319,58 @@ export default function AddEmployer() {
               <Grid
                 item
                 xs={12}
-                sx={{ display: "flex", justifyContent: "center" }}
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                }}
               >
                 <Item elevation={0}>
-                  <Badge
-                    overlap="circular"
-                    anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-                    badgeContent={
-                      <IconButton
-                        id="delete-btn"
-                        sx={{ height: "60px", width: "60px" }}
-                        onClick={onDeleteFileHandler}
-                      >
-                        <DeleteIcon sx={{ color: "white" }} />
-                      </IconButton>
-                    }
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
                   >
                     <Badge
                       overlap="circular"
-                      anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                      anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
                       badgeContent={
-                        <FileUploader
-                          onSelectFile={onSelectFileHandler}
-                          setFile={setFile}
-                          icon={"upload"}
-                        />
+                        <IconButton
+                          id="delete-btn"
+                          sx={{ height: "60px", width: "60px" }}
+                          onClick={onDeleteFileHandler}
+                        >
+                          <DeleteIcon sx={{ color: "white" }} />
+                        </IconButton>
                       }
                     >
-                      <Avatar
-                        src={file}
-                        sx={{ width: "300px  ", height: "300px" }}
-                      />
+                      <Badge
+                        overlap="circular"
+                        anchorOrigin={{
+                          vertical: "bottom",
+                          horizontal: "right",
+                        }}
+                        badgeContent={
+                          <FileUploader
+                            onSelectFile={onSelectFileHandler}
+                            setFile={setFile}
+                            icon={"upload"}
+                          />
+                        }
+                      >
+                        <Avatar
+                          src={file}
+                          sx={{ width: "300px  ", height: "300px" }}
+                        />
+                      </Badge>
                     </Badge>
-                  </Badge>
+                  </Box>
                   <Box mt mb>
                     <Typography
                       variant="h5"
                       color="initial"
-                      sx={{
-                        display: "flex",
-                        justifyContent: "center",
-                      }}
+                      textAlign={"center"}
                     >
                       {firstName}
                     </Typography>
