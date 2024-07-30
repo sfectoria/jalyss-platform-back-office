@@ -9,3 +9,9 @@ button {
   justify-content: center; /* Assuming you want to center content inside the button */
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
+
+
+.emp-form{
+  display: flex;
+  justify-content: space-between
+}
