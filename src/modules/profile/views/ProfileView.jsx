@@ -58,6 +58,7 @@ const ProfileView = () => {
     setNewPassword("");
     setFile(null);
     setFileName("");
+    setErrors({});
   };
 
 

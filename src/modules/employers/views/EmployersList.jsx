@@ -9,7 +9,7 @@ import CustomNoResultsOverlay from '../../../style/NoResultStyle'
 import Item from '../../../style/ItemStyle';
 
 
-export default function EmployersList() {
+export default function EmployeesList() {
   const { data } = useDemoData({
     dataSet: 'Commodity',
     rowLength: 500,

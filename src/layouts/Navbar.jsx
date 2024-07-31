@@ -25,7 +25,7 @@ const Navbar = ({ isCollapsed }) => {
       }}
       >
         {sidebarData.map((element) => (
-          ['Client','Employer'].includes(element.title)?<SubMenu component={<Link to={element.link}/>} key={element.title} icon={element.icon} label={element.title}>
+          ['Client','Employee', 'Fournisseur'].includes(element.title)?<SubMenu component={<Link to={element.link}/>} key={element.title} icon={element.icon} label={element.title}>
           {element.children.map((el,index)=><MenuItem key={index} component={<Link to={el.link}/>} >{el.title}</MenuItem>)}
           
         </SubMenu>:

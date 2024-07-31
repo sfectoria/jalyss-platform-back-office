@@ -26,7 +26,7 @@ import FileUploader from "../../../component/FileUploader";
 import { EditNotifications } from "@mui/icons-material";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-export default function AddEmployer() {
+export default function AddEmployee() {
   const defaultTheme = createTheme();
 
   const roleData = ["admin", "manager", "seller"];
@@ -105,6 +105,7 @@ export default function AddEmployer() {
     setLocation("");
     setFile(null);
     setFileName("");
+    setErrors({});
     console.log(form);
   };
 
