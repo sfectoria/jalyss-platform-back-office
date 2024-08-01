@@ -84,7 +84,7 @@ export default function BasicTable() {
             
           />
           </TableCell>
-              <TableCell align="center">  <OutlinedInput
+              <TableCell align="center">  <TextField
           type="number"
           value={row.fat}
           sx={{width:70,height:56}}

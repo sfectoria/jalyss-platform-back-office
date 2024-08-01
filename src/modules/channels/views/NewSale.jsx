@@ -1,9 +1,8 @@
 import { Box } from '@mui/material';
 import React from 'react';
 import Item from '../../../style/ItemStyle';
-import SearchBar from '../component/SearchBar';
-import BarcodeSearch from '../component/BarcodeSearch';
 import ItemsList from '../component/ItemsList';
+import SearchArticle from '../component/SearchArticle';
 
 export default function NewSale() {
 
@@ -11,10 +10,7 @@ export default function NewSale() {
        <Box sx={{display:'flex',m:3,width:'100%',gap:3}}>
         <Box sx={{width:'65%'}}>
         <Item sx={{p:4,borderRadius:2,width:'100%'}} elevation={5}>
-        <Box sx={{display:'flex',mx:2,gap:2,flexWrap: 'wrap',}}>
-            <BarcodeSearch />
-            <SearchBar/>
-            </Box>
+        <SearchArticle/>
         </Item>
         <Item sx={{p:4,borderRadius:2,width:'100%',mt:4}} elevation={5}>
         <ItemsList/>
