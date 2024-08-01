@@ -28,7 +28,6 @@ export default function ArticlesList() {
 
   const columns = [
     { field: 'image', headerName: 'Image', width: 90 ,renderCell: (params) => {
-      console.log(params);
       return<ImagePopUp image={params.value} />}
     },
     { field: 'title', headerName: 'Titel', width: 270 },

@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useRef  } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { TextField, Autocomplete, MenuItem, Typography } from '@mui/material';
-
+import SearchField from './SearchField'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
@@ -11,8 +11,10 @@ import Card from 'react-bootstrap/Card';
 import InvoiceItem from './InvoiceItem';
 import InvoiceModal from './InvoiceModal';
 import InputGroup from 'react-bootstrap/InputGroup';
-import SearchArticle from '../modules/channels/component/SearchArticle';
-import ImagePopUp from './ImagePopUp';
+import SearchTableRes from './SearchTableRes';
+import AlertAdding from './AlertAdding'
+
+
 
 const InvoiceForm = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -34,13 +36,18 @@ const InvoiceForm = () => {
   const [discountRate, setDiscountRate] = useState('');
   const [discountAmount, setDiscountAmount] = useState('0.00');
   const [items, setItems] = useState([]);
+  const [showSuAlert, setShowSuAlert] = useState(false);
+  const [showErAlert, setShowErAlert] = useState(false);
 
   useEffect(() => {
     handleCalculateTotal();
     setCurrentDate(new Date().toLocaleDateString());
-    console.log(items);
   }, [items]);
+  const targetRef = useRef(null);
 
+  const handelRef = () => {
+    targetRef.current.scrollIntoView({ behavior: 'smooth' });
+  };
   const handleRowDel = (itemToDelete) => {
     const updatedItems = items.filter(item => item.id !== itemToDelete.id);
     setItems(updatedItems);
@@ -61,9 +68,16 @@ const InvoiceForm = () => {
     handleCalculateTotal();
   };
   
-  const handelBarcode = (e) => {
-    const prod = (rows.find((element) => element.barcode==e.target.value))
-    prod?handleAddEvent(prod.col1,prod.col2):''
+  const handelBarcode = (e,rows) => {
+    const prod = (rows.find((element) =>{ console.log(element,e.target.value);
+      return element.barcode==e.target.value}))
+    prod?(handleAddEvent(prod.title,prod.prices),setShowSuAlert(true)):(setShowErAlert(true))
+  }
+
+  const handelAddItem = (obj) => {
+    setShowSuAlert(true)
+    handleAddEvent(obj.title,obj.quantity)
+
   }
   const handleCalculateTotal = () => {
     let subTotal = 0;
@@ -156,6 +170,8 @@ const InvoiceForm = () => {
 
   return (
     <Form onSubmit={openModal}>
+      {showSuAlert&&<AlertAdding msg={'Article Added Successfully'} status={'success'}/>}
+      {showErAlert&&<AlertAdding msg={" We Can't Find This Article"} status={'error'}/>}
       <Row>
         <Col md={8} lg={9}>
           <Card className="p-4 p-xl-5 my-3 my-xl-4">
@@ -263,14 +279,16 @@ const InvoiceForm = () => {
                 />
               </Col>
             </Row>
+            <div ref={targetRef}>
             <InvoiceItem
               onItemizedItemEdit={onItemizedItemEdit}
               onRowAdd={handleAddEvent}
               onRowDel={handleRowDel}
               currency={currency}
               items={items}
+
             />
-            
+            </div>
             <Row className="mt-4 justify-content-end">
               <Col lg={6}>
                 <div className="d-flex flex-row align-items-start justify-content-between">
@@ -298,7 +316,7 @@ const InvoiceForm = () => {
                 </div>
               </Col>
             </Row>
-            <SearchField handelBarcode={handelBarcode}/>
+            <SearchField handelRef={handelRef} handelBarcode={handelBarcode} handelAddItem={handelAddItem}/>
             <hr className="my-4" />
             <Form.Label className="fw-bold">Notes:</Form.Label>
             <Form.Control
@@ -404,75 +422,5 @@ const InvoiceForm = () => {
 };
 
 export default InvoiceForm;
-
-
-const rows = [
-  { id: 1, col1: 'Hello', col2: 'World',barcode:101012 },
-  { id: 2, col1: 'DataGrid', col2: 'is Awesome',barcode:101042 },
-  { id: 3, col1: 'Material-UI', col2: 'is Cool' ,barcode:101072},
-];
-
-const SearchField = ({handelBarcode}) => {
-  const [searchText, setSearchText] = useState('');
-
-  const handleInputChange = (event, value) => {
-    setSearchText(value);
-  };
-
-  const filteredRows = rows.filter((row) =>
-    Object.values(row).some((field) =>
-      String(field).toLowerCase().includes(searchText.toLowerCase())
-    )
-  );
-
-  return (
-    <div className="d-flex gap-4 container mt-5">
-      <div className="input-group" style={{ width: '30%' }}>
-        <input type="text" className="form-control" placeholder="Bar Code" onChange={handelBarcode} />
-        <button className="btn btn-outline-secondary" type="button">
-          <i className="bi bi-upc-scan"></i>
-        </button>
-      </div>
-      <div className="input-group" style={{ width: '65%' }}>
-        <Autocomplete
-        sx={{width:'100%'}}
-          freeSolo
-          inputValue={searchText}
-          onInputChange={handleInputChange}
-          options={filteredRows}
-          getOptionLabel={(option) => `${option.col1} ${option.col2}`}
-          filterOptions={(options, params) => {
-            if (params.inputValue.length > 0) {
-              return options;
-            }
-            return [];
-          }}
-          renderInput={(params) => (
-            <TextField
-            placeholder='Search ...'
-              {...params}
-              variant="outlined"
-              fullWidth
-            />
-          )}
-          renderOption={(props, option) => (
-            <MenuItem {...props}  key={option.id}>
-              <div style={{display:'flex'}}>
-              <ImagePopUp image={'https://daroueya.com/wp-content/uploads/2023/05/%D8%A7%D9%84%D8%A3%D8%A8-%D8%A7%D9%84%D8%BA%D9%86%D9%8A-%D8%A7%D9%84%D8%A3%D8%A8-%D8%A7%D9%84%D9%81%D9%82%D9%8A%D8%B1-1.jpg'} />
-
-                <Typography variant="body1">{`ID: ${option.id}`}</Typography>
-                <Typography variant="body1">{`Column 1: ${option.col1}`}</Typography>
-                <Typography variant="body1">{`Column 2: ${option.col2}`}</Typography>
-              </div>
-            </MenuItem>
-          )}
-          
-
-          
-        />
-      </div>
-    </div>
-  );
-};
 
 
