@@ -22,6 +22,8 @@ import ProfileView from "../modules/profile/views/ProfileView";
 import ProfileModule from "../modules/profile/ProfileModule";
 import ChannelsList from "../modules/channels/views/ChannelsList";
 import AddClient from "../modules/clients/views/AddClient";
+import NewSale from "../modules/channels/views/NewSale";
+import ChannelDetails from "../modules/channels/views/ChannelDetails";
 import AddFournisseur from "../modules/fournisseur/views/AddFournisseur";
 import FournisseursList from "../modules/fournisseur/views/FournisseursList";
 import FournisseurModule from "../modules/fournisseur/FournisseurModule";
@@ -61,7 +63,8 @@ export default function Router() {
               <Route path=":id" element={<ArticleDetails />} />
             </Route>
             <Route path="channels" element={<ChannelModule />}>
-              <Route index element={<ChannelsList />} />
+            <Route index element={<ChannelsList/>} />
+            <Route path="new-sale" element={<NewSale/>}/>
             </Route>
             <Route path="invoice" element={<InvoiceContainer />}></Route>
           </Route>

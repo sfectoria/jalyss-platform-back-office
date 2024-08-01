@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
+import { TextField, Autocomplete, MenuItem, Typography } from '@mui/material';
+
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
@@ -8,6 +11,8 @@ import Card from 'react-bootstrap/Card';
 import InvoiceItem from './InvoiceItem';
 import InvoiceModal from './InvoiceModal';
 import InputGroup from 'react-bootstrap/InputGroup';
+import SearchArticle from '../modules/channels/component/SearchArticle';
+import ImagePopUp from './ImagePopUp';
 
 const InvoiceForm = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -28,15 +33,7 @@ const InvoiceForm = () => {
   const [taxAmount, setTaxAmount] = useState('0.00');
   const [discountRate, setDiscountRate] = useState('');
   const [discountAmount, setDiscountAmount] = useState('0.00');
-  const [items, setItems] = useState([
-    {
-      id: (+ new Date() + Math.floor(Math.random() * 999999)).toString(36),
-      name: '',
-      description: '',
-      price: '1.00',
-      quantity: 1
-    }
-  ]);
+  const [items, setItems] = useState([]);
 
   useEffect(() => {
     handleCalculateTotal();
@@ -50,19 +47,24 @@ const InvoiceForm = () => {
     handleCalculateTotal();
   };
 
-  const handleAddEvent = () => {
+
+  const handleAddEvent = (name,price) => {
     const id = (+ new Date() + Math.floor(Math.random() * 999999)).toString(36);
     const newItem = {
       id: id,
-      name: '',
-      price: '1.00',
+      name: name,
+      price: price,
       description: '',
       quantity: 1
     };
     setItems([...items, newItem]);
     handleCalculateTotal();
   };
-
+  
+  const handelBarcode = (e) => {
+    const prod = (rows.find((element) => element.barcode==e.target.value))
+    prod?handleAddEvent(prod.col1,prod.col2):''
+  }
   const handleCalculateTotal = () => {
     let subTotal = 0;
     items.forEach(item => {
@@ -268,6 +270,7 @@ const InvoiceForm = () => {
               currency={currency}
               items={items}
             />
+            
             <Row className="mt-4 justify-content-end">
               <Col lg={6}>
                 <div className="d-flex flex-row align-items-start justify-content-between">
@@ -295,6 +298,7 @@ const InvoiceForm = () => {
                 </div>
               </Col>
             </Row>
+            <SearchField handelBarcode={handelBarcode}/>
             <hr className="my-4" />
             <Form.Label className="fw-bold">Notes:</Form.Label>
             <Form.Control
@@ -400,3 +404,75 @@ const InvoiceForm = () => {
 };
 
 export default InvoiceForm;
+
+
+const rows = [
+  { id: 1, col1: 'Hello', col2: 'World',barcode:101012 },
+  { id: 2, col1: 'DataGrid', col2: 'is Awesome',barcode:101042 },
+  { id: 3, col1: 'Material-UI', col2: 'is Cool' ,barcode:101072},
+];
+
+const SearchField = ({handelBarcode}) => {
+  const [searchText, setSearchText] = useState('');
+
+  const handleInputChange = (event, value) => {
+    setSearchText(value);
+  };
+
+  const filteredRows = rows.filter((row) =>
+    Object.values(row).some((field) =>
+      String(field).toLowerCase().includes(searchText.toLowerCase())
+    )
+  );
+
+  return (
+    <div className="d-flex gap-4 container mt-5">
+      <div className="input-group" style={{ width: '30%' }}>
+        <input type="text" className="form-control" placeholder="Bar Code" onChange={handelBarcode} />
+        <button className="btn btn-outline-secondary" type="button">
+          <i className="bi bi-upc-scan"></i>
+        </button>
+      </div>
+      <div className="input-group" style={{ width: '65%' }}>
+        <Autocomplete
+        sx={{width:'100%'}}
+          freeSolo
+          inputValue={searchText}
+          onInputChange={handleInputChange}
+          options={filteredRows}
+          getOptionLabel={(option) => `${option.col1} ${option.col2}`}
+          filterOptions={(options, params) => {
+            if (params.inputValue.length > 0) {
+              return options;
+            }
+            return [];
+          }}
+          renderInput={(params) => (
+            <TextField
+            placeholder='Search ...'
+              {...params}
+              variant="outlined"
+              fullWidth
+            />
+          )}
+          renderOption={(props, option) => (
+            <MenuItem {...props}  key={option.id}>
+              <div style={{display:'flex'}}>
+              <ImagePopUp image={'https://daroueya.com/wp-content/uploads/2023/05/%D8%A7%D9%84%D8%A3%D8%A8-%D8%A7%D9%84%D8%BA%D9%86%D9%8A-%D8%A7%D9%84%D8%A3%D8%A8-%D8%A7%D9%84%D9%81%D9%82%D9%8A%D8%B1-1.jpg'} />
+
+                <Typography variant="body1">{`ID: ${option.id}`}</Typography>
+                <Typography variant="body1">{`Column 1: ${option.col1}`}</Typography>
+                <Typography variant="body1">{`Column 2: ${option.col2}`}</Typography>
+              </div>
+            </MenuItem>
+          )}
+          
+
+          
+        />
+      </div>
+    </div>
+  );
+};
+
+
