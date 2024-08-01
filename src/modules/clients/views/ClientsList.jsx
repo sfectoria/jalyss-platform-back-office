@@ -7,6 +7,9 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useNavigate } from 'react-router-dom';
 import CustomNoResultsOverlay from '../../../style/NoResultStyle'
 import Item from '../../../style/ItemStyle';
+import Avatar from '@mui/material/Avatar';
+import Stack from '@mui/material/Stack';
+import { deepOrange } from '@mui/material/colors';
 
 export default function ClientsList() {
   const { data } = useDemoData({
@@ -16,14 +19,25 @@ export default function ClientsList() {
   });
   const navigate = useNavigate()
   const handelDetails = (ids)=>{
-    navigate('/stock/location',{state:{id:ids}})
+    navigate(`/clients/${ids}`)
   }
   const columns = [
-    { field: 'id', headerName: 'ID', width: 90 },
+    { field: 'id', headerName: 'ID', width: 70 },
+    {
+      field:'image',
+      headerName:'',
+      width:90,
+      getActions:({})=>[
+        <Stack direction="row" spacing={2}>
+        <Avatar sx={{ bgcolor: deepOrange[500], width: 50, height: 50,fontSize:50}}>A</Avatar>
+      </Stack>
+      ]
+    },
     {
       field: 'fullName',
       headerName: 'Client Name',
       width: 200,
+      // getActions:({})=>{}
     },
     {
       field: 'companyName',
@@ -43,7 +57,7 @@ export default function ClientsList() {
     {
       field: 'address',
       headerName: 'Address',
-      width: 200,
+      width: 190,
     },
     {
       field: 'details',
@@ -82,7 +96,7 @@ export default function ClientsList() {
             <Typography variant="h5" mb={3} gutterBottom sx={{ fontWeight: 'bold' }}>
          Clients
         </Typography>
-    <div style={{height:500 }}>
+    <div style={{width:'100%'}}>
       <DataGrid
       pageSizeOptions={[7, 10,20]}
        sx={{
