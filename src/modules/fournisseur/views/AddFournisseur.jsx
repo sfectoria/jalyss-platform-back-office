@@ -26,10 +26,8 @@ import FileUploader from "../../../component/FileUploader";
 import { EditNotifications } from "@mui/icons-material";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-export default function AddClient() {
+export default function AddFournisseur() {
   const defaultTheme = createTheme();
-
-  const names = ["iyed", "oussema", "khalil", "meycem", "yassmine"];
   const emails = [
     "iyediyedammari@gmail.com",
     "khalil@gmail.com",
@@ -40,19 +38,6 @@ export default function AddClient() {
   const phoneNumbers = ["12345678", "50712106", "28283596", "87654321"];
   const comapanies = ["maktabat jarir", "attanwir", "molhimon", "dar e salam"];
 
-  const [firstName, setFirstName] = useState("");
-  const handleFirstNameChange = (e) => {
-    const newValue = e.target.value;
-    setFirstName(newValue);
-    console.log(newValue);
-  };
-
-  const [lastName, setLastName] = useState("");
-  const handleLastNameChange = (e) => {
-    const newValue = e.target.value;
-    setLastName(newValue);
-    console.log(newValue);
-  };
 
   const [companyName, setCompanyName] = useState("");
   const handleCompanyNameChange = (e) => {
@@ -73,7 +58,6 @@ export default function AddClient() {
     const newValue = e.target.value;
     setEmail(newValue);
     console.log(newValue);
-  
   };
 
   const [file, setFile] = useState(null);
@@ -92,24 +76,19 @@ export default function AddClient() {
   };
 
   const resetForm = () => {
-    setFirstName("");
-    setLastName("");
-    setCompanyName('')
+    
+    setCompanyName("");
     setPhoneNumber("");
     setEmail("");
     setFile(null);
     setFileName("");
-    setErrors({})
+    setErrors({});
     console.log(form);
   };
 
   const [errors, setErrors] = useState({});
 
   const isVerified = (form) => {
-    if (names.includes(form.firstName.toLowerCase())) {
-      setErrors({ firstName: "First Name already exists" });
-      return false;
-    }
 
     if (phoneNumber.toString().length != 8) {
       setErrors({
@@ -126,7 +105,7 @@ export default function AddClient() {
       return false;
     }
 
-    if (comapanies.includes(form.companyName)){
+    if (comapanies.includes(form.companyName)) {
       setErrors({ companyName: "Company's Name already exists" });
       return false;
     }
@@ -139,8 +118,6 @@ export default function AddClient() {
     e.preventDefault();
     const newErrors = {};
 
-    if (!firstName) newErrors.firstName = "First Name is required";
-    if (!lastName) newErrors.lastName = "Last Name is required";
     if (!companyName) newErrors.companyName = "Company's Name is required";
     if (!phoneNumber) newErrors.phoneNumber = "Phone Number is required";
     if (!email) newErrors.email = "Email is required";
@@ -164,15 +141,13 @@ export default function AddClient() {
 
   useEffect(() => {
     setForm({
-      firstName: firstName,
-      lastName: lastName,
       companyName: companyName,
       phoneNumber: phoneNumber,
       email: email,
       fileName: fileName,
       fileUrl: file,
     });
-  }, [firstName, lastName, phoneNumber, companyName, email, fileName, file]);
+  }, [ phoneNumber, companyName, email, fileName, file]);
 
   const [open, setOpen] = useState(false);
 
@@ -189,45 +164,7 @@ export default function AddClient() {
           </Typography>
           <form onSubmit={handleSubmit} className="emp-form">
             <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <Item elevation={0}>
-                  <TextField
-                    required
-                    margin="normal"
-                    fullWidth
-                    id="firstName"
-                    label="First Name"
-                    name="firstName"
-                    onChange={handleFirstNameChange}
-                    inputProps={{
-                      maxLength: 20,
-                    }}
-                    value={firstName}
-                    error={!!errors.firstName}
-                    helperText={errors.firstName}
-                  />
-                </Item>
-              </Grid>
-
-              <Grid item xs={12}>
-                <Item elevation={0}>
-                  <TextField
-                    required
-                    margin="normal"
-                    fullWidth
-                    id="lastName"
-                    label="Last Name"
-                    name="lastName"
-                    onChange={handleLastNameChange}
-                    inputProps={{
-                      maxLength: 20,
-                    }}
-                    value={lastName}
-                    error={!!errors.lastName}
-                    helperText={errors.lastName}
-                  />
-                </Item>
-              </Grid>
+              
               <Grid item xs={12}>
                 <Item elevation={0}>
                   <TextField
@@ -341,23 +278,6 @@ export default function AddClient() {
                     </Badge>
                   </Box>
                   <Box mt mb>
-                    <Typography
-                      variant="h5"
-                      color="initial"
-                      textAlign={"center"}
-                    >
-                      {firstName}
-                    </Typography>
-                    <Typography
-                      variant="h5"
-                      color="initial"
-                      sx={{
-                        display: "flex",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {lastName}
-                    </Typography>
                     <Typography
                       variant="h5"
                       color="initial"

@@ -18,18 +18,18 @@ export const sidebarData = [
     icon: <GroupIcon />,
   },
   {
-    title: "Employer",
+    title: "Employee",
     icon: <BadgeIcon />,
     children:[
       {
-      title: "All Employers",
+      title: "All Employees",
     // icon: <BadgeIcon />,
-    link: "/employers",
+    link: "/employees",
     },
     {
-      title: "Add Employer",
+      title: "Add Employee",
     // icon: <BadgeIcon />,
-    link: "/employers/add-employer",
+    link: "/employees/add-employee",
     }
   ]
   },
@@ -65,6 +65,16 @@ export const sidebarData = [
   {
     title: "Fournisseur",
     icon: <BusinessIcon />,
+    children: [
+      {
+        title: "All Fournisseurs",
+        link: '/fournisseurs'
+      },
+      {
+        title: "Add Fournisseur",
+        link: '/fournisseurs/add-fournisseur'
+      }
+    ]
   },
   {
     title: "Help",

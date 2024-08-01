@@ -1,9 +1,9 @@
 import { Button, IconButton } from "@mui/material";
 import React, { useRef, useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
-
+import UploadFileIcon from "@mui/icons-material/UploadFile";
 function FileUploader(props) {
-  const { onSelectFile,  disabled , setFile} = props;
+  const { onSelectFile,  disabled , setFile, icon} = props;
   const hiddenFileInput = useRef(null);
 
   const handleClick = (event) => {
@@ -19,7 +19,12 @@ function FileUploader(props) {
 
   return (
     <Button id="upload-btn" onClick={handleClick} disabled={disabled}>
-      <EditIcon sx={{ color: "white" }} />
+      {icon === "upload" ? (
+        <UploadFileIcon sx={{ color: "white" }} />
+      ) : (
+        <EditIcon sx={{ color: "white" }} />
+      )}
+
       <input
         type="file"
         id="actual-btn"
