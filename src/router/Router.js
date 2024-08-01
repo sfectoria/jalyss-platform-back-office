@@ -14,8 +14,6 @@ import ChannelModule from "../modules/channels/ChannelModule";
 import StockList from "../modules/stocks/views/StockList";
 import StockDetails from "../modules/stocks/views/StockDetails";
 import ClientsList from "../modules/clients/views/ClientsList";
-import EmployerModule from "../modules/employers/EmployerModule";
-import EmployersList from "../modules/employers/views/EmployersList";
 import InvoiceContainer from "../component/InvoiceContainer";
 import ArticleModule from "../modules/articles/ArticleModule";
 import ArticlesList from "../modules/articles/views/ArticlesList";
@@ -24,9 +22,14 @@ import ProfileView from "../modules/profile/views/ProfileView";
 import ProfileModule from "../modules/profile/ProfileModule";
 import ChannelsList from "../modules/channels/views/ChannelsList";
 import AddClient from "../modules/clients/views/AddClient";
-import AddEmployer from "../modules/employers/views/AddEmployer";
 import NewSale from "../modules/channels/views/NewSale";
 import ChannelDetails from "../modules/channels/views/ChannelDetails";
+import AddFournisseur from "../modules/fournisseur/views/AddFournisseur";
+import FournisseursList from "../modules/fournisseur/views/FournisseursList";
+import FournisseurModule from "../modules/fournisseur/FournisseurModule";
+import AddEmployee from "../modules/employers/views/AddEmployer";
+import EmployeesList from "../modules/employers/views/EmployersList";
+import EmployeeModule from "../modules/employers/EmployerModule";
 
 export default function Router() {
   const user = useSelector((state) => state.authSlice.me);
@@ -44,18 +47,20 @@ export default function Router() {
               <Route index element={<ClientsList />} />
               <Route path="add-client" element={<AddClient />} />
             </Route>
-            <Route path="employers" element={<EmployerModule />}>
-              <Route index element={<EmployersList />} />
-              <Route path="add-employer" element={<AddEmployer />} />
-
+            <Route path="employees" element={<EmployeeModule />}>
+              <Route index element={<EmployeesList />} />
+              <Route path="add-employee" element={<AddEmployee />} />
+            </Route>
+            <Route path="fournisseurs" element={<FournisseurModule />}>
+              <Route index element={<FournisseursList />} />
+              <Route path="add-fournisseur" element={<AddFournisseur />} />
             </Route>
             <Route path="profile" element={<ProfileModule />}>
               <Route index element={<ProfileView />} />
             </Route>
             <Route path="articles" element={<ArticleModule />}>
               <Route index element={<ArticlesList />} />
-              <Route path=":id" element={< ArticleDetails/>} />
-
+              <Route path=":id" element={<ArticleDetails />} />
             </Route>
             <Route path="channels" element={<ChannelModule />}>
             <Route index element={<ChannelsList/>} />

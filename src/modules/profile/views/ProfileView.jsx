@@ -12,6 +12,7 @@ import {
   Stack,
   Button,
   Badge,
+  FormHelperText,
 } from "@mui/material";
 
 import Divider from "@mui/material/Divider";
@@ -57,15 +58,24 @@ const ProfileView = () => {
     setNewPassword("");
     setFile(null);
     setFileName("");
+    setErrors({});
   };
 
-  const handleSubmit = () => {
-    setIsCancelled(false);
-    setOpen(true);
-    console.log(form);
 
-    setOpen(true);
-    resetForm();
+  const [errors, setErrors] = useState({});
+  const handleSubmit = (e) => {
+
+    e.preventDefault();
+    const newErrors = {};
+
+    if (!currentPassword) newErrors.currentPassword = "Current password is required";
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length === 0 ) {
+      console.log(form);
+      setIsCancelled(false);
+      setOpen(true);
+      resetForm();
+    }
   };
 
   const handleCancel = () => {
@@ -95,7 +105,7 @@ const ProfileView = () => {
     }
   };
 
-  const onDeleteFileHandler = () => {};
+  
   return (
     <ThemeProvider theme={defaultTheme}>
       <Box m={10}>
@@ -128,7 +138,13 @@ const ProfileView = () => {
                     }}
                     value={username}
                   />
-                  <FormControl margin="normal" fullWidth variant="outlined">
+                  <FormControl
+                    margin="normal"
+                    fullWidth
+                    required
+                    error={!!errors.currentPassword}
+                    variant="outlined"
+                  >
                     <InputLabel htmlFor="currentPassword" variant="outlined">
                       Current Password
                     </InputLabel>
@@ -156,12 +172,14 @@ const ProfileView = () => {
                       label="Current Password"
                       name="password"
                     />
+                    <FormHelperText>{errors.currentPassword}</FormHelperText>
                   </FormControl>
                   <FormControl margin="normal" fullWidth variant="outlined">
                     <InputLabel htmlFor="newPassword" variant="outlined">
                       New Password
                     </InputLabel>
                     <OutlinedInput
+                      required
                       value={newPassword}
                       onChange={(event) => {
                         setNewPassword(event.target.value);
@@ -190,7 +208,6 @@ const ProfileView = () => {
                       name="newPassword"
                     />
                   </FormControl>
-
                 </form>
               </Box>
             </Item>
@@ -222,7 +239,6 @@ const ProfileView = () => {
                     badgeContent={
                       <FileUploader
                         onSelectFile={onSelectFileHandler}
-                        onDeleteFile={onDeleteFileHandler}
                         setFile={setFile}
                       />
                     }
@@ -233,7 +249,7 @@ const ProfileView = () => {
                     />
                   </Badge>
                 </>
-                <Item>
+                <Item elevation={0}>
                   <Typography
                     variant="h6"
                     color="initial"
