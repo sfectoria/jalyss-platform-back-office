@@ -1,5 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useRef  } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
+import { TextField, Autocomplete, MenuItem, Typography } from '@mui/material';
+import SearchField from './SearchField'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
@@ -8,6 +11,10 @@ import Card from 'react-bootstrap/Card';
 import InvoiceItem from './InvoiceItem';
 import InvoiceModal from './InvoiceModal';
 import InputGroup from 'react-bootstrap/InputGroup';
+import SearchTableRes from './SearchTableRes';
+import AlertAdding from './AlertAdding'
+
+
 
 const InvoiceForm = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -28,41 +35,50 @@ const InvoiceForm = () => {
   const [taxAmount, setTaxAmount] = useState('0.00');
   const [discountRate, setDiscountRate] = useState('');
   const [discountAmount, setDiscountAmount] = useState('0.00');
-  const [items, setItems] = useState([
-    {
-      id: (+ new Date() + Math.floor(Math.random() * 999999)).toString(36),
-      name: '',
-      description: '',
-      price: '1.00',
-      quantity: 1
-    }
-  ]);
+  const [items, setItems] = useState([]);
+  const [showSuAlert, setShowSuAlert] = useState(false);
+  const [showErAlert, setShowErAlert] = useState(false);
 
   useEffect(() => {
     handleCalculateTotal();
     setCurrentDate(new Date().toLocaleDateString());
-    console.log(items);
   }, [items]);
+  const targetRef = useRef(null);
 
+  const handelRef = () => {
+    targetRef.current.scrollIntoView({ behavior: 'smooth' });
+  };
   const handleRowDel = (itemToDelete) => {
     const updatedItems = items.filter(item => item.id !== itemToDelete.id);
     setItems(updatedItems);
     handleCalculateTotal();
   };
 
-  const handleAddEvent = () => {
+
+  const handleAddEvent = (name,price) => {
     const id = (+ new Date() + Math.floor(Math.random() * 999999)).toString(36);
     const newItem = {
       id: id,
-      name: '',
-      price: '1.00',
+      name: name,
+      price: price,
       description: '',
       quantity: 1
     };
     setItems([...items, newItem]);
     handleCalculateTotal();
   };
+  
+  const handelBarcode = (e,rows) => {
+    const prod = (rows.find((element) =>{ console.log(element,e.target.value);
+      return element.barcode==e.target.value}))
+    prod?(handleAddEvent(prod.title,prod.prices),setShowSuAlert(true)):(setShowErAlert(true))
+  }
 
+  const handelAddItem = (obj) => {
+    setShowSuAlert(true)
+    handleAddEvent(obj.title,obj.quantity)
+
+  }
   const handleCalculateTotal = () => {
     let subTotal = 0;
     items.forEach(item => {
@@ -154,6 +170,8 @@ const InvoiceForm = () => {
 
   return (
     <Form onSubmit={openModal}>
+      {showSuAlert&&<AlertAdding msg={'Article Added Successfully'} status={'success'}/>}
+      {showErAlert&&<AlertAdding msg={" We Can't Find This Article"} status={'error'}/>}
       <Row>
         <Col md={8} lg={9}>
           <Card className="p-4 p-xl-5 my-3 my-xl-4">
@@ -261,13 +279,16 @@ const InvoiceForm = () => {
                 />
               </Col>
             </Row>
+            <div ref={targetRef}>
             <InvoiceItem
               onItemizedItemEdit={onItemizedItemEdit}
               onRowAdd={handleAddEvent}
               onRowDel={handleRowDel}
               currency={currency}
               items={items}
+
             />
+            </div>
             <Row className="mt-4 justify-content-end">
               <Col lg={6}>
                 <div className="d-flex flex-row align-items-start justify-content-between">
@@ -295,6 +316,7 @@ const InvoiceForm = () => {
                 </div>
               </Col>
             </Row>
+            <SearchField handelRef={handelRef} handelBarcode={handelBarcode} handelAddItem={handelAddItem}/>
             <hr className="my-4" />
             <Form.Label className="fw-bold">Notes:</Form.Label>
             <Form.Control
@@ -400,3 +422,5 @@ const InvoiceForm = () => {
 };
 
 export default InvoiceForm;
+
+
