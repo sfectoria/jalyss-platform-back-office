@@ -27,7 +27,17 @@ import { EditNotifications } from "@mui/icons-material";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 export default function AddEmployee() {
-  const defaultTheme = createTheme();
+  const defaultTheme = createTheme({
+    components: {
+      MuiTypography: {
+        styleOverrides: {
+          root: {
+            wordBreak: "break-word",
+          },
+        },
+      },
+    },
+  });
 
   const roleData = ["admin", "manager", "seller"];
   const locationData = ["Sfax", "Tunis", "Sousse"];
