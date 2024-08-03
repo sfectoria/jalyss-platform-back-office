@@ -60,7 +60,14 @@ export const sidebarData = [
   {
     title: "Article",
     icon: <ForumIcon />,
-    link: '/articles'
+    link: '/articles',
+    children : [
+      {
+        title: "Add Article",
+      // icon: <BadgeIcon />,
+      link: "/articles/new-article",
+      }
+    ]
   },
   {
     title: "Fournisseur",
