@@ -31,6 +31,7 @@ import FournisseurModule from "../modules/fournisseur/FournisseurModule";
 import AddEmployee from "../modules/employers/views/AddEmployer";
 import EmployeesList from "../modules/employers/views/EmployersList";
 import EmployeeModule from "../modules/employers/EmployerModule";
+import ProfileSettings from "../modules/profile/views/ProfileSettings";
 
 export default function Router() {
   const user = useSelector((state) => state.authSlice.me);
@@ -59,14 +60,15 @@ export default function Router() {
             </Route>
             <Route path="profile" element={<ProfileModule />}>
               <Route index element={<ProfileView />} />
+              <Route path="settings" element={<ProfileSettings />} />
             </Route>
             <Route path="articles" element={<ArticleModule />}>
               <Route index element={<ArticlesList />} />
               <Route path=":id" element={<ArticleDetails />} />
             </Route>
             <Route path="channels" element={<ChannelModule />}>
-            <Route index element={<ChannelsList/>} />
-            <Route path="new-sale" element={<NewSale/>}/>
+              <Route index element={<ChannelsList />} />
+              <Route path="new-sale" element={<NewSale />} />
             </Route>
             <Route path="invoice" element={<InvoiceContainer />}></Route>
           </Route>
