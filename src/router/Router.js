@@ -33,6 +33,9 @@ import EmployeesList from "../modules/employers/views/EmployersList";
 import EmployeeModule from "../modules/employers/EmployerModule";
 import ProfileSettings from "../modules/profile/views/ProfileSettings";
 import AddStock from "../modules/stocks/views/AddStock";
+import DashboardModule from "../modules/dashboard/DashboardModule";
+import MyResponsiveLine from "../modules/dashboard/views/LineChart";
+import MyResponsiveBump from "../modules/dashboard/views/BumpChart";
 
 export default function Router() {
   const user = useSelector((state) => state.authSlice.me);
@@ -42,6 +45,11 @@ export default function Router() {
       {user ? (
         <Routes>
           <Route path="/" element={<Main />}>
+            <Route path="dashboard" element={<DashboardModule />}>
+              <Route index element={<MyResponsiveLine />} />
+              <Route path="bump" element={<MyResponsiveBump />} />
+            </Route>
+
             <Route path="stock" element={<StockModule />}>
               <Route index element={<StockList />} />
               <Route path=":id" element={<StockDetails />} />

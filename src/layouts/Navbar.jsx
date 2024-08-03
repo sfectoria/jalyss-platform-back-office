@@ -25,7 +25,7 @@ const Navbar = ({ isCollapsed }) => {
         }}
       >
         {sidebarData.map((element) =>
-          ["Client", "Employee", "Fournisseur", "Stock"].includes(
+          ["Client", "Employee", "Fournisseur", "Stock", "Dashboard"].includes(
             element.title
           ) ? (
             <SubMenu
