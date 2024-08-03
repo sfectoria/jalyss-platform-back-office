@@ -27,7 +27,17 @@ import { EditNotifications } from "@mui/icons-material";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 export default function AddFournisseur() {
-  const defaultTheme = createTheme();
+  const defaultTheme = createTheme({
+    components: {
+      MuiTypography: {
+        styleOverrides: {
+          root: {
+            wordBreak: "break-word",
+          },
+        },
+      },
+    },
+  });
   const emails = [
     "iyediyedammari@gmail.com",
     "khalil@gmail.com",

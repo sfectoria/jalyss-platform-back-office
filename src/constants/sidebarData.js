@@ -20,38 +20,48 @@ export const sidebarData = [
   {
     title: "Employee",
     icon: <BadgeIcon />,
-    children:[
+    children: [
       {
-      title: "All Employees",
-    // icon: <BadgeIcon />,
-    link: "/employees",
-    },
-    {
-      title: "Add Employee",
-    // icon: <BadgeIcon />,
-    link: "/employees/add-employee",
-    }
-  ]
+        title: "All Employees",
+        // icon: <BadgeIcon />,
+        link: "/employees",
+      },
+      {
+        title: "Add Employee",
+        // icon: <BadgeIcon />,
+        link: "/employees/add-employee",
+      },
+    ],
   },
   {
     title: "Client",
     icon: <AssignmentIndIcon />,
-    children:[
+    children: [
       {
-      title: "All Clients",
-    // icon: <BadgeIcon />,
-    link: "/clients",
-    },
-    {
-      title: "Add Client",
-    // icon: <BadgeIcon />,
-    link: "/clients/add-client",
-    }
-  ]  },
+        title: "All Clients",
+        // icon: <BadgeIcon />,
+        link: "/clients",
+      },
+      {
+        title: "Add Client",
+        // icon: <BadgeIcon />,
+        link: "/clients/add-client",
+      },
+    ],
+  },
   {
     title: "Stock",
     icon: <WarehouseIcon />,
-    link: "/stock",
+    children: [
+      {
+        title: "All Stocks",
+        link: "/stock",
+      },
+      {
+        title: "Add Stock",
+        link: "/stock/add-stock",
+      },
+    ],
   },
   {
     title: "Channels",
@@ -60,7 +70,7 @@ export const sidebarData = [
   {
     title: "Article",
     icon: <ForumIcon />,
-    link: '/articles'
+    link: "/articles",
   },
   {
     title: "Fournisseur",
@@ -68,13 +78,13 @@ export const sidebarData = [
     children: [
       {
         title: "All Fournisseurs",
-        link: '/fournisseurs'
+        link: "/fournisseurs",
       },
       {
         title: "Add Fournisseur",
-        link: '/fournisseurs/add-fournisseur'
-      }
-    ]
+        link: "/fournisseurs/add-fournisseur",
+      },
+    ],
   },
   {
     title: "Help",

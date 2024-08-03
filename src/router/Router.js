@@ -32,6 +32,7 @@ import AddEmployee from "../modules/employers/views/AddEmployer";
 import EmployeesList from "../modules/employers/views/EmployersList";
 import EmployeeModule from "../modules/employers/EmployerModule";
 import ProfileSettings from "../modules/profile/views/ProfileSettings";
+import AddStock from "../modules/stocks/views/AddStock";
 
 export default function Router() {
   const user = useSelector((state) => state.authSlice.me);
@@ -44,6 +45,7 @@ export default function Router() {
             <Route path="stock" element={<StockModule />}>
               <Route index element={<StockList />} />
               <Route path=":id" element={<StockDetails />} />
+              <Route path="add-stock" element={<AddStock />} />
             </Route>
             <Route path="clients" element={<ClientModule />}>
               <Route index element={<ClientsList />} />
@@ -58,6 +60,7 @@ export default function Router() {
               <Route index element={<FournisseursList />} />
               <Route path="add-fournisseur" element={<AddFournisseur />} />
             </Route>
+
             <Route path="profile" element={<ProfileModule />}>
               <Route index element={<ProfileView />} />
               <Route path="settings" element={<ProfileSettings />} />

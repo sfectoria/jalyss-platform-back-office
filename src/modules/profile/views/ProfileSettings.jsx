@@ -32,7 +32,17 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 
 const ProfileSettings = () => {
-  const defaultTheme = createTheme();
+  const defaultTheme = createTheme({
+    components: {
+      MuiTypography: {
+        styleOverrides: {
+          root: {
+            wordBreak: "break-word",
+          },
+        },
+      },
+    },
+  });
 
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
