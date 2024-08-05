@@ -11,7 +11,6 @@ import Card from 'react-bootstrap/Card';
 import InvoiceItem from './InvoiceItem';
 import InvoiceModal from './InvoiceModal';
 import InputGroup from 'react-bootstrap/InputGroup';
-import SearchTableRes from './SearchTableRes';
 import AlertAdding from './AlertAdding'
 
 
@@ -35,7 +34,15 @@ const InvoiceForm = () => {
   const [taxAmount, setTaxAmount] = useState('0.00');
   const [discountRate, setDiscountRate] = useState('');
   const [discountAmount, setDiscountAmount] = useState('0.00');
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState([
+    {
+      id: '',
+      name: '',
+      price: '',
+      description: '',
+      quantity: 1
+    }
+  ]);
   const [showSuAlert, setShowSuAlert] = useState(false);
   const [showErAlert, setShowErAlert] = useState(false);
 
@@ -71,7 +78,13 @@ const InvoiceForm = () => {
   const handelBarcode = (e,rows) => {
     const prod = (rows.find((element) =>{ console.log(element,e.target.value);
       return element.barcode==e.target.value}))
-    prod?(handleAddEvent(prod.title,prod.prices),setShowSuAlert(true),e.target.value=''):e.target.value.length?setShowErAlert(true):''
+    if(prod){
+      handleAddEvent(prod.title,prod.prices),
+      setShowSuAlert(true),
+      e.target.value=''
+    } else if(e.target.value.length){
+      setShowErAlert(true)
+    }
   }
   
   const handelAddItem = (obj) => {
