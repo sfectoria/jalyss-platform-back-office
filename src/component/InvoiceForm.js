@@ -71,14 +71,9 @@ const InvoiceForm = () => {
   const handelBarcode = (e,rows) => {
     const prod = (rows.find((element) =>{ console.log(element,e.target.value);
       return element.barcode==e.target.value}))
-    if (prod) {
-    handleAddEvent(prod.title, prod.prices);
-    setShowSuAlert(true);
-  } else {
-    setShowErAlert(true);
+    prod?(handleAddEvent(prod.title,prod.prices),setShowSuAlert(true),e.target.value=''):e.target.value.length?setShowErAlert(true):''
   }
-  }
-
+  
   const handelAddItem = (obj) => {
     setShowSuAlert(true)
     handleAddEvent(obj.title,obj.quantity)
@@ -116,6 +111,11 @@ const InvoiceForm = () => {
     setItems(updatedItems);
     handleCalculateTotal();
   };
+
+  const handelShow =()=>{
+    setShowErAlert(false)
+    setShowSuAlert(false)
+  }
 
   const editField = (event) => {
     const { name, value } = event.target;
@@ -175,8 +175,8 @@ const InvoiceForm = () => {
 
   return (
     <Form onSubmit={openModal}>
-      {showSuAlert&&<AlertAdding msg={'Article Added Successfully'} status={'success'}/>}
-      {showErAlert&&<AlertAdding msg={" We Can't Find This Article"} status={'error'}/>}
+      {showSuAlert&&<AlertAdding showAlert={showSuAlert} handelShow={handelShow} msg={'Article Added Successfully'} status={'success'}/>}
+      {showErAlert&&<AlertAdding showAlert={showErAlert} handelShow={handelShow} msg={" We Can't Find This Article"} status={'error'}/>}
       <Row>
         <Col md={8} lg={9}>
           <Card className="p-4 p-xl-5 my-3 my-xl-4">

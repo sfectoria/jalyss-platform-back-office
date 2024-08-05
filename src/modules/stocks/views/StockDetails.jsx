@@ -16,6 +16,8 @@ import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
 import { useNavigate } from 'react-router-dom';
 import AddButton from '../component/AddOp';
+import RuleIcon from '@mui/icons-material/Rule';
+import StockInvontaire from '../component/StockInvontaire';
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -73,6 +75,7 @@ function FullWidthTabs() {
         >   
           <Tab icon={<ArticleIcon/>} iconPosition="start" label="Articles" sx={{}} {...a11yProps(0)} />
           <Tab icon={<HistoryIcon/>} iconPosition="start" label="History" {...a11yProps(1)} />
+          <Tab icon={<RuleIcon/>} iconPosition="start" label="Inventaire" {...a11yProps(2)} />
         </Tabs>
       </AppBar>
       <SwipeableViews
@@ -85,6 +88,9 @@ function FullWidthTabs() {
         </TabPanel>
         <TabPanel value={value} index={1} dir={theme.direction}>
           <StockHistory/>
+        </TabPanel>       
+        <TabPanel value={value} index={2} dir={theme.direction}>
+          <StockInvontaire/>
         </TabPanel>       
       </SwipeableViews>
       {value===1&&<AddButton />}

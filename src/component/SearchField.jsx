@@ -29,7 +29,7 @@ function createData(id,image, title, quantity, author, publisher, barcode,price)
   ];
 
 
-const SearchField = ({handelRef,handelBarcode,handelAddItem}) => {
+const SearchField = ({handelRef,handelBarcode,val,handelAddItem}) => {
   const [searchText, setSearchText] = useState('');
   const [filteredRows,setFilteredRows] =useState(rows)
   
@@ -55,7 +55,11 @@ const SearchField = ({handelRef,handelBarcode,handelAddItem}) => {
     <div>
     <div className="d-flex gap-4 container mt-5">
       <div className="input-group" style={{ width: '30%' }}>
-        <input type="text" className="form-control" placeholder="Bar Code" onChange={(event)=>handelBarcode(event,rows)} />
+        <input type="text" className="form-control" placeholder="Bar Code" onChange={(event)=>{
+          handelBarcode(event,rows)
+        }
+        } 
+          />
         <button className="btn btn-outline-secondary" type="button">
           <i className="bi bi-upc-scan"></i>
         </button>

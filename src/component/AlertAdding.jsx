@@ -2,12 +2,13 @@ import React from 'react';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 
-export default function AlertAdding({msg,status}) {
-  const [open, setOpen] = React.useState(true);
+export default function AlertAdding({handelShow,showAlert,msg,status}) {
+  const [open, setOpen] = React.useState(showAlert);
 
 
   const handleClose = () => {
     setOpen(false);
+    handelShow()
   };
 
   return (
