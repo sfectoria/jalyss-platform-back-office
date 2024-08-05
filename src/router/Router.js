@@ -29,7 +29,7 @@ export default function Router() {
     <BrowserRouter>
       {user ? (
         <Routes>
-          <Route path="/" key='main' element={<Main />}>
+          <Route path="/" key="main" element={<Main />}>
             {StockRoutes()}
             {InventaireRoutes()}
             {ClientsRoutes()}
@@ -38,14 +38,17 @@ export default function Router() {
             {ArticleRoutes()}
             {FornisseursRoutes()}
             {ChannelsRoutes()}
-            <Route path="invoice" key='invoice' element={<InvoiceContainer />}></Route>
-          <Route path="/" element={<Main />}>
-            <Route path="dashboard" element={<DashboardModule />}>
-              <Route index element={<MyResponsiveLine />} />
-              <Route path="bump" element={<MyResponsiveBump />} />
-              <Route path="calendar" element={<MyResponsiveCalendar />}/>
+            <Route
+              path="invoice"
+              key="invoice"
+              element={<InvoiceContainer />}
+            ></Route>
+              <Route path="dashboard" element={<DashboardModule />}>
+                <Route index element={<MyResponsiveLine />} />
+                <Route path="bump" element={<MyResponsiveBump />} />
+                <Route path="calendar" element={<MyResponsiveCalendar />} />
+              </Route>
             </Route>
-          </Route>
         </Routes>
       ) : (
         <Routes>
