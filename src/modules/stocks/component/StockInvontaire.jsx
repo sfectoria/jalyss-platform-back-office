@@ -1,264 +1,245 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import Box from '@mui/material/Box';
-import Collapse from '@mui/material/Collapse';
-import IconButton from '@mui/material/IconButton';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import Link from '@mui/material/Link';
+import React , {useState} from 'react';
+import { DataGrid, GridToolbar, GridActionsCellItem } from '@mui/x-data-grid';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import CustomNoResultsOverlay from '../../../style/NoResultStyle';
 import DoneIcon from '@mui/icons-material/Done';
 import ClearIcon from '@mui/icons-material/Clear';
-import ImagePopUp from '../../../component/ImagePopUp';
-
-
-
-function createData(image, title, quantity, author, publisher, price) {
-  return {
-    image,
-    title,
-    quantity,
-    author,
-    publisher,
-    price,
-    history: [
-      {
-        date: '2020-01-05',
-        customerName: null,
-        fournisseurName:'Dar el kiteb',
-        type: 'BR',
-        transfer:false,
-        quantity: 40,
-        price:5.5
-      },
-      {
-        date: '2020-01-02',
-        customerName: 'Canaux sfax',
-        fournisseurName:null,
-        type: 'BS',
-        transfer:false,
-        quantity: 40,
-        price:6
-      },
-      {
-        date: '2020-01-02',
-        customerName: 'Canaux sfax',
-        type: 'BS',
-        transfer:true,
-        quantity: 70,
-      },
-      {
-        date: '2020-01-05',
-        customerName: 'canaux gafsa',
-        type: 'BR',
-        quantity: 40,
-        price:5.5
-      },
-      {
-        date: '2020-01-02',
-        customerName: 'Canaux sfax',
-        type: 'BS',
-        quantity: 40,
-        price:6
-      },
-      {
-        date: '2020-01-02',
-        customerName: 'Canaux sfax',
-        type: 'BR',
-        transfer:true,
-        quantity: 70,
-      },
-      {
-        date: '2020-01-05',
-        customerName: 'Dar el kiteb',
-        type: 'BR',
-        quantity: 40,
-        price:5.5
-      },
-      {
-        date: '2020-01-02',
-        customerName: 'Canaux sfax',
-        type: 'BS',
-        quantity: 40,
-        price:6
-      },
-      {
-        date: '2020-01-02',
-        customerName: 'Canaux sfax',
-        type: 'BS',
-        transfer:true,
-        quantity: 70,
-      },
-      {
-        date: '2020-01-02',
-        customerName: 'Canaux sfax',
-        type: 'BS',
-        quantity: 70,
-      },
-      {
-        date: '2020-01-02',
-        customerName: 'Canaux sfax',
-        type: 'BS',
-        quantity: 70,
-      },
-    ],
-  };
-}
-
-function Row(props) {
-  const { row } = props;
-  const [open, setOpen] = React.useState(false);
-
-  return (
-    <React.Fragment>
-      <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
-        <TableCell>
-          <IconButton
-            aria-label="expand row"
-            size="small"
-            onClick={() => setOpen(!open)}
-          >
-            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-          </IconButton>
-        </TableCell>
-        <TableCell component="th" scope="row" >
-        <ImagePopUp image={row.image} />
-        </TableCell>
-        <TableCell align="left">{row.title}</TableCell>
-        <TableCell align="left">{row.quantity}</TableCell>
-        <TableCell align="left">{row.author}</TableCell>
-        <TableCell align="left">{row.publisher}</TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1 }}>
-              <Typography variant="h6" gutterBottom component="div">
-                History
-              </Typography>
-              <Table size="small" aria-label="purchases">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Date</TableCell>
-                    <TableCell>Customer</TableCell>
-                    <TableCell>Fournisseur</TableCell>
-                    <TableCell>Type</TableCell>
-                    <TableCell align='center'>Transfer</TableCell>
-                    <TableCell >Quantity</TableCell>
-                    <TableCell >Price</TableCell>
-                    <TableCell >Total price ($)</TableCell>
-                  </TableRow>
-                </TableHead>
-                {(row.history.length>10)?
-                <TableBody>
-                  {row.history.map((historyRow,i) => {
-                    if (i<10) {return<TableRow key={historyRow.date}>
-                        <TableCell component="th" scope="row">
-                          {historyRow.date}
-                        </TableCell>
-                        <TableCell>{historyRow.customerName}</TableCell>
-                        <TableCell>{historyRow.fournisseurName}</TableCell>
-                        <TableCell >{historyRow.type}</TableCell>
-                        <TableCell align='center' >{historyRow.transfer?<DoneIcon color='success'/>:<ClearIcon color='error'/>}</TableCell>
-                        <TableCell >{historyRow.quantity}</TableCell>
-                        <TableCell >{historyRow.price}</TableCell>
-                        <TableCell >
-                          {(historyRow.price * historyRow.quantity * 100) / 100}
-                        </TableCell>
-                      </TableRow>}
-                      else return '';
-                        
-                    }
-                    
-
-                  )}
-                  <Link href="#" sx={{}} underline="hover">
-  {'...    see more'}
-</Link>
-                </TableBody>: <TableBody>
-                  {row.history.map((historyRow,i) => (
-                    <TableRow key={historyRow.date}>
-                        <TableCell component="th" scope="row">
-                          {historyRow.date}
-                        </TableCell>
-                        <TableCell>{historyRow.customerName}</TableCell>
-                        <TableCell>{historyRow.fournisseurName}</TableCell>
-                        <TableCell >{historyRow.type}</TableCell>
-                        <TableCell >{historyRow.quantity}</TableCell>
-                        <TableCell >{historyRow.price}</TableCell>
-                        <TableCell >
-                          {(historyRow.price * historyRow.quantity * 100) / 100}
-                        </TableCell>
-                      </TableRow>
-                        
-                  )
-                    
-
-                  )}
-                </TableBody>}
-              </Table>
-            </Box>
-          </Collapse>
-        </TableCell>
-      </TableRow>
-    </React.Fragment>
-  );
-}
-
-Row.propTypes = {
-  row: PropTypes.shape({
-    image: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-    quantity: PropTypes.number.isRequired,
-    history: PropTypes.arrayOf(
-      PropTypes.shape({
-        type: PropTypes.number.isRequired,
-        quantity: PropTypes.number.isRequired,
-        price: PropTypes.number.isRequired,
-        date: PropTypes.string.isRequired,
-      }),
-    ).isRequired,
-    auther: PropTypes.string.isRequired,
-    publisher: PropTypes.string.isRequired,
-  }).isRequired,
-};
-
-const rows = [
-  createData('https://jalyss.com/520-large_default/alabe-alghani-alabe-alfaker.jpg', 'الرجل الغني و الرجل الفقير', 24, 'robert ti kyosaki', 'maktabat jarir' ),
-  createData('https://jalyss.com/899-large_default/The-Subtle-Art-of-Not-Giving.jpg', 'فن اللامبالات',120, 'mark manson', 'attanwir'),
-  createData('https://jalyss.com/1064-home_default/-kon-ant.jpg', 'كن انت', 160, 'iheb hamarna','molhimon'),
-  createData('https://jalyss.com/2759-large_default/-.jpg', 'خلق الكون في القران الكريم', 123, 'walid mohyi e din al asghar', 'dar e salam'),
-  createData('https://jalyss.com/423-home_default/min-ajl-annajah.jpg', 'من أجل النجاح', 49, 'abd el karim bakkar','dar e salam'),
-  createData('https://jalyss.com/1170-large_default/-.jpg', 'اولاد حارتنا', 49, 'najib mahfoudh','dar e chourouk'),
-];
-
+import InvoiceModal from '../../../component/InvoiceModal';
+import MouseOverPopover from './cosOrForPopUp';
+import { useNavigate } from 'react-router-dom';
 export default function StockInvontaire() {
+  const [isOpen, setIsOpen] = useState(false);
+  const navigate=useNavigate()
+  const items=[
+    {
+      id: (+ new Date() + Math.floor(Math.random() * 999999)).toString(36),
+      name: 'hhhh',
+      description: 'a  book',
+      price: '1.00',
+      quantity: 7
+    },
+    {
+      id: (+ new Date() + Math.floor(Math.random() * 999999)).toString(36),
+      name: 'halima',
+      description: 'a  book',
+      price: '1.00',
+      quantity: 1
+    },
+    {
+      id: (+ new Date() + Math.floor(Math.random() * 999999)).toString(36),
+      name: 'nooo',
+      description: 'a  book',
+      price: '4.00',
+      quantity: 5
+    }
+  ]
+
+  const handelNavigation  =()=>{
+    navigate('/inventaire')
+  }
+  
+  const openModal = (event) => {
+    event.preventDefault();
+    setIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsOpen(false);
+  };
+
+  const columns = [
+    { field: 'title', headerName: 'Invontaire Title', width: 200 },
+    { field: 'date', headerName: 'Date', width: 170 },
+    { field: 'time', headerName: 'Time', width: 100 },
+    { field: 'customerName', headerName: 'Customer', width: 200,
+  },
+    { field: 'valid',
+      headerName: 'T', 
+      width: 50,
+      },
+    { field: 'falsy', 
+      headerName: 'F', 
+      width: 50,
+    },
+    { field: 'percentage', 
+        headerName: 'Percentage', 
+        width: 100,
+      },
+    
+     {
+      field: 'details',
+      headerName: 'Details',
+      width: 110,
+      type: 'actions',
+      getActions: ({ id }) => [
+        <GridActionsCellItem icon={<VisibilityIcon />} onClick={handelNavigation} label="" />,
+      ],
+    },
+  ];
+
+  const rows = [
+    { 
+      id: 1, 
+      title: 'Inventory Check A', 
+      date: '2024-08-01', 
+      time: '10:00 AM', 
+      customerName: 'Customer One', 
+      valid: 30, 
+      falsy: 10, 
+      percentage: (30 / (30 + 10)) * 100 
+    },
+    { 
+      id: 2, 
+      title: 'Inventory Check B', 
+      date: '2024-08-02', 
+      time: '11:30 AM', 
+      customerName: 'Customer Two', 
+      valid: 25, 
+      falsy: 15, 
+      percentage: (25 / (25 + 15)) * 100 
+    },
+    { 
+      id: 3, 
+      title: 'Inventory Check C', 
+      date: '2024-08-03', 
+      time: '02:15 PM', 
+      customerName: 'Customer Three', 
+      valid: 40, 
+      falsy: 10, 
+      percentage: (40 / (40 + 10)) * 100 
+    },
+    { 
+      id: 4, 
+      title: 'Inventory Check D', 
+      date: '2024-08-04', 
+      time: '09:45 AM', 
+      customerName: 'Customer Four', 
+      valid: 20, 
+      falsy: 30, 
+      percentage: (20 / (20 + 30)) * 100 
+    },
+    { 
+      id: 5, 
+      title: 'Inventory Check E', 
+      date: '2024-08-05', 
+      time: '03:30 PM', 
+      customerName: 'Customer Five', 
+      valid: 50, 
+      falsy: 20, 
+      percentage: (50 / (50 + 20)) * 100 
+    },
+    { 
+      id: 6, 
+      title: 'Inventory Check F', 
+      date: '2024-08-06', 
+      time: '12:00 PM', 
+      customerName: 'Customer Six', 
+      valid: 45, 
+      falsy: 5, 
+      percentage: (45 / (45 + 5)) * 100 
+    },
+    { 
+      id: 7, 
+      title: 'Inventory Check G', 
+      date: '2024-08-07', 
+      time: '04:00 PM', 
+      customerName: 'Customer Seven', 
+      valid: 10, 
+      falsy: 30, 
+      percentage: (10 / (10 + 30)) * 100 
+    },
+    { 
+      id: 8, 
+      title: 'Inventory Check H', 
+      date: '2024-08-08', 
+      time: '01:30 PM', 
+      customerName: 'Customer Eight', 
+      valid: 35, 
+      falsy: 15, 
+      percentage: (35 / (35 + 15)) * 100 
+    },
+    { 
+      id: 9, 
+      title: 'Inventory Check I', 
+      date: '2024-08-09', 
+      time: '10:30 AM', 
+      customerName: 'Customer Nine', 
+      valid: 28, 
+      falsy: 12, 
+      percentage: (28 / (28 + 12)) * 100 
+    },
+    { 
+      id: 10, 
+      title: 'Inventory Check J', 
+      date: '2024-08-10', 
+      time: '11:00 AM', 
+      customerName: 'Customer Ten', 
+      valid: 22, 
+      falsy: 18, 
+      percentage: (22 / (22 + 18)) * 100 
+    },
+  ];
+  
+
   return (
-    <TableContainer component={Paper}>
-      <Table aria-label="collapsible table">
-        <TableHead>
-          <TableRow>
-            <TableCell />
-            <TableCell>Image</TableCell>
-            <TableCell align="left">Title</TableCell>
-            <TableCell align="left">Quantity</TableCell>
-            <TableCell align="left">Author</TableCell>
-            <TableCell align="left">Publisher</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row,i) => (
-            <Row key={i} row={row} />
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+              <div style={{ width: '100%' }}>
+                  <DataGrid
+                    pageSizeOptions={[7, 10, 20]}
+                    sx={{
+                      boxShadow: 0,
+                      border: 0,
+                      borderColor: 'primary.light',
+                      '& .MuiDataGrid-cell:hover': {
+                        color: 'primary.main',
+                      },
+                    }}
+                    rows={rows}
+                    columns={columns}
+                    slots={{
+                      noResultsOverlay: CustomNoResultsOverlay,
+                      toolbar: GridToolbar,
+                    }}
+                    initialState={{
+                      pagination: { paginationModel: { pageSize: 7 } },
+                      filter: {
+                        filterModel: {
+                          items: [],
+                          quickFilterValues: [''],
+                        },
+                      },
+                    }}
+                    slotProps={{
+                      toolbar: {
+                        showQuickFilter: true,
+                      },
+                    }}
+                  />
+                  <InvoiceModal
+              showModal={isOpen}
+              closeModal={closeModal}
+              info={{
+                // currentDate,
+                // dateOfIssue,
+                invoiceNumber:1,
+                billTo:'hamadi',
+                billToEmail:'hamadi@gmail.com',
+                billToAddress:'win',
+                // billFrom,
+                // billFromEmail,
+                // billFromAddress,
+                // notes,
+                // total,
+                // subTotal,
+                // taxAmount,
+                // discountAmount
+              }}
+              items={items}
+              currency={0}
+              subTotal={0}
+              taxAmount={0}
+              discountAmount={0}
+              total={0}
+            />
+              </div>
   );
 }
