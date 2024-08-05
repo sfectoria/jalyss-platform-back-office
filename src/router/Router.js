@@ -39,7 +39,8 @@ export default function Router() {
             {ArticleRoutes()}
             {FornisseursRoutes()}
             {ChannelsRoutes()}
-            <Route path="invoice" key='invoice' element={<InvoiceContainer />}></Route>
+            <Route path="invoice" key='invoice' element={<InvoiceContainer />} />
+          </Route>
           
         </Routes>
       ) : (
