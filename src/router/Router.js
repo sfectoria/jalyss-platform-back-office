@@ -31,6 +31,10 @@ import FournisseurModule from "../modules/fournisseur/FournisseurModule";
 import AddEmployee from "../modules/employers/views/AddEmployer";
 import EmployeesList from "../modules/employers/views/EmployersList";
 import EmployeeModule from "../modules/employers/EmployerModule";
+import AddArticle from "../modules/articles/views/AddArticle";
+import StockRoutes from "./Modules/StockRoutes";
+import InventaireRoutes from "./Modules/InventaireRoutes";
+import ArticleRoutes from "./Modules/ArticlesRoutes";
 import ProfileSettings from "../modules/profile/views/ProfileSettings";
 import AddStock from "../modules/stocks/views/AddStock";
 
@@ -42,11 +46,8 @@ export default function Router() {
       {user ? (
         <Routes>
           <Route path="/" element={<Main />}>
-            <Route path="stock" element={<StockModule />}>
-              <Route index element={<StockList />} />
-              <Route path=":id" element={<StockDetails />} />
-              <Route path="add-stock" element={<AddStock />} />
-            </Route>
+            {StockRoutes()}
+            {InventaireRoutes()}
             <Route path="clients" element={<ClientModule />}>
               <Route index element={<ClientsList />} />
               <Route path="add-client" element={<AddClient />} />
@@ -65,10 +66,7 @@ export default function Router() {
               <Route index element={<ProfileView />} />
               <Route path="settings" element={<ProfileSettings />} />
             </Route>
-            <Route path="articles" element={<ArticleModule />}>
-              <Route index element={<ArticlesList />} />
-              <Route path=":id" element={<ArticleDetails />} />
-            </Route>
+            {ArticleRoutes()}
             <Route path="channels" element={<ChannelModule />}>
               <Route index element={<ChannelsList />} />
               <Route path="new-sale" element={<NewSale />} />
