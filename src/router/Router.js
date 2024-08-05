@@ -21,6 +21,7 @@ import DashboardModule from "../modules/dashboard/DashboardModule";
 import MyResponsiveLine from "../modules/dashboard/views/LineChart";
 import MyResponsiveBump from "../modules/dashboard/views/BumpChart";
 import MyResponsiveCalendar from "../modules/dashboard/views/CalendarChart";
+import DashboardRoutes from "./Modules/DashboardRoutes";
 
 export default function Router() {
   const user = useSelector((state) => state.authSlice.me);
@@ -30,6 +31,7 @@ export default function Router() {
       {user ? (
         <Routes>
           <Route path="/" key='main' element={<Main />}>
+            {DashboardRoutes()}
             {StockRoutes()}
             {InventaireRoutes()}
             {ClientsRoutes()}
@@ -39,12 +41,6 @@ export default function Router() {
             {FornisseursRoutes()}
             {ChannelsRoutes()}
             <Route path="invoice" key='invoice' element={<InvoiceContainer />}></Route>
-          <Route path="/" element={<Main />}>
-            <Route path="dashboard" element={<DashboardModule />}>
-              <Route index element={<MyResponsiveLine />} />
-              <Route path="bump" element={<MyResponsiveBump />} />
-              <Route path="calendar" element={<MyResponsiveCalendar />}/>
-            </Route>
           </Route>
         </Routes>
       ) : (
