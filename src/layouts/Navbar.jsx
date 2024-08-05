@@ -19,7 +19,7 @@ const Navbar = ({ isCollapsed }) => {
             backgroundColor: "#13395e",
             color: "#b6c8d9",
           },
-        }}
+        }}}
       >
         {sidebarData.map((element) => (
           element.children?<SubMenu component={<Link to={element.link}/>} key={element.title} icon={element.icon} label={element.title}>
