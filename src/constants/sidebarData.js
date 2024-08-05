@@ -12,6 +12,22 @@ export const sidebarData = [
   {
     title: "Dashboard",
     icon: <DashboardIcon />,
+    children: [
+      {
+        title: "Line Chart",
+        // icon: <BadgeIcon />,
+        link: "/dashboard",
+      },
+      {
+        title: "Bump Chart",
+        // icon: <BadgeIcon />,
+        link: "/dashboard/bump",
+      },
+      {
+        title: "Calendar Chart",
+        link: "/dashboard/calendar"
+      }
+    ],
   },
   {
     title: "Users",
