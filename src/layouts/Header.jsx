@@ -128,20 +128,13 @@ export default function Header({ isCollapsed, setIsCollapsed }) {
       onClose={handleProfileMenuClose}
     >
       <MenuItem onClick={() => navigate("/profile")}>Profile</MenuItem>
-      <MenuItem>My account</MenuItem>
       <Divider
         sx={{
           height: "3px",
           backgroundColor: "black",
         }}
       />
-      <MenuItem>
-        <ListItemIcon>
-          <PersonAdd fontSize="small" />
-        </ListItemIcon>
-        Add another account
-      </MenuItem>
-      <MenuItem>
+      <MenuItem onClick={() => navigate("profile/settings")}>
         <ListItemIcon>
           <Settings fontSize="small" />
         </ListItemIcon>

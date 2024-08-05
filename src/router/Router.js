@@ -35,6 +35,8 @@ import AddArticle from "../modules/articles/views/AddArticle";
 import StockRoutes from "./Modules/StockRoutes";
 import InventaireRoutes from "./Modules/InventaireRoutes";
 import ArticleRoutes from "./Modules/ArticlesRoutes";
+import ProfileSettings from "../modules/profile/views/ProfileSettings";
+import AddStock from "../modules/stocks/views/AddStock";
 
 export default function Router() {
   const user = useSelector((state) => state.authSlice.me);
@@ -59,13 +61,15 @@ export default function Router() {
               <Route index element={<FournisseursList />} />
               <Route path="add-fournisseur" element={<AddFournisseur />} />
             </Route>
+
             <Route path="profile" element={<ProfileModule />}>
               <Route index element={<ProfileView />} />
+              <Route path="settings" element={<ProfileSettings />} />
             </Route>
             {ArticleRoutes()}
             <Route path="channels" element={<ChannelModule />}>
-            <Route index element={<ChannelsList/>} />
-            <Route path="new-sale" element={<NewSale/>}/>
+              <Route index element={<ChannelsList />} />
+              <Route path="new-sale" element={<NewSale />} />
             </Route>
             <Route path="invoice" element={<InvoiceContainer />}></Route>
           </Route>

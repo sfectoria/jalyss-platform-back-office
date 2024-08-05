@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Sidebar, Menu, MenuItem ,SubMenu} from "react-pro-sidebar";
+import { Sidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar";
 import { sidebarData } from "../constants/sidebarData";
 import { Link } from "react-router-dom";
 
@@ -19,8 +19,7 @@ const Navbar = ({ isCollapsed }) => {
             backgroundColor: "#13395e",
             color: "#b6c8d9",
           },
-        },
-      }}
+        }}
       >
         {sidebarData.map((element) => (
           element.children?<SubMenu component={<Link to={element.link}/>} key={element.title} icon={element.icon} label={element.title}>
@@ -29,11 +28,9 @@ const Navbar = ({ isCollapsed }) => {
         </SubMenu>:
             <MenuItem component={<Link to={element.link}/>} key={element.title} icon={element.icon}>
               {element.title}
-              
             </MenuItem>
-          
-        ))}
-        
+          )
+        )}
       </Menu>
     </Sidebar>
   );
