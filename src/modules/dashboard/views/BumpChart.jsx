@@ -1,5 +1,6 @@
 // install (please try to align the version of installed @nivo packages)
 // yarn add @nivo/bump
+import { Box } from '@mui/material';
 import { ResponsiveBump } from '@nivo/bump'
 
 // make sure parent container have a defined height when using
@@ -311,52 +312,53 @@ const MyResponsiveBump = () => {
   }
 ]
     
-    return(
-    
-    <ResponsiveBump
-        data={data}
-        colors={{ scheme: 'spectral' }}
-        lineWidth={3}
-        activeLineWidth={6}
-        inactiveLineWidth={3}
-        inactiveOpacity={0.15}
-        pointSize={10}
-        activePointSize={16}
-        inactivePointSize={0}
-        pointColor={{ theme: 'background' }}
-        pointBorderWidth={3}
-        activePointBorderWidth={3}
-        pointBorderColor={{ from: 'serie.color' }}
-        axisTop={{
+    return (
+      <Box sx={{height: "500px"}}>
+        <ResponsiveBump
+          data={data}
+          colors={{ scheme: "spectral" }}
+          lineWidth={3}
+          activeLineWidth={6}
+          inactiveLineWidth={3}
+          inactiveOpacity={0.15}
+          pointSize={10}
+          activePointSize={16}
+          inactivePointSize={0}
+          pointColor={{ theme: "background" }}
+          pointBorderWidth={3}
+          activePointBorderWidth={3}
+          pointBorderColor={{ from: "serie.color" }}
+          axisTop={{
             tickSize: 5,
             tickPadding: 5,
             tickRotation: 0,
-            legend: '',
-            legendPosition: 'middle',
+            legend: "",
+            legendPosition: "middle",
             legendOffset: -36,
-            truncateTickAt: 0
-        }}
-        axisBottom={{
+            truncateTickAt: 0,
+          }}
+          axisBottom={{
             tickSize: 5,
             tickPadding: 5,
             tickRotation: 0,
-            legend: '',
-            legendPosition: 'middle',
+            legend: "",
+            legendPosition: "middle",
             legendOffset: 32,
-            truncateTickAt: 0
-        }}
-        axisLeft={{
+            truncateTickAt: 0,
+          }}
+          axisLeft={{
             tickSize: 5,
             tickPadding: 5,
             tickRotation: 0,
-            legend: 'ranking',
-            legendPosition: 'middle',
+            legend: "ranking",
+            legendPosition: "middle",
             legendOffset: -40,
-            truncateTickAt: 0
-        }}
-        margin={{ top: 40, right: 100, bottom: 40, left: 60 }}
-        axisRight={null}
-    />
-)}
+            truncateTickAt: 0,
+          }}
+          margin={{ top: 40, right: 100, bottom: 40, left: 60 }}
+          axisRight={null}
+        />
+      </Box>
+    );}
 
 export default MyResponsiveBump

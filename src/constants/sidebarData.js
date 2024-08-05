@@ -23,6 +23,10 @@ export const sidebarData = [
         // icon: <BadgeIcon />,
         link: "/dashboard/bump",
       },
+      {
+        title: "Calendar Chart",
+        link: "/dashboard/calendar"
+      }
     ],
   },
   {
