@@ -11,7 +11,6 @@ import Card from 'react-bootstrap/Card';
 import InvoiceItem from './InvoiceItem';
 import InvoiceModal from './InvoiceModal';
 import InputGroup from 'react-bootstrap/InputGroup';
-import SearchTableRes from './SearchTableRes';
 import AlertAdding from './AlertAdding'
 
 
@@ -35,7 +34,15 @@ const InvoiceForm = () => {
   const [taxAmount, setTaxAmount] = useState('0.00');
   const [discountRate, setDiscountRate] = useState('');
   const [discountAmount, setDiscountAmount] = useState('0.00');
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState([
+    {
+      id: '',
+      name: '',
+      price: '',
+      description: '',
+      quantity: 1
+    }
+  ]);
   const [showSuAlert, setShowSuAlert] = useState(false);
   const [showErAlert, setShowErAlert] = useState(false);
 
