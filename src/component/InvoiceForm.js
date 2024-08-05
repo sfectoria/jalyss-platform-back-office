@@ -78,7 +78,13 @@ const InvoiceForm = () => {
   const handelBarcode = (e,rows) => {
     const prod = (rows.find((element) =>{ console.log(element,e.target.value);
       return element.barcode==e.target.value}))
-    prod?(handleAddEvent(prod.title,prod.prices),setShowSuAlert(true),e.target.value=''):e.target.value.length?setShowErAlert(true):''
+    if(prod){
+      handleAddEvent(prod.title,prod.prices),
+      setShowSuAlert(true),
+      e.target.value=''
+    } else if(e.target.value.length){
+      setShowErAlert(true)
+    }
   }
   
   const handelAddItem = (obj) => {
