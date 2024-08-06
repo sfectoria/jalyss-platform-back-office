@@ -16,17 +16,17 @@ export const sidebarData = [
       {
         title: "Line Chart",
         // icon: <BadgeIcon />,
-        link: "/dashboard",
+        link: "/",
       },
       {
         title: "Bump Chart",
         // icon: <BadgeIcon />,
-        link: "/dashboard/bump",
+        link: "/bump",
       },
       {
         title: "Calendar Chart",
-        link: "/dashboard/calendar"
-      }
+        link: "/calendar",
+      },
     ],
   },
   {
@@ -82,18 +82,28 @@ export const sidebarData = [
   {
     title: "Channels",
     icon: <HubIcon />,
+    children: [
+      {
+        title: "All Channels",
+        link: "/channels",
+      },
+      {
+        title: "Add Channel",
+        link: "/channels/add-channel",
+      },
+    ],
   },
   {
     title: "Article",
     icon: <ForumIcon />,
-    link: '/articles',
-    children : [
+    link: "/articles",
+    children: [
       {
         title: "Add Article",
-      // icon: <BadgeIcon />,
-      link: "/articles/new-article",
-      }
-    ]
+        // icon: <BadgeIcon />,
+        link: "/articles/new-article",
+      },
+    ],
   },
   {
     title: "Fournisseur",

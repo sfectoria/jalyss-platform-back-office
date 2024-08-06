@@ -4,7 +4,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import CustomNoResultsOverlay from '../../../style/NoResultStyle';
 import DoneIcon from '@mui/icons-material/Done';
 import ClearIcon from '@mui/icons-material/Clear';
-import InvoiceModal from '../../../component/InvoiceModal';
+import InvoiceModal from '../../../components/InvoiceModal';
 
 export default function ClientHistory() {
   const [isOpen, setIsOpen] = useState(false);

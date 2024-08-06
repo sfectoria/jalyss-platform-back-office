@@ -8,7 +8,7 @@ import Login from "../modules/auth/views/Login";
 import ForgetPassword from "../modules/auth/views/ForgetPassword";
 import ConfirmPassword from "../modules/auth/views/ConfirmPassword";
 import SixDigitCode from "../modules/auth/views/SixDigitCode";
-import InvoiceContainer from "../component/InvoiceContainer";
+import InvoiceContainer from "../components/InvoiceContainer";
 import StockRoutes from "./Modules/StockRoutes";
 import InventaireRoutes from "./Modules/InventaireRoutes";
 import ArticleRoutes from "./Modules/ArticlesRoutes";
@@ -17,10 +17,7 @@ import ClientsRoutes from "./Modules/ClientsRoutes";
 import EmployeesRoutes from "./Modules/EmployeesRoutes";
 import FornisseursRoutes from "./FornisseursRoutes";
 import ChannelsRoutes from "./ChannelsRoutes";
-import DashboardModule from "../modules/dashboard/DashboardModule";
-import MyResponsiveLine from "../modules/dashboard/views/LineChart";
-import MyResponsiveBump from "../modules/dashboard/views/BumpChart";
-import MyResponsiveCalendar from "../modules/dashboard/views/CalendarChart";
+import DashboardRoutes from "./Modules/DashboardRoutes";
 
 export default function Router() {
   const user = useSelector((state) => state.authSlice.me);

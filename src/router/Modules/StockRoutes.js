@@ -13,4 +13,4 @@ export default function StockRoutes() {
           <Route key="details" path=":id" element={<StockDetails />} />
         </Route>
     ]
-}
+} 

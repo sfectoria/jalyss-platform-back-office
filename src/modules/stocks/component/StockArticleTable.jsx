@@ -16,7 +16,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import Link from '@mui/material/Link';
 import DoneIcon from '@mui/icons-material/Done';
 import ClearIcon from '@mui/icons-material/Clear';
-import ImagePopUp from '../../../component/ImagePopUp';
+import ImagePopUp from '../../../components/ImagePopUp';
 
 
 
