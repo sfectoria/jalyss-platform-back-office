@@ -1,8 +1,8 @@
 import React from 'react'
 import { Route } from 'react-router-dom'
-import ChannelModule from '../modules/channels/ChannelModule'
-import ChannelsList from '../modules/channels/views/ChannelsList'
-import NewSale from '../modules/channels/views/NewSale'
+import ChannelModule from '../../modules/channels/ChannelModule'
+import ChannelsList from '../../modules/channels/views/ChannelsList'
+import NewSale from '../../modules/channels/views/NewSale'
 function ChannelsRoutes() {
   return [
     <Route path="channels" key='channels-module' element={<ChannelModule />}>

@@ -53,7 +53,7 @@ const SearchField = ({handelRef,handelBarcode,val,handelAddItem}) => {
 
   return (
     <div>
-    <div className="d-flex gap-4 container mt-5">
+    <div className="d-flex gap-4 container mt-5" >
       <div className="input-group" style={{ width: '30%' }}>
         <input type="text" className="form-control" placeholder="Bar Code" onChange={(event)=>{
           handelBarcode(event,rows)
@@ -104,7 +104,6 @@ const SearchField = ({handelRef,handelBarcode,val,handelAddItem}) => {
         />
       </div>
     </div>
-    <SearchTableRes handelRef={handelRef} handelAddItem={handelAddItem} rows={filteredRows}/>
     </div>
   );
 };

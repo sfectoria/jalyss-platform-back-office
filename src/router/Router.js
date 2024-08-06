@@ -15,12 +15,8 @@ import ArticleRoutes from "./Modules/ArticlesRoutes";
 import ProfileRoutes from "./Modules/ProfileRoutes";
 import ClientsRoutes from "./Modules/ClientsRoutes";
 import EmployeesRoutes from "./Modules/EmployeesRoutes";
-import FornisseursRoutes from "./FornisseursRoutes";
-import ChannelsRoutes from "./ChannelsRoutes";
-import DashboardModule from "../modules/dashboard/DashboardModule";
-import MyResponsiveLine from "../modules/dashboard/views/LineChart";
-import MyResponsiveBump from "../modules/dashboard/views/BumpChart";
-import MyResponsiveCalendar from "../modules/dashboard/views/CalendarChart";
+import FornisseursRoutes from "./Modules/FornisseursRoutes";
+import ChannelsRoutes from "./Modules/ChannelsRoutes";
 import DashboardRoutes from "./Modules/DashboardRoutes";
 
 export default function Router() {

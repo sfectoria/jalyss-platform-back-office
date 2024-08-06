@@ -34,13 +34,15 @@ const InvoiceForm = () => {
   const [taxAmount, setTaxAmount] = useState('0.00');
   const [discountRate, setDiscountRate] = useState('');
   const [discountAmount, setDiscountAmount] = useState('0.00');
+  const ids = (+ new Date() + Math.floor(Math.random() * 999999)).toString(36);
   const [items, setItems] = useState([
     {
-      id: '',
+      id: ids,
       name: '',
-      price: '',
-      description: '',
-      quantity: 1
+      price: '14',
+      barcode: '',
+      quantity: 1,
+      discount:0
     }
   ]);
   const [showSuAlert, setShowSuAlert] = useState(false);
@@ -68,8 +70,9 @@ const InvoiceForm = () => {
       id: id,
       name: name,
       price: price,
-      description: '',
-      quantity: 1
+      barcode: '',
+      quantity: 1,
+      discount:10
     };
     setItems([...items, newItem]);
     handleCalculateTotal();
@@ -89,13 +92,13 @@ const InvoiceForm = () => {
   
   const handelAddItem = (obj) => {
     setShowSuAlert(true)
-    handleAddEvent(obj.title,obj.quantity)
+    handleAddEvent(obj.title,obj.price)
 
   }
   const handleCalculateTotal = () => {
     let subTotal = 0;
     items.forEach(item => {
-      subTotal += parseFloat((parseFloat(item.price) * parseInt(item.quantity)).toFixed(2)
+      subTotal += parseFloat((parseFloat(item.price) * parseInt(item.quantity)).toFixed(2)-((parseFloat(item.price) * parseInt(item.quantity)*(item.discount/100))).toFixed(2)
     );
     setSubTotal(subTotal.toFixed(2));
 })
@@ -112,7 +115,7 @@ const InvoiceForm = () => {
   const onItemizedItemEdit = (event) => {
   
     const { id, name, value } = event.target;
-    console.log(value);
+    console.log(name);
     const updatedItems = items.map(item => {
       console.log(id,item.id);
       if (item.id === id) {
@@ -304,7 +307,7 @@ const InvoiceForm = () => {
               onRowDel={handleRowDel}
               currency={currency}
               items={items}
-
+              handelBarcode={handelBarcode}
             />
             </div>
             <Row className="mt-4 justify-content-end">
