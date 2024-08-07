@@ -7,6 +7,11 @@ import HubIcon from "@mui/icons-material/Hub";
 import ForumIcon from "@mui/icons-material/Forum";
 import BusinessIcon from "@mui/icons-material/Business";
 import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
+import ShowChartIcon from "@mui/icons-material/ShowChart";
+import SvgBumpChartIcon from "../icons/BumpChartIcon";
+import ViewCompactIcon from "@mui/icons-material/ViewCompact";
+import ListIcon from "@mui/icons-material/List";
+import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 
 export const sidebarData = [
   {
@@ -15,17 +20,18 @@ export const sidebarData = [
     children: [
       {
         title: "Line Chart",
-        // icon: <BadgeIcon />,
+        icon: <ShowChartIcon />,
         link: "/",
       },
       {
         title: "Bump Chart",
-        // icon: <BadgeIcon />,
+        icon: <SvgBumpChartIcon />,
         link: "/bump",
       },
       {
         title: "Calendar Chart",
         link: "/calendar",
+        icon: <ViewCompactIcon />,
       },
     ],
   },
@@ -39,12 +45,12 @@ export const sidebarData = [
     children: [
       {
         title: "All Employees",
-        // icon: <BadgeIcon />,
+        icon: <ListIcon />,
         link: "/employees",
       },
       {
         title: "Add Employee",
-        // icon: <BadgeIcon />,
+        icon: <PlaylistAddIcon />,
         link: "/employees/add-employee",
       },
     ],
@@ -55,12 +61,12 @@ export const sidebarData = [
     children: [
       {
         title: "All Clients",
-        // icon: <BadgeIcon />,
+        icon: <ListIcon />,
         link: "/clients",
       },
       {
         title: "Add Client",
-        // icon: <BadgeIcon />,
+        icon: <PlaylistAddIcon />,
         link: "/clients/add-client",
       },
     ],
@@ -71,10 +77,12 @@ export const sidebarData = [
     children: [
       {
         title: "All Stocks",
+        icon: <ListIcon />,
         link: "/stock",
       },
       {
         title: "Add Stock",
+        icon: <PlaylistAddIcon />,
         link: "/stock/add-stock",
       },
     ],
@@ -85,10 +93,12 @@ export const sidebarData = [
     children: [
       {
         title: "All Channels",
+        icon: <ListIcon />,
         link: "/channels",
       },
       {
         title: "Add Channel",
+        icon: <PlaylistAddIcon />,
         link: "/channels/add-channel",
       },
     ],
@@ -96,11 +106,15 @@ export const sidebarData = [
   {
     title: "Article",
     icon: <ForumIcon />,
-    link: "/articles",
     children: [
       {
+        title: "All Articles",
+        icon: <ListIcon />,
+        link: "/articles",
+      },
+      {
         title: "Add Article",
-        // icon: <BadgeIcon />,
+        icon: <PlaylistAddIcon />,
         link: "/articles/new-article",
       },
     ],
@@ -111,10 +125,12 @@ export const sidebarData = [
     children: [
       {
         title: "All Fournisseurs",
+        icon: <ListIcon />,
         link: "/fournisseurs",
       },
       {
         title: "Add Fournisseur",
+        icon: <PlaylistAddIcon />,
         link: "/fournisseurs/add-fournisseur",
       },
     ],
