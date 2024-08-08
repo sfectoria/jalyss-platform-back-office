@@ -34,15 +34,8 @@ const InvoiceForm = () => {
   const [taxAmount, setTaxAmount] = useState('0.00');
   const [discountRate, setDiscountRate] = useState('');
   const [discountAmount, setDiscountAmount] = useState('0.00');
-  const [items, setItems] = useState([
-    {
-      id: '',
-      name: '',
-      price: '',
-      description: '',
-      quantity: 1
-    }
-  ]);
+  const ids = (+ new Date() + Math.floor(Math.random() * 999999)).toString(36);
+  const [items, setItems] = useState([]);
   const [showSuAlert, setShowSuAlert] = useState(false);
   const [showErAlert, setShowErAlert] = useState(false);
 
@@ -52,9 +45,6 @@ const InvoiceForm = () => {
   }, [items]);
   const targetRef = useRef(null);
 
-  const handelRef = () => {
-    targetRef.current.scrollIntoView({ behavior: 'smooth' });
-  };
   const handleRowDel = (itemToDelete) => {
     const updatedItems = items.filter(item => item.id !== itemToDelete.id);
     setItems(updatedItems);
@@ -62,16 +52,29 @@ const InvoiceForm = () => {
   };
 
 
-  const handleAddEvent = (name,price) => {
-    const id = (+ new Date() + Math.floor(Math.random() * 999999)).toString(36);
+  const handleAddEvent = (obj) => {
+    const duplicate =items.find((e)=>{return (e.id===obj.id)})
+    if(duplicate){
+     const doubleQ=items.map((e)=>{
+      if(e.id===obj.id){
+       e.quantity=e.quantity+1
+      }
+      return e
+     })
+     setItems(items)
+     return doubleQ
+    }
+    else {
     const newItem = {
-      id: id,
-      name: name,
-      price: price,
-      description: '',
-      quantity: 1
+      id: obj.id,
+      name: obj.title,
+      price: obj.price,
+      barcode: '',
+      quantity: 1,
+      discount:0
     };
     setItems([...items, newItem]);
+  }
     handleCalculateTotal();
   };
   
@@ -86,16 +89,21 @@ const InvoiceForm = () => {
       setShowErAlert(true);
     }
   }
+
+  const handelNSearch = (event,value,rows) => {
+      handelAddItem(value,rows)
+  };
   
-  const handelAddItem = (obj) => {
+  const handelAddItem = (obj,rows) => {
+    setShowErAlert(false)
     setShowSuAlert(true)
-    handleAddEvent(obj.title,obj.quantity)
+    handleAddEvent(obj)
 
   }
   const handleCalculateTotal = () => {
     let subTotal = 0;
     items.forEach(item => {
-      subTotal += parseFloat((parseFloat(item.price) * parseInt(item.quantity)).toFixed(2)
+      subTotal += parseFloat((parseFloat(item.price) * parseInt(item.quantity)).toFixed(2)-((parseFloat(item.price) * parseInt(item.quantity)*(item.discount/100))).toFixed(2)
     );
     setSubTotal(subTotal.toFixed(2));
 })
@@ -112,11 +120,9 @@ const InvoiceForm = () => {
   const onItemizedItemEdit = (event) => {
   
     const { id, name, value } = event.target;
-    console.log(value);
+    console.log(name,value,id);
     const updatedItems = items.map(item => {
-      console.log(id,item.id);
-      if (item.id === id) {
-        console.log(item.id===id);
+      if (item.id == id) {
         return { ...item, [name]: value };
       }
       return item;
@@ -304,7 +310,8 @@ const InvoiceForm = () => {
               onRowDel={handleRowDel}
               currency={currency}
               items={items}
-
+              handelBarcode={handelBarcode}
+              handelNSearch={handelNSearch}
             />
             </div>
             <Row className="mt-4 justify-content-end">
@@ -334,7 +341,6 @@ const InvoiceForm = () => {
                 </div>
               </Col>
             </Row>
-            <SearchField handelRef={handelRef} handelBarcode={handelBarcode} handelAddItem={handelAddItem}/>
             <hr className="my-4" />
             <Form.Label className="fw-bold">Notes:</Form.Label>
             <Form.Control
