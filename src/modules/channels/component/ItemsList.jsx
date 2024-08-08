@@ -17,7 +17,7 @@ import FormControl from '@mui/material/FormControl';
 
 
 
-import ImagePopUp from '../../../component/ImagePopUp';
+import ImagePopUp from '../../../components/ImagePopUp';
 
 function createData(image,title, subTotal, fat, carbs, protein) {
   return {image, title, subTotal, fat, carbs, protein };

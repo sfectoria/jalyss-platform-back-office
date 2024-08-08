@@ -74,7 +74,7 @@ function FullWidthTabs() {
           variant="fullWidth"
           aria-label="full width tabs example"
         >   
-          <Tab icon={<ArticleIcon/>} iconPosition="start" label="Articles" sx={{}} {...a11yProps(0)} />
+          <Tab icon={<ArticleIcon/>} iconPosition="start" label="Articles" {...a11yProps(0)} />
           <Tab icon={<HistoryIcon/>} iconPosition="start" label="History" {...a11yProps(1)} />
           <Tab icon={<RuleIcon/>} iconPosition="start" label="Inventaire" {...a11yProps(2)} />
         </Tabs>
@@ -102,11 +102,6 @@ function FullWidthTabs() {
 
 export default function StockDetails() {
 
-  const navigate=useNavigate()
-  function handleClick(event) {
-    event.preventDefault();
-    navigate('/stock')
-  }
       
   return (
       <Box
@@ -117,7 +112,7 @@ export default function StockDetails() {
         }}
       >   
           <Item sx={{pt:7,pb:1,px:7,borderRadius:10}} elevation={5}>
-            <div role="presentation" onClick={handleClick}>
+            <div role="presentation">
               <Breadcrumbs aria-label="breadcrumb">
                 <Link underline="hover" variant="h5" sx={{ fontWeight: 'bold' }} color="inherit" href="/stock">
                  Stock

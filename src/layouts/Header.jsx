@@ -59,9 +59,10 @@ import {  useNavigate } from "react-router-dom";
 //   },
 // }));
 
-export default function Header({ isCollapsed, setIsCollapsed }) {
+export default function Header({ isCollapsed, setIsCollapsed, setHeight}) {
   const navigate = useNavigate();
 
+  
   const [profileAnchorEl, setProfileAnchorEl] = React.useState(null);
   const [messagesAnchorEl, setMessagesAnchorEl] = React.useState(null);
   const [notificationsAnchorEl, setNotificationsAnchorEl] =
@@ -270,8 +271,11 @@ export default function Header({ isCollapsed, setIsCollapsed }) {
   // );
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static" elevation={0}>
+    <Box sx={{ flexGrow: 1 }} >
+      <AppBar
+        position="static"
+        elevation={0}
+      >
         <Toolbar>
           <IconButton
             size="large"

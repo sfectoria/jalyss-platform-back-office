@@ -2,7 +2,7 @@ import React , {useState} from 'react';
 import { DataGrid, GridToolbar, GridActionsCellItem } from '@mui/x-data-grid';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import CustomNoResultsOverlay from '../../../style/NoResultStyle';
-import InvoiceModal from '../../../component/InvoiceModal';
+import InvoiceModal from '../../../components/InvoiceModal';
 import { useNavigate } from 'react-router-dom';
 export default function StockInvontaire() {
   const [isOpen, setIsOpen] = useState(false);

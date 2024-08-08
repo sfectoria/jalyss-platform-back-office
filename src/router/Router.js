@@ -8,7 +8,7 @@ import Login from "../modules/auth/views/Login";
 import ForgetPassword from "../modules/auth/views/ForgetPassword";
 import ConfirmPassword from "../modules/auth/views/ConfirmPassword";
 import SixDigitCode from "../modules/auth/views/SixDigitCode";
-import InvoiceContainer from "../component/InvoiceContainer";
+import InvoiceContainer from "../components/InvoiceContainer";
 import StockRoutes from "./Modules/StockRoutes";
 import InventaireRoutes from "./Modules/InventaireRoutes";
 import ArticleRoutes from "./Modules/ArticlesRoutes";
@@ -37,7 +37,7 @@ export default function Router() {
             {ArticleRoutes()}
             {FornisseursRoutes()}
             {ChannelsRoutes()}
-            <Route path="invoice" key='invoice' element={<InvoiceContainer />}></Route>
+            <Route path="invoice" key='invoice' element={<InvoiceContainer />} />
           </Route>
           <Route key="index" path="inventaires" element={<NewInventaire />} />
         </Routes>
