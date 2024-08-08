@@ -34,7 +34,7 @@ const rows = [
 ];
 
 const InvoiceItem = (props) => {
-  const { items, currency, onItemizedItemEdit, onRowDel, onRowAdd,handelBarcode } = props;
+  const { items, currency, onItemizedItemEdit, onRowDel, onRowAdd,handelBarcode,handelNSearch } = props;
 
   const handleRowDel = (item) => {
     onRowDel(item);
@@ -47,7 +47,6 @@ const InvoiceItem = (props) => {
       currency={currency}
       onItemizedItemEdit={onItemizedItemEdit}
       onDelEvent={() => handleRowDel(item)}
-      handelBarcode={handelBarcode}
     />
   ));
 
@@ -57,30 +56,34 @@ const InvoiceItem = (props) => {
         <thead>
           <tr>
             <th>ITEM</th>
-            <th>QTY</th>
-            <th>PRICE/RATE</th>
+            <th style={{display:'flex' ,justifyContent:'center'}}>QTY</th>
+            <th>PRICE</th>
             <th>Discount</th>
+            <th>Subtotal</th>
             <th className="text-center">ACTION</th>
           </tr>
         </thead>
+        <tbody>
           {itemTable}
+          </tbody>
+          <tfoot>
+          <SearchField handelBarcode={handelBarcode} handelNSearch={handelNSearch}/>
+         </tfoot>
       </Table>
-      <Button className="fw-bold" onClick={()=>{onRowAdd('hhh',12)}}>Add Item</Button>
     </div>
   );
 };
 
-const ItemRow = ({ item, currency, onItemizedItemEdit, onDelEvent,handelBarcode }) => {
+const ItemRow = ({ item, currency, onItemizedItemEdit, onDelEvent,handelBarcode,handelNSearch}) => {
   const handleDelEvent = () => {
     onDelEvent();
   };
-
   return (
-    <tbody>
-    <tr style={{}}>
+
+    <tr>
       <td style={{ width: '100%',alignContent:'center' }}>
           <div className="col-sm-10">
-      <input data-toggle="tooltip" data-placement="top"  type="text" readOnly className="form-control-plaintext" id="name" defaultValue={'lalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalala'}/>
+      <input data-toggle="tooltip" data-placement="top"  type="text" readOnly className="form-control-plaintext" id="name" defaultValue={item.name}/>
     </div>
       </td>
       
@@ -93,20 +96,6 @@ const ItemRow = ({ item, currency, onItemizedItemEdit, onDelEvent,handelBarcode 
     </div>
       </td>
       <td style={{ minWidth: '130px' }}>
-        {/* <EditableField
-          onItemizedItemEdit={onItemizedItemEdit}
-          cellData={{
-            leading: '%',
-            type: "number",
-            name: "discount",
-            min: 1,
-            step: "0.01",
-            precision: 2,
-            textAlign: "text-end",
-            value: item.discount,
-            id: item.id,
-          }}
-        /> */}
          <InputGroup className="my-1 flex-nowrap">
                 <Form.Control
                 id={item.id}
@@ -125,7 +114,13 @@ const ItemRow = ({ item, currency, onItemizedItemEdit, onDelEvent,handelBarcode 
                 </InputGroup.Text>
               </InputGroup>
       </td>
-      <td className="text-center" style={{ minWidth: '50px' }}>
+      <td style={{ minWidth:'130px',alignContent:'center' }}>
+          <div className="col-sm-10">
+      <input type="text" readOnly className="form-control-plaintext" id="subtotal" name='subtotal' value={parseFloat((parseFloat(item.price) * parseInt(item.quantity)).toFixed(2)-((parseFloat(item.price) * parseInt(item.quantity)*(item.discount/100))).toFixed(2))
+}/>
+    </div>
+      </td>
+      <td className="text-center" style={{ minWidth: '30px' }}>
         <BiTrash
           onClick={handleDelEvent}
           style={{ height: '33px', width: '33px', padding: '7.5px' }}
@@ -133,9 +128,6 @@ const ItemRow = ({ item, currency, onItemizedItemEdit, onDelEvent,handelBarcode 
         />
       </td>
     </tr>
-    <SearchField/>
-    
-    </tbody>
   );
 };
 

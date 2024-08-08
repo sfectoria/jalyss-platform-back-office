@@ -35,16 +35,7 @@ const InvoiceForm = () => {
   const [discountRate, setDiscountRate] = useState('');
   const [discountAmount, setDiscountAmount] = useState('0.00');
   const ids = (+ new Date() + Math.floor(Math.random() * 999999)).toString(36);
-  const [items, setItems] = useState([
-    {
-      id: ids,
-      name: '',
-      price: '14',
-      barcode: '',
-      quantity: 1,
-      discount:0
-    }
-  ]);
+  const [items, setItems] = useState([]);
   const [showSuAlert, setShowSuAlert] = useState(false);
   const [showErAlert, setShowErAlert] = useState(false);
 
@@ -54,9 +45,6 @@ const InvoiceForm = () => {
   }, [items]);
   const targetRef = useRef(null);
 
-  const handelRef = () => {
-    targetRef.current.scrollIntoView({ behavior: 'smooth' });
-  };
   const handleRowDel = (itemToDelete) => {
     const updatedItems = items.filter(item => item.id !== itemToDelete.id);
     setItems(updatedItems);
@@ -64,17 +52,29 @@ const InvoiceForm = () => {
   };
 
 
-  const handleAddEvent = (name,price) => {
-    const id = (+ new Date() + Math.floor(Math.random() * 999999)).toString(36);
+  const handleAddEvent = (obj) => {
+    const duplicate =items.find((e)=>{return (e.id===obj.id)})
+    if(duplicate){
+     const doubleQ=items.map((e)=>{
+      if(e.id===obj.id){
+       e.quantity=e.quantity+1
+      }
+      return e
+     })
+     setItems(items)
+     return doubleQ
+    }
+    else {
     const newItem = {
-      id: id,
-      name: name,
-      price: price,
+      id: obj.id,
+      name: obj.title,
+      price: obj.price,
       barcode: '',
       quantity: 1,
-      discount:10
+      discount:0
     };
     setItems([...items, newItem]);
+  }
     handleCalculateTotal();
   };
   
@@ -82,17 +82,22 @@ const InvoiceForm = () => {
     const prod = (rows.find((element) =>{ console.log(element,e.target.value);
       return element.barcode==e.target.value}))
     if(prod){
-      handleAddEvent(prod.title,prod.prices),
+      handleAddEvent(prod),
       setShowSuAlert(true),
       e.target.value=''
     } else if(e.target.value.length){
       setShowErAlert(true)
     }
   }
+
+  const handelNSearch = (event,value,rows) => {
+      handelAddItem(value,rows)
+  };
   
-  const handelAddItem = (obj) => {
+  const handelAddItem = (obj,rows) => {
+    setShowErAlert(false)
     setShowSuAlert(true)
-    handleAddEvent(obj.title,obj.price)
+    handleAddEvent(obj)
 
   }
   const handleCalculateTotal = () => {
@@ -115,11 +120,9 @@ const InvoiceForm = () => {
   const onItemizedItemEdit = (event) => {
   
     const { id, name, value } = event.target;
-    console.log(name);
+    console.log(name,value,id);
     const updatedItems = items.map(item => {
-      console.log(id,item.id);
-      if (item.id === id) {
-        console.log(item.id===id);
+      if (item.id == id) {
         return { ...item, [name]: value };
       }
       return item;
@@ -308,6 +311,7 @@ const InvoiceForm = () => {
               currency={currency}
               items={items}
               handelBarcode={handelBarcode}
+              handelNSearch={handelNSearch}
             />
             </div>
             <Row className="mt-4 justify-content-end">
@@ -337,7 +341,6 @@ const InvoiceForm = () => {
                 </div>
               </Col>
             </Row>
-            <SearchField handelRef={handelRef} handelBarcode={handelBarcode} handelAddItem={handelAddItem}/>
             <hr className="my-4" />
             <Form.Label className="fw-bold">Notes:</Form.Label>
             <Form.Control

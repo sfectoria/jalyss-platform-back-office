@@ -2,28 +2,24 @@ import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const PandMField = ({ onItemizedItemEdit, quantity,id }) => {
-  const [value, setValue] = useState(quantity);
-// s
+
+  
   const triggerChange = (newValue) => {
-    setValue(newValue);
     const event = { target: { value: newValue,name:'quantity',id:id } };
-    console.log(event.target.name);
     handleChange(event);
   };
 
   const handleIncrement = () => {
-    triggerChange(value + 1);
+    triggerChange(quantity + 1);
   };
 
   const handleDecrement = () => {
-    if (value > 1) {
-      triggerChange(value - 1);
+    if (quantity > 1) {
+      triggerChange(quantity - 1);
     }
   };
 
   const handleChange = (e) => {
-    setValue(Number(e.target.value));
-    console.log(e.target.value);
       onItemizedItemEdit(e);
   };
 
@@ -43,7 +39,7 @@ const PandMField = ({ onItemizedItemEdit, quantity,id }) => {
         className="form-control text-center border-0" 
         id={id}
         name={'quantity'}
-        value={value} 
+        value={quantity} 
         onChange={handleChange}
       />
       <div className="input-group-append">
