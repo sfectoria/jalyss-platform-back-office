@@ -18,6 +18,7 @@ import { useNavigate } from 'react-router-dom';
 import AddButton from '../component/AddOp';
 import RuleIcon from '@mui/icons-material/Rule';
 import StockInvontaire from '../component/StockInvontaire';
+import AddInventaire from '../component/AddInventaire';
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -94,6 +95,7 @@ function FullWidthTabs() {
         </TabPanel>       
       </SwipeableViews>
       {value===1&&<AddButton />}
+      {value===2&&<AddInventaire/>}
     </Box>
   );
 }
