@@ -6,7 +6,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useNavigate } from 'react-router-dom';
 import CustomNoResultsOverlay from '../../../style/NoResultStyle';
 import Item from '../../../style/ItemStyle';
-import ImagePopUp from '../../../component/ImagePopUp';
+import ImagePopUp from '../../../components/ImagePopUp';
 
 function createData(id,image, title, quantity,reelQuantity, author, publisher, price) {
   return {
