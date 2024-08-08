@@ -22,7 +22,7 @@ import {
 import React, { useEffect, useState } from "react";
 import Item from "../../../style/ItemStyle";
 import Autocomplete from "@mui/material/Autocomplete";
-import FileUploader from "../../../component/FileUploader";
+import FileUploader from "../../../components/FileUploader";
 import { EditNotifications } from "@mui/icons-material";
 import DeleteIcon from "@mui/icons-material/Delete";
 

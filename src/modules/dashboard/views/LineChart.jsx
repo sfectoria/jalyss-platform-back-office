@@ -25,7 +25,7 @@ const MyResponsiveLine = () => {
         newData[0].data.push(newPoint); // Add the new data point to the series
         return newData; // Update the state with the new data
       });
-    }, 5000);
+    }, 1000);
 
     // Cleanup interval on component unmount
     return () => clearInterval(interval);

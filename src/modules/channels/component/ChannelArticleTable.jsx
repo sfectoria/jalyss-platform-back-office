@@ -278,7 +278,7 @@ const rows = [
   ),
 ];
 
-export default function StockArticles() {
+export default function ChannelArticles() {
   return (
     <TableContainer component={Paper}>
       <Table aria-label="collapsible table">

@@ -13,20 +13,40 @@ const Navbar = ({ isCollapsed }) => {
       }}
     >
       <Menu
-      menuItemStyles={{
-        button: {
-          [`&.active`]: {
-            backgroundColor: "#13395e",
-            color: "#b6c8d9",
+        menuItemStyles={{
+          button: {
+            [`&.active`]: {
+              backgroundColor: "#13395e",
+              color: "#b6c8d9",
+            },
           },
-        }}}
+        }}
       >
-        {sidebarData.map((element) => (
-          element.children?<SubMenu component={<Link to={element.link}/>} key={element.title} icon={element.icon} label={element.title}>
-          {element.children.map((el,index)=><MenuItem key={index} component={<Link to={el.link}/>} >{el.title}</MenuItem>)}
-          
-        </SubMenu>:
-            <MenuItem component={<Link to={element.link}/>} key={element.title} icon={element.icon}>
+        {sidebarData.map((element) =>
+          element.children ? (
+            <SubMenu
+              component={<Link to={element.link} />}
+              key={element.title}
+              icon={element.icon}
+              label={element.title}
+              
+            >
+              {element.children.map((el, index) => (
+                <MenuItem
+                  icon={el.icon}
+                  key={index}
+                  component={<Link to={el.link} />}
+                >
+                  {el.title}
+                </MenuItem>
+              ))}
+            </SubMenu>
+          ) : (
+            <MenuItem
+              component={<Link to={element.link} />}
+              key={element.title}
+              icon={element.icon}
+            >
               {element.title}
             </MenuItem>
           )
