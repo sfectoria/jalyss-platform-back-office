@@ -2,7 +2,6 @@ import React, { useState, useEffect,useRef  } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { TextField, Autocomplete, MenuItem, Typography } from '@mui/material';
-import SearchField from './SearchField'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
@@ -12,6 +11,8 @@ import InvoiceItem from './InvoiceItem';
 import InvoiceModal from './InvoiceModal';
 import InputGroup from 'react-bootstrap/InputGroup';
 import AlertAdding from './AlertAdding'
+import {useLocation} from 'react-router-dom';
+import PersonPresent from './PersonPresent';
 
 
 
@@ -38,7 +39,9 @@ const InvoiceForm = () => {
   const [items, setItems] = useState([]);
   const [showSuAlert, setShowSuAlert] = useState(false);
   const [showErAlert, setShowErAlert] = useState(false);
-
+  const location = useLocation();
+ const {title,receiver,sender} = location.state
+ console.log(sender);
   useEffect(() => {
     handleCalculateTotal();
     setCurrentDate(new Date().toLocaleDateString());
@@ -135,6 +138,8 @@ const InvoiceForm = () => {
     setShowErAlert(false)
     setShowSuAlert(false)
   }
+  console.log(billTo,billFrom);
+
 
   const editField = (event) => {
     const { name, value } = event.target;
@@ -203,20 +208,12 @@ const InvoiceForm = () => {
               <div className="d-flex flex-column">
                 <div className="d-flex flex-column">
                   <div className="mb-2">
-                    <span className="fw-bold">Current&nbsp;Date:&nbsp;</span>
-                    <span className="current-date">{currentDate}</span>
+                  <p className="h2 fw-bold">{title}</p>
                   </div>
                 </div>
                 <div className="d-flex flex-row align-items-center">
-                  <span className="fw-bold d-block me-2">Due&nbsp;Date:</span>
-                  <Form.Control
-                    type="date"
-                    value={dateOfIssue}
-                    name="dateOfIssue"
-                    onChange={editField}
-                    style={{ maxWidth: '150px' }}
-                    required
-                  />
+                  <span className="fw-bold d-block me-2">Current&nbsp;Date:&nbsp;</span>
+                  <span className="current-date">{currentDate}</span>
                 </div>
               </div>
               <div className="d-flex flex-row align-items-center">
@@ -236,6 +233,9 @@ const InvoiceForm = () => {
             <Row className="mb-5">
               <Col>
                 <Form.Label className="fw-bold">Bill to:</Form.Label>
+                {receiver.info?
+                 <PersonPresent person={receiver} type={title} setName={setBillTo} setEmail={setBillToEmail} setAddress={setBillToAddress} />:
+                <div>
                 <Form.Control
                   placeholder={"Who is this invoice to?"}
                   rows={3}
@@ -246,30 +246,35 @@ const InvoiceForm = () => {
                   onChange={editField}
                   autoComplete="name"
                   required
-                />
+                /> 
                 <Form.Control
-                  placeholder={"Email address"}
-                  value={billToEmail}
-                  type="email"
-                  name="billToEmail"
-                  className="my-2"
-                  onChange={editField}
-                  autoComplete="email"
-                  required
-                />
-                <Form.Control
-                  placeholder={"Billing address"}
-                  value={billToAddress}
-                  type="text"
-                  name="billToAddress"
-                  className="my-2"
-                  autoComplete="address"
-                  onChange={editField}
-                  required
-                />
+                placeholder={"Email address"}
+                value={billToEmail}
+                type="email"
+                name="billToEmail"
+                className="my-2"
+                onChange={editField}
+                autoComplete="email"
+                required
+              />
+              <Form.Control
+                placeholder={"Billing address"}
+                value={billToAddress}
+                type="text"
+                name="billToAddress"
+                className="my-2"
+                autoComplete="address"
+                onChange={editField}
+                required
+              />
+              </div>
+}
               </Col>
               <Col>
                 <Form.Label className="fw-bold">Bill from:</Form.Label>
+                {sender.info?
+               <PersonPresent person={sender} type={title} setName={setBillFrom} setEmail={setBillFromEmail} setAddress={setBillFromAddress}/>:
+                <div>
                 <Form.Control
                   placeholder={"Who is this invoice from?"}
                   rows={3}
@@ -301,6 +306,7 @@ const InvoiceForm = () => {
                   onChange={editField}
                   required
                 />
+                </div>}
               </Col>
             </Row>
             <div ref={targetRef}>
@@ -390,6 +396,7 @@ const InvoiceForm = () => {
                 className="btn btn-light my-1"
                 aria-label="Change Currency"
               >
+                <option value="DT">DT (Tunisian Dinar)</option>
                 <option value="$">USD (United States Dollar)</option>
                 <option value="£">GBP (British Pound Sterling)</option>
                 <option value="¥">JPY (Japanese Yen)</option>

@@ -8,8 +8,6 @@ import {
   GridActionsCellItem,
   GridRowEditStopReasons,
 } from '@mui/x-data-grid';
-
-
 import ImagePopUp from '../../../components/ImagePopUp';
 import CustomNoResultsOverlay from '../../../style/NoResultStyle';
 import AlertAdding from '../../../components/AlertAdding'
