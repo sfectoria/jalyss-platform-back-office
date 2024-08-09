@@ -17,6 +17,7 @@ import Link from "@mui/material/Link";
 import DoneIcon from "@mui/icons-material/Done";
 import ClearIcon from "@mui/icons-material/Clear";
 import ImagePopUp from "../../../components/ImagePopUp";
+import { useParams } from "react-router-dom";
 
 function createData(image, title, quantity, author, publisher, price) {
   return {
@@ -113,6 +114,7 @@ function createData(image, title, quantity, author, publisher, price) {
 function Row(props) {
   const { row } = props;
   const [open, setOpen] = React.useState(false);
+  const { id } = useParams();
 
   return (
     <React.Fragment>
@@ -183,7 +185,11 @@ function Row(props) {
                         );
                       } else return "";
                     })}
-                    <Link href="#" sx={{}} underline="hover">
+                    <Link
+                      href={`/channels/channel-details/${id}/history`}
+                      sx={{}}
+                      underline="hover"
+                    >
                       {"...    see more"}
                     </Link>
                   </TableBody>
