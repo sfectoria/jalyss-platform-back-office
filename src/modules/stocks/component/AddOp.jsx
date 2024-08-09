@@ -17,8 +17,20 @@ export default function AddButton() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const navigate=useNavigate()
+  const info={
+    name:'Stock Sfax',
+    email:'stockSfax@gmail.com',
+    address:'sfax , tunisia'
+  }
 
-  const handelAction=()=>navigate('/invoice')
+  const handelAction=(type)=>{
+    if(type==='BR'){
+      navigate('/invoice',{state:{title:'Bon de Reception',sender:{},receiver:{info}}})
+ }
+    else if (type==='BS'){
+      navigate('/invoice',{state:{title:'Bon de Sortie',sender:{info},receiver:{}}})
+ }
+}
 
   return (
     <Box sx={{ height: 330, transform: 'translateZ(0px)', flexGrow: 1 , position: 'fixed',bottom: 40, right: 100,}}>
@@ -36,7 +48,7 @@ export default function AddButton() {
             icon={action.icon}
             tooltipTitle={action.name}
             tooltipOpen
-            onClick={handelAction}
+            onClick={()=>{handelAction(action.name)}}
           />
         ))}
       </SpeedDial>

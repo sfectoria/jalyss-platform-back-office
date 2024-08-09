@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { TextField, Autocomplete, MenuItem, Typography } from '@mui/material';
-import ImagePopUp from './ImagePopUp';
 
 function createData(id, image, title, quantity, author, publisher, barcode, price) {
   return {
@@ -25,9 +24,10 @@ const rows = [
   createData(6, 'https://jalyss.com/1170-large_default/-.jpg', 'اولاد حارتنا', 49, 'najib mahfoudh', 'dar e chourouk', '104729',47),
 ];
 
-const SearchField = ({ handelBarcode,handelNSearch}) => {
+const SearchField = ({ handelBarcode, handelNSearch }) => {
   const [searchText, setSearchText] = useState('');
   const [filteredRows, setFilteredRows] = useState(rows);
+  const [hoveredImage, setHoveredImage] = useState(null);
 
   const handleInputChange = (event, value) => {
     setSearchText(value);
@@ -48,15 +48,23 @@ const SearchField = ({ handelBarcode,handelNSearch}) => {
   const handelNormalSearch = (event, value) => {
     if (value) {
       event.target.value=''  
-      handelNSearch(event, value);  }
+      handelNSearch(event, value);  
+    }
   };
 
+  const handleMouseEnter = (image) => {
+    setHoveredImage(image);
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredImage(null);
+  };
 
   return (
     <tr style={{ width: '100%' }}>
       <td colSpan={6}>
         <div className="d-flex gap-3 align-items-center" style={{ width: '100%' }}>
-          <div style={{width: '30% '}}>
+          <div style={{ width: '25%' }}>
             <div className="input-group">
               <input
                 type="text"
@@ -69,7 +77,7 @@ const SearchField = ({ handelBarcode,handelNSearch}) => {
               </button>
             </div>
           </div>
-          <div style={{ width: '65%' }}>
+          <div style={{ width: '70%' }}>
             <Autocomplete
               sx={{ width: '100%' }}
               freeSolo
@@ -78,9 +86,7 @@ const SearchField = ({ handelBarcode,handelNSearch}) => {
               options={filteredRows}
               onChange={handelNormalSearch}
               getOptionLabel={(option) => `${option.title}`}
-              filterOptions={(options) => {
-                  return options;
-              }}
+              filterOptions={(options) => options}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -93,9 +99,21 @@ const SearchField = ({ handelBarcode,handelNSearch}) => {
               renderOption={(props, option) => (
                 <MenuItem {...props} key={option.id}>
                   <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <ImagePopUp image={option.image} />
+                    <img 
+                      src={option.image} 
+                      alt={option.title} 
+                      style={{ width: 50, cursor: 'pointer' }}
+                      onMouseEnter={() => handleMouseEnter(option.image)}
+                      onMouseLeave={handleMouseLeave}
+                    />
                     <div className="ms-2">
                       <Typography variant="body1">{`${option.title}`}</Typography>
+                    </div>
+                    <div className="ms-2">
+                      <Typography variant="body1">{` | ${option.author}`}</Typography>
+                    </div>
+                    <div className="ms-2">
+                      <Typography variant="body1">{` | ${option.publisher}`}</Typography>
                     </div>
                   </div>
                 </MenuItem>
@@ -103,6 +121,22 @@ const SearchField = ({ handelBarcode,handelNSearch}) => {
             />
           </div>
         </div>
+        {hoveredImage && (
+          <div 
+            style={{
+              position: 'fixed',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              padding: '20px',
+              borderRadius: '10px',
+              zIndex: 1500,
+            }}
+            onMouseLeave={handleMouseLeave}
+          >
+            <img src={hoveredImage} alt="Hover Preview" style={{ width: '300px', height: 'auto' }} />
+          </div>
+        )}
       </td>
     </tr>
   );
