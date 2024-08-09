@@ -82,7 +82,7 @@ const InvoiceForm = () => {
     const prod = (rows.find((element) =>{ console.log(element,e.target.value);
       return element.barcode==e.target.value}))
     if (prod) {
-      handleAddEvent(prod.title, prod.prices);
+      handleAddEvent(prod);
       setShowSuAlert(true);
       e.target.value = '';
     } else if (e.target.value.length) {
