@@ -94,7 +94,7 @@ function FullWidthTabs() {
           <StockInvontaire/>
         </TabPanel>       
       </SwipeableViews>
-      {value===1&&<AddButton />}
+      {value === 1 && <AddButton type={'histStock'} />}
       {value===2&&<AddInventaire/>}
     </Box>
   );
