@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Item from "../../../style/ItemStyle";
@@ -16,8 +16,12 @@ import { useParams } from "react-router-dom";
 import RuleIcon from "@mui/icons-material/Rule";
 import AddButton from "../../stocks/component/AddOp";
 import ChannelArticles from "../component/ChannelArticleTable";
-import ChannelHistory from "../component/ChannelHistory";
+import ChannelHistory from "../component/Vente";
 import ChannelInventaire from "../component/ChannelInventaire";
+import Vente from "../component/Vente";
+import Retour from "../component/Retour";
+import Commande from "../component/Commande";
+import Devis from "../component/Devis";
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -54,6 +58,19 @@ function a11yProps(index) {
 function FullWidthTabs() {
   const theme = useTheme();
   const [value, setValue] = useState(0);
+  const types = [
+    "vente",
+    "retour",
+    "commande",
+    "devis",
+  
+  ];
+  const [type, setType] = useState('')
+
+  useEffect(() => {
+    
+    setType(types[value]);
+  },[value])
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -62,7 +79,7 @@ function FullWidthTabs() {
   const handleChangeIndex = (index) => {
     setValue(index);
   };
-
+  const { id } = useParams();
   return (
     <Box
       sx={{
@@ -73,6 +90,14 @@ function FullWidthTabs() {
         justifyContent: "center",
       }}
     >
+      <Typography variant="h2" color="initial" gutterBottom>
+        Channel's {id} informations
+      </Typography>
+      <Typography variant="body1" color={"initial"} gutterBottom>
+        channel {id} is located in stock{" "}
+        <a href={`/stock/${id}`}>(foulen fouleni)</a> managed by (foulen
+        fouleni)
+      </Typography>
       <AppBar
         position="static"
         sx={{ mx: 4, height: 60, border: 0, boxShadow: 0, bgcolor: "white" }}
@@ -86,14 +111,26 @@ function FullWidthTabs() {
           <Tab
             icon={<ArticleIcon />}
             iconPosition="start"
-            label="Articles"
+            label="Vente"
             {...a11yProps(0)}
           />
           <Tab
             icon={<HistoryIcon />}
             iconPosition="start"
-            label="History"
+            label="Retour"
             {...a11yProps(1)}
+          />
+          <Tab
+            icon={<HistoryIcon />}
+            iconPosition="start"
+            label="Commande"
+            {...a11yProps(2)}
+          />
+          <Tab
+            icon={<HistoryIcon />}
+            iconPosition="start"
+            label="Devis"
+            {...a11yProps(3)}
           />
         </Tabs>
       </AppBar>
@@ -103,19 +140,26 @@ function FullWidthTabs() {
         onChangeIndex={handleChangeIndex}
       >
         <TabPanel value={value} index={0} dir={theme.direction}>
-          <ChannelArticles />
+          <Vente />
         </TabPanel>
         <TabPanel value={value} index={1} dir={theme.direction}>
-          <ChannelHistory />
+          <Retour />
         </TabPanel>
+        <TabPanel value={value} index={2} dir={theme.direction}>
+          <Commande />
+        </TabPanel>
+        <TabPanel value={value} index={3} dir={theme.direction}>
+          <Devis />
+        </TabPanel>
+        
       </SwipeableViews>
-      {value === 1 && <AddButton />}
+      <AddButton type={type} />
     </Box>
   );
 }
 
 export default function ChannelDetails() {
-  const {id} = useParams()
+  const { id } = useParams();
   return (
     <Box
       sx={{

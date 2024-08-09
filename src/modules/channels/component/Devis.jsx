@@ -7,7 +7,7 @@ import ClearIcon from "@mui/icons-material/Clear";
 import InvoiceModal from "../../../components/InvoiceModal";
 import MouseOverPopover from "./cosOrForPopUp";
 
-export default function ChannelHistory() {
+export default function Devis() {
   const [isOpen, setIsOpen] = useState(false);
   const items = [
     {
@@ -61,39 +61,6 @@ export default function ChannelHistory() {
       ),
     },
     {
-      field: "br",
-      headerName: "BR",
-      width: 50,
-      renderCell: (params) =>
-        params.row.br ? (
-          <DoneIcon color="success" />
-        ) : (
-          <ClearIcon color="error" />
-        ),
-    },
-    {
-      field: "bs",
-      headerName: "BS",
-      width: 50,
-      renderCell: (params) =>
-        params.row.bs ? (
-          <DoneIcon color="success" />
-        ) : (
-          <ClearIcon color="error" />
-        ),
-    },
-    {
-      field: "bt",
-      headerName: "BT",
-      width: 50,
-      renderCell: (params) =>
-        params.row.bt ? (
-          <DoneIcon color="success" />
-        ) : (
-          <ClearIcon color="error" />
-        ),
-    },
-    {
       field: "details",
       headerName: "Details",
       width: 110,
@@ -116,21 +83,21 @@ export default function ChannelHistory() {
       fournisseurName: "Salim sfexi",
       managerNumber: "+216 28527345",
       details: "fff",
-      br: true,
+      bl: true,
     },
     {
       id: 2,
       date: "07/23/2024 6:56 PM",
       customerName: "Hamida midawi",
       fournisseurName: null,
-      bs: true,
+      ticket: true,
     },
     {
       id: 3,
       date: "07/23/2024 6:56 PM",
       customerName: null,
       fournisseurName: "Wael ben sahloul",
-      br: true,
+      f: true,
     },
     {
       id: 4,
@@ -138,28 +105,28 @@ export default function ChannelHistory() {
       customerName: null,
       fournisseurName: "Stock Gabes",
       br: true,
-      bt: true,
+      blf: true,
     },
     {
       id: 5,
       date: "07/23/2024 6:56 PM",
       customerName: "Daenerys",
       fournisseurName: null,
-      bs: true,
+      bl: true,
     },
     {
       id: 6,
       date: "07/23/2024 6:56 PM",
       customerName: "houssem ben ammar",
       fournisseurName: null,
-      bs: true,
+      ticket: true,
     },
     {
       id: 7,
       date: "07/23/2024 6:56 PM",
       customerName: null,
       fournisseurName: "Ferrara",
-      br: true,
+      f: true,
     },
     {
       id: 8,
@@ -167,14 +134,14 @@ export default function ChannelHistory() {
       customerName: "Stock Nabeul",
       fournisseurName: null,
       bs: true,
-      bt: true,
+      blf: true,
     },
     {
       id: 9,
       date: "07/23/2024 6:56 PM",
       customerName: "Harvey",
       fournisseurName: null,
-      bs: true,
+      bl: true,
     },
   ];
 
