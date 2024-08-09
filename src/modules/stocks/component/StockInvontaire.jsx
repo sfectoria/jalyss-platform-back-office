@@ -31,8 +31,8 @@ export default function StockInvontaire() {
     }
   ]
 
-  const handelNavigation  =()=>{
-    navigate('/inventaire')
+  const handelNavigation  =(ids)=>{
+    navigate(`/inventaire/${ids}`)
   }
   
   const openModal = (event) => {
@@ -69,7 +69,7 @@ export default function StockInvontaire() {
       width: 110,
       type: 'actions',
       getActions: ({ id }) => [
-        <GridActionsCellItem icon={<VisibilityIcon />} onClick={handelNavigation} label="" />,
+        <GridActionsCellItem icon={<VisibilityIcon />} onClick={()=>{handelNavigation(id)}} label="" />,
       ],
     },
   ];

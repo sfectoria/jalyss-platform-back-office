@@ -5,7 +5,6 @@ import ChannelsList from "../modules/channels/views/ChannelsList";
 import NewSale from "../modules/channels/views/NewSale";
 import AddChannel from "../modules/channels/views/AddChannel";
 import ChannelDetails from "../modules/channels/views/ChannelDetails";
-import ChannelHistoryDetails from "../modules/channels/component/ChannelHistoryDetails";
 
 function ChannelsRoutes() {
   return [
@@ -17,11 +16,6 @@ function ChannelsRoutes() {
         key="details"
         path="channel-details/:id"
         element={<ChannelDetails />}
-      />
-      <Route
-        key="history-details"
-        path="channel-details/:id/history"
-        element={<ChannelHistoryDetails />}
       />
       <Route path="new-sale" key="new-sale" element={<NewSale />} />
     </Route>,
