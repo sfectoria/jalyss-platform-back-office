@@ -1,10 +1,10 @@
 import React from "react";
 import { Route } from "react-router-dom";
-import ChannelsList from "../../modules/channels/views/ChannelsList";
-import AddChannel from "../../modules/channels/views/AddChannel";
 import ChannelModule from "../../modules/channels/ChannelModule";
-import ChannelDetails from "../../modules/channels/views/ChannelDetails";
+import ChannelsList from "../../modules/channels/views/ChannelsList";
 import NewSale from "../../modules/channels/views/NewSale";
+import AddChannel from "../../modules/channels/views/AddChannel";
+import ChannelDetails from "../../modules/channels/views/ChannelDetails";
 import ChannelHistoryDetails from "../../modules/channels/component/ChannelHistoryDetails";
 
 function ChannelsRoutes() {

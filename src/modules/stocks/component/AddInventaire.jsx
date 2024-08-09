@@ -8,7 +8,7 @@ function AddInventaire() {
     
     const navigate=useNavigate()
     const handelNavigate=()=>{
-        navigate('/inventaire')
+        navigate('/inventaires')
     }
   return (
     <Box sx={{height:70, position: 'fixed',bottom: 40, right: 100,}}>
