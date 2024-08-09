@@ -103,6 +103,18 @@ const InvoiceForm = () => {
     handleAddEvent(obj)
 
   }
+  const handelSearchPerson = (event,type,rows) => {
+    if(type==='viaName'){
+     return rows.filter(row=>row.name.includes(event))
+    }
+    if(type==='viaEmail'){
+      return rows.filter(row=>row.email.includes(event))
+     }
+     if(type==='viaAddress'){
+      return rows.filter(row=>row.address.includes(event))
+     }
+  }
+  
   const handleCalculateTotal = () => {
     let subTotal = 0;
     items.forEach(item => {
