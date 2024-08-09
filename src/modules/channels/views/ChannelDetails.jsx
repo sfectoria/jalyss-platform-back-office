@@ -95,12 +95,6 @@ function FullWidthTabs() {
             label="History"
             {...a11yProps(1)}
           />
-          <Tab
-            icon={<RuleIcon />}
-            iconPosition="start"
-            label="Inventaire"
-            {...a11yProps(2)}
-          />
         </Tabs>
       </AppBar>
       <SwipeableViews
@@ -113,9 +107,6 @@ function FullWidthTabs() {
         </TabPanel>
         <TabPanel value={value} index={1} dir={theme.direction}>
           <ChannelHistory />
-        </TabPanel>
-        <TabPanel value={value} index={2} dir={theme.direction}>
-          <ChannelInventaire />
         </TabPanel>
       </SwipeableViews>
       {value === 1 && <AddButton />}

@@ -9,11 +9,11 @@ import {
   GridRowEditStopReasons,
 } from '@mui/x-data-grid';
 
-import ImagePopUp from '../../../component/ImagePopUp';
 import CustomNoResultsOverlay from '../../../style/NoResultStyle';
-import AlertAdding from '../../../component/AlertAdding'
+import AlertAdding from "../../../components/AlertAdding"
 import QuickSearchToolbar from '../component/QuickSearchToolbar'
 import SaveDialog from '../component/SaveDialog';
+import ImagePopUp from '../../../components/ImagePopUp';
 
 
 function createData(id, image, title, quantity, author, publisher, price) {
