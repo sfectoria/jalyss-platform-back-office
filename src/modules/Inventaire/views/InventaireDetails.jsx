@@ -8,6 +8,7 @@ import CustomNoResultsOverlay from '../../../style/NoResultStyle';
 import Item from '../../../style/ItemStyle';
 import ImagePopUp from '../../../components/ImagePopUp';
 
+
 function createData(id,image, title, quantity,reelQuantity, author, publisher, price) {
   return {
     id,
