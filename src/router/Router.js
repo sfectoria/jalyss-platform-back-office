@@ -15,9 +15,10 @@ import ArticleRoutes from "./Modules/ArticlesRoutes";
 import ProfileRoutes from "./Modules/ProfileRoutes";
 import ClientsRoutes from "./Modules/ClientsRoutes";
 import EmployeesRoutes from "./Modules/EmployeesRoutes";
-import FornisseursRoutes from "./FornisseursRoutes";
-import ChannelsRoutes from "./ChannelsRoutes";
+import FornisseursRoutes from "./Modules/FornisseursRoutes";
+import ChannelsRoutes from "./Modules/ChannelsRoutes";
 import DashboardRoutes from "./Modules/DashboardRoutes";
+import NewInventaire from "../modules/Inventaire/views/NewInventaire";
 
 export default function Router() {
   const user = useSelector((state) => state.authSlice.me);
@@ -38,7 +39,7 @@ export default function Router() {
             {ChannelsRoutes()}
             <Route path="invoice" key='invoice' element={<InvoiceContainer />} />
           </Route>
-          
+          <Route key="index" path="inventaires" element={<NewInventaire />} />
         </Routes>
       ) : (
         <Routes>
