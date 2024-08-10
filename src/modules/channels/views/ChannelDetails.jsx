@@ -12,16 +12,14 @@ import HistoryIcon from "@mui/icons-material/History";
 import ArticleIcon from "@mui/icons-material/Article";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Link from "@mui/material/Link";
-import { useParams } from "react-router-dom";
-import RuleIcon from "@mui/icons-material/Rule";
+import { useNavigate, useParams } from "react-router-dom";
 import AddButton from "../../stocks/component/AddOp";
-import ChannelArticles from "../component/ChannelArticleTable";
-import ChannelHistory from "../component/Vente";
-import ChannelInventaire from "../component/ChannelInventaire";
 import Vente from "../component/Vente";
 import Retour from "../component/Retour";
 import Commande from "../component/Commande";
 import Devis from "../component/Devis";
+import { Button } from "@mui/material";
+import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -56,6 +54,7 @@ function a11yProps(index) {
 }
 
 function FullWidthTabs() {
+  const navigate = useNavigate();
   const theme = useTheme();
   const [value, setValue] = useState(0);
   const types = [
@@ -91,13 +90,21 @@ function FullWidthTabs() {
       }}
     >
       <Typography variant="h2" color="initial" gutterBottom>
-        Channel's {id} informations
+        Channel {id} informations
       </Typography>
       <Typography variant="body1" color={"initial"} gutterBottom>
-        channel {id} is located in stock{" "}
-        <a href={`/stock/${id}`}>(foulen fouleni)</a> managed by (foulen
+        channel {id} is located in stock (foulen fouleni) managed by (foulen
         fouleni)
       </Typography>
+      <Button
+        variant="contained"
+        color="primary"
+        endIcon={<RemoveRedEyeIcon />}
+        sx={{ width: '15%' }}
+        onClick={
+          () => navigate(`/stock/${id}`)
+        }
+      >View stock</Button>
       <AppBar
         position="static"
         sx={{ mx: 4, height: 60, border: 0, boxShadow: 0, bgcolor: "white" }}
