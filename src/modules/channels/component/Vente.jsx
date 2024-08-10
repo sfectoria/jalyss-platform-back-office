@@ -53,14 +53,6 @@ export default function Vente() {
       ),
     },
     {
-      field: "fournisseurName",
-      headerName: "Fournisseur",
-      width: 250,
-      renderCell: (params) => (
-        <MouseOverPopover name={params.row.fournisseurName} />
-      ),
-    },
-    {
       field: "bl",
       headerName: "BL",
       width: 50,

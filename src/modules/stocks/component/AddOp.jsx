@@ -74,7 +74,7 @@ export default function AddButton(props) {
     }
     else if (type === 'Ticket') {
       navigate("/invoice", {
-        state: { title: "Ticket de caisse", sender: { info }, receiver: {} },
+        state: { title: "Ticket de Caisse", sender: { info }, receiver: {} },
       });
     }
     else if (type === 'BC') {

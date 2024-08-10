@@ -91,7 +91,7 @@ function FullWidthTabs() {
       }}
     >
       <Typography variant="h2" color="initial" gutterBottom>
-        Channel's {id} informations
+        Channel {id} informations
       </Typography>
       <Typography variant="body1" color={"initial"} gutterBottom>
         channel {id} is located in stock{" "}

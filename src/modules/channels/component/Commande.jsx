@@ -2,10 +2,9 @@ import React, { useState } from "react";
 import { DataGrid, GridToolbar, GridActionsCellItem } from "@mui/x-data-grid";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import CustomNoResultsOverlay from "../../../style/NoResultStyle";
-import DoneIcon from "@mui/icons-material/Done";
-import ClearIcon from "@mui/icons-material/Clear";
 import InvoiceModal from "../../../components/InvoiceModal";
 import MouseOverPopover from "./cosOrForPopUp";
+import ColorToggleButton from "../../../components/ColorToggleButton";
 
 export default function Commande() {
   const [isOpen, setIsOpen] = useState(false);
@@ -53,12 +52,13 @@ export default function Commande() {
       ),
     },
     {
-      field: "fournisseurName",
-      headerName: "Fournisseur",
-      width: 250,
+      field: "state",
+      headerName: "State",
+      width: 400,
       renderCell: (params) => (
-        <MouseOverPopover name={params.row.fournisseurName} />
-      ),
+        <ColorToggleButton state={params.row.state} />
+      )
+      
     },
     {
       field: "details",
@@ -80,68 +80,55 @@ export default function Commande() {
       id: 1,
       date: "07/23/2024 6:56 PM",
       customerName: null,
-      fournisseurName: "Salim sfexi",
-      managerNumber: "+216 28527345",
-      details: "fff",
-      bl: true,
+      state: "pending",
     },
     {
       id: 2,
       date: "07/23/2024 6:56 PM",
       customerName: "Hamida midawi",
-      fournisseurName: null,
-      ticket: true,
+      state: "confirmed",
     },
     {
       id: 3,
       date: "07/23/2024 6:56 PM",
       customerName: null,
-      fournisseurName: "Wael ben sahloul",
-      f: true,
+      state: "pending",
     },
     {
       id: 4,
       date: "07/23/2024 6:56 PM",
       customerName: null,
-      fournisseurName: "Stock Gabes",
-      br: true,
-      blf: true,
+      state: "confirmed",
     },
     {
       id: 5,
       date: "07/23/2024 6:56 PM",
       customerName: "Daenerys",
-      fournisseurName: null,
-      bl: true,
+      state: "cancelled",
     },
     {
       id: 6,
       date: "07/23/2024 6:56 PM",
       customerName: "houssem ben ammar",
-      fournisseurName: null,
-      ticket: true,
+      state: "pending",
     },
     {
       id: 7,
       date: "07/23/2024 6:56 PM",
       customerName: null,
-      fournisseurName: "Ferrara",
-      f: true,
+      state: "confirmed",
     },
     {
       id: 8,
       date: "07/23/2024 6:56 PM",
       customerName: "Stock Nabeul",
-      fournisseurName: null,
-      bs: true,
-      blf: true,
+      state: "cancelled",
     },
     {
       id: 9,
       date: "07/23/2024 6:56 PM",
       customerName: "Harvey",
-      fournisseurName: null,
-      bl: true,
+      state: "confirmed",
     },
   ];
 
