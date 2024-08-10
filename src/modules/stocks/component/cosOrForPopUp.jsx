@@ -23,7 +23,7 @@ export default function MouseOverPopover({name}) {
   const open = Boolean(anchorEl);
 
   return (
-    <div>
+    <div style={{display:'flex',alignItems:'center',height:'100%'}}>
       <Typography
         aria-owns={open ? 'mouse-over-popover' : undefined}
         aria-haspopup="true"

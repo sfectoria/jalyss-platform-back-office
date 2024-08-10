@@ -46,7 +46,7 @@ export default function NewInventaireTable() {
   const [msg, setMsg] = useState('');
   const [rowModesModel, setRowModesModel] = useState(
     rowss.reduce((acc, row) => {
-      acc[row.id] = { mode: GridRowModes.Edit };
+      acc[row.id] = { mode: GridRowModes.View };
       return acc;
     }, {})
   );

@@ -13,6 +13,7 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import AlertAdding from './AlertAdding'
 import {useLocation} from 'react-router-dom';
 import PersonPresent from './PersonPresent';
+import PersonSearch from './PersonSearch';
 
 
 
@@ -103,6 +104,18 @@ const InvoiceForm = () => {
     handleAddEvent(obj)
 
   }
+  const handelSearchPerson = (event,type,rows) => {
+    if(type==='viaName'){
+     return rows.filter(row=>row.name.includes(event))
+    }
+    if(type==='viaEmail'){
+      return rows.filter(row=>row.email.includes(event))
+     }
+     if(type==='viaAddress'){
+      return rows.filter(row=>row.address.includes(event))
+     }
+  }
+  
   const handleCalculateTotal = () => {
     let subTotal = 0;
     items.forEach(item => {
@@ -236,7 +249,8 @@ const InvoiceForm = () => {
                 {receiver.info?
                  <PersonPresent person={receiver} type={title} setName={setBillTo} setEmail={setBillToEmail} setAddress={setBillToAddress} />:
                 <div>
-                <Form.Control
+                 <PersonSearch type={'name'} setName={setBillTo} setEmail={setBillToEmail} setAddress={setBillToAddress}/>
+                {/* <Form.Control
                   placeholder={"Who is this invoice to?"}
                   rows={3}
                   value={billTo}
@@ -246,7 +260,8 @@ const InvoiceForm = () => {
                   onChange={editField}
                   autoComplete="name"
                   required
-                /> 
+                />  */}
+
                 <Form.Control
                 placeholder={"Email address"}
                 value={billToEmail}
