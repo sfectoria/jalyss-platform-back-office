@@ -28,12 +28,10 @@ export default function SaveDialog({show,setShow}) {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-           Please Press TO the botton to save it 
+          Please Choose an option Confirm or Save as draft
           </DialogContentText>
         </DialogContent>
-        <DialogActions>
             <SaveOption/>
-        </DialogActions>
       </Dialog>
     </React.Fragment>
   );

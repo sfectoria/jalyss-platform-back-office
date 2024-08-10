@@ -1,7 +1,7 @@
-import * as React from 'react';
+import React,{useState} from 'react';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import { green } from '@mui/material/colors';
+import { green,red } from '@mui/material/colors';
 import Button from '@mui/material/Button';
 import Fab from '@mui/material/Fab';
 import CheckIcon from '@mui/icons-material/Check';
@@ -9,8 +9,9 @@ import SaveIcon from '@mui/icons-material/Save';
 import { useNavigate } from 'react-router-dom';
 
 export default function SaveOption() {
-  const [loading, setLoading] = React.useState(false);
-  const [success, setSuccess] = React.useState(false);
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [draft, setDraft] = useState(false);
   const timer = React.useRef();
   const navigate=useNavigate()
 
@@ -20,8 +21,20 @@ export default function SaveOption() {
       '&:hover': {
         bgcolor: green[700],
       },
-    }),
+    })    
   };
+  const DraftSx = {
+    ...(draft ? {
+      bgcolor: green[500],
+      '&:hover': {
+        bgcolor: green[700],
+      },
+    }:{
+      bgcolor: red[500],
+      '&:hover': {
+        bgcolor: red[700],
+    }}),
+  }
 
   React.useEffect(() => {
     return () => {
@@ -43,7 +56,28 @@ export default function SaveOption() {
     }
   };
 
+  const handleButtonClickSave = () => {
+    setDraft(true)
+      timer.current = setTimeout(() => {
+        navigate('/stock/1')
+      }, 2000);
+    
+  };
+
   return (
+    <Box sx={{ display: 'flex', alignItems: 'center',justifyContent:'space-between',px:6 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+      <Box sx={{ m: 1, position: 'relative' }}>
+        <Fab
+          aria-label="save"
+          color="primary"
+          sx={DraftSx}
+          onClick={handleButtonClickSave}
+        >
+          {success ? <SaveIcon /> : <SaveIcon />}
+        </Fab>
+      </Box>
+    </Box>
     <Box sx={{ display: 'flex', alignItems: 'center' }}>
       <Box sx={{ m: 1, position: 'relative' }}>
         <Fab
@@ -52,7 +86,7 @@ export default function SaveOption() {
           sx={buttonSx}
           onClick={handleButtonClick}
         >
-          {success ? <CheckIcon /> : <SaveIcon />}
+          {success ? <CheckIcon /> : <CheckIcon />}
         </Fab>
         {loading && (
           <CircularProgress
@@ -74,7 +108,7 @@ export default function SaveOption() {
           disabled={loading}
           onClick={handleButtonClick}
         >
-          Save
+          {success ? 'Confirmed': 'Confirm'}
         </Button>
         {loading && (
           <CircularProgress
@@ -90,6 +124,7 @@ export default function SaveOption() {
           />
         )}
       </Box>
+    </Box>
     </Box>
   );
 }

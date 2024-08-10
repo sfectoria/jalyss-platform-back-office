@@ -4,6 +4,9 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import CustomNoResultsOverlay from '../../../style/NoResultStyle';
 import InvoiceModal from '../../../components/InvoiceModal';
 import { useNavigate } from 'react-router-dom';
+import { Typography } from '@mui/material';
+import DraftsIcon from '@mui/icons-material/Drafts';
+
 export default function StockInvontaire() {
   const [isOpen, setIsOpen] = useState(false);
   const navigate=useNavigate()
@@ -31,8 +34,12 @@ export default function StockInvontaire() {
     }
   ]
 
-  const handelNavigation  =(ids)=>{
+  const handelNavigationSee  =(ids)=>{
     navigate(`/inventaire/${ids}`)
+  }
+
+  const handelNavigationModify =()=>{
+    navigate(`/inventaires`)
   }
   
   const openModal = (event) => {
@@ -62,16 +69,22 @@ export default function StockInvontaire() {
         headerName: 'Percentage', 
         width: 100,
       },
-    
      {
       field: 'details',
       headerName: 'Details',
       width: 110,
       type: 'actions',
-      getActions: ({ id }) => [
-        <GridActionsCellItem icon={<VisibilityIcon />} onClick={()=>{handelNavigation(id)}} label="" />,
-      ],
-    },
+      renderCell: (params) => {
+        if(params.row.status==='confirmed'){
+        return(
+          <GridActionsCellItem icon={<VisibilityIcon sx={{color:'#448aff'}} />} onClick={()=>{handelNavigationSee(params.id)}} label="" /> )
+        }
+        else if (params.row.status==='draft'){
+          return(
+            <GridActionsCellItem icon={<DraftsIcon sx={{color:'red'}} />} onClick={()=>{handelNavigationModify(params.id)}} label="" /> 
+          )
+        }
+    }},
   ];
 
   const rows = [
@@ -83,7 +96,8 @@ export default function StockInvontaire() {
       customerName: 'Customer One', 
       valid: 30, 
       falsy: 10, 
-      percentage: (30 / (30 + 10)) * 100 
+      percentage: (30 / (30 + 10)) * 100 ,
+      status:'confirmed'
     },
     { 
       id: 2, 
@@ -93,7 +107,8 @@ export default function StockInvontaire() {
       customerName: 'Customer Two', 
       valid: 25, 
       falsy: 15, 
-      percentage: (25 / (25 + 15)) * 100 
+      percentage: (25 / (25 + 15)) * 100 ,
+      status:'draft'
     },
     { 
       id: 3, 
@@ -103,7 +118,8 @@ export default function StockInvontaire() {
       customerName: 'Customer Three', 
       valid: 40, 
       falsy: 10, 
-      percentage: (40 / (40 + 10)) * 100 
+      percentage: (40 / (40 + 10)) * 100,
+      status:'confirmed'
     },
     { 
       id: 4, 
@@ -113,7 +129,8 @@ export default function StockInvontaire() {
       customerName: 'Customer Four', 
       valid: 20, 
       falsy: 30, 
-      percentage: (20 / (20 + 30)) * 100 
+      percentage: (20 / (20 + 30)) * 100,
+      status:'confirmed'
     },
     { 
       id: 5, 
@@ -123,7 +140,8 @@ export default function StockInvontaire() {
       customerName: 'Customer Five', 
       valid: 50, 
       falsy: 20, 
-      percentage: (50 / (50 + 20)) * 100 
+      percentage: (50 / (50 + 20)) * 100 ,
+      status:'draft'
     },
     { 
       id: 6, 
@@ -133,7 +151,8 @@ export default function StockInvontaire() {
       customerName: 'Customer Six', 
       valid: 45, 
       falsy: 5, 
-      percentage: (45 / (45 + 5)) * 100 
+      percentage: (45 / (45 + 5)) * 100 ,
+      status:'confirmed'
     },
     { 
       id: 7, 
@@ -143,7 +162,8 @@ export default function StockInvontaire() {
       customerName: 'Customer Seven', 
       valid: 10, 
       falsy: 30, 
-      percentage: (10 / (10 + 30)) * 100 
+      percentage: (10 / (10 + 30)) * 100 ,
+      status:'confirmed'
     },
     { 
       id: 8, 
@@ -153,7 +173,8 @@ export default function StockInvontaire() {
       customerName: 'Customer Eight', 
       valid: 35, 
       falsy: 15, 
-      percentage: (35 / (35 + 15)) * 100 
+      percentage: (35 / (35 + 15)) * 100 ,
+      status:'confirmed'
     },
     { 
       id: 9, 
@@ -163,7 +184,8 @@ export default function StockInvontaire() {
       customerName: 'Customer Nine', 
       valid: 28, 
       falsy: 12, 
-      percentage: (28 / (28 + 12)) * 100 
+      percentage: (28 / (28 + 12)) * 100 ,
+      status:'confirmed'
     },
     { 
       id: 10, 
@@ -173,7 +195,8 @@ export default function StockInvontaire() {
       customerName: 'Customer Ten', 
       valid: 22, 
       falsy: 18, 
-      percentage: (22 / (22 + 18)) * 100 
+      percentage: (22 / (22 + 18)) * 100 ,
+      status:'confirmed'
     },
   ];
   
