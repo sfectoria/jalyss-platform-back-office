@@ -25,6 +25,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 import FileUploader from "../../../components/FileUploader";
 import { EditNotifications } from "@mui/icons-material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import CameraAltRoundedIcon from "@mui/icons-material/CameraAltRounded";
 
 export default function AddEmployee() {
   const defaultTheme = createTheme({
@@ -331,6 +332,38 @@ export default function AddEmployee() {
                   </Alert>
                 </Item>
               </Grid>
+              <Grid item xs={12}>
+                <Item elevation={0} sx={{
+                  display: "flex",
+                  justifyContent: "start",
+                  gap: '14px'
+                }}>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    sx={{
+                      backgroundColor: (theme) => theme.palette.success.light,
+                      "&:hover": {
+                        backgroundColor: (theme) => theme.palette.success.main,
+                      },
+                    }}
+                  >
+                    Confirm
+                  </Button>
+                  <Button
+                    onClick={handleCancel}
+                    variant="contained"
+                    sx={{
+                      backgroundColor: (theme) => theme.palette.error.light,
+                      "&:hover": {
+                        backgroundColor: (theme) => theme.palette.error.main,
+                      },
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </Item>
+              </Grid>
             </Grid>
             <Grid container spacing={2}>
               <Grid
@@ -441,38 +474,6 @@ export default function AddEmployee() {
                     >
                       {location}
                     </Typography>
-                  </Box>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-around",
-                    }}
-                  >
-                    <Button
-                      onClick={handleCancel}
-                      variant="contained"
-                      sx={{
-                        backgroundColor: (theme) => theme.palette.error.light,
-                        "&:hover": {
-                          backgroundColor: (theme) => theme.palette.error.main,
-                        },
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      sx={{
-                        backgroundColor: (theme) => theme.palette.success.light,
-                        "&:hover": {
-                          backgroundColor: (theme) =>
-                            theme.palette.success.main,
-                        },
-                      }}
-                    >
-                      Confirm
-                    </Button>
                   </Box>
                 </Item>
               </Grid>

@@ -149,40 +149,41 @@ const ProfileSettings = () => {
                     error={!!errors.currentPassword}
                     variant="outlined"
                   >
-                    <InputLabel htmlFor="currentPassword" variant="outlined">
-                      Current Password
-                    </InputLabel>
-                    <OutlinedInput
+                    <TextField
+                      required
                       value={currentPassword}
                       onChange={(event) => {
                         setCurrentPassword(event.target.value);
                       }}
                       id="currentPassword"
                       type={showPassword ? "text" : "password"}
-                      endAdornment={
-                        <InputAdornment position="end">
-                          <IconButton
-                            onClick={() => setShowPassword((show) => !show)}
-                            onMouseDown={(event) => {
-                              event.preventDefault();
-                            }}
-                            aria-label="toggle password visibility"
-                            edge="end"
-                          >
-                            {showPassword ? <VisibilityOff /> : <Visibility />}
-                          </IconButton>
-                        </InputAdornment>
-                      }
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              onClick={() => setShowPassword((show) => !show)}
+                              onMouseDown={(event) => {
+                                event.preventDefault();
+                              }}
+                              aria-label="toggle password visibility"
+                              edge="end"
+                            >
+                              {showPassword ? (
+                                <VisibilityOff />
+                              ) : (
+                                <Visibility />
+                              )}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
                       label="Current Password"
                       name="password"
                     />
                     <FormHelperText>{errors.currentPassword}</FormHelperText>
                   </FormControl>
                   <FormControl margin="normal" fullWidth variant="outlined">
-                    <InputLabel htmlFor="newPassword" variant="outlined">
-                      New Password
-                    </InputLabel>
-                    <OutlinedInput
+                    <TextField
                       required
                       value={newPassword}
                       onChange={(event) => {
@@ -190,24 +191,28 @@ const ProfileSettings = () => {
                       }}
                       id="newPassword"
                       type={showNewPassword ? "text" : "password"}
-                      endAdornment={
-                        <InputAdornment position="end">
-                          <IconButton
-                            onClick={() => setShowNewPassword((show) => !show)}
-                            onMouseDown={(event) => {
-                              event.preventDefault();
-                            }}
-                            aria-label="toggle new password visibility"
-                            edge="end"
-                          >
-                            {showNewPassword ? (
-                              <VisibilityOff />
-                            ) : (
-                              <Visibility />
-                            )}
-                          </IconButton>
-                        </InputAdornment>
-                      }
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              onClick={() =>
+                                setShowNewPassword((show) => !show)
+                              }
+                              onMouseDown={(event) => {
+                                event.preventDefault();
+                              }}
+                              aria-label="toggle new password visibility"
+                              edge="end"
+                            >
+                              {showNewPassword ? (
+                                <VisibilityOff />
+                              ) : (
+                                <Visibility />
+                              )}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
                       label="New Password"
                       name="newPassword"
                     />
