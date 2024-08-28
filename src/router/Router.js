@@ -21,7 +21,7 @@ import DashboardRoutes from "./Modules/DashboardRoutes";
 import NewInventaire from "../modules/Inventaire/views/NewInventaire";
 
 export default function Router() {
-  const user = useSelector((state) => state.authSlice.me);
+  const user = useSelector((state) => state.authSlice.user);
 
   return (
     <BrowserRouter>

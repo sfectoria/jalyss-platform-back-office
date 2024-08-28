@@ -1,34 +1,66 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { TextField, Autocomplete, MenuItem, Typography } from '@mui/material';
+import axios from 'axios';
 
-function createData(id, image, title, quantity, author, publisher, barcode, price) {
-  return {
-    id,
-    image,
-    title,
-    quantity,
-    author,
-    publisher,
-    barcode,
-    price,
-  };
-}
+// function createData(id, image, title, quantity, author, publisher, barcode, price) {
+//   return {
+//     id,
+//     image,
+//     title,
+//     quantity,
+//     author,
+//     publisher,
+//     barcode,
+//     price,
+//   };
+// }
 
-const rows = [
-  createData(1, 'https://jalyss.com/520-large_default/alabe-alghani-alabe-alfaker.jpg', 'الرجل الغني و الرجل الفقير', 24, 'robert ti kyosaki', 'maktabat jarir', '104725',10),
-  createData(2, 'https://jalyss.com/899-large_default/The-Subtle-Art-of-Not-Giving.jpg', 'فن اللامبالات', 120, 'mark manson', 'attanwir', '104727',47),
-  createData(3, 'https://jalyss.com/1064-home_default/-kon-ant.jpg', 'كن انت', 160, 'iheb hamarna', 'molhimon', '104720', 100),
-  createData(4, 'https://jalyss.com/2759-large_default/-.jpg', 'خلق الكون في القران الكريم', 123, 'walid mohyi e din al asghar', 'dar e salam', '104728',147),
-  createData(5, 'https://jalyss.com/423-home_default/min-ajl-annajah.jpg', 'من أجل النجاح', 49, 'abd el karim bakkar', 'dar e salam', '1047254',14),
-  createData(6, 'https://jalyss.com/1170-large_default/-.jpg', 'اولاد حارتنا', 49, 'najib mahfoudh', 'dar e chourouk', '104729',47),
-];
+// const rows = [
+//   createData(1, 'https://jalyss.com/520-large_default/alabe-alghani-alabe-alfaker.jpg', 'الرجل الغني و الرجل الفقير', 24, 'robert ti kyosaki', 'maktabat jarir', '104725',10),
+//   createData(2, 'https://jalyss.com/899-large_default/The-Subtle-Art-of-Not-Giving.jpg', 'فن اللامبالات', 120, 'mark manson', 'attanwir', '104727',47),
+//   createData(3, 'https://jalyss.com/1064-home_default/-kon-ant.jpg', 'كن انت', 160, 'iheb hamarna', 'molhimon', '104720', 100),
+//   createData(4, 'https://jalyss.com/2759-large_default/-.jpg', 'خلق الكون في القران الكريم', 123, 'walid mohyi e din al asghar', 'dar e salam', '104728',147),
+//   createData(5, 'https://jalyss.com/423-home_default/min-ajl-annajah.jpg', 'من أجل النجاح', 49, 'abd el karim bakkar', 'dar e salam', '1047254',14),
+//   createData(6, 'https://jalyss.com/1170-large_default/-.jpg', 'اولاد حارتنا', 49, 'najib mahfoudh', 'dar e chourouk', '104729',47),
+// ];
 
 const SearchField = ({ handelBarcode, handelNSearch }) => {
   const [searchText, setSearchText] = useState('');
+  const [rows,setRows]=useState([])
+  const [error,setError]=useState(false)
+  const [loading,setLoading]=useState(true)
   const [filteredRows, setFilteredRows] = useState(rows);
   const [hoveredImage, setHoveredImage] = useState(null);
+  useEffect(()=>{
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/articles/getAll');
+        setRows(response.data)
+       const test=response.data.map((e)=>{
+        console.log(e.articalByPublishingHouse.length);
+        if(e.cover!==null){
+          e.image=e.cover.path
+        }
+        if(e.articalByPublishingHouse.length){
+          e.publisher=e.articalByPublishingHouse[0].publishingHouse.nameAr
+        }
+        if(e.articalByAuthor.length)
+          e.author=e.articalByAuthor[0].author.nameAr
+        return e
+        })
+     
+        console.log(response.data,'and',test);
+        
+      } catch (err) {
+        setError(err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchData();
+  },[])
   const handleInputChange = (event, value) => {
     setSearchText(value);
   };
