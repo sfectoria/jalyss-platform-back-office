@@ -14,6 +14,7 @@ import AlertAdding from './AlertAdding'
 import {useLocation} from 'react-router-dom';
 import PersonPresent from './PersonPresent';
 import PersonSearch from './PersonSearch';
+import axios from 'axios';
 
 
 
@@ -42,7 +43,7 @@ const InvoiceForm = () => {
   const [showErAlert, setShowErAlert] = useState(false);
   const location = useLocation();
  const {title,receiver,sender} = location.state
- console.log(sender);
+ console.log(items);
   useEffect(() => {
     handleCalculateTotal();
     setCurrentDate(new Date().toLocaleDateString());
@@ -55,7 +56,27 @@ const InvoiceForm = () => {
     handleCalculateTotal();
   };
 
-
+  const finishSale=async()=>{
+    try {
+      const itemsWithIdArtical=items.map((e)=>{
+        let {id,quantity,...rest} = e
+       const articalId=id
+        return {articalId,quantity} })
+        console.log(itemsWithIdArtical);
+        
+      const obj={
+        exitNoteId: 0,
+        idClient: 1,
+        saleChannelId: 1,
+        date: "2024-08-24T13:41:02.604Z",
+        salesInvoiceLine: itemsWithIdArtical
+      }
+      const response = await axios.post('http://localhost:3000/sales-invoices/create',obj);
+      console.log('Response:', response.data);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
   const handleAddEvent = (obj) => {
     const duplicate =items.find((e)=>{return (e.id===obj.id)})
     if(duplicate){
@@ -84,7 +105,7 @@ const InvoiceForm = () => {
   
   const handelBarcode = (e,rows) => {
     const prod = (rows.find((element) =>{ console.log(element,e.target.value);
-      return element.barcode==e.target.value}))
+      return element.code==e.target.value}))
     if (prod) {
       handleAddEvent(prod);
       setShowSuAlert(true);
@@ -395,7 +416,7 @@ const InvoiceForm = () => {
                 total,
                 subTotal,
                 taxAmount,
-                discountAmount
+                discountAmount,
               }}
               items={items}
               currency={currency}
@@ -403,6 +424,7 @@ const InvoiceForm = () => {
               taxAmount={taxAmount}
               discountAmount={discountAmount}
               total={total}
+              finishSale={finishSale}
             />
             <Form.Group className="mb-3">
               <Form.Label className="fw-bold">Currency:</Form.Label>
