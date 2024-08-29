@@ -298,6 +298,31 @@ export default function AddClient() {
                   </Alert>
                 </Item>
               </Grid>
+              <Grid item xs={12}>
+                <Item
+                  elevation={0}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "start",
+                    gap: "14px",
+                  }}
+                >
+                  <Button
+                    className="confirm-btn"
+                    type="submit"
+                    variant="contained"
+                  >
+                    Confirm
+                  </Button>
+                  <Button
+                    className="cancel-btn"
+                    onClick={handleCancel}
+                    variant="contined"
+                  >
+                    Cancel
+                  </Button>
+                </Item>
+              </Grid>
             </Grid>
             <Grid container spacing={2}>
               <Grid
@@ -329,25 +354,20 @@ export default function AddClient() {
                         </IconButton>
                       }
                     >
-                      <Badge
-                        overlap="circular"
-                        anchorOrigin={{
-                          vertical: "bottom",
-                          horizontal: "right",
+                      <Avatar
+                        src={file}
+                        sx={{
+                          width: "300px  ",
+                          height: "300px",
+                          bgcolor: "#48184C",
                         }}
-                        badgeContent={
-                          <FileUploader
-                            onSelectFile={onSelectFileHandler}
-                            setFile={setFile}
-                            icon={"upload"}
-                          />
-                        }
                       >
-                        <Avatar
-                          src={file}
-                          sx={{ width: "300px  ", height: "300px" }}
+                        <FileUploader
+                          onSelectFile={onSelectFileHandler}
+                          setFile={setFile}
+                          icon={"upload"}
                         />
-                      </Badge>
+                      </Avatar>
                     </Badge>
                   </Box>
                   <Box mt mb>
@@ -388,38 +408,6 @@ export default function AddClient() {
                     >
                       {email}
                     </Typography>
-                  </Box>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-around",
-                    }}
-                  >
-                    <Button
-                      onClick={handleCancel}
-                      variant="contained"
-                      sx={{
-                        backgroundColor: (theme) => theme.palette.error.light,
-                        "&:hover": {
-                          backgroundColor: (theme) => theme.palette.error.main,
-                        },
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      sx={{
-                        backgroundColor: (theme) => theme.palette.success.light,
-                        "&:hover": {
-                          backgroundColor: (theme) =>
-                            theme.palette.success.main,
-                        },
-                      }}
-                    >
-                      Confirm
-                    </Button>
                   </Box>
                 </Item>
               </Grid>
