@@ -17,6 +17,7 @@ import {
   Stack,
   TextField,
   ThemeProvider,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
@@ -333,32 +334,25 @@ export default function AddEmployee() {
                 </Item>
               </Grid>
               <Grid item xs={12}>
-                <Item elevation={0} sx={{
-                  display: "flex",
-                  justifyContent: "start",
-                  gap: '14px'
-                }}>
+                <Item
+                  elevation={0}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "start",
+                    gap: "14px",
+                  }}
+                >
                   <Button
+                    className="confirm-btn"
                     type="submit"
                     variant="contained"
-                    sx={{
-                      backgroundColor: (theme) => theme.palette.success.light,
-                      "&:hover": {
-                        backgroundColor: (theme) => theme.palette.success.main,
-                      },
-                    }}
                   >
                     Confirm
                   </Button>
                   <Button
+                    className="cancel-btn"
                     onClick={handleCancel}
-                    variant="contained"
-                    sx={{
-                      backgroundColor: (theme) => theme.palette.error.light,
-                      "&:hover": {
-                        backgroundColor: (theme) => theme.palette.error.main,
-                      },
-                    }}
+                    variant="contined"
                   >
                     Cancel
                   </Button>
@@ -395,25 +389,20 @@ export default function AddEmployee() {
                         </IconButton>
                       }
                     >
-                      <Badge
-                        overlap="circular"
-                        anchorOrigin={{
-                          vertical: "bottom",
-                          horizontal: "right",
+                      <Avatar
+                        src={file}
+                        sx={{
+                          width: "300px  ",
+                          height: "300px",
+                          bgcolor: "#48184C",
                         }}
-                        badgeContent={
-                          <FileUploader
-                            onSelectFile={onSelectFileHandler}
-                            setFile={setFile}
-                            icon={"upload"}
-                          />
-                        }
                       >
-                        <Avatar
-                          src={file}
-                          sx={{ width: "300px  ", height: "300px" }}
+                        <FileUploader
+                          onSelectFile={onSelectFileHandler}
+                          setFile={setFile}
+                          icon={"upload"}
                         />
-                      </Badge>
+                      </Avatar>
                     </Badge>
                   </Box>
                   <Box mt mb>

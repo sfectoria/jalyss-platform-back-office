@@ -1,6 +1,41 @@
 @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 
+*{
+  font-family: 'Outfit' !important;
+}
+.confirm-btn {
+  width: 240px !important;
+  height: 57px !important;
+  border: 1px #bdbdbd !important;
+  font-family: "Outfit" !important;
+  font-size: 20px !important;
+  font-weight: 500 !important;
+  border-radius: 20px !important;
+  background-color: #48184c !important;
+}
+
+.confirm-btn:hover {
+  background-color: #7f2c85 !important;
+}
+
+.cancel-btn {
+  width: 240px !important;
+  height: 57px !important;
+  border: 1px solid #bdbdbd !important;
+  font-family: "Outfit" !important;
+  font-weight: 500 !important;
+  font-size: 20px !important;
+  border-radius: 20px !important;
+  color: #333 !important;
+  background-color: white !important;
+}
+
+.cancel-btn:hover {
+  background-color: #d32f2f !important;
+  color: white !important;
+}
+
 .MuiTypography-h5 {
   font-family: "Outfit", sans-serif !important ;
   font-optical-sizing: auto !important;
@@ -48,12 +83,11 @@ button {
 
 #upload-btn {
   /* Equal to the width to make it circular */
-  border-radius: 50%;
-  height: 60px;
-  background-color: #42a5f5;
+  background-color: transparent;
   justify-content: center; /* Assuming you want to center content inside the button */
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
+
 #delete-btn {
   /* Equal to the width to make it circular */
   border-radius: 50%;

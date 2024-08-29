@@ -217,6 +217,31 @@ const ProfileSettings = () => {
                       name="newPassword"
                     />
                   </FormControl>
+                  <Grid item xs={12}>
+                    <Item
+                      elevation={0}
+                      sx={{
+                        display: "flex",
+                        justifyContent: "start",
+                        gap: "14px",
+                      }}
+                    >
+                      <Button
+                        className="confirm-btn"
+                        type="submit"
+                        variant="contained"
+                      >
+                        Confirm
+                      </Button>
+                      <Button
+                        className="cancel-btn"
+                        onClick={handleCancel}
+                        variant="contined"
+                      >
+                        Cancel
+                      </Button>
+                    </Item>
+                  </Grid>
                 </form>
               </Box>
             </Item>
@@ -231,33 +256,22 @@ const ProfileSettings = () => {
               }}
             >
               <Stack
-                divider={
-                  <Divider
-                    orientation="horizontal"
-                    flexItem
-                    variant="middle"
-                    sx={{ backgroundColor: "black", height: "2px" }}
-                  />
-                }
-                spacing={2}
+                spacing={4}
               >
-                <>
-                  <Badge
-                    overlap="circular"
-                    anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                    badgeContent={
-                      <FileUploader
-                        onSelectFile={onSelectFileHandler}
-                        setFile={setFile}
-                      />
-                    }
-                  >
-                    <Avatar
-                      src={file}
-                      sx={{ width: "200px  ", height: "200px" }}
-                    />
-                  </Badge>
-                </>
+                <Avatar
+                  src={file}
+                  sx={{
+                    width: "300px  ",
+                    height: "300px",
+                    bgcolor: "#48184C",
+                  }}
+                >
+                  <FileUploader
+                    onSelectFile={onSelectFileHandler}
+                    setFile={setFile}
+                    icon={"upload"}
+                  />
+                </Avatar>
                 <Item elevation={0}>
                   <Typography
                     variant="h6"
@@ -268,30 +282,6 @@ const ProfileSettings = () => {
                     {username}
                   </Typography>
                 </Item>
-                <Button
-                  variant="contained"
-                  sx={{
-                    backgroundColor: (theme) => theme.palette.success.light,
-                    "&:hover": {
-                      backgroundColor: (theme) => theme.palette.success.main,
-                    },
-                  }}
-                  onClick={handleSubmit}
-                >
-                  Confirm
-                </Button>
-                <Button
-                  variant="contained"
-                  sx={{
-                    backgroundColor: (theme) => theme.palette.error.light,
-                    "&:hover": {
-                      backgroundColor: (theme) => theme.palette.error.main,
-                    },
-                  }}
-                  onClick={handleCancel}
-                >
-                  Cancel
-                </Button>
               </Stack>
             </Item>
           </Grid>
