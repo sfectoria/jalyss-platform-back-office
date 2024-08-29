@@ -39,6 +39,7 @@ export default function AddButton(props) {
   const handleClose = () => setOpen(false);
   const navigate = useNavigate();
   const info = {
+    id:1,
     name: "Stock Sfax",
     email: "stockSfax@gmail.com",
     address: "sfax , tunisia",
@@ -46,7 +47,7 @@ export default function AddButton(props) {
 
   const handleAction = (type) => {
     if (type === "BR") {
-      navigate("/invoice", {
+      navigate(`/invoice/${type}/0/1`, {
         state: { title: "Bon de Reception", sender: {}, receiver: { info } },
       });
     } else if (type === "BS") {

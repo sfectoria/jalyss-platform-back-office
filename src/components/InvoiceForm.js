@@ -1,164 +1,201 @@
-import React, { useState, useEffect,useRef  } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap-icons/font/bootstrap-icons.css';
-import { TextField, Autocomplete, MenuItem, Typography } from '@mui/material';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import Card from 'react-bootstrap/Card';
-import InvoiceItem from './InvoiceItem';
-import InvoiceModal from './InvoiceModal';
-import InputGroup from 'react-bootstrap/InputGroup';
-import AlertAdding from './AlertAdding'
-import {useLocation} from 'react-router-dom';
-import PersonPresent from './PersonPresent';
-import PersonSearch from './PersonSearch';
-import axios from 'axios';
-
-
+import React, { useState, useEffect, useRef } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
+import { TextField, Autocomplete, MenuItem, Typography } from "@mui/material";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
+import Card from "react-bootstrap/Card";
+import InvoiceItem from "./InvoiceItem";
+import InvoiceModal from "./InvoiceModal";
+import InputGroup from "react-bootstrap/InputGroup";
+import AlertAdding from "./AlertAdding";
+import { useLocation } from "react-router-dom";
+import PersonPresent from "./PersonPresent";
+import PersonSearch from "./PersonSearch";
+import { useParams } from "react-router-dom";
+import axios from "axios";
+import { ip } from "../constants/ip";
 
 const InvoiceForm = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [currency, setCurrency] = useState('$');
-  const [currentDate, setCurrentDate] = useState('');
+  const [currency, setCurrency] = useState("$");
+  const [currentDate, setCurrentDate] = useState("");
   const [invoiceNumber, setInvoiceNumber] = useState(1);
-  const [dateOfIssue, setDateOfIssue] = useState('');
-  const [billTo, setBillTo] = useState('');
-  const [billToEmail, setBillToEmail] = useState('');
-  const [billToAddress, setBillToAddress] = useState('');
-  const [billFrom, setBillFrom] = useState('');
-  const [billFromEmail, setBillFromEmail] = useState('');
-  const [billFromAddress, setBillFromAddress] = useState('');
-  const [notes, setNotes] = useState('');
-  const [total, setTotal] = useState('0.00');
-  const [subTotal, setSubTotal] = useState('0.00');
-  const [taxRate, setTaxRate] = useState('');
-  const [taxAmount, setTaxAmount] = useState('0.00');
-  const [discountRate, setDiscountRate] = useState('');
-  const [discountAmount, setDiscountAmount] = useState('0.00');
-  const ids = (+ new Date() + Math.floor(Math.random() * 999999)).toString(36);
+  const [dateOfIssue, setDateOfIssue] = useState("");
+  const [billTo, setBillTo] = useState("");
+  const [billToEmail, setBillToEmail] = useState("");
+  const [billToAddress, setBillToAddress] = useState("");
+  const [billFrom, setBillFrom] = useState("");
+  const [billFromEmail, setBillFromEmail] = useState("");
+  const [billFromAddress, setBillFromAddress] = useState("");
+  const [notes, setNotes] = useState("");
+  const [total, setTotal] = useState("0.00");
+  const [subTotal, setSubTotal] = useState("0.00");
+  const [taxRate, setTaxRate] = useState("");
+  const [taxAmount, setTaxAmount] = useState("0.00");
+  const [discountRate, setDiscountRate] = useState("");
+  const [discountAmount, setDiscountAmount] = useState("0.00");
+  const ids = (+new Date() + Math.floor(Math.random() * 999999)).toString(36);
   const [items, setItems] = useState([]);
   const [showSuAlert, setShowSuAlert] = useState(false);
   const [showErAlert, setShowErAlert] = useState(false);
+  const [senderInv, setSenderInv] = useState({});
+  const [receiverInv, setReceiverInv] = useState({});
   const location = useLocation();
- const {title,receiver,sender} = location.state
- console.log(items);
+  const param = useParams();
+  console.log(param);
+
+  const { title, receiver, sender } = location.state;
+  console.log(items);
   useEffect(() => {
+    getInfo();
     handleCalculateTotal();
     setCurrentDate(new Date().toLocaleDateString());
   }, [items]);
   const targetRef = useRef(null);
 
   const handleRowDel = (itemToDelete) => {
-    const updatedItems = items.filter(item => item.id !== itemToDelete.id);
+    const updatedItems = items.filter((item) => item.id !== itemToDelete.id);
     setItems(updatedItems);
     handleCalculateTotal();
   };
-
-  const finishSale=async()=>{
+  const getInfo = async () => {
     try {
-      const itemsWithIdArtical=items.map((e)=>{
-        let {id,quantity,...rest} = e
-       const articalId=id
-        return {articalId,quantity} })
-        console.log(itemsWithIdArtical);
-        
-      const obj={
+      if (param.type === "br") {
+        if (param.receiver) {
+          const response = await axios.get(`${ip}/stocks/${param.receiver}`);
+          console.log("receiver", response.data);
+        }
+        if (param.sender) {
+          const response = await axios.get(`${ip}/forniseurs/${param.sender}`);
+          console.log("sender", response.data);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      
+    }
+  };
+  const finishSale = async () => {
+    try {
+      const itemsWithIdArtical = items.map((e) => {
+        let { id, quantity, ...rest } = e;
+        const articalId = id;
+        return { articalId, quantity };
+      });
+      console.log(itemsWithIdArtical);
+
+      const obj = {
         exitNoteId: 0,
         idClient: 1,
         saleChannelId: 1,
         date: "2024-08-24T13:41:02.604Z",
-        salesInvoiceLine: itemsWithIdArtical
-      }
-      const response = await axios.post('http://localhost:3000/sales-invoices/create',obj);
-      console.log('Response:', response.data);
+        salesInvoiceLine: itemsWithIdArtical,
+      };
+      const response = await axios.post(
+        "http://localhost:3000/sales-invoices/create",
+        obj
+      );
+      console.log("Response:", response.data);
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
-  }
+  };
   const handleAddEvent = (obj) => {
-    const duplicate =items.find((e)=>{return (e.id===obj.id)})
-    if(duplicate){
-     const doubleQ=items.map((e)=>{
-      if(e.id===obj.id){
-       e.quantity=e.quantity+1
-      }
-      return e
-     })
-     setItems(items)
-     return doubleQ
+    const duplicate = items.find((e) => {
+      return e.id === obj.id;
+    });
+    if (duplicate) {
+      const doubleQ = items.map((e) => {
+        if (e.id === obj.id) {
+          e.quantity = e.quantity + 1;
+        }
+        return e;
+      });
+      setItems(items);
+      return doubleQ;
+    } else {
+      const newItem = {
+        id: obj.id,
+        name: obj.title,
+        price: obj.price,
+        barcode: "",
+        quantity: 1,
+        discount: 0,
+      };
+      setItems([...items, newItem]);
     }
-    else {
-    const newItem = {
-      id: obj.id,
-      name: obj.title,
-      price: obj.price,
-      barcode: '',
-      quantity: 1,
-      discount:0
-    };
-    setItems([...items, newItem]);
-  }
     handleCalculateTotal();
   };
-  
-  const handelBarcode = (e,rows) => {
-    const prod = (rows.find((element) =>{ console.log(element,e.target.value);
-      return element.code==e.target.value}))
+
+  const handelBarcode = (e, rows) => {
+    const prod = rows.find((element) => {
+      console.log(element, e.target.value);
+      return element.code == e.target.value;
+    });
     if (prod) {
       handleAddEvent(prod);
       setShowSuAlert(true);
-      e.target.value = '';
+      e.target.value = "";
     } else if (e.target.value.length) {
       setShowErAlert(true);
     }
-  }
-
-  const handelNSearch = (event,value,rows) => {
-      handelAddItem(value,rows)
   };
-  
-  const handelAddItem = (obj,rows) => {
-    setShowErAlert(false)
-    setShowSuAlert(true)
-    handleAddEvent(obj)
 
-  }
-  const handelSearchPerson = (event,type,rows) => {
-    if(type==='viaName'){
-     return rows.filter(row=>row.name.includes(event))
+  const handelNSearch = (event, value, rows) => {
+    handelAddItem(value, rows);
+  };
+
+  const handelAddItem = (obj, rows) => {
+    setShowErAlert(false);
+    setShowSuAlert(true);
+    handleAddEvent(obj);
+  };
+  const handelSearchPerson = (event, type, rows) => {
+    if (type === "viaName") {
+      return rows.filter((row) => row.name.includes(event));
     }
-    if(type==='viaEmail'){
-      return rows.filter(row=>row.email.includes(event))
-     }
-     if(type==='viaAddress'){
-      return rows.filter(row=>row.address.includes(event))
-     }
-  }
-  
+    if (type === "viaEmail") {
+      return rows.filter((row) => row.email.includes(event));
+    }
+    if (type === "viaAddress") {
+      return rows.filter((row) => row.address.includes(event));
+    }
+  };
+
   const handleCalculateTotal = () => {
     let subTotal = 0;
-    items.forEach(item => {
-      subTotal += parseFloat((parseFloat(item.price) * parseInt(item.quantity)).toFixed(2)-((parseFloat(item.price) * parseInt(item.quantity)*(item.discount/100))).toFixed(2)
-    );
-    setSubTotal(subTotal.toFixed(2));
-})
+    items.forEach((item) => {
+      subTotal += parseFloat(
+        (parseFloat(item.price) * parseInt(item.quantity)).toFixed(2) -
+          (
+            parseFloat(item.price) *
+            parseInt(item.quantity) *
+            (item.discount / 100)
+          ).toFixed(2)
+      );
+      setSubTotal(subTotal.toFixed(2));
+    });
     const taxAmt = parseFloat(subTotal * (taxRate / 100) || 0).toFixed(2);
     setTaxAmount(taxAmt);
 
-    const discountAmt = parseFloat(subTotal * (discountRate / 100) || 0).toFixed(2);
+    const discountAmt = parseFloat(
+      subTotal * (discountRate / 100) || 0
+    ).toFixed(2);
     setDiscountAmount(discountAmt);
 
-    const totalAmt = parseFloat(subTotal - discountAmt + parseFloat(taxAmt)).toFixed(2);
+    const totalAmt = parseFloat(
+      subTotal - discountAmt + parseFloat(taxAmt)
+    ).toFixed(2);
     setTotal(totalAmt);
   };
 
   const onItemizedItemEdit = (event) => {
-  
     const { id, name, value } = event.target;
-    console.log(name,value,id);
-    const updatedItems = items.map(item => {
+    console.log(name, value, id);
+    const updatedItems = items.map((item) => {
       if (item.id == id) {
         return { ...item, [name]: value };
       }
@@ -168,47 +205,46 @@ const InvoiceForm = () => {
     handleCalculateTotal();
   };
 
-  const handelShow =()=>{
-    setShowErAlert(false)
-    setShowSuAlert(false)
-  }
-  console.log(billTo,billFrom);
-
+  const handelShow = () => {
+    setShowErAlert(false);
+    setShowSuAlert(false);
+  };
+  console.log(billTo, billFrom);
 
   const editField = (event) => {
     const { name, value } = event.target;
     switch (name) {
-      case 'dateOfIssue':
+      case "dateOfIssue":
         setDateOfIssue(value);
         break;
-      case 'invoiceNumber':
+      case "invoiceNumber":
         setInvoiceNumber(value);
         break;
-      case 'billTo':
+      case "billTo":
         setBillTo(value);
         break;
-      case 'billToEmail':
+      case "billToEmail":
         setBillToEmail(value);
         break;
-      case 'billToAddress':
+      case "billToAddress":
         setBillToAddress(value);
         break;
-      case 'billFrom':
+      case "billFrom":
         setBillFrom(value);
         break;
-      case 'billFromEmail':
+      case "billFromEmail":
         setBillFromEmail(value);
         break;
-      case 'billFromAddress':
+      case "billFromAddress":
         setBillFromAddress(value);
         break;
-      case 'notes':
+      case "notes":
         setNotes(value);
         break;
-      case 'taxRate':
+      case "taxRate":
         setTaxRate(value);
         break;
-      case 'discountRate':
+      case "discountRate":
         setDiscountRate(value);
         break;
       default:
@@ -233,8 +269,22 @@ const InvoiceForm = () => {
 
   return (
     <Form onSubmit={openModal}>
-      {showSuAlert&&<AlertAdding showAlert={showSuAlert} handelShow={handelShow} msg={'Article Added Successfully'} status={'success'}/>}
-      {showErAlert&&<AlertAdding showAlert={showErAlert} handelShow={handelShow} msg={" We Can't Find This Article"} status={'error'}/>}
+      {showSuAlert && (
+        <AlertAdding
+          showAlert={showSuAlert}
+          handelShow={handelShow}
+          msg={"Article Added Successfully"}
+          status={"success"}
+        />
+      )}
+      {showErAlert && (
+        <AlertAdding
+          showAlert={showErAlert}
+          handelShow={handelShow}
+          msg={" We Can't Find This Article"}
+          status={"error"}
+        />
+      )}
       <Row>
         <Col md={8} lg={9}>
           <Card className="p-4 p-xl-5 my-3 my-xl-4">
@@ -242,11 +292,13 @@ const InvoiceForm = () => {
               <div className="d-flex flex-column">
                 <div className="d-flex flex-column">
                   <div className="mb-2">
-                  <p className="h2 fw-bold">{title}</p>
+                    <p className="h2 fw-bold">{title}</p>
                   </div>
                 </div>
                 <div className="d-flex flex-row align-items-center">
-                  <span className="fw-bold d-block me-2">Current&nbsp;Date:&nbsp;</span>
+                  <span className="fw-bold d-block me-2">
+                    Current&nbsp;Date:&nbsp;
+                  </span>
                   <span className="current-date">{currentDate}</span>
                 </div>
               </div>
@@ -258,7 +310,7 @@ const InvoiceForm = () => {
                   name="invoiceNumber"
                   onChange={editField}
                   min="1"
-                  style={{ maxWidth: '70px' }}
+                  style={{ maxWidth: "70px" }}
                   required
                 />
               </div>
@@ -267,11 +319,23 @@ const InvoiceForm = () => {
             <Row className="mb-5">
               <Col>
                 <Form.Label className="fw-bold">Bill to:</Form.Label>
-                {receiver.info?
-                 <PersonPresent person={receiver} type={title} setName={setBillTo} setEmail={setBillToEmail} setAddress={setBillToAddress} />:
-                <div>
-                 <PersonSearch type={'name'} setName={setBillTo} setEmail={setBillToEmail} setAddress={setBillToAddress}/>
-                {/* <Form.Control
+                {receiver.info ? (
+                  <PersonPresent
+                    person={receiver}
+                    type={title}
+                    setName={setBillTo}
+                    setEmail={setBillToEmail}
+                    setAddress={setBillToAddress}
+                  />
+                ) : (
+                  <div>
+                    <PersonSearch
+                      type={"name"}
+                      setName={setBillTo}
+                      setEmail={setBillToEmail}
+                      setAddress={setBillToAddress}
+                    />
+                    {/* <Form.Control
                   placeholder={"Who is this invoice to?"}
                   rows={3}
                   value={billTo}
@@ -283,103 +347,122 @@ const InvoiceForm = () => {
                   required
                 />  */}
 
-                <Form.Control
-                placeholder={"Email address"}
-                value={billToEmail}
-                type="email"
-                name="billToEmail"
-                className="my-2"
-                onChange={editField}
-                autoComplete="email"
-                required
-              />
-              <Form.Control
-                placeholder={"Billing address"}
-                value={billToAddress}
-                type="text"
-                name="billToAddress"
-                className="my-2"
-                autoComplete="address"
-                onChange={editField}
-                required
-              />
-              </div>
-}
+                    <Form.Control
+                      placeholder={"Email address"}
+                      value={billToEmail}
+                      type="email"
+                      name="billToEmail"
+                      className="my-2"
+                      onChange={editField}
+                      autoComplete="email"
+                      required
+                    />
+                    <Form.Control
+                      placeholder={"Billing address"}
+                      value={billToAddress}
+                      type="text"
+                      name="billToAddress"
+                      className="my-2"
+                      autoComplete="address"
+                      onChange={editField}
+                      required
+                    />
+                  </div>
+                )}
               </Col>
               <Col>
                 <Form.Label className="fw-bold">Bill from:</Form.Label>
-                {sender.info?
-               <PersonPresent person={sender} type={title} setName={setBillFrom} setEmail={setBillFromEmail} setAddress={setBillFromAddress}/>:
-                <div>
-                <Form.Control
-                  placeholder={"Who is this invoice from?"}
-                  rows={3}
-                  value={billFrom}
-                  type="text"
-                  name="billFrom"
-                  className="my-2"
-                  onChange={editField}
-                  autoComplete="name"
-                  required
-                />
-                <Form.Control
-                  placeholder={"Email address"}
-                  value={billFromEmail}
-                  type="email"
-                  name="billFromEmail"
-                  className="my-2"
-                  onChange={editField}
-                  autoComplete="email"
-                  required
-                />
-                <Form.Control
-                  placeholder={"Billing address"}
-                  value={billFromAddress}
-                  type="text"
-                  name="billFromAddress"
-                  className="my-2"
-                  autoComplete="address"
-                  onChange={editField}
-                  required
-                />
-                </div>}
+                {sender.info ? (
+                  <PersonPresent
+                    person={sender}
+                    type={title}
+                    setName={setBillFrom}
+                    setEmail={setBillFromEmail}
+                    setAddress={setBillFromAddress}
+                  />
+                ) : (
+                  <div>
+                    <Form.Control
+                      placeholder={"Who is this invoice from?"}
+                      rows={3}
+                      value={billFrom}
+                      type="text"
+                      name="billFrom"
+                      className="my-2"
+                      onChange={editField}
+                      autoComplete="name"
+                      required
+                    />
+                    <Form.Control
+                      placeholder={"Email address"}
+                      value={billFromEmail}
+                      type="email"
+                      name="billFromEmail"
+                      className="my-2"
+                      onChange={editField}
+                      autoComplete="email"
+                      required
+                    />
+                    <Form.Control
+                      placeholder={"Billing address"}
+                      value={billFromAddress}
+                      type="text"
+                      name="billFromAddress"
+                      className="my-2"
+                      autoComplete="address"
+                      onChange={editField}
+                      required
+                    />
+                  </div>
+                )}
               </Col>
             </Row>
             <div ref={targetRef}>
-            <InvoiceItem
-              onItemizedItemEdit={onItemizedItemEdit}
-              onRowAdd={handleAddEvent}
-              onRowDel={handleRowDel}
-              currency={currency}
-              items={items}
-              handelBarcode={handelBarcode}
-              handelNSearch={handelNSearch}
-            />
+              <InvoiceItem
+                onItemizedItemEdit={onItemizedItemEdit}
+                onRowAdd={handleAddEvent}
+                onRowDel={handleRowDel}
+                currency={currency}
+                items={items}
+                handelBarcode={handelBarcode}
+                handelNSearch={handelNSearch}
+              />
             </div>
             <Row className="mt-4 justify-content-end">
               <Col lg={6}>
                 <div className="d-flex flex-row align-items-start justify-content-between">
                   <span className="fw-bold">Subtotal:</span>
-                  <span>{currency}{subTotal}</span>
+                  <span>
+                    {currency}
+                    {subTotal}
+                  </span>
                 </div>
                 <div className="d-flex flex-row align-items-start justify-content-between mt-2">
                   <span className="fw-bold">Discount:</span>
                   <span>
                     <span className="small">({discountRate || 0}%)</span>
-                    {currency}{discountAmount || 0}
+                    {currency}
+                    {discountAmount || 0}
                   </span>
                 </div>
                 <div className="d-flex flex-row align-items-start justify-content-between mt-2">
                   <span className="fw-bold">Tax:</span>
                   <span>
                     <span className="small">({taxRate || 0}%)</span>
-                    {currency}{taxAmount || 0}
+                    {currency}
+                    {taxAmount || 0}
                   </span>
                 </div>
                 <hr />
-                <div className="d-flex flex-row align-items-start justify-content-between" style={{ fontSize: '1.125rem' }}>
+                <div
+                  className="d-flex flex-row align-items-start justify-content-between"
+                  style={{ fontSize: "1.125rem" }}
+                >
                   <span className="fw-bold">Total:</span>
-                  <span className="fw-bold">{currency}{total || 0}</span>
+                  <span className="fw-bold">
+                    {currency}
+                    {total || 0}
+                  </span>
                 </div>
               </Col>
             </Row>
@@ -398,7 +481,9 @@ const InvoiceForm = () => {
         </Col>
         <Col md={4} lg={3}>
           <div className="sticky-top pt-md-3 pt-xl-4">
-            <Button variant="primary" type="submit" className="d-block w-100">Review Invoice</Button>
+            <Button variant="primary" type="submit" className="d-block w-100">
+              Review Invoice
+            </Button>
             <InvoiceModal
               showModal={isOpen}
               closeModal={closeModal}
@@ -490,5 +575,3 @@ const InvoiceForm = () => {
 };
 
 export default InvoiceForm;
-
-

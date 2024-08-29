@@ -37,7 +37,7 @@ export default function Router() {
             {ArticleRoutes()}
             {FornisseursRoutes()}
             {ChannelsRoutes()}
-            <Route path="invoice" key='invoice' element={<InvoiceContainer />} />
+            <Route path="invoice/:type/:sender/:receiver" key='invoice' element={<InvoiceContainer />} />
           </Route>
           <Route key="index" path="inventaires" element={<NewInventaire />} />
         </Routes>

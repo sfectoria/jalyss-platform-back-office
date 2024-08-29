@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
-import { DataGrid, GridToolbar, GridActionsCellItem } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridToolbar,
+  GridActionsCellItem,
+  gridPageCountSelector,
+  GridPagination,
+  useGridApiContext,
+  useGridSelector,
+} from "@mui/x-data-grid";
+import MuiPagination from "@mui/material/Pagination";
 import Typography from "@mui/material/Typography";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -9,6 +18,7 @@ import Item from "../../../style/ItemStyle";
 import ImagePopUp from "../../../components/ImagePopUp";
 import axios from "axios";
 import { ip } from "../../../constants/ip";
+
 
 function createData(id, image, title, quantity, author, publisher, price) {
   return {
@@ -21,68 +31,127 @@ function createData(id, image, title, quantity, author, publisher, price) {
     price,
   };
 }
+const getPageFromUrl = () => {
+  const params = new URLSearchParams(window.location.search);
+  return +params.get("page") || 0;
+};
+
+const getPageSizeFromUrl = () => {
+  const params = new URLSearchParams(window.location.search);
+  return +params.get("take") || 10;
+};
 
 export default function ArticlesList() {
   const [rows, setRows] = useState([]);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
   const location = useLocation();
+  const [page, setPage] = useState(getPageFromUrl);
+  const [pageSize, setPageSize] = useState(getPageSizeFromUrl());
   const [text, setText] = useState(null);
+  console.log(page, pageSize, "test here");
 
+  function Pagination({ onPageChange, className }) {
+    const apiRef = useGridApiContext();
+    const pageCount = useGridSelector(apiRef, gridPageCountSelector);
+   console.log(page);
+   
+    return (
+      <MuiPagination
+        color="primary"
+        className={className}
+        count={pageCount}
+        page={page+1}
+        onChange={(event, newPage) => {
+          setPage(newPage-1,page)
+          onPageChange(event, newPage-1);
+        }}
+      />
+    );
+  }
+  
+  function CustomPagination(props) {
+    return <GridPagination ActionsComponent={Pagination} {...props} />;
+  }
   const navigate = useNavigate();
   const handleDetails = (ids) => {
     navigate(`/articles/${ids}`);
   };
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const queryParams = new URLSearchParams(location.search);
-        let params = { ...queryParams };
-        if (text) params["text"] = text;
-        const response = await axios.get(ip + "/articles/getAll", {
-          params,
-        });
-        setRows(response.data);
-      } catch (err) {
-        setError(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
+    updateUrlParams();
     fetchData();
-  }, [location, text]);
+  }, [location, text, page,pageSize]);
 
+  const fetchData = async () => {
+    try {
+      let queryParams = new URLSearchParams(location.search);
+      console.log(
+        "hh",
+        new URLSearchParams(location.search)
+      );
+      let params = Object.fromEntries(queryParams.entries());
+      console.log(params);
+      if (text) params["text"] = text;
+      console.log(params, text);
+      const response = await axios.get(ip + "/articles/getAll", {
+        params,
+      });
+      setRows(response.data);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const updateUrlParams = () => {
+    const params = new URLSearchParams(location.search);
+    params.set("page", page);
+    params.set("take", pageSize);
+    params.set("skip", page * pageSize);
+    console.log('handleuP');
+    const newUrl = `${location.pathname}?${params.toString()}`;
+    window.history.pushState({}, "", newUrl);
+  };
+
+  const handlePageChange = (newPageInfo) => {
+    console.log(newPageInfo, "pagesize");
+    console.log(pageSize===newPageInfo.pageSize)
+    
+    if (pageSize===newPageInfo.pageSize) {
+      setPage(newPageInfo.page);
+    }
+    if (pageSize!==newPageInfo.pageSize) {
+      setPage(0)
+      setPageSize(newPageInfo.pageSize)
+    }
+   
+  };
   const columns = [
     {
       field: "image",
       headerName: "Image",
       width: 90,
-      renderCell: (params) => {
-        return <ImagePopUp image={params?.row?.cover?.path} />;
+      renderCell: (value, row) => {
+        return <ImagePopUp image={row?.cover?.path} />;
       },
     },
-    { field: "title", headerName: "Titel", width: 270 },
+    { field: "title", headerName: "Title", width: 270 },
     { field: "quantity", headerName: "Quantity", width: 90 },
     {
       field: "author",
       headerName: "Author",
       width: 250,
 
-      valueGetter: (params) => {
-        console.log();
-
-        return params?.row?.articleByAuthor[0]?.author?.nameAr;
+      valueGetter: (value, row) => {
+        return row?.articleByAuthor[0]?.author?.nameAr;
       },
     },
     {
       field: "nameAr",
       headerName: "Publisher",
       width: 250,
-      valueGetter: (value,params) => {
-        console.log(params);
-        
-        return params?.row?.articleByPublishingHouse[0]?.publishingHouse?.nameAr;
+      valueGetter: (value, row) => {
+        return row?.articleByPublishingHouse[0]?.publishingHouse?.nameAr;
       },
     },
     {
@@ -146,14 +215,23 @@ export default function ArticlesList() {
                 color: "primary.main",
               },
             }}
+            onPaginationModelChange={(event)=>{
+             
+              handlePageChange(event)
+            }}
             rows={rows}
             columns={columns}
+            pagination
+            pageSize={pageSize}
+            paginationMode="server"
+            rowCount={40}
             slots={{
               noResultsOverlay: CustomNoResultsOverlay,
               toolbar: GridToolbar,
+               pagination: CustomPagination,
             }}
             initialState={{
-              pagination: { paginationModel: { pageSize: 7 } },
+              pagination: { paginationModel: { pageSize: 10 } },
               filter: {
                 filterModel: {
                   items: [],
