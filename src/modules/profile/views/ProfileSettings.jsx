@@ -149,40 +149,41 @@ const ProfileSettings = () => {
                     error={!!errors.currentPassword}
                     variant="outlined"
                   >
-                    <InputLabel htmlFor="currentPassword" variant="outlined">
-                      Current Password
-                    </InputLabel>
-                    <OutlinedInput
+                    <TextField
+                      required
                       value={currentPassword}
                       onChange={(event) => {
                         setCurrentPassword(event.target.value);
                       }}
                       id="currentPassword"
                       type={showPassword ? "text" : "password"}
-                      endAdornment={
-                        <InputAdornment position="end">
-                          <IconButton
-                            onClick={() => setShowPassword((show) => !show)}
-                            onMouseDown={(event) => {
-                              event.preventDefault();
-                            }}
-                            aria-label="toggle password visibility"
-                            edge="end"
-                          >
-                            {showPassword ? <VisibilityOff /> : <Visibility />}
-                          </IconButton>
-                        </InputAdornment>
-                      }
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              onClick={() => setShowPassword((show) => !show)}
+                              onMouseDown={(event) => {
+                                event.preventDefault();
+                              }}
+                              aria-label="toggle password visibility"
+                              edge="end"
+                            >
+                              {showPassword ? (
+                                <VisibilityOff />
+                              ) : (
+                                <Visibility />
+                              )}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
                       label="Current Password"
                       name="password"
                     />
                     <FormHelperText>{errors.currentPassword}</FormHelperText>
                   </FormControl>
                   <FormControl margin="normal" fullWidth variant="outlined">
-                    <InputLabel htmlFor="newPassword" variant="outlined">
-                      New Password
-                    </InputLabel>
-                    <OutlinedInput
+                    <TextField
                       required
                       value={newPassword}
                       onChange={(event) => {
@@ -190,28 +191,57 @@ const ProfileSettings = () => {
                       }}
                       id="newPassword"
                       type={showNewPassword ? "text" : "password"}
-                      endAdornment={
-                        <InputAdornment position="end">
-                          <IconButton
-                            onClick={() => setShowNewPassword((show) => !show)}
-                            onMouseDown={(event) => {
-                              event.preventDefault();
-                            }}
-                            aria-label="toggle new password visibility"
-                            edge="end"
-                          >
-                            {showNewPassword ? (
-                              <VisibilityOff />
-                            ) : (
-                              <Visibility />
-                            )}
-                          </IconButton>
-                        </InputAdornment>
-                      }
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              onClick={() =>
+                                setShowNewPassword((show) => !show)
+                              }
+                              onMouseDown={(event) => {
+                                event.preventDefault();
+                              }}
+                              aria-label="toggle new password visibility"
+                              edge="end"
+                            >
+                              {showNewPassword ? (
+                                <VisibilityOff />
+                              ) : (
+                                <Visibility />
+                              )}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
                       label="New Password"
                       name="newPassword"
                     />
                   </FormControl>
+                  <Grid item xs={12}>
+                    <Item
+                      elevation={0}
+                      sx={{
+                        display: "flex",
+                        justifyContent: "start",
+                        gap: "14px",
+                      }}
+                    >
+                      <Button
+                        className="confirm-btn"
+                        type="submit"
+                        variant="contained"
+                      >
+                        Confirm
+                      </Button>
+                      <Button
+                        className="cancel-btn"
+                        onClick={handleCancel}
+                        variant="contined"
+                      >
+                        Cancel
+                      </Button>
+                    </Item>
+                  </Grid>
                 </form>
               </Box>
             </Item>
@@ -226,33 +256,22 @@ const ProfileSettings = () => {
               }}
             >
               <Stack
-                divider={
-                  <Divider
-                    orientation="horizontal"
-                    flexItem
-                    variant="middle"
-                    sx={{ backgroundColor: "black", height: "2px" }}
-                  />
-                }
-                spacing={2}
+                spacing={4}
               >
-                <>
-                  <Badge
-                    overlap="circular"
-                    anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                    badgeContent={
-                      <FileUploader
-                        onSelectFile={onSelectFileHandler}
-                        setFile={setFile}
-                      />
-                    }
-                  >
-                    <Avatar
-                      src={file}
-                      sx={{ width: "200px  ", height: "200px" }}
-                    />
-                  </Badge>
-                </>
+                <Avatar
+                  src={file}
+                  sx={{
+                    width: "300px  ",
+                    height: "300px",
+                    bgcolor: "#48184C",
+                  }}
+                >
+                  <FileUploader
+                    onSelectFile={onSelectFileHandler}
+                    setFile={setFile}
+                    icon={"upload"}
+                  />
+                </Avatar>
                 <Item elevation={0}>
                   <Typography
                     variant="h6"
@@ -263,30 +282,6 @@ const ProfileSettings = () => {
                     {username}
                   </Typography>
                 </Item>
-                <Button
-                  variant="contained"
-                  sx={{
-                    backgroundColor: (theme) => theme.palette.success.light,
-                    "&:hover": {
-                      backgroundColor: (theme) => theme.palette.success.main,
-                    },
-                  }}
-                  onClick={handleSubmit}
-                >
-                  Confirm
-                </Button>
-                <Button
-                  variant="contained"
-                  sx={{
-                    backgroundColor: (theme) => theme.palette.error.light,
-                    "&:hover": {
-                      backgroundColor: (theme) => theme.palette.error.main,
-                    },
-                  }}
-                  onClick={handleCancel}
-                >
-                  Cancel
-                </Button>
               </Stack>
             </Item>
           </Grid>

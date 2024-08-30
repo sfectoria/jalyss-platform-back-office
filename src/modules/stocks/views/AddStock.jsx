@@ -212,6 +212,31 @@ const AddStock = () => {
                   />
                 </Item>
               </Grid>
+              <Grid item xs={12}>
+                <Item
+                  elevation={0}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "start",
+                    gap: "14px",
+                  }}
+                >
+                  <Button
+                    className="confirm-btn"
+                    type="submit"
+                    variant="contained"
+                  >
+                    Confirm
+                  </Button>
+                  <Button
+                    className="cancel-btn"
+                    onClick={handleCancel}
+                    variant="contined"
+                  >
+                    Cancel
+                  </Button>
+                </Item>
+              </Grid>
             </Grid>
             <Grid container spacing={2}>
               <Grid
@@ -264,39 +289,6 @@ const AddStock = () => {
                     >
                       {managerPhoneNumber}
                     </Typography>
-                  </Box>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      gap: "5%",
-                    }}
-                  >
-                    <Button
-                      variant="contained"
-                      sx={{
-                        backgroundColor: (theme) => theme.palette.error.light,
-                        "&:hover": {
-                          backgroundColor: (theme) => theme.palette.error.main,
-                        },
-                      }}
-                      onClick={handleCancel}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      sx={{
-                        backgroundColor: (theme) => theme.palette.success.light,
-                        "&:hover": {
-                          backgroundColor: (theme) =>
-                            theme.palette.success.main,
-                        },
-                      }}
-                    >
-                      Confirm
-                    </Button>
                   </Box>
                 </Item>
               </Grid>

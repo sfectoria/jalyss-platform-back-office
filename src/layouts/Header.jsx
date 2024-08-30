@@ -271,11 +271,8 @@ export default function Header({ isCollapsed, setIsCollapsed, setHeight}) {
   // );
 
   return (
-    <Box sx={{ flexGrow: 1 }} >
-      <AppBar
-        position="static"
-        elevation={0}
-      >
+    <Box sx={{ flexGrow: 1 }}>
+      <AppBar position="static" elevation={0} sx={{ backgroundColor: "#48184C" }}>
         <Toolbar>
           <IconButton
             size="large"
