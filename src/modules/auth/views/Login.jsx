@@ -17,7 +17,10 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Alert from '@mui/material/Alert';
-
+import api from '../../../utils/api';
+import { useDispatch, useSelector } from 'react-redux';
+import { loginSuccess, loginFailure } from '../../../store/slices/authSlice';
+  
 
 const defaultTheme = createTheme();
 const possibelErrors = [
@@ -30,18 +33,42 @@ const possibelErrors = [
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMessage] = useState("");
+
+  const dispatch = useDispatch();
+  const error = useSelector((state) => state.authSlice.error);
+
+  
+ 
+  const loginSubmit=async(obj)=>{
+    
+    try {
+      console.log(obj);
+      const response = await api.post('/auth/login', obj);
+      const token = response.data;
+      console.log('response',response.data);
+      console.log(token);
+      
+      dispatch(loginSuccess({ token }));
+    } catch (err) {
+      dispatch(loginFailure('Invalid username or password'));
+    }
+  }
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const info = new FormData(event.currentTarget);
     let email = info.get("email");
     let password = info.get("password");
-    console.log(email);
     if (password === "" && email === "") {
       setErrorMessage(possibelErrors[0]);
     } else if (email === "") {
       setErrorMessage(possibelErrors[1]);
     } else if (password === "") {
       setErrorMessage(possibelErrors[2]);
+    }
+    else {
+     
+      loginSubmit({email,password})
     }
   };
 

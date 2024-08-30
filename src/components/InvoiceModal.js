@@ -17,7 +17,8 @@ const InvoiceModal = ({
   items,
   subTotal,
   taxAmount,
-  discountAmount
+  discountAmount,
+  finishSale
 }) => {
   const invoiceCaptureRef = useRef(null);
 
@@ -135,8 +136,8 @@ const InvoiceModal = ({
         <div className="pb-4 px-4">
           <Row>
             <Col md={6}>
-              <Button variant="primary" className="d-block w-100" onClick={generateInvoice}>
-                <BiPaperPlane style={{ width: '15px', height: '15px', marginTop: '-3px' }} className="me-2" />Send Invoice
+              <Button variant="primary" className="d-block w-100" onClick={()=>{finishSale()}}>
+                <BiPaperPlane style={{ width: '15px', height: '15px', marginTop: '-3px' }} className="me-2" />Finish Sale
               </Button>
             </Col>
             <Col md={6}>
