@@ -90,6 +90,8 @@ export default function ArticlesList() {
         new URLSearchParams(location.search)
       );
       let params = Object.fromEntries(queryParams.entries());
+      params.take=pageSize
+      params.skip= page * pageSize
       console.log(params);
       if (text) params["text"] = text;
       console.log(params, text);
