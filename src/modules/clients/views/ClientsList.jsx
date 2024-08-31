@@ -1,6 +1,14 @@
-import React from 'react';
+import React, { useState } from "react";
 import Box from '@mui/material/Box';
-import { DataGrid,GridToolbar,GridActionsCellItem  } from '@mui/x-data-grid';
+import {
+  DataGrid,
+  GridToolbar,
+  GridActionsCellItem,
+  gridPageCountSelector,
+  GridPagination,
+  useGridApiContext,
+  useGridSelector,
+} from "@mui/x-data-grid";
 import { useDemoData } from '@mui/x-data-grid-generator';
 import Typography from '@mui/material/Typography';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -11,7 +19,39 @@ import Avatar from '@mui/material/Avatar';
 import Stack from '@mui/material/Stack';
 import { deepOrange } from '@mui/material/colors';
 
+import MuiPagination from "@mui/material/Pagination";
+
 export default function ClientsList() {
+
+  const getPageFromUrl = () => {
+    const params = new URLSearchParams(window.location.search);
+    return +params.get("page") || 0;
+  };
+
+  const [page, setPage] = useState(getPageFromUrl());
+
+  function Pagination({ onPageChange, className }) {
+    const apiRef = useGridApiContext();
+    const pageCount = useGridSelector(apiRef, gridPageCountSelector);
+    console.log(page);
+
+    return (
+      <MuiPagination
+      color='secondary'
+        className={className}
+        count={pageCount}
+        page={page + 1}
+        onChange={(event, newPage) => {
+          setPage(newPage - 1, page);
+          onPageChange(event, newPage - 1);
+        }}
+      />
+    );
+  }
+
+  function CustomPagination(props) {
+    return <GridPagination ActionsComponent={Pagination} {...props} />;
+  }
   const { data } = useDemoData({
     dataSet: 'Commodity',
     rowLength: 500,
@@ -110,7 +150,8 @@ export default function ClientsList() {
         columns={columns}
        slots={{
         noResultsOverlay: CustomNoResultsOverlay,
-        toolbar: GridToolbar,
+         toolbar: GridToolbar,
+        pagination: CustomPagination,
       }} 
       initialState={{
         ...data.initialState,

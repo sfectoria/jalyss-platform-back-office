@@ -58,7 +58,7 @@ export default function ArticlesList() {
    
     return (
       <MuiPagination
-        color="primary"
+      color='secondary'
         className={className}
         count={pageCount}
         page={page+1}

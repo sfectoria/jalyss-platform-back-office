@@ -1,13 +1,53 @@
-import * as React from 'react';
+import React, { useState } from "react";
 import Box from '@mui/material/Box';
-import { DataGrid, GridToolbar, GridActionsCellItem } from '@mui/x-data-grid';
+import {
+  DataGrid,
+  GridToolbar,
+  GridActionsCellItem,
+  gridPageCountSelector,
+  GridPagination,
+  useGridApiContext,
+  useGridSelector,
+} from "@mui/x-data-grid";
 import Typography from '@mui/material/Typography';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useNavigate } from 'react-router-dom';
 import CustomNoResultsOverlay from '../../../style/NoResultStyle';
 import Item from '../../../style/ItemStyle';
 
+
+import MuiPagination from "@mui/material/Pagination";
 export default function StockList() {
+
+  const getPageFromUrl = () => {
+    const params = new URLSearchParams(window.location.search);
+    return +params.get("page") || 0;
+  };
+
+  const [page, setPage] = useState(getPageFromUrl());
+
+  function Pagination({ onPageChange, className }) {
+    const apiRef = useGridApiContext();
+    const pageCount = useGridSelector(apiRef, gridPageCountSelector);
+    console.log(page);
+
+    return (
+      <MuiPagination
+      color='secondary'
+        className={className}
+        count={pageCount}
+        page={page + 1}
+        onChange={(event, newPage) => {
+          setPage(newPage - 1, page);
+          onPageChange(event, newPage - 1);
+        }}
+      />
+    );
+  }
+
+  function CustomPagination(props) {
+    return <GridPagination ActionsComponent={Pagination} {...props} />;
+  }
   const navigate = useNavigate();
   const handleDetails = (ids) => {
     navigate(`/stock/${ids}`);
@@ -70,6 +110,7 @@ export default function StockList() {
                     slots={{
                       noResultsOverlay: CustomNoResultsOverlay,
                       toolbar: GridToolbar,
+                      pagination: CustomPagination
                     }}
                     initialState={{
                       pagination: { paginationModel: { pageSize: 7 } },
