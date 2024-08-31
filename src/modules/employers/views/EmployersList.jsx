@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Box from '@mui/material/Box';
 import { DataGrid,GridToolbar,GridActionsCellItem  } from '@mui/x-data-grid';
 import { useDemoData } from '@mui/x-data-grid-generator';
@@ -7,7 +7,17 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useNavigate } from 'react-router-dom';
 import CustomNoResultsOverlay from '../../../style/NoResultStyle'
 import Item from '../../../style/ItemStyle';
+import { Pagination, Stack } from '@mui/material';
+import { GridPagination } from "@mui/x-data-grid";
+import { styled } from "@mui/material/styles";
 
+function BasicPagination() {
+  return (
+    <Stack spacing={2}>
+      <Pagination count={10} color="secondary" />
+    </Stack>
+  );
+}
 
 export default function EmployeesList() {
   const { data } = useDemoData({
@@ -73,53 +83,54 @@ export default function EmployeesList() {
     { id: 8, post: 'Frances', postLocation: 'Rossini', fullName: 36 },
     { id: 9, post: 'Roxie', postLocation: 'Harvey', fullName: 65 },
   ];
-
   return (
-        <Box
-          sx={{
-            bgcolor: 'background.default',
-            mx:3,
-            mt:3
-          }}
-        >   
-            <Item sx={{pt:7,pb:1,px:7,borderRadius:10}} elevation={5}>
-            <Typography variant="h5" mb={3} gutterBottom sx={{ fontWeight: 'bold' }}>
-         Employers
+    <Box
+      sx={{
+        bgcolor: "background.default",
+        mx: 3,
+        mt: 3,
+      }}
+    >
+      <Item sx={{ pt: 7, pb: 1, px: 7, borderRadius: 10 }} elevation={5}>
+        <Typography variant="h5" mb={3} gutterBottom>
+          Employers
         </Typography>
-    <div style={{height:500 }}>
-      <DataGrid
-      pageSizeOptions={[7, 10,20]}
-       sx={{
-        boxShadow: 0,
-        border: 0,
-        borderColor: 'primary.light',
-        '& .MuiDataGrid-cell:hover': {
-          color: 'primary.main',
-        }}}
-        rows={rows}
-        columns={columns}
-       slots={{
-        noResultsOverlay: CustomNoResultsOverlay,
-        toolbar: GridToolbar,
-      }} 
-      initialState={{
-        ...data.initialState,
-        pagination: { paginationModel: { pageSize: 7 } },
-        filter: {
-          filterModel: {
-            items: [],
-            quickFilterValues: [''],
-          },
-        },
-      }}
-      slotProps={{
-        toolbar: {
-          showQuickFilter: true,
-        },
-      }}
-      />
-    </div>
-         </Item>               
-         </Box>
+        <div style={{ height: 500 }}>
+          <DataGrid
+            pageSizeOptions={[7, 10, 20]}
+            sx={{
+              boxShadow: 0,
+              border: 0,
+              borderColor: "primary.light",
+              "& .MuiDataGrid-cell:hover": {
+                color: "primary.main",
+              },
+            }}
+            rows={rows}
+            columns={columns}
+            slots={{
+              noResultsOverlay: CustomNoResultsOverlay,
+              toolbar: GridToolbar,
+            }}
+            initialState={{
+              ...data.initialState,
+              pagination: { paginationModel: { pageSize: 7 } },
+              filter: {
+                filterModel: {
+                  items: [],
+                  quickFilterValues: [""],
+                },
+              },
+            }}
+            slotProps={{
+              toolbar: {
+                showQuickFilter: true,
+              },
+            }}
+          />
+        </div>
+        <BasicPagination />
+      </Item>
+    </Box>
   );
 }
