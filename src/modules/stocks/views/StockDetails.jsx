@@ -15,7 +15,7 @@ import StockHistory from "../component/StockHistory";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Link from "@mui/material/Link";
 import { useParams } from "react-router-dom";
-import AddButton from "../component/AddOp";
+import AddButton from "../../../components/AddOp";
 import RuleIcon from "@mui/icons-material/Rule";
 import StockInvontaire from "../component/StockInvontaire";
 import AddInventaire from "../component/AddInventaire";
@@ -121,7 +121,7 @@ function FullWidthTabs({stockInfo}) {
           <StockInvontaire />
         </TabPanel>
       </SwipeableViews>
-      {value === 1 && <AddButton type={"histStock"} stockInfo={stockInfo} />}
+      {value === 1 && <AddButton type={"histStock"} info={stockInfo} />}
       {value === 2 && <AddInventaire />}
     </Box>
   );

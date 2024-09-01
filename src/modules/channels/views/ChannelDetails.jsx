@@ -13,13 +13,15 @@ import ArticleIcon from "@mui/icons-material/Article";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Link from "@mui/material/Link";
 import { useNavigate, useParams } from "react-router-dom";
-import AddButton from "../../stocks/component/AddOp";
+import AddButton from "../../../components/AddOp";
 import Vente from "../component/Vente";
 import Retour from "../component/Retour";
 import Commande from "../component/Commande";
 import Devis from "../component/Devis";
 import { Button } from "@mui/material";
-import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
+import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
+import { ip } from "../../../constants/ip";
+import axios from "axios";
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -53,22 +55,16 @@ function a11yProps(index) {
   };
 }
 
-function FullWidthTabs() {
+function FullWidthTabs({channelInfo}) {
   const navigate = useNavigate();
   const theme = useTheme();
   const [value, setValue] = useState(0);
-  const types = [
-    "vente",
-    "retour",
-    "commande",
-    "devis",
-  
-  ];
-  const [type, setType] = useState('')
+  const types = ["vente", "retour", "commande", "devis"];
+  const [type, setType] = useState("");
 
   useEffect(() => {
     setType(types[value]);
-  },[value])
+  }, [value]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -140,16 +136,30 @@ function FullWidthTabs() {
         <TabPanel value={value} index={3} dir={theme.direction}>
           <Devis />
         </TabPanel>
-        
       </SwipeableViews>
-      <AddButton type={type} />
+      <AddButton type={type} info={channelInfo} />
     </Box>
   );
 }
 
 export default function ChannelDetails() {
-  const navigate=useNavigate()
-  const { id } = useParams();
+  const [channel, setChannel] = useState({});
+
+  const navigate = useNavigate();
+
+  const params = useParams();
+
+  let { id } = params;
+  useEffect(() => {
+    fetchStockDetails();
+  }, []);
+
+  const fetchStockDetails = async () => {
+    const response = await axios.get(`${ip}/selling/${id}`);
+    console.log(response.data);
+    
+    setChannel(response.data);
+  };
   return (
     <Box
       sx={{
@@ -175,29 +185,29 @@ export default function ChannelDetails() {
               sx={{ fontWeight: "bold" }}
               color="text.primary"
             >
-              Channel {id}
+              {channel.name}
             </Typography>
           </Breadcrumbs>
         </div>
-        <Box sx={{mx:4}}>
-        <Typography variant="h2" color="initial" gutterBottom>
-        Channel {id} informations
-      </Typography>
-      <Typography variant="body1" color={"initial"} gutterBottom>
-        channel {id} is located in stock (foulen fouleni) managed by (foulen
-        fouleni)
-      </Typography>
-      <Button
-        variant="contained"
-        color="primary"
-        endIcon={<RemoveRedEyeIcon />}
-        sx={{ width: '15%' }}
-        onClick={
-          () => navigate(`/stock/${id}`)
-        }
-      >View stock</Button>
-      </Box>
-        <FullWidthTabs />
+        <Box sx={{ mx: 4 }}>
+          <Typography variant="h2" color="initial" gutterBottom>
+            {channel.name} informations
+          </Typography>
+          <Typography variant="body1" color={"initial"} gutterBottom>
+            {channel.name} is located in stock (foulen fouleni) managed by (foulen
+            fouleni)
+          </Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            endIcon={<RemoveRedEyeIcon />}
+            sx={{ width: "15%" }}
+            onClick={() => navigate(`/stock/${channel.idStock}`)}
+          >
+            View stock
+          </Button>
+        </Box>
+        <FullWidthTabs channelInfo={channel}/>
       </Item>
     </Box>
   );

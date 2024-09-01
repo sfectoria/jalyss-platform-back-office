@@ -51,6 +51,7 @@ const InvoiceForm = () => {
   const { type, receiver, sender } = param;
   console.log(items);
   useEffect(() => {
+    handelInfo()
     handleCalculateTotal();
     setCurrentDate(new Date().toLocaleDateString());
   }, [items]);
@@ -61,7 +62,26 @@ const InvoiceForm = () => {
     setItems(updatedItems);
     handleCalculateTotal();
   };
- 
+   const handelInfo=()=>{
+    if(type==='BR'){
+      setInvoiceTitle('Bon de Reception')
+    }
+    if(type==='BS'){
+      setInvoiceTitle('Bon de Sortie')
+    }
+    if(type==='BT'){
+      setInvoiceTitle('Bon de Transfer')
+    }
+    if(type==='BL'){
+      setInvoiceTitle('Bon de Livraison')
+    }
+    if(type==='BL/F'){
+      setInvoiceTitle('Bon de Livraison/Facture')
+    }
+    if(type==='F'){
+      setInvoiceTitle('Facture')
+    }
+   }
   const finishSale = async () => {
     try {
       const itemsWithIdArtical = items.map((e) => {
@@ -355,10 +375,9 @@ const InvoiceForm = () => {
               </Col>
               <Col>
                 <Form.Label className="fw-bold">Bill from:</Form.Label>
-                {senderInv.id ? (
+                {sender!=0 ? (
                   <PersonPresent
-                    person={sender}
-                    type={title}
+                    person={param}
                     setName={setBillFrom}
                     setEmail={setBillFromEmail}
                     setAddress={setBillFromAddress}

@@ -227,7 +227,6 @@ export default function ArticlesList() {
               },
             }}
             onPaginationModelChange={(event)=>{
-             
               handlePageChange(event)
             }}
             rows={rows}

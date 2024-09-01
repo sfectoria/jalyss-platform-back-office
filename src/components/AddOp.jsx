@@ -7,7 +7,7 @@ import ExitToAppOutlinedIcon from "@mui/icons-material/ExitToAppOutlined";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import { useNavigate } from "react-router-dom";
 
-export default function AddButton({type,stockInfo}) {
+export default function AddButton({type,info}) {
   const [actions, setActions] = useState([]);
 
   useEffect(() => {
@@ -37,25 +37,20 @@ export default function AddButton({type,stockInfo}) {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const navigate = useNavigate();
-  const info = {
-    id:1,
-    name: "Stock Sfax",
-    email: "stockSfax@gmail.com",
-    address: "sfax , tunisia",
-  };
+
 
   const handleAction = (type) => {
     if (type === "BR") {
-      navigate(`/invoice/${type}/0/${stockInfo.id}`);
+      navigate(`/invoice/${type}/0/${info.id}`);
     } else if (type === "BS") {
-      navigate(`/invoice/${type}/${stockInfo.id}/0`, {
+      navigate(`/invoice/${type}/${info.id}/0`, {
       });
     } else if (type === 'BT') {
       navigate("/invoice", {
         state: { title: "Bon de Transfert", sender: { info }, receiver: {} },
       });
     } else if (type === 'BL') {
-      navigate("/invoice", {
+      navigate(`/invoice/${type}/${info.id}/0`, {
         state: { title: "Bon de Livraison", sender: { info }, receiver: {} },
       });
     }
