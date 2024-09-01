@@ -43,14 +43,14 @@ const InvoiceForm = () => {
   const [showErAlert, setShowErAlert] = useState(false);
   const [senderInv, setSenderInv] = useState({});
   const [receiverInv, setReceiverInv] = useState({});
+  const [invoiceTitle, setInvoiceTitle] = useState('');
   const location = useLocation();
   const param = useParams();
   console.log(param);
 
-  const { title, receiver, sender } = location.state;
+  const { type, receiver, sender } = param;
   console.log(items);
   useEffect(() => {
-    getInfo();
     handleCalculateTotal();
     setCurrentDate(new Date().toLocaleDateString());
   }, [items]);
@@ -61,23 +61,7 @@ const InvoiceForm = () => {
     setItems(updatedItems);
     handleCalculateTotal();
   };
-  const getInfo = async () => {
-    try {
-      if (param.type === "br") {
-        if (param.receiver) {
-          const response = await axios.get(`${ip}/stocks/${param.receiver}`);
-          console.log("receiver", response.data);
-        }
-        if (param.sender) {
-          const response = await axios.get(`${ip}/forniseurs/${param.sender}`);
-          console.log("sender", response.data);
-        }
-      }
-    } catch (error) {
-      console.error(error);
-      
-    }
-  };
+ 
   const finishSale = async () => {
     try {
       const itemsWithIdArtical = items.map((e) => {
@@ -292,7 +276,7 @@ const InvoiceForm = () => {
               <div className="d-flex flex-column">
                 <div className="d-flex flex-column">
                   <div className="mb-2">
-                    <p className="h2 fw-bold">{title}</p>
+                    <p className="h2 fw-bold">{invoiceTitle}</p>
                   </div>
                 </div>
                 <div className="d-flex flex-row align-items-center">
@@ -319,10 +303,9 @@ const InvoiceForm = () => {
             <Row className="mb-5">
               <Col>
                 <Form.Label className="fw-bold">Bill to:</Form.Label>
-                {receiver.info ? (
+                {receiver!=0 ? (
                   <PersonPresent
-                    person={receiver}
-                    type={title}
+                    person={param}
                     setName={setBillTo}
                     setEmail={setBillToEmail}
                     setAddress={setBillToAddress}
@@ -372,7 +355,7 @@ const InvoiceForm = () => {
               </Col>
               <Col>
                 <Form.Label className="fw-bold">Bill from:</Form.Label>
-                {sender.info ? (
+                {senderInv.id ? (
                   <PersonPresent
                     person={sender}
                     type={title}

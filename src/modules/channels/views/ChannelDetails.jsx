@@ -67,7 +67,6 @@ function FullWidthTabs() {
   const [type, setType] = useState('')
 
   useEffect(() => {
-    
     setType(types[value]);
   },[value])
 
@@ -78,7 +77,6 @@ function FullWidthTabs() {
   const handleChangeIndex = (index) => {
     setValue(index);
   };
-  const { id } = useParams();
   return (
     <Box
       sx={{
@@ -89,22 +87,6 @@ function FullWidthTabs() {
         justifyContent: "center",
       }}
     >
-      <Typography variant="h2" color="initial" gutterBottom>
-        Channel {id} informations
-      </Typography>
-      <Typography variant="body1" color={"initial"} gutterBottom>
-        channel {id} is located in stock (foulen fouleni) managed by (foulen
-        fouleni)
-      </Typography>
-      <Button
-        variant="contained"
-        color="primary"
-        endIcon={<RemoveRedEyeIcon />}
-        sx={{ width: '15%' }}
-        onClick={
-          () => navigate(`/stock/${id}`)
-        }
-      >View stock</Button>
       <AppBar
         position="static"
         sx={{ mx: 4, height: 60, border: 0, boxShadow: 0, bgcolor: "white" }}
@@ -166,6 +148,7 @@ function FullWidthTabs() {
 }
 
 export default function ChannelDetails() {
+  const navigate=useNavigate()
   const { id } = useParams();
   return (
     <Box
@@ -196,6 +179,24 @@ export default function ChannelDetails() {
             </Typography>
           </Breadcrumbs>
         </div>
+        <Box sx={{mx:4}}>
+        <Typography variant="h2" color="initial" gutterBottom>
+        Channel {id} informations
+      </Typography>
+      <Typography variant="body1" color={"initial"} gutterBottom>
+        channel {id} is located in stock (foulen fouleni) managed by (foulen
+        fouleni)
+      </Typography>
+      <Button
+        variant="contained"
+        color="primary"
+        endIcon={<RemoveRedEyeIcon />}
+        sx={{ width: '15%' }}
+        onClick={
+          () => navigate(`/stock/${id}`)
+        }
+      >View stock</Button>
+      </Box>
         <FullWidthTabs />
       </Item>
     </Box>

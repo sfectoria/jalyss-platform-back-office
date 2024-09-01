@@ -1,22 +1,73 @@
-import * as React from "react";
+import React ,{useState,useEffect}from "react";
 import Box from "@mui/material/Box";
 import { DataGrid, GridToolbar, GridActionsCellItem } from "@mui/x-data-grid";
 import Typography from "@mui/material/Typography";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useLocation } from "react-router-dom";
 import CustomNoResultsOverlay from "../../../style/NoResultStyle";
 import Item from "../../../style/ItemStyle";
+import { ip } from "../../../constants/ip";
+import axios from "axios";
+
+const getPageFromUrl = () => {
+  const params = new URLSearchParams(window.location.search);
+  return +params.get("page") || 0;
+};
+
+const getPageSizeFromUrl = () => {
+  const params = new URLSearchParams(window.location.search);
+  return +params.get("take") || 10;
+};
 
 
 const ChannelsList = () => {
+
+  const [rows,setRows]=useState([])
+  const [page, setPage] = useState(getPageFromUrl);
+  const [pageSize, setPageSize] = useState(getPageSizeFromUrl());
+  const [text, setText] = useState(null);
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(true);
+
   const navigate = useNavigate();
+  const location = useLocation();
+
   const handleDetails = (id) => {
     navigate(`/channels/channel-details/${id}`);
   };
+ 
+  useEffect(() => {
+    // updateUrlParams();
+    fetchData();
+  }, [location, text, page, pageSize]);
 
+  const fetchData = async () => {
+    try {
+      let queryParams = new URLSearchParams(location.search);
+      let params = Object.fromEntries(queryParams.entries());
+      params.take = pageSize;
+      params.skip = page * pageSize;
+      console.log(params);
+      if (text) params["text"] = text;
+      console.log(params, text);
+      const response = await axios.get(ip + "/selling/getAll", {
+        params,
+      });
+      console.log('test',response.data);
+      
+      setRows(response.data);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  console.log(rows);
+  
   const columns = [
-    { field: "channelName", headerName: "Channel name", width: 200 },
-    { field: "address", headerName: "Address", width: 270 },
+    { field: "name", headerName: "Channel name", width: 200 },
+    { field: "region", headerName: "Address", width: 270 },
     { field: "managerName", headerName: "Manager name", width: 250 },
     { field: "managerNumber", headerName: "Manager Tel number", width: 250 },
     {
@@ -34,44 +85,6 @@ const ChannelsList = () => {
     },
   ];
 
-  const rows = [
-    {
-      id: 1,
-      channelName: "Sfax1",
-      address: "Sfax1/Sfax",
-      managerName: "Salim sfexi",
-      managerNumber: "+216 28527345",
-      details: "fff",
-    },
-    {
-      id: 2,
-      channelName: "Stock l mida",
-      address: "Mida/menzel tmim/Nabeul",
-      managerName: "Hamida midawi",
-    },
-    {
-      id: 3,
-      channelName: "Stock sahlin",
-      address: "Sahlin/Sousse",
-      managerName: "Wael ben sahloul",
-    },
-    {
-      id: 4,
-      channelName: "Stock alia",
-      address: "Alia/bizerte",
-      managerName: "Mouhamed Amin ben yahya",
-    },
-    {
-      id: 5,
-      channelName: "Targaryen",
-      address: "Daenerys",
-      managerName: "houssem ben ammar",
-    },
-    { id: 6, channelName: "Melisandre", address: null, managerName: 150 },
-    { id: 7, channelName: "Clifford", address: "Ferrara", managerName: 44 },
-    { id: 8, channelName: "Frances", address: "Rossini", managerName: 36 },
-    { id: 9, channelName: "Roxie", address: "Harvey", managerName: 65 },
-  ];
 
   return (
     <Box

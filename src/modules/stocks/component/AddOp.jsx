@@ -7,8 +7,7 @@ import ExitToAppOutlinedIcon from "@mui/icons-material/ExitToAppOutlined";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import { useNavigate } from "react-router-dom";
 
-export default function AddButton(props) {
-  const { type } = props;
+export default function AddButton({type,stockInfo}) {
   const [actions, setActions] = useState([]);
 
   useEffect(() => {
@@ -47,12 +46,9 @@ export default function AddButton(props) {
 
   const handleAction = (type) => {
     if (type === "BR") {
-      navigate(`/invoice/${type}/0/1`, {
-        state: { title: "Bon de Reception", sender: {}, receiver: { info } },
-      });
+      navigate(`/invoice/${type}/0/${stockInfo.id}`);
     } else if (type === "BS") {
-      navigate("/invoice", {
-        state: { title: "Bon de Sortie", sender: { info }, receiver: {} },
+      navigate(`/invoice/${type}/${stockInfo.id}/0`, {
       });
     } else if (type === 'BT') {
       navigate("/invoice", {

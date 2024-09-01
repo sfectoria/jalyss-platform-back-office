@@ -43,6 +43,7 @@ const getPageSizeFromUrl = () => {
 
 export default function ArticlesList() {
   const [rows, setRows] = useState([]);
+  const [count, setCount] = useState(0);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
   const location = useLocation();
@@ -78,9 +79,11 @@ export default function ArticlesList() {
     navigate(`/articles/${ids}`);
   };
   useEffect(() => {
-    updateUrlParams();
     fetchData();
-  }, [location, text, page,pageSize]);
+  }, [location, text,]);
+  useEffect(() => {
+    updateUrlParams();
+  }, [page]);
 
   const fetchData = async () => {
     try {
@@ -90,15 +93,16 @@ export default function ArticlesList() {
         new URLSearchParams(location.search)
       );
       let params = Object.fromEntries(queryParams.entries());
-      params.take=pageSize
-      params.skip= page * pageSize
+      // params.take=pageSize
+      // params.skip= page * pageSize
       console.log(params);
       if (text) params["text"] = text;
       console.log(params, text);
       const response = await axios.get(ip + "/articles/getAll", {
         params,
       });
-      setRows(response.data);
+      setRows(response.data.data);
+      setCount(response.data.count);
     } catch (err) {
       setError(err);
     } finally {
@@ -112,7 +116,7 @@ export default function ArticlesList() {
     params.set("skip", page * pageSize);
     console.log('handleuP');
     const newUrl = `${location.pathname}?${params.toString()}`;
-    window.history.pushState({}, "", newUrl);
+    navigate(newUrl)
   };
 
   const handlePageChange = (newPageInfo) => {
@@ -123,10 +127,15 @@ export default function ArticlesList() {
       setPage(newPageInfo.page);
     }
     if (pageSize!==newPageInfo.pageSize) {
-      setPage(0)
       setPageSize(newPageInfo.pageSize)
+      const params = new URLSearchParams(location.search);
+      params.set("page", 0);
+      params.set("take", newPageInfo.pageSize);
+      params.set("skip", 0);
+      console.log('handleuP');
+      const newUrl = `${location.pathname}?${params.toString()}`;
+      navigate(newUrl)
     }
-   
   };
   const columns = [
     {
@@ -226,7 +235,7 @@ export default function ArticlesList() {
             pagination
             pageSize={pageSize}
             paginationMode="server"
-            rowCount={40}
+            rowCount={count}
             slots={{
               noResultsOverlay: CustomNoResultsOverlay,
               toolbar: GridToolbar,
