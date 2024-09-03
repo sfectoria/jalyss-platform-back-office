@@ -11,15 +11,19 @@ import Tab from "@mui/material/Tab";
 import HistoryIcon from "@mui/icons-material/History";
 import ArticleIcon from "@mui/icons-material/Article";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
+import MenuBookIcon from '@mui/icons-material/MenuBook';
 import Link from "@mui/material/Link";
 import { useNavigate, useParams } from "react-router-dom";
-import AddButton from "../../stocks/component/AddOp";
+import AddButton from "../../../components/AddOp";
 import Vente from "../component/Vente";
 import Retour from "../component/Retour";
 import Commande from "../component/Commande";
 import Devis from "../component/Devis";
 import { Button } from "@mui/material";
-import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
+import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
+import { ip } from "../../../constants/ip";
+import axios from "axios";
+import ArticleInChannels from "../component/ArticleInChannels";
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -53,23 +57,16 @@ function a11yProps(index) {
   };
 }
 
-function FullWidthTabs() {
+function FullWidthTabs({channelInfo}) {
   const navigate = useNavigate();
   const theme = useTheme();
   const [value, setValue] = useState(0);
-  const types = [
-    "vente",
-    "retour",
-    "commande",
-    "devis",
-  
-  ];
-  const [type, setType] = useState('')
+  const types = ["vente","articles", "retour", "commande", "devis"];
+  const [type, setType] = useState("");
 
   useEffect(() => {
-    
     setType(types[value]);
-  },[value])
+  }, [value]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -78,7 +75,6 @@ function FullWidthTabs() {
   const handleChangeIndex = (index) => {
     setValue(index);
   };
-  const { id } = useParams();
   return (
     <Box
       sx={{
@@ -89,22 +85,6 @@ function FullWidthTabs() {
         justifyContent: "center",
       }}
     >
-      <Typography variant="h2" color="initial" gutterBottom>
-        Channel {id} informations
-      </Typography>
-      <Typography variant="body1" color={"initial"} gutterBottom>
-        channel {id} is located in stock (foulen fouleni) managed by (foulen
-        fouleni)
-      </Typography>
-      <Button
-        variant="contained"
-        color="primary"
-        endIcon={<RemoveRedEyeIcon />}
-        sx={{ width: '15%' }}
-        onClick={
-          () => navigate(`/stock/${id}`)
-        }
-      >View stock</Button>
       <AppBar
         position="static"
         sx={{ mx: 4, height: 60, border: 0, boxShadow: 0, bgcolor: "white" }}
@@ -122,22 +102,28 @@ function FullWidthTabs() {
             {...a11yProps(0)}
           />
           <Tab
-            icon={<HistoryIcon />}
+            icon={<MenuBookIcon />}
             iconPosition="start"
-            label="Retour"
+            label="Articles"
             {...a11yProps(1)}
           />
           <Tab
             icon={<HistoryIcon />}
             iconPosition="start"
-            label="Commande"
+            label="Retour"
             {...a11yProps(2)}
           />
           <Tab
             icon={<HistoryIcon />}
             iconPosition="start"
-            label="Devis"
+            label="Commande"
             {...a11yProps(3)}
+          />
+          <Tab
+            icon={<HistoryIcon />}
+            iconPosition="start"
+            label="Devis"
+            {...a11yProps(4)}
           />
         </Tabs>
       </AppBar>
@@ -150,23 +136,39 @@ function FullWidthTabs() {
           <Vente />
         </TabPanel>
         <TabPanel value={value} index={1} dir={theme.direction}>
-          <Retour />
+          <ArticleInChannels channelInfo={channelInfo} />
         </TabPanel>
         <TabPanel value={value} index={2} dir={theme.direction}>
-          <Commande />
+          <Retour />
         </TabPanel>
         <TabPanel value={value} index={3} dir={theme.direction}>
+          <Commande />
+        </TabPanel>
+        <TabPanel value={value} index={4} dir={theme.direction}>
           <Devis />
         </TabPanel>
-        
       </SwipeableViews>
-      <AddButton type={type} />
+      {value!==1&&<AddButton type={type} info={channelInfo} />}
     </Box>
   );
 }
 
 export default function ChannelDetails() {
-  const { id } = useParams();
+  const [channel, setChannel] = useState({});
+
+  const navigate = useNavigate();
+
+  const params = useParams();
+
+  let { id } = params;
+  useEffect(() => {
+    fetchStockDetails();
+  }, []);
+
+  const fetchStockDetails = async () => {
+    const response = await axios.get(`${ip}/selling/${id}`);
+    setChannel(response.data);
+  };
   return (
     <Box
       sx={{
@@ -192,11 +194,29 @@ export default function ChannelDetails() {
               sx={{ fontWeight: "bold" }}
               color="text.primary"
             >
-              Channel {id}
+              {channel.name}
             </Typography>
           </Breadcrumbs>
         </div>
-        <FullWidthTabs />
+        <Box sx={{ mx: 4 }}>
+          <Typography variant="h2" color="initial" gutterBottom>
+            {channel.name} informations
+          </Typography>
+          <Typography variant="body1" color={"initial"} gutterBottom>
+            {channel.name} is located in stock (foulen fouleni) managed by (foulen
+            fouleni)
+          </Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            endIcon={<RemoveRedEyeIcon />}
+            sx={{ width: "15%" }}
+            onClick={() => navigate(`/stock/${channel.idStock}`)}
+          >
+            View stock
+          </Button>
+        </Box>
+        <FullWidthTabs channelInfo={channel}/>
       </Item>
     </Box>
   );

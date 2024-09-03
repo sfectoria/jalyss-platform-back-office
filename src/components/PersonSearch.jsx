@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import { Stack } from '@mui/material';
+import axios from 'axios';
+import { ip } from '../constants/ip';
 
 const rows = [
     { id: 1, name: 'Sfax1', address: 'Sfax1/Sfax', email: "salim.sfexi@example.com", phone: "123-456-7890", details: "fff" },
@@ -15,8 +17,33 @@ const rows = [
     { id: 9, name: 'Roxie', address: 'Harvey', email: "roxie.harvey@example.com", phone: "901-234-5678" },
 ];
 
-const PersonSearch = ({type,setName,setEmail,setAddress}) => {
-    const [options, setOptions] = useState(rows);
+const PersonSearch = ({person,type,setName,setEmail,setAddress,setId}) => {
+  const [rows,setRows]=useState([])
+  useEffect(()=>{
+    fetchData()
+  },[])
+
+  const fetchData = async () => {
+    if(type==='BR') {
+    // const response = await axios.get(`${ip}/fournisseurs/${person}`);
+    // console.log(response.data);
+    // setRows(response.data)
+
+  }
+  else if (type==='BT'){
+     const response = await axios.get(`${ip}/stocks/getAll`)
+     console.log(response.data);
+     setRows(response.data)
+
+       }
+  else if (type === "BL" || type === "BLF" || type === "F" || type === "Ticket" || type === "Devis" || type==='BC'){
+     const response = await axios.get(`${ip}/clients`)
+     console.log(response.data);
+     setRows(response.data)
+       }
+
+  };
+    const [options, setOptions] = useState();
     const [searchText, setSearchText] = useState('');
     const [filteredRows, setFilteredRows] = useState(rows);
 
@@ -34,7 +61,8 @@ const PersonSearch = ({type,setName,setEmail,setAddress}) => {
 
   const handelNormalSearch = (event, value) => {
     if (value) {
-      setName(value.name)
+      setId(value.id)
+      setName(value.fullName)
       setEmail(value.email)
       setAddress(value.address)
       
@@ -55,7 +83,7 @@ const PersonSearch = ({type,setName,setEmail,setAddress}) => {
                 options={filteredRows}
                 inputValue={searchText}
                 onInputChange={handleInputChange}
-                getOptionLabel={(option) => `${option.name}`}
+                getOptionLabel={(option) => `${option.fullName}`}
               filterOptions={(options) => options}
               onChange={handelNormalSearch}
                 renderInput={(params) => (

@@ -24,9 +24,11 @@ const InvoiceForm = () => {
   const [currentDate, setCurrentDate] = useState("");
   const [invoiceNumber, setInvoiceNumber] = useState(1);
   const [dateOfIssue, setDateOfIssue] = useState("");
+  const [billToId, setBillToId] = useState(0);
   const [billTo, setBillTo] = useState("");
   const [billToEmail, setBillToEmail] = useState("");
   const [billToAddress, setBillToAddress] = useState("");
+  const [billFromId, setBillFromId] = useState("");
   const [billFrom, setBillFrom] = useState("");
   const [billFromEmail, setBillFromEmail] = useState("");
   const [billFromAddress, setBillFromAddress] = useState("");
@@ -43,14 +45,20 @@ const InvoiceForm = () => {
   const [showErAlert, setShowErAlert] = useState(false);
   const [senderInv, setSenderInv] = useState({});
   const [receiverInv, setReceiverInv] = useState({});
+  const [invoiceTitle, setInvoiceTitle] = useState("");
+  const [reqName, setReqName] = useState("");
+  const [reqClient, setReqClient] = useState("");
+  const [reqChannel, setReqChannel] = useState("");
+  const [reqLine, setReqLine] = useState("");
+  const [reqDate, setReqDate] = useState('date');
   const location = useLocation();
   const param = useParams();
   console.log(param);
 
-  const { title, receiver, sender } = location.state;
+  const { type, receiver, sender } = param;
   console.log(items);
   useEffect(() => {
-    getInfo();
+    handelInfo();
     handleCalculateTotal();
     setCurrentDate(new Date().toLocaleDateString());
   }, [items]);
@@ -61,44 +69,78 @@ const InvoiceForm = () => {
     setItems(updatedItems);
     handleCalculateTotal();
   };
-  const getInfo = async () => {
-    try {
-      if (param.type === "br") {
-        if (param.receiver) {
-          const response = await axios.get(`${ip}/stocks/${param.receiver}`);
-          console.log("receiver", response.data);
-        }
-        if (param.sender) {
-          const response = await axios.get(`${ip}/forniseurs/${param.sender}`);
-          console.log("sender", response.data);
-        }
-      }
-    } catch (error) {
-      console.error(error);
-      
+  const handelInfo = () => {
+    if (type === "BR") {
+      setInvoiceTitle("Bon de Reception");
+      setReqName()
+      setReqLine()
+    } else if (type === "BS") {
+      setInvoiceTitle("Bon de Sortie");
+      setReqName()
+      setReqLine()
+    } else if (type === "BT") {
+      setInvoiceTitle("Bon de Transfer");
+      setReqName()
+      setReqLine()
+    } else if (type === "BL") {
+      setInvoiceTitle("Bon de Livraison");
+      setReqName('salesDeliveryNote')
+      setReqLine('salesDeliveryNoteLine')
+      setReqChannel('saleChannelId')
+      setReqClient('idClient')
+      setReqDate('deliveryDate')
+    } else if (type === "BLF") {
+      setInvoiceTitle("Bon de Livraison/Facture");
+      setReqName('salesDeliveryInvoice')
+      setReqLine('salesDeliveryInvoiceLines')
+      setReqChannel('salesChannelsId')
+      setReqClient('clientId')
+      setReqDate('deliveryDate')
+    } else if (type === "F") {
+      setInvoiceTitle("Facture");
+      setReqName('sales-invoices')
+      setReqLine('salesInvoiceLine')
+      setReqChannel('saleChannelId')
+      setReqClient('idClient')
+    } else if (type === "BC") {
+      setInvoiceTitle("Bon de Commande");
+      setReqName()
+      setReqLine()
+    } else if (type === "BRe") {
+      setInvoiceTitle("Bon de Retour");
+      setReqName()
+      setReqLine()
+    } else if (type === "Ticket" || type === "Devis") {
+      setInvoiceTitle(type);
+      setReqName()
+      setReqLine()
     }
   };
   const finishSale = async () => {
     try {
-      const itemsWithIdArtical = items.map((e) => {
+      if(type === "BL" || type === "BLF" || type === "F" || type === "Ticket" || type === "Devis" || type==='BC'){
+      const itemsWithIdArticle = items.map((e) => {
         let { id, quantity, ...rest } = e;
-        const articalId = id;
-        return { articalId, quantity };
+        const articleId = id;
+        return { articleId, quantity };
       });
-      console.log(itemsWithIdArtical);
-
+      console.log(itemsWithIdArticle);
+      
       const obj = {
         exitNoteId: 0,
-        idClient: 1,
-        saleChannelId: 1,
-        date: "2024-08-24T13:41:02.604Z",
-        salesInvoiceLine: itemsWithIdArtical,
+        [reqClient]:billToId,
+        [reqChannel]: parseInt(sender),
+        [reqDate]:new Date(),
+        totalAmount:parseFloat(total),
+        [reqLine]: itemsWithIdArticle,
       };
       const response = await axios.post(
-        "http://localhost:3000/sales-invoices/create",
+        `${ip}/${reqName}/create`,
         obj
       );
       console.log("Response:", response.data);
+    }
+    setItems([])
     } catch (error) {
       console.error("Error:", error);
     }
@@ -119,7 +161,7 @@ const InvoiceForm = () => {
     } else {
       const newItem = {
         id: obj.id,
-        name: obj.title,
+        name: obj.name,
         price: obj.price,
         barcode: "",
         quantity: 1,
@@ -209,7 +251,7 @@ const InvoiceForm = () => {
     setShowErAlert(false);
     setShowSuAlert(false);
   };
-  console.log(billTo, billFrom);
+  console.log(billTo,billToId, billFrom);
 
   const editField = (event) => {
     const { name, value } = event.target;
@@ -292,7 +334,7 @@ const InvoiceForm = () => {
               <div className="d-flex flex-column">
                 <div className="d-flex flex-column">
                   <div className="mb-2">
-                    <p className="h2 fw-bold">{title}</p>
+                    <p className="h2 fw-bold">{invoiceTitle}</p>
                   </div>
                 </div>
                 <div className="d-flex flex-row align-items-center">
@@ -319,10 +361,11 @@ const InvoiceForm = () => {
             <Row className="mb-5">
               <Col>
                 <Form.Label className="fw-bold">Bill to:</Form.Label>
-                {receiver.info ? (
+                {param.receiver !== "0" ? (
                   <PersonPresent
                     person={receiver}
-                    type={title}
+                    type={type}
+                    reff={"resv"}
                     setName={setBillTo}
                     setEmail={setBillToEmail}
                     setAddress={setBillToAddress}
@@ -330,7 +373,9 @@ const InvoiceForm = () => {
                 ) : (
                   <div>
                     <PersonSearch
-                      type={"name"}
+                      person={receiver}
+                      type={type}
+                      setId={setBillToId}
                       setName={setBillTo}
                       setEmail={setBillToEmail}
                       setAddress={setBillToAddress}
@@ -372,17 +417,26 @@ const InvoiceForm = () => {
               </Col>
               <Col>
                 <Form.Label className="fw-bold">Bill from:</Form.Label>
-                {sender.info ? (
+                {param.sender !== "0" ? (
                   <PersonPresent
                     person={sender}
-                    type={title}
+                    type={type}
+                    reff={"sndr"}
                     setName={setBillFrom}
                     setEmail={setBillFromEmail}
                     setAddress={setBillFromAddress}
                   />
                 ) : (
                   <div>
-                    <Form.Control
+                    <PersonSearch
+                      person={sender}
+                      type={type}
+                      setId={setBillFromId}
+                      setName={setBillFrom}
+                      setEmail={setBillFromEmail}
+                      setAddress={setBillFromAddress}
+                    />
+                    {/* <Form.Control
                       placeholder={"Who is this invoice from?"}
                       rows={3}
                       value={billFrom}
@@ -392,7 +446,7 @@ const InvoiceForm = () => {
                       onChange={editField}
                       autoComplete="name"
                       required
-                    />
+                    /> */}
                     <Form.Control
                       placeholder={"Email address"}
                       value={billFromEmail}
@@ -426,6 +480,8 @@ const InvoiceForm = () => {
                 items={items}
                 handelBarcode={handelBarcode}
                 handelNSearch={handelNSearch}
+                type={type}
+                info={param}
               />
             </div>
             <Row className="mt-4 justify-content-end">

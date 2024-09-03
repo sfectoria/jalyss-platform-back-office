@@ -19,18 +19,6 @@ import ImagePopUp from "../../../components/ImagePopUp";
 import axios from "axios";
 import { ip } from "../../../constants/ip";
 
-
-function createData(id, image, title, quantity, author, publisher, price) {
-  return {
-    id,
-    image,
-    title,
-    quantity,
-    author,
-    publisher,
-    price,
-  };
-}
 const getPageFromUrl = () => {
   const params = new URLSearchParams(window.location.search);
   return +params.get("page") || 0;
@@ -43,6 +31,7 @@ const getPageSizeFromUrl = () => {
 
 export default function ArticlesList() {
   const [rows, setRows] = useState([]);
+  const [count, setCount] = useState(0);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
   const location = useLocation();
@@ -78,9 +67,11 @@ export default function ArticlesList() {
     navigate(`/articles/${ids}`);
   };
   useEffect(() => {
-    updateUrlParams();
     fetchData();
-  }, [location, text, page,pageSize]);
+  }, [location, text,]);
+  useEffect(() => {
+    updateUrlParams();
+  }, [page]);
 
   const fetchData = async () => {
     try {
@@ -96,7 +87,37 @@ export default function ArticlesList() {
       const response = await axios.get(ip + "/articles/getAll", {
         params,
       });
-      setRows(response.data);
+      console.log(response.data.data);
+      
+      const ids=response.data.data.map(e=> e.id)
+      console.log('here',ids);
+      const rNoteResponse= await axios.get(`${ip}/receiptNote/all_rn`)
+      const result =rNoteResponse.data.reduce((acc, receipt) => {
+        receipt.receiptNoteLine.forEach(line => {
+          const existingArticle = acc.find(item => item.id === line.idArticle);
+          
+          if (existingArticle) {
+            existingArticle.quantity += line.quantity;
+          } else {
+            acc.push({
+              id: line.idArticle,
+              name: line.Article.title,
+              quantity: line.quantity
+            });
+          }
+        });
+        return acc;
+      }, []);
+      
+      console.log(result);
+      result.forEach(({ id, quantity }) => {
+        const article = response.data.data.find((article) => article.id === id);
+        if (article) {
+          article.quantity = quantity; 
+        }
+      });
+      setRows(response.data.data);
+      setCount(response.data.count);
     } catch (err) {
       setError(err);
     } finally {
@@ -110,7 +131,7 @@ export default function ArticlesList() {
     params.set("skip", page * pageSize);
     console.log('handleuP');
     const newUrl = `${location.pathname}?${params.toString()}`;
-    window.history.pushState({}, "", newUrl);
+    navigate(newUrl)
   };
 
   const handlePageChange = (newPageInfo) => {
@@ -121,18 +142,23 @@ export default function ArticlesList() {
       setPage(newPageInfo.page);
     }
     if (pageSize!==newPageInfo.pageSize) {
-      setPage(0)
       setPageSize(newPageInfo.pageSize)
+      const params = new URLSearchParams(location.search);
+      params.set("page", 0);
+      params.set("take", newPageInfo.pageSize);
+      params.set("skip", 0);
+      console.log('handleuP');
+      const newUrl = `${location.pathname}?${params.toString()}`;
+      navigate(newUrl)
     }
-   
   };
   const columns = [
     {
       field: "image",
       headerName: "Image",
       width: 90,
-      renderCell: (value, row) => {
-        return <ImagePopUp image={row?.cover?.path} />;
+      renderCell: (value) => {
+        return <ImagePopUp image={value?.row?.cover?.path} />;
       },
     },
     { field: "title", headerName: "Title", width: 270 },
@@ -216,7 +242,6 @@ export default function ArticlesList() {
               },
             }}
             onPaginationModelChange={(event)=>{
-             
               handlePageChange(event)
             }}
             rows={rows}
@@ -224,7 +249,7 @@ export default function ArticlesList() {
             pagination
             pageSize={pageSize}
             paginationMode="server"
-            rowCount={40}
+            rowCount={count}
             slots={{
               noResultsOverlay: CustomNoResultsOverlay,
               toolbar: GridToolbar,

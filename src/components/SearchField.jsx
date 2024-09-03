@@ -2,6 +2,7 @@ import React, { useState,useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { TextField, Autocomplete, MenuItem, Typography } from '@mui/material';
 import axios from 'axios';
+import { ip } from '../constants/ip';
 
 // function createData(id, image, title, quantity, author, publisher, barcode, price) {
 //   return {
@@ -25,7 +26,7 @@ import axios from 'axios';
 //   createData(6, 'https://jalyss.com/1170-large_default/-.jpg', 'اولاد حارتنا', 49, 'najib mahfoudh', 'dar e chourouk', '104729',47),
 // ];
 
-const SearchField = ({ handelBarcode, handelNSearch }) => {
+const SearchField = ({ handelBarcode, handelNSearch,info ,type}) => {
   const [searchText, setSearchText] = useState('');
   const [rows,setRows]=useState([])
   const [error,setError]=useState(false)
@@ -33,34 +34,145 @@ const SearchField = ({ handelBarcode, handelNSearch }) => {
   const [filteredRows, setFilteredRows] = useState(rows);
   const [hoveredImage, setHoveredImage] = useState(null);
   useEffect(()=>{
-    const fetchData = async () => {
-      try {
-        const response = await axios.get('http://localhost:3000/articles/getAll');
-        setRows(response.data)
-       const test=response.data.map((e)=>{
-        console.log(e.articalByPublishingHouse.length);
-        if(e.cover!==null){
-          e.image=e.cover.path
-        }
-        if(e.articalByPublishingHouse.length){
-          e.publisher=e.articalByPublishingHouse[0].publishingHouse.nameAr
-        }
-        if(e.articalByAuthor.length)
-          e.author=e.articalByAuthor[0].author.nameAr
-        return e
-        })
+    // const fetchData = async () => {
+    //   try {
+    //     const response = await axios.get('http://localhost:3000/articles/getAll');
+    //     setRows(response.data.data)
+    //    const test=response.data.map((e)=>{
+    //     console.log(e.articalByPublishingHouse.length);
+    //     if(e.cover!==null){
+    //       e.image=e.cover.path
+    //     }
+    //     if(e.articalByPublishingHouse.length){
+    //       e.publisher=e.articalByPublishingHouse[0].publishingHouse.nameAr
+    //     }
+    //     if(e.articalByAuthor.length)
+    //       e.author=e.articalByAuthor[0].author.nameAr
+    //     return e
+    //     })
      
-        console.log(response.data,'and',test);
+    //     console.log(response.data,'and',test);
         
-      } catch (err) {
-        setError(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+    //   } catch (err) {
+    //     setError(err);
+    //   } finally {
+    //     setLoading(false);
+    //   }
+    // };
 
-    fetchData();
+    // fetchData();
+    if (info.type==="BL" || info.type==="BLF"|| info.type==="F" || info.type==="Ticket" || info.type==="Devis" || info.type==="BC" ) {
+      fetchDataChannel()
+    }
   },[])
+  console.log(info,type);
+  
+  const mergeAndSortByDate = (exitNotes, receiptNotes) => {
+    const combined = [
+      ...exitNotes.map((item) => ({
+        ...item,
+        type: "exit",
+        date: new Date(item.exitDate),
+        id: `exit-${item.id}`,
+      })),
+      ...receiptNotes.map((item) => ({
+        ...item,
+        type: "receipt",
+        date: new Date(item.receiptDate),
+        id: `receipt-${item.id}`,
+      })),
+    ];
+
+    return combined.sort((a, b) => a.date - b.date);
+  };
+  const fetchDataChannel = async () => {
+    const findStockResponse= await axios.get(`${ip}/selling/${info.sender}`)
+    console.log('this is me ',findStockResponse.data);
+    if(findStockResponse.data){
+    const responseReceipt = await axios.get(`${ip}/receiptNote/all_rn`, {
+      params: { stocksIds: [findStockResponse.data.idStock] },
+    });
+    console.log(responseReceipt.data);
+    const responseExit = await axios.get(`${ip}/exitNote/all_en`, {
+      params: { stocksIds: [findStockResponse.data.idStock] },
+    });
+    console.log(responseExit.data, "exit");
+    const sortedData = mergeAndSortByDate(
+      responseExit.data,
+      responseReceipt.data
+    );
+    const responsePriceByChannel = await axios.get(
+      `http://localhost:3000/price-By-Channel/getAll`,
+      { params: { salesChannelIds: [info.sender] } }
+    );
+    console.log('test',responsePriceByChannel.data);
+
+    const result = sortedData.reduce((acc, allData) => {
+      if (allData.type === "receipt") {
+        allData.receiptNoteLine.forEach((line) => {
+          const existingArticle = acc.find(
+            (item) => item.id === line.idArticle
+          );
+
+          if (existingArticle) {
+            existingArticle.quantity += line.quantity;
+          } else {
+            acc.push({
+              id: line.idArticle,
+              name: line.Article.title,
+              code:line.Article.code,
+              image: line.Article.cover.path,
+              author: line.Article.articleByAuthor.length
+                ? line.Article.articleByAuthor[0].author.nameAr
+                : null,
+              publisher: line.Article.articleByPublishingHouse.length
+                ? line.Article.articleByPublishingHouse[0].publisher.nameAr
+                : null,
+              quantity: line.quantity,
+              price: 0,
+              history: [],
+            });
+          }
+        });
+      } else if (allData.type === "exit") {
+        allData.exitNoteLine.forEach((line) => {
+          const existingArticle = acc.find(
+            (item) => item.id === line.articleId
+          );
+
+          if (existingArticle) {
+            existingArticle.quantity -= line.quantity;
+          } else {
+            acc.push({
+              id: line.articleId,
+              name: line.Article.title,
+              code:line.Article.code,
+              image: line.Article.cover.path,
+              author: null,
+              publisher: null,
+              quantity: -line.quantity,
+              price: 0,
+              history: [],
+            });
+          }
+        });
+      }
+
+      return acc;
+    }, []);
+ 
+    result.forEach((article) => {
+      const priceData = responsePriceByChannel.data.find(
+        (priceItem) => priceItem.idArticle === article.id
+      );
+      if (priceData) {
+        article.price = priceData.price;
+      }
+    });
+    console.log('result',result);
+    setRows(result)
+  }
+  }
   const handleInputChange = (event, value) => {
     setSearchText(value);
   };
@@ -117,7 +229,7 @@ const SearchField = ({ handelBarcode, handelNSearch }) => {
               onInputChange={handleInputChange}
               options={filteredRows}
               onChange={handelNormalSearch}
-              getOptionLabel={(option) => `${option.title}`}
+              getOptionLabel={(option) => ``}
               filterOptions={(options) => options}
               renderInput={(params) => (
                 <TextField
@@ -133,19 +245,19 @@ const SearchField = ({ handelBarcode, handelNSearch }) => {
                   <div style={{ display: 'flex', alignItems: 'center' }}>
                     <img 
                       src={option.image} 
-                      alt={option.title} 
+                      alt="img"
                       style={{ width: 50, cursor: 'pointer' }}
                       onMouseEnter={() => handleMouseEnter(option.image)}
                       onMouseLeave={handleMouseLeave}
                     />
                     <div className="ms-2">
-                      <Typography variant="body1">{`${option.title}`}</Typography>
+                      <Typography variant="body1">{`${option.name}`}</Typography>
                     </div>
                     <div className="ms-2">
-                      <Typography variant="body1">{` | ${option.author}`}</Typography>
+                      <Typography variant="body1">{` | ${option.price} DT`}</Typography>
                     </div>
                     <div className="ms-2">
-                      <Typography variant="body1">{` | ${option.publisher}`}</Typography>
+                      <Typography variant="body1">{` | ${option.quantity}`}</Typography>
                     </div>
                   </div>
                 </MenuItem>
