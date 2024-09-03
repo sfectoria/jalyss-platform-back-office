@@ -14,6 +14,8 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import Item from "../../../style/ItemStyle";
+import axios from "axios";
+import { ip } from "../../../constants/ip";
 
 const AddChannel = () => {
   const defaultTheme = createTheme({
@@ -30,86 +32,64 @@ const AddChannel = () => {
 
   const [open, setOpen] = React.useState(false);
   const [isCancelled, setIsCancelled] = React.useState(false);
-  const [form, setForm] = useState({});
+  const [channelName, setChannelName] = React.useState("");
+  const [address, setAddress] = React.useState("");
+  const [managerName, setManagerName] = React.useState("");
+  const [managerPhoneNumber, setManagerPhoneNumber] = React.useState("");
+  const [errors, setErrors] = React.useState({});
 
-  const channelNames = ["tunis", "sfax", "sousse", "mahdia"];
 
-  const addresses = ["marsa", "sfax", "bou ficha", "mahdia"];
-
-  //handleClose
   const handleClose = () => {
     setOpen(false);
   };
 
-  //handleCancel
   const handleCancel = () => {
     setIsCancelled(true);
     setOpen(true);
-    resetForm();
-
-    console.log(form);
   };
 
-  // isVerified
-  const isVerified = (form) => {
-    if (channelNames.includes(form.channelName)) {
-      setErrors((prev) => ({
-        ...prev,
-        channelName: "Stock's name already exists",
-      }));
-      return false;
-    }
+  // const isVerified = () => {
+  //   if (channelNames.includes(channelName)) {
+  //     setErrors((prev) => ({
+  //       ...prev,
+  //       channelName: "Stock's name already exists",
+  //     }));
+  //     return false;
+  //   }
 
-    if (addresses.includes(form.address)) {
-      setErrors((prev) => ({
-        ...prev,
-        address: "Address already exists",
-      }));
-      return false;
-    }
-    return true;
-  };
+  //   if (addresses.includes(form.address)) {
+  //     setErrors((prev) => ({
+  //       ...prev,
+  //       address: "Address already exists",
+  //     }));
+  //     return false;
+  //   }
+  //   return true;
+  // };
 
-  // handleChannelNameChange
-  const [channelName, setChannelName] = React.useState("");
   const handleChannelNameChange = (event) => {
     setChannelName(event.target.value);
   };
 
-  // handleAddressChange
-  const [address, setAddress] = React.useState("");
   const handleAddressChange = (event) => {
     setAddress(event.target.value);
   };
 
-  // handleManagerNameChange
-  const [managerName, setManagerName] = React.useState("");
+
   const handleManagerNameChange = (event) => {
     setManagerName(event.target.value);
   };
 
-  // handlemanagerPhoneNumberChange
-  const [managerPhoneNumber, setManagerPhoneNumber] = React.useState("");
   const handlemanagerPhoneNumberChange = (event) => {
     setManagerPhoneNumber(event.target.value);
   };
 
-  // errors
-  const [errors, setErrors] = React.useState({});
 
-  useEffect(() => {
-    setForm({
-      channelName: channelName,
-      address: address,
-      managerName: managerName,
-      managerPhoneNumber: managerPhoneNumber,
-    });
-  }, [channelName, address, managerName, managerPhoneNumber]);
-
-  const handleSubmit = (e) => {
+  const handelConfirm = (e) => {
     e.preventDefault();
     const newErrors = {};
-
+   console.log('slm');
+   
     if (!channelName) newErrors.channelName = "Stock's Name is required";
     if (!address) newErrors.address = "Address is required";
     if (!managerName) newErrors.managerName = "Manager's name is required";
@@ -117,24 +97,29 @@ const AddChannel = () => {
       newErrors.managerPhoneNumber = "Manager's phone number is required";
 
     setErrors(newErrors);
-
-    if (Object.keys(newErrors).length === 0 && isVerified(form)) {
-      console.log(form);
+   console.log(newErrors);
+   
+    if (Object.keys(newErrors).length === 0) {
+      console.log('hey');
+      
+      handelAddChannel()
       setIsCancelled(false);
       setOpen(true);
-      resetForm();
     }
-    console.log(form);
   };
 
-  // resetForm
-  const resetForm = () => {
-    setChannelName("");
-    setAddress("");
-    setManagerName("");
-    setManagerPhoneNumber("");
-    setErrors({});
-  };
+  const handelAddChannel=async()=>{
+    let obj ={
+      name:channelName,
+      type:'local',
+      region:address,
+      idStock:4
+    }
+     const newStock=await axios.post(`${ip}/selling/create`,obj)
+     console.log('ggg',newStock.data);
+     
+  }
+
   return (
     <ThemeProvider theme={defaultTheme}>
       <Paper elevation={3} sx={{ m: "5%" }}>
@@ -142,7 +127,7 @@ const AddChannel = () => {
           <Typography variant="h2" color="initial" gutterBottom>
             Channel's informations
           </Typography>
-          <form onSubmit={handleSubmit} className="emp-form">
+         
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <Item elevation={0}>
@@ -287,6 +272,7 @@ const AddChannel = () => {
                     <Button
                       type="submit"
                       variant="contained"
+                      onClick={(e)=>handelConfirm(e)}
                       sx={{
                         backgroundColor: (theme) => theme.palette.success.light,
                         "&:hover": {
@@ -301,7 +287,6 @@ const AddChannel = () => {
                 </Item>
               </Grid>
             </Grid>
-          </form>
         </Box>
       </Paper>
       <Dialog
