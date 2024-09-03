@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import Box from "@mui/material/Box";
 import Collapse from "@mui/material/Collapse";
@@ -17,6 +17,9 @@ import Link from "@mui/material/Link";
 import DoneIcon from "@mui/icons-material/Done";
 import ClearIcon from "@mui/icons-material/Clear";
 import ImagePopUp from "../../../components/ImagePopUp";
+import { ip } from "../../../constants/ip";
+import axios from "axios";
+import { useParams } from "react-router-dom";
 
 function createData(image, title, quantity, author, publisher, price) {
   return {
@@ -129,7 +132,7 @@ function Row(props) {
         <TableCell component="th" scope="row">
           <ImagePopUp image={row.image} />
         </TableCell>
-        <TableCell align="left">{row.title}</TableCell>
+        <TableCell align="left">{row.name}</TableCell>
         <TableCell align="left">{row.quantity}</TableCell>
         <TableCell align="left">{row.author}</TableCell>
         <TableCell align="left">{row.publisher}</TableCell>
@@ -279,6 +282,92 @@ const rows = [
 ];
 
 export default function StockArticles() {
+  const [data,setData]=useState([])
+  const params = useParams();
+ 
+  useEffect(()=>{
+    fetchData()
+  },[])
+
+  const combineObjs = (exitNotes, receiptNotes) => {
+    return [
+      ...receiptNotes.map((item) => ({
+        ...item,
+        type: "receipt",
+      })),
+      ...exitNotes.map((item) => ({
+        ...item,
+        type: "exit",
+      })),
+    ];
+
+  };
+  const fetchData = async () => {
+    const responseReceiptNote = await axios.get(`${ip}/receiptNote/all_rn`,{params:{stocksIds:[params.id]}});   
+    const responseExit = await axios.get(`${ip}/exitNote/all_en`, {
+      params:{stocksIds:[params.id]},
+    });
+    const sortedData = combineObjs(
+      responseExit.data,
+      responseReceiptNote.data
+    );
+    console.log("sortedData",sortedData);
+    
+    const result = sortedData.reduce((acc, allData) => {
+      if (allData.type === "receipt") {
+        allData.receiptNoteLine.forEach((line) => {
+          const existingArticle = acc.find(
+            (item) => item.id === line.idArticle
+          );
+
+          if (existingArticle) {
+            existingArticle.quantity += line.quantity;
+          } else {
+            acc.push({
+              id: line.idArticle,
+              name: line.Article.title,
+              image: line.Article.cover.path,
+              author: line.Article.articleByAuthor.length
+                ? line.Article.articleByAuthor[0].author.nameAr
+                : null,
+              publisher: line.Article.articleByPublishingHouse.length
+                ? line.Article.articleByPublishingHouse[0].publisher.nameAr
+                : null,
+              quantity: line.quantity,
+              price: 0,
+              history: [],
+            });
+          }
+        });
+      } else if (allData.type === "exit") {
+        allData.exitNoteLine.forEach((line) => {
+          const existingArticle = acc.find(
+            (item) => item.id === line.articleId
+          );
+
+          if (existingArticle) {
+            existingArticle.quantity -= line.quantity;
+          } else {
+            acc.push({
+              id: line.articleId,
+              name: line.Article.title,
+              image: line.Article.cover.path,
+              author: null,
+              publisher: null,
+              quantity: -line.quantity,
+              price: 0,
+              history: [],
+            });
+          }
+        });
+      }
+
+      return acc;
+    }, []);
+    
+    setData(result)
+    
+  };
   return (
     <TableContainer component={Paper}>
       <Table aria-label="collapsible table">
@@ -293,7 +382,7 @@ export default function StockArticles() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row, i) => (
+          {data.map((row, i) => (
             <Row key={i} row={row} />
           ))}
         </TableBody>

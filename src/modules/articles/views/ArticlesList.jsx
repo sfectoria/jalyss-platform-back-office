@@ -19,18 +19,6 @@ import ImagePopUp from "../../../components/ImagePopUp";
 import axios from "axios";
 import { ip } from "../../../constants/ip";
 
-
-function createData(id, image, title, quantity, author, publisher, price) {
-  return {
-    id,
-    image,
-    title,
-    quantity,
-    author,
-    publisher,
-    price,
-  };
-}
 const getPageFromUrl = () => {
   const params = new URLSearchParams(window.location.search);
   return +params.get("page") || 0;
@@ -93,13 +81,40 @@ export default function ArticlesList() {
         new URLSearchParams(location.search)
       );
       let params = Object.fromEntries(queryParams.entries());
-      // params.take=pageSize
-      // params.skip= page * pageSize
       console.log(params);
       if (text) params["text"] = text;
       console.log(params, text);
       const response = await axios.get(ip + "/articles/getAll", {
         params,
+      });
+      console.log(response.data.data);
+      
+      const ids=response.data.data.map(e=> e.id)
+      console.log('here',ids);
+      const rNoteResponse= await axios.get(`${ip}/receiptNote/all_rn`)
+      const result =rNoteResponse.data.reduce((acc, receipt) => {
+        receipt.receiptNoteLine.forEach(line => {
+          const existingArticle = acc.find(item => item.id === line.idArticle);
+          
+          if (existingArticle) {
+            existingArticle.quantity += line.quantity;
+          } else {
+            acc.push({
+              id: line.idArticle,
+              name: line.Article.title,
+              quantity: line.quantity
+            });
+          }
+        });
+        return acc;
+      }, []);
+      
+      console.log(result);
+      result.forEach(({ id, quantity }) => {
+        const article = response.data.data.find((article) => article.id === id);
+        if (article) {
+          article.quantity = quantity; 
+        }
       });
       setRows(response.data.data);
       setCount(response.data.count);
@@ -142,8 +157,8 @@ export default function ArticlesList() {
       field: "image",
       headerName: "Image",
       width: 90,
-      renderCell: (value, row) => {
-        return <ImagePopUp image={row?.cover?.path} />;
+      renderCell: (value) => {
+        return <ImagePopUp image={value?.row?.cover?.path} />;
       },
     },
     { field: "title", headerName: "Title", width: 270 },

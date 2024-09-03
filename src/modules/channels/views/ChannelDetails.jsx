@@ -11,6 +11,7 @@ import Tab from "@mui/material/Tab";
 import HistoryIcon from "@mui/icons-material/History";
 import ArticleIcon from "@mui/icons-material/Article";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
+import MenuBookIcon from '@mui/icons-material/MenuBook';
 import Link from "@mui/material/Link";
 import { useNavigate, useParams } from "react-router-dom";
 import AddButton from "../../../components/AddOp";
@@ -22,6 +23,7 @@ import { Button } from "@mui/material";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import { ip } from "../../../constants/ip";
 import axios from "axios";
+import ArticleInChannels from "../component/ArticleInChannels";
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -59,7 +61,7 @@ function FullWidthTabs({channelInfo}) {
   const navigate = useNavigate();
   const theme = useTheme();
   const [value, setValue] = useState(0);
-  const types = ["vente", "retour", "commande", "devis"];
+  const types = ["vente","articles", "retour", "commande", "devis"];
   const [type, setType] = useState("");
 
   useEffect(() => {
@@ -100,22 +102,28 @@ function FullWidthTabs({channelInfo}) {
             {...a11yProps(0)}
           />
           <Tab
-            icon={<HistoryIcon />}
+            icon={<MenuBookIcon />}
             iconPosition="start"
-            label="Retour"
+            label="Articles"
             {...a11yProps(1)}
           />
           <Tab
             icon={<HistoryIcon />}
             iconPosition="start"
-            label="Commande"
+            label="Retour"
             {...a11yProps(2)}
           />
           <Tab
             icon={<HistoryIcon />}
             iconPosition="start"
-            label="Devis"
+            label="Commande"
             {...a11yProps(3)}
+          />
+          <Tab
+            icon={<HistoryIcon />}
+            iconPosition="start"
+            label="Devis"
+            {...a11yProps(4)}
           />
         </Tabs>
       </AppBar>
@@ -128,16 +136,19 @@ function FullWidthTabs({channelInfo}) {
           <Vente />
         </TabPanel>
         <TabPanel value={value} index={1} dir={theme.direction}>
-          <Retour />
+          <ArticleInChannels channelInfo={channelInfo} />
         </TabPanel>
         <TabPanel value={value} index={2} dir={theme.direction}>
-          <Commande />
+          <Retour />
         </TabPanel>
         <TabPanel value={value} index={3} dir={theme.direction}>
+          <Commande />
+        </TabPanel>
+        <TabPanel value={value} index={4} dir={theme.direction}>
           <Devis />
         </TabPanel>
       </SwipeableViews>
-      <AddButton type={type} info={channelInfo} />
+      {value!==1&&<AddButton type={type} info={channelInfo} />}
     </Box>
   );
 }
@@ -156,8 +167,6 @@ export default function ChannelDetails() {
 
   const fetchStockDetails = async () => {
     const response = await axios.get(`${ip}/selling/${id}`);
-    console.log(response.data);
-    
     setChannel(response.data);
   };
   return (

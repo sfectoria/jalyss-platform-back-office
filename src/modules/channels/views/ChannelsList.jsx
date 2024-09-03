@@ -43,16 +43,7 @@ const ChannelsList = () => {
 
   const fetchData = async () => {
     try {
-      let queryParams = new URLSearchParams(location.search);
-      let params = Object.fromEntries(queryParams.entries());
-      params.take = pageSize;
-      params.skip = page * pageSize;
-      console.log(params);
-      if (text) params["text"] = text;
-      console.log(params, text);
-      const response = await axios.get(ip + "/selling/getAll", {
-        params,
-      });
+      const response = await axios.get(ip + "/selling/getAll");
       console.log('test',response.data);
       
       setRows(response.data);
