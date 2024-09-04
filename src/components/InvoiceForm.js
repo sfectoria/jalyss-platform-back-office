@@ -167,6 +167,31 @@ const InvoiceForm = () => {
       console.log("Response:", response.data);
       setItems([])
     }
+      else if(type === "BT"){
+      const itemsWithIdArticle = items.map((e) => {
+        console.log(e);
+        let { id, quantity,...rest } = e;
+        const idArticle = id;
+        quantity=parseInt(quantity)
+        return { idArticle, quantity };
+      });
+      console.log(itemsWithIdArticle);
+      
+      const obj = {
+        from: billFromId,
+        to: parseInt(receiver),
+        date: new Date(),
+        idReceiptNote: 0,
+        idExitNote: 0,
+        lines:itemsWithIdArticle
+        }
+      const response = await axios.post(
+        `${ip}/transfer-note/createTN`,
+        obj
+      );
+      console.log("Response:", response.data);
+      setItems([])
+    }
   
     } catch (error) {
       console.error("Error:", error);
@@ -281,7 +306,7 @@ const InvoiceForm = () => {
     setShowErAlert(false);
     setShowSuAlert(false);
   };
-  console.log(billTo,billToId, billFrom);
+  console.log(billTo,billToId, billFrom,billFromId);
 
   const editField = (event) => {
     const { name, value } = event.target;

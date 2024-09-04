@@ -60,7 +60,7 @@ const SearchField = ({ handelBarcode, handelNSearch,info ,type}) => {
     //   }
     // };
 
-    if (info.type==='BR') {
+    if (info.type==='BR' || info.type==='BT') {
       fetchDataStock()
     }
     if (info.type==="BL" || info.type==="BLF"|| info.type==="F" || info.type==="Ticket" || info.type==="Devis" || info.type==="BC" ) {
