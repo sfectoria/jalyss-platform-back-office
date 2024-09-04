@@ -124,9 +124,9 @@ const InvoiceItem = (props) => {
           <tr>
             <th>ITEM</th>
             <th style={{ display: "flex", justifyContent: "center" }}>QTY</th>
-            <th>PRICE</th>
-            <th>Discount</th>
-            <th>Subtotal</th>
+            {type!=='BT'&&<th>PRICE</th>}
+            {type!=='BT'&&<th>Discount</th>}
+            {type!=='BT'&&<th>Subtotal</th>}
             <th className="text-center">ACTION</th>
           </tr>
         </thead>
@@ -181,7 +181,7 @@ const ItemRow = ({
           onItemizedItemEdit={onItemizedItemEdit}
         />
       </td>
-      <td style={{ minWidth: "130px", alignContent: "center" }}>
+     { type !== "BT"&&<td style={{ minWidth: "130px", alignContent: "center" }}>
         {type === "BR" ? (
           <InputGroup className="my-1 flex-nowrap">
             <Form.Control
@@ -212,8 +212,8 @@ const ItemRow = ({
             />
           </div>
         )}
-      </td>
-      <td style={{ minWidth: "130px" }}>
+      </td>}
+      { type !== "BT"&& <td style={{ minWidth: "130px" }}>
         <InputGroup className="my-1 flex-nowrap">
           <Form.Control
             id={item.id}
@@ -231,8 +231,8 @@ const ItemRow = ({
             %
           </InputGroup.Text>
         </InputGroup>
-      </td>
-      <td style={{ minWidth: "130px", alignContent: "center" }}>
+      </td>}
+      { type !== "BT"&&<td style={{ minWidth: "130px", alignContent: "center" }}>
         <div className="col-sm-10">
           <input
             type="text"
@@ -250,7 +250,7 @@ const ItemRow = ({
             )}
           />
         </div>
-      </td>
+      </td>}
       <td className="text-center" style={{ minWidth: "30px" }}>
         <BiTrash
           onClick={handleDelEvent}
