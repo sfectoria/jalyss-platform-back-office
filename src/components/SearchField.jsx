@@ -60,7 +60,9 @@ const SearchField = ({ handelBarcode, handelNSearch,info ,type}) => {
     //   }
     // };
 
-    // fetchData();
+    if (info.type==='BR') {
+      fetchDataStock()
+    }
     if (info.type==="BL" || info.type==="BLF"|| info.type==="F" || info.type==="Ticket" || info.type==="Devis" || info.type==="BC" ) {
       fetchDataChannel()
     }
@@ -173,6 +175,73 @@ const SearchField = ({ handelBarcode, handelNSearch,info ,type}) => {
     setRows(result)
   }
   }
+  const fetchDataStock = async () => {
+    const responseReceipt = await axios.get(`${ip}/receiptNote/all_rn`, {
+      params: { stocksIds: [info.receiver] },
+    });
+    console.log(responseReceipt.data);
+    const responseExit = await axios.get(`${ip}/exitNote/all_en`, {
+      params: { stocksIds: [info.receiver] },
+    });
+    console.log(responseExit.data, "exit");
+    const sortedData = mergeAndSortByDate(
+      responseExit.data,
+      responseReceipt.data
+    );
+
+
+    const result = sortedData.reduce((acc, allData) => {
+      if (allData.type === "receipt") {
+        allData.receiptNoteLine.forEach((line) => {
+          const existingArticle = acc.find(
+            (item) => item.id === line.idArticle
+          );
+
+          if (existingArticle) {
+            existingArticle.quantity += line.quantity;
+          } else {
+            acc.push({
+              id: line.idArticle,
+              name: line.Article.title,
+              code:line.Article.code,
+              image: line.Article.cover.path,
+              author: line.Article.articleByAuthor.length
+                ? line.Article.articleByAuthor[0].author.nameAr
+                : null,
+              publisher: line.Article.articleByPublishingHouse.length
+                ? line.Article.articleByPublishingHouse[0].publisher.nameAr
+                : null,
+              quantity: line.quantity,
+            });
+          }
+        });
+      } else if (allData.type === "exit") {
+        allData.exitNoteLine.forEach((line) => {
+          const existingArticle = acc.find(
+            (item) => item.id === line.articleId
+          );
+
+          if (existingArticle) {
+            existingArticle.quantity -= line.quantity;
+          } else {
+            acc.push({
+              id: line.articleId,
+              name: line.Article.title,
+              code:line.Article.code,
+              image: line.Article.cover.path,
+              author: null,
+              publisher: null,
+              quantity: -line.quantity,
+            });
+          }
+        });
+      }
+
+      return acc;
+    }, []);
+    setRows(result)
+  
+  }
   const handleInputChange = (event, value) => {
     setSearchText(value);
   };
@@ -253,9 +322,9 @@ const SearchField = ({ handelBarcode, handelNSearch,info ,type}) => {
                     <div className="ms-2">
                       <Typography variant="body1">{`${option.name}`}</Typography>
                     </div>
-                    <div className="ms-2">
+                   { option.price&&<div className="ms-2">
                       <Typography variant="body1">{` | ${option.price} DT`}</Typography>
-                    </div>
+                    </div>}
                     <div className="ms-2">
                       <Typography variant="body1">{` | ${option.quantity}`}</Typography>
                     </div>

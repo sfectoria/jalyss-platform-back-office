@@ -139,8 +139,35 @@ const InvoiceForm = () => {
         obj
       );
       console.log("Response:", response.data);
+      setItems([])
     }
-    setItems([])
+      else if(type === "BR"){
+      const itemsWithIdArticle = items.map((e) => {
+        console.log(e);
+        let { id, quantity,price, ...rest } = e;
+        const idArticle = id;
+        price=parseFloat(price)
+        quantity=parseInt(quantity)
+        return { idArticle, quantity ,price};
+      });
+      console.log(itemsWithIdArticle);
+      
+      const obj = {
+          typeReceipt: "achat",
+          receiptDate: new Date(),
+          idStock: parseInt(receiver),
+          totalAmount:parseFloat(total) ,
+          lines: itemsWithIdArticle,
+          numReceiptNote: 0
+        }
+      const response = await axios.post(
+        `${ip}/receiptNote/create_rn`,
+        obj
+      );
+      console.log("Response:", response.data);
+      setItems([])
+    }
+  
     } catch (error) {
       console.error("Error:", error);
     }
@@ -165,8 +192,11 @@ const InvoiceForm = () => {
         price: obj.price,
         barcode: "",
         quantity: 1,
+        stockQuantity:obj.quantity,
         discount: 0,
       };
+      console.log(newItem,'tt');
+      
       setItems([...items, newItem]);
     }
     handleCalculateTotal();

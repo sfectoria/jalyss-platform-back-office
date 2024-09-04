@@ -25,9 +25,9 @@ const PersonSearch = ({person,type,setName,setEmail,setAddress,setId}) => {
 
   const fetchData = async () => {
     if(type==='BR') {
-    // const response = await axios.get(`${ip}/fournisseurs/${person}`);
-    // console.log(response.data);
-    // setRows(response.data)
+    const response = await axios.get(`${ip}/clients`);
+    console.log(response.data);
+    setRows(response.data)
 
   }
   else if (type==='BT'){
