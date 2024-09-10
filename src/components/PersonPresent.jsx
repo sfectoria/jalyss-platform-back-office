@@ -17,7 +17,7 @@ function PersonPresent({person,type,reff,setName,setEmail,setAddress}) {
           if (reff==='resv') {
             const response = await axios.get(`${ip}/stocks/${person}`);
             console.log(person,response.data,'hello');
-            const {id, name, location } = response.data;
+            const {id, name, location } = response.data.data;
             setName(name)
             setPName(name)
             setEmail('jalyss@gmail.com')
@@ -40,7 +40,7 @@ function PersonPresent({person,type,reff,setName,setEmail,setAddress}) {
           if (reff==='resv') {
             const response = await axios.get(`${ip}/stocks/${person}`);
             console.log(person,response.data,'hello');
-            const {id, name, location } = response.data;
+            const {id, name, location } = response.data.data;
             setName(name)
             setPName(name)
             setEmail('jalyss@gmail.com')
@@ -50,7 +50,7 @@ function PersonPresent({person,type,reff,setName,setEmail,setAddress}) {
           }
           if (reff==='sndr') {
             const response = await axios.get(`${ip}/stocks/${person}`);
-            const {id, name, location } = response.data;
+            const {id, name, location } = response.data.data;
             setName(name)
             setPName(name)
             setEmail('jalyss@gmail.com')
@@ -74,7 +74,7 @@ function PersonPresent({person,type,reff,setName,setEmail,setAddress}) {
           }
           if (reff==='sndr') {
             const response = await axios.get(`${ip}/stocks/${person}`);
-            const {id, name, location } = response.data;
+            const {id, name, location } = response.data.data;
             setName(name)
             setPName(name)
             setEmail('jalyss@gmail.com')

@@ -92,7 +92,7 @@ const InvoiceForm = () => {
     } else if (type === "BLF") {
       setInvoiceTitle("Bon de Livraison/Facture");
       setReqName('salesDeliveryInvoice')
-      setReqLine('salesDeliveryInvoiceLines')
+      setReqLine('salesDeliveryInvoicelines')
       setReqChannel('salesChannelsId')
       setReqClient('clientId')
       setReqDate('deliveryDate')
@@ -178,8 +178,8 @@ const InvoiceForm = () => {
       console.log(itemsWithIdArticle);
       
       const obj = {
-        from: billFromId,
-        to: parseInt(receiver),
+        from: parseInt(sender),
+        to: billToId,
         date: new Date(),
         idReceiptNote: 0,
         idExitNote: 0,

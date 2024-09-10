@@ -17,7 +17,7 @@ export default function ArticleInChannels({ channelInfo }) {
   const [rows, setRows] = useState([]);
   const [editRowId, setEditRowId] = useState(null);
   const [price, setPrice] = useState({});
-  const [refresh,setRefresh]=useState(true)
+  const [refresh, setRefresh] = useState(true);
 
   useEffect(() => {
     fetchData();
@@ -41,78 +41,35 @@ export default function ArticleInChannels({ channelInfo }) {
     return combined.sort((a, b) => a.date - b.date);
   };
   const fetchData = async () => {
-    const responseReceipt = await axios.get(`${ip}/receiptNote/all_rn`, {
-      params: { stocksIds: [channelInfo.idStock] },
-    });
-    console.log(responseReceipt.data);
-    const responseExit = await axios.get(`${ip}/exitNote/all_en`, {
-      params: { stocksIds: [channelInfo.idStock] },
-    });
-    console.log(responseExit.data, "exit");
-    const sortedData = mergeAndSortByDate(
-      responseExit.data,
-      responseReceipt.data
+    const response = await axios.get(`${ip}/stocks/${channelInfo.idStock}`);
+    console.log("hello ", response.data.data.stockArticle);
+    const result = response.data.data.stockArticle.reduce(
+      (acc, item) => {
+        acc.data.push({
+          id: item.articleId,
+          name: item.article.title,
+          code: item.article.code,
+          image: item.article.cover.path,
+          author: item.article?.articleByAuthor[0]?.author?.nameAr,
+          publisher: item.article?.articleByPublishingHouse[0]?.publishingHouse.nameAr,
+          quantity: item.quantity,
+          price: 0,
+        });
+        acc.ids.push(item.articleId);
+        return acc;
+      },
+      {
+        data: [],
+        ids: [],
+      }
     );
+
     const responsePriceByChannel = await axios.get(
       `http://localhost:3000/price-By-Channel/getAll`,
-      { params: { salesChannelIds: [channelInfo.id] } }
+      { params: { salesChannelIds: result.ids } }
     );
-    console.log(responsePriceByChannel.data);
 
-    const result = sortedData.reduce((acc, allData) => {
-      if (allData.type === "receipt") {
-        allData.receiptNoteLine.forEach((line) => {
-          const existingArticle = acc.find(
-            (item) => item.id === line.idArticle
-          );
-
-          if (existingArticle) {
-            existingArticle.quantity += line.quantity;
-          } else {
-            acc.push({
-              id: line.idArticle,
-              name: line.Article.title,
-              image: line.Article.cover.path,
-              author: line.Article.articleByAuthor.length
-                ? line.Article.articleByAuthor[0].author.nameAr
-                : null,
-              publisher: line.Article.articleByPublishingHouse.length
-                ? line.Article.articleByPublishingHouse[0].publisher.nameAr
-                : null,
-              quantity: line.quantity,
-              price: 0,
-              history: [],
-            });
-          }
-        });
-      } else if (allData.type === "exit") {
-        allData.exitNoteLine.forEach((line) => {
-          const existingArticle = acc.find(
-            (item) => item.id === line.articleId
-          );
-
-          if (existingArticle) {
-            existingArticle.quantity -= line.quantity;
-          } else {
-            acc.push({
-              id: line.articleId,
-              name: line.Article.title,
-              image: line.Article.cover.path,
-              author: null,
-              publisher: null,
-              quantity: -line.quantity,
-              price: 0,
-              history: [],
-            });
-          }
-        });
-      }
-
-      return acc;
-    }, []);
-
-    console.log(result, "before");
-    result.forEach((article) => {
+    result.data.forEach((article) => {
       const priceData = responsePriceByChannel.data.find(
         (priceItem) => priceItem.idArticle === article.id
       );
@@ -120,8 +77,8 @@ export default function ArticleInChannels({ channelInfo }) {
         article.price = priceData.price;
       }
     });
-    console.log(result, "after");
-    setRows(result);
+    console.log("result", result);
+    setRows(result.data);
   };
 
   const handleEditClick = (id) => {
@@ -133,29 +90,28 @@ export default function ArticleInChannels({ channelInfo }) {
       `http://localhost:3000/price-By-Channel/getAll`,
       { params: { salesChannelIds: [channelInfo.id], articleIds: [id] } }
     );
-    if (responseExistPrice.data.length&&price[id]&&!isNaN(price[id])) {
-        console.log(responseExistPrice.data);
-        const updatePrice = await axios.patch(
-            `http://localhost:3000/price-By-Channel/${responseExistPrice.data[0].id}`,
-            {
-              price:parseInt(price[id]),
-            }
-          );
+    if (responseExistPrice.data.length && price[id] && !isNaN(price[id])) {
+      console.log(responseExistPrice.data);
+      const updatePrice = await axios.patch(
+        `http://localhost:3000/price-By-Channel/${responseExistPrice.data[0].id}`,
+        {
+          price: parseInt(price[id]),
+        }
+      );
     } else if (responseExistPrice.data.length === 0) {
       console.log(price[id], "price");
 
       const newPrice = await axios.post(
         `http://localhost:3000/price-By-Channel/create`,
         {
-          price:parseInt(price[id]),
+          price: parseInt(price[id]),
           idArticle: id,
           idSalesChannel: channelInfo.id,
         }
       );
       console.log(newPrice);
-      
     }
-    setRefresh(!refresh)
+    setRefresh(!refresh);
     setEditRowId(null);
   };
   const handlePriceChange = (id, value) => {

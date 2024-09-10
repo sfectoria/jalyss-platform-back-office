@@ -136,7 +136,7 @@ export default function StockDetails() {
 
   const fetchStockDetails = async () => {
     const response = await axios.get(`${ip}/stocks/${params.id}`);
-    setStockInfo(response.data);
+    setStockInfo(response.data.data);
   };
   return (
     <Box

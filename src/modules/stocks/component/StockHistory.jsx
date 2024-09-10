@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { DataGrid, GridToolbar, GridActionsCellItem } from "@mui/x-data-grid";
-import VisibilityIcon from "@mui/icons-material/Visibility";
+import DescriptionIcon from '@mui/icons-material/Description';
 import CustomNoResultsOverlay from "../../../style/NoResultStyle";
 import DoneIcon from "@mui/icons-material/Done";
 import ClearIcon from "@mui/icons-material/Clear";
@@ -9,7 +9,6 @@ import MouseOverPopover from "./cosOrForPopUp";
 import { ip } from "../../../constants/ip";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import { v4 as uuidv4 } from "uuid";
 
 export default function StockHistory() {
   const [rows, setRows] = useState([]);
@@ -52,8 +51,8 @@ export default function StockHistory() {
     });
     console.log(responseExit.data);
     const sortedData = mergeAndSortByDate(
-      responseExit.data,
-      responseReceipt.data
+      responseExit.data.data,
+      responseReceipt.data.data
     );
     console.log(sortedData);
     setRows(sortedData);
@@ -92,7 +91,9 @@ export default function StockHistory() {
   };
 
   const columns = [
-    { field: "date", headerName: "Date", width: 200 },
+    { field: "date", headerName: "Date", width: 200,
+      valueGetter:(value)=>(value.toString().slice(0,value.toString().indexOf('GMT')-1))
+     },
     {
       field: "customerName",
       headerName: "Customer",
@@ -149,7 +150,7 @@ export default function StockHistory() {
       type: "actions",
       getActions: (params) => [
         <GridActionsCellItem
-          icon={<VisibilityIcon />}
+          icon={<DescriptionIcon />}
           onClick={openModal}
           label=""
         />,
