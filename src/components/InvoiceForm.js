@@ -211,12 +211,16 @@ const InvoiceForm = () => {
       setItems(items);
       return doubleQ;
     } else {
+      console.log(obj);
+      
       const newItem = {
         id: obj.id,
         name: obj.name,
         price: obj.price,
         barcode: "",
         quantity: 1,
+        publisher:obj.publisher,
+        author:obj.author,
         stockQuantity:obj.quantity,
         discount: 0,
       };
@@ -595,7 +599,7 @@ const InvoiceForm = () => {
             <Button variant="primary" type="submit" className="d-block w-100">
               Review Invoice
             </Button>
-            <InvoiceModal
+            {isOpen&&<InvoiceModal
               showModal={isOpen}
               closeModal={closeModal}
               info={{
@@ -614,14 +618,15 @@ const InvoiceForm = () => {
                 taxAmount,
                 discountAmount,
               }}
-              items={items}
+              itemsData={items}
               currency={currency}
               subTotal={subTotal}
               taxAmount={taxAmount}
               discountAmount={discountAmount}
               total={total}
               finishSale={finishSale}
-            />
+              mode='creation'
+            />}
             <Form.Group className="mb-3">
               <Form.Label className="fw-bold">Currency:</Form.Label>
               <Form.Select

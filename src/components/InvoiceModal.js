@@ -14,35 +14,77 @@ import { ip } from '../constants/ip';
 const InvoiceModal = ({
   showModal,
   closeModal,
-  info,
   currency,
-  items,
-  subTotal,
+  modalId,
+  idChannel,
+  info,
+  itemsData,
   taxAmount,
   discountAmount,
-  finishSale
+  finishSale,
+  mode
 }) => {
   const invoiceCaptureRef = useRef(null);
-  const [item,setItem]=useState([])
+  const [items,setItems]=useState([])
   const [date,setDate]=useState('')
   const [billTo,setBillTo]=useState({})
   const [billFrom,setBillFrom]=useState({})
   const [amount,setAmount]=useState(0)
   const [title,setTitle]=useState('')
   useEffect(()=>{
-    fetchModalData()
+    if(mode==="viewer"){
+      fetchModalData()
+    }
+    else if (mode==="creation"){
+      setBillTo({
+        name:info.billTo,
+        address:info.billToAddress,
+        email:info.billToEmail
+      })
+      setBillFrom({
+        name:info.billFrom,
+        address:info.billFromAddress,
+        email:info.billFromEmail
+      })
+      setItems(itemsData)
+      console.log(billTo,billFrom);
+      
+    }
   },[])
-
+  console.log(idChannel,modalId,mode);
+  
   const fetchModalData=async()=>{
-    const response=await axios.get(`${ip}/exitNote/${1}`)
-    console.log(response.data);
-    
+    const response=await axios.get(`${ip}/exitNote/${modalId}`)
     let e =response.data
+    let itemsData=e.exitNoteLine.reduce((acc,el)=>{
+      let {Article,quantity}=el
+      acc.data.push({...Article,quantity})
+      acc.ids.push(Article.id);
+      return acc;
+     },{data:[],ids:[]})
+    const responsePrices = await axios.get(
+      `${ip}/price-By-Channel/getAll`,
+      { params: { salesChannelIds: [idChannel],articleIds:itemsData.ids} }
+    );
+   itemsData.data.forEach((article) => {
+    const priceData = responsePrices.data.find(
+      (priceItem) => priceItem.idArticle === article.id
+    );
+    if (priceData) {
+      article.price = priceData.price;
+    }
+  });
+     
     if (e.salesDeliveryInvoice.length) {
       setBillTo({
         name:e.salesDeliveryInvoice[0].client.fullName,
         address:e.salesDeliveryInvoice[0].client.address,
         email:e.salesDeliveryInvoice[0].client.email
+      })
+      setBillFrom({
+        name:e.salesDeliveryInvoice[0].salesChannels.name,
+        address:e.salesDeliveryInvoice[0].salesChannels.region,
+        email:"jalyss@gmail.com",
       })
       setTitle('Bon de Livraison / Facture')
     }
@@ -52,6 +94,11 @@ const InvoiceModal = ({
         address:e.salesDeliveryNote[0].client.address,
         email:e.salesDeliveryNote[0].client.email
       })
+      setBillFrom({
+        name:e.salesDeliveryNote[0].salesChannels.name,
+        address:e.salesDeliveryNote[0].salesChannels.region,
+        email:"jalyss@gmail.com",
+      })
       setTitle('Bon de Livraison')
     }
     if (e.salesInvoice.length) {
@@ -60,16 +107,25 @@ const InvoiceModal = ({
         address:e.salesInvoice[0].client.address,
         email:e.salesInvoice[0].client.email
       })
+      setBillFrom({
+        name:e.salesInvoice[0].salesChannels.name,
+        address:e.salesInvoice[0].salesChannels.region,
+        email:"jalyss@gmail.com",
+      })
       setTitle('Facture')
     }
-    setBillFrom({
-      name:e.stock.name,
-      address:e.stock.location,
-      email:"jalyss@gmail.com",
-    })
+    
     setDate(e.exitDate)
     setAmount(e.totalAmount)
-    setItem(e.exitNoteLine.Article)
+    console.log(itemsData.data,'hello');
+    
+    setItems(itemsData.data.map((e)=>{
+      e.author=e.articleByAuthor.length?e.articleByAuthor[0]?.author?.nameAr:null
+      e.publisher=e.articleByPublishingHouse.length?e.articleByPublishingHouse[0]?.publishingHouse?.nameAr:null
+      e.image=e?.cover?.path
+      e.name=e.title
+      return e
+    }))
     
   }
 
@@ -98,8 +154,7 @@ const InvoiceModal = ({
             <div className="w-100">
               <h4 className="fw-bold my-2">{title}</h4>
               <h6 className="fw-bold text-secondary mb-1">
-                Invoice #: {info.invoiceNumber || ''}
-              </h6>
+                Invoice #: {''} </h6>
             </div>
             <div className="text-end ms-4">
               <h6 className="fw-bold mt-1 mb-2">Amount&nbsp;Due:</h6>
@@ -130,7 +185,7 @@ const InvoiceModal = ({
               <thead>
                 <tr>
                   <th>QTY</th>
-                  <th>DESCRIPTION</th>
+                  <th>Title</th>
                   <th className="text-end">PRICE</th>
                   <th className="text-end">AMOUNT</th>
                 </tr>
@@ -139,9 +194,9 @@ const InvoiceModal = ({
                 {items.map((item, i) => (
                   <tr key={i}>
                     <td style={{ width: '70px' }}>{item.quantity}</td>
-                    <td>{item.title} - {item.description}</td>
-                    <td className="text-end" style={{ width: '100px' }}>{currency} {item.price}</td>
-                    <td className="text-end" style={{ width: '100px' }}>{currency} {item.price * item.quantity}</td>
+                    <td>{item.name} - {item?.author} - {item?.publisher}</td>
+                    <td className="text-end" style={{ width: '100px' }}>{item.price} {currency}</td>
+                    <td className="text-end" style={{ width: '100px' }}>{item.price * item.quantity} {currency}</td>
                   </tr>
                 ))}
               </tbody>
@@ -156,42 +211,42 @@ const InvoiceModal = ({
                 <tr className="text-end">
                   <td></td>
                   <td className="fw-bold" style={{ width: '100px' }}>SUBTOTAL</td>
-                  <td className="text-end" style={{ width: '100px' }}>{currency} {subTotal}</td>
+                  <td className="text-end" style={{ width: '100px' }}>{amount} {currency}</td>
                 </tr>
                 {taxAmount !== '0.00' &&
                   <tr className="text-end">
                     <td></td>
                     <td className="fw-bold" style={{ width: '100px' }}>TAX</td>
-                    <td className="text-end" style={{ width: '100px' }}>{currency} {taxAmount}</td>
+                    <td className="text-end" style={{ width: '100px' }}>{taxAmount} {currency}</td>
                   </tr>
                 }
                 {discountAmount !== '0.00' &&
                   <tr className="text-end">
                     <td></td>
                     <td className="fw-bold" style={{ width: '100px' }}>DISCOUNT</td>
-                    <td className="text-end" style={{ width: '100px' }}>{currency} {discountAmount}</td>
+                    <td className="text-end" style={{ width: '100px' }}>{discountAmount} {currency}</td>
                   </tr>
                 }
                 <tr className="text-end">
                   <td></td>
                   <td className="fw-bold" style={{ width: '100px' }}>TOTAL</td>
-                  <td className="text-end" style={{ width: '100px' }}>{currency} {amount}</td>
+                  <td className="text-end" style={{ width: '100px' }}>{amount} {currency}</td>
                 </tr>
               </tbody>
             </Table>
-            {info.notes &&
+            {/* { &&
               <div className="bg-light py-3 px-4 rounded">
-                {info.notes}
-              </div>}
+                {}
+              </div>} */}
           </div>
         </div>
         <div className="pb-4 px-4">
           <Row>
-            <Col md={6}>
+            {mode!=="viewer"&&<Col md={6}>
               <Button variant="primary" className="d-block w-100" onClick={()=>{finishSale()}}>
                 <BiPaperPlane style={{ width: '15px', height: '15px', marginTop: '-3px' }} className="me-2" />Finish Sale
               </Button>
-            </Col>
+            </Col>}
             <Col md={6}>
               <Button variant="outline-primary" className="d-block w-100 mt-3 mt-md-0" onClick={generateInvoice}>
                 <BiCloudDownload style={{ width: '16px', height: '16px', marginTop: '-3px' }} className="me-2" />

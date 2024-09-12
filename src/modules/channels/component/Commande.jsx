@@ -1,13 +1,30 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DataGrid, GridToolbar, GridActionsCellItem } from "@mui/x-data-grid";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import CustomNoResultsOverlay from "../../../style/NoResultStyle";
 import InvoiceModal from "../../../components/InvoiceModal";
 import MouseOverPopover from "./cosOrForPopUp";
 import ColorToggleButton from "../../../components/ColorToggleButton";
+import axios from "axios";
+import { ip } from "../../../constants/ip";
 
 export default function Commande() {
   const [isOpen, setIsOpen] = useState(false);
+  const [rows,setRows]=useState([])
+  const [count,setCount]=useState(0)
+
+  useEffect(()=>{
+    fetchData()
+  },[])
+
+  const fetchData=async()=>{
+    const response=await axios.get(`${ip}/purchaseOrder/getAll`)
+    console.log(response.data.data);
+    
+    setRows(response.data.data);
+    
+  }
+
   const items = [
     {
       id: (+new Date() + Math.floor(Math.random() * 999999)).toString(36),
@@ -42,21 +59,23 @@ export default function Commande() {
   };
 
   const columns = [
-    { field: "date", headerName: "Date", width: 200 },
+    { field: "date", headerName: "Date", width: 200  ,valueGetter:(value)=>{
+      return new Date(value).toString().slice(0,new Date(value).toString().indexOf('GMT')-4)
+    }},
     {
       field: "customerName",
       headerName: "Customer",
       width: 270,
       renderCell: (params) => (
-        <MouseOverPopover name={params.row.customerName} />
-      ),
+       <MouseOverPopover name={params.row?.client} />
+      )
     },
     {
       field: "state",
       headerName: "State",
       width: 400,
       renderCell: (params) => (
-        <ColorToggleButton state={params.row.state} />
+        <ColorToggleButton state={params.row?.status?.toLowerCase()} />
       )
       
     },
@@ -75,62 +94,62 @@ export default function Commande() {
     },
   ];
 
-  const rows = [
-    {
-      id: 1,
-      date: "07/23/2024 6:56 PM",
-      customerName: null,
-      state: "pending",
-    },
-    {
-      id: 2,
-      date: "07/23/2024 6:56 PM",
-      customerName: "Hamida midawi",
-      state: "confirmed",
-    },
-    {
-      id: 3,
-      date: "07/23/2024 6:56 PM",
-      customerName: null,
-      state: "pending",
-    },
-    {
-      id: 4,
-      date: "07/23/2024 6:56 PM",
-      customerName: null,
-      state: "confirmed",
-    },
-    {
-      id: 5,
-      date: "07/23/2024 6:56 PM",
-      customerName: "Daenerys",
-      state: "cancelled",
-    },
-    {
-      id: 6,
-      date: "07/23/2024 6:56 PM",
-      customerName: "houssem ben ammar",
-      state: "pending",
-    },
-    {
-      id: 7,
-      date: "07/23/2024 6:56 PM",
-      customerName: null,
-      state: "confirmed",
-    },
-    {
-      id: 8,
-      date: "07/23/2024 6:56 PM",
-      customerName: "Stock Nabeul",
-      state: "cancelled",
-    },
-    {
-      id: 9,
-      date: "07/23/2024 6:56 PM",
-      customerName: "Harvey",
-      state: "confirmed",
-    },
-  ];
+  // const rows = [
+  //   {
+  //     id: 1,
+  //     date: "07/23/2024 6:56 PM",
+  //     customerName: null,
+  //     state: "pending",
+  //   },
+  //   {
+  //     id: 2,
+  //     date: "07/23/2024 6:56 PM",
+  //     customerName: "Hamida midawi",
+  //     state: "confirmed",
+  //   },
+  //   {
+  //     id: 3,
+  //     date: "07/23/2024 6:56 PM",
+  //     customerName: null,
+  //     state: "pending",
+  //   },
+  //   {
+  //     id: 4,
+  //     date: "07/23/2024 6:56 PM",
+  //     customerName: null,
+  //     state: "confirmed",
+  //   },
+  //   {
+  //     id: 5,
+  //     date: "07/23/2024 6:56 PM",
+  //     customerName: "Daenerys",
+  //     state: "cancelled",
+  //   },
+  //   {
+  //     id: 6,
+  //     date: "07/23/2024 6:56 PM",
+  //     customerName: "houssem ben ammar",
+  //     state: "pending",
+  //   },
+  //   {
+  //     id: 7,
+  //     date: "07/23/2024 6:56 PM",
+  //     customerName: null,
+  //     state: "confirmed",
+  //   },
+  //   {
+  //     id: 8,
+  //     date: "07/23/2024 6:56 PM",
+  //     customerName: "Stock Nabeul",
+  //     state: "cancelled",
+  //   },
+  //   {
+  //     id: 9,
+  //     date: "07/23/2024 6:56 PM",
+  //     customerName: "Harvey",
+  //     state: "confirmed",
+  //   },
+  // ];
 
   return (
     <div style={{ width: "100%" }}>
@@ -165,7 +184,7 @@ export default function Commande() {
           },
         }}
       />
-      <InvoiceModal
+      {isOpen&&<InvoiceModal
         showModal={isOpen}
         closeModal={closeModal}
         info={{
@@ -190,7 +209,7 @@ export default function Commande() {
         taxAmount={0}
         discountAmount={0}
         total={0}
-      />
+      />}
     </div>
   );
 }

@@ -204,7 +204,7 @@ export default function StockHistory() {
             },
           }}
         />
-        <InvoiceModal
+        {isOpen&&<InvoiceModal
           showModal={isOpen}
           closeModal={closeModal}
           info={{
@@ -229,7 +229,7 @@ export default function StockHistory() {
           taxAmount={0}
           discountAmount={0}
           total={0}
-        />
+        />}
       </div>
     </div>
   );

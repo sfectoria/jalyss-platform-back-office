@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
-import { DataGrid, GridToolbar, GridActionsCellItem } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridToolbar,
+  GridActionsCellItem,
+  gridPageCountSelector,
+  GridPagination,
+  useGridApiContext,
+  useGridSelector,
+} from "@mui/x-data-grid";
 import MuiPagination from "@mui/material/Pagination";
-import Typography from "@mui/material/Typography";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
-import { useLocation, useNavigate } from "react-router-dom";
 import CustomNoResultsOverlay from "../../../style/NoResultStyle";
-import Item from "../../../style/ItemStyle";
 import ImagePopUp from "../../../components/ImagePopUp";
 import axios from "axios";
 import { ip } from "../../../constants/ip";
@@ -18,67 +23,82 @@ export default function ArticleInChannels({ channelInfo }) {
   const [editRowId, setEditRowId] = useState(null);
   const [price, setPrice] = useState({});
   const [refresh, setRefresh] = useState(true);
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [count, setCount] = useState(0);
 
   useEffect(() => {
     fetchData();
   }, [refresh]);
-  const mergeAndSortByDate = (exitNotes, receiptNotes) => {
-    const combined = [
-      ...exitNotes.map((item) => ({
-        ...item,
-        type: "exit",
-        date: new Date(item.exitDate),
-        id: `exit-${item.id}`,
-      })),
-      ...receiptNotes.map((item) => ({
-        ...item,
-        type: "receipt",
-        date: new Date(item.receiptDate),
-        id: `receipt-${item.id}`,
-      })),
-    ];
 
-    return combined.sort((a, b) => a.date - b.date);
-  };
+  function Pagination({ onPageChange, className }) {
+    const apiRef = useGridApiContext();
+    const pageCount = useGridSelector(apiRef, gridPageCountSelector);
+   console.log(page);
+   
+    return (
+      <MuiPagination
+        color="secondary"
+        className={className}
+        count={pageCount}
+        page={page+1}
+        onChange={(event, newPage) => {
+          setPage(newPage-1,page)
+          onPageChange(event, newPage-1);
+        }}
+      />
+    );
+  }
+  
+  function CustomPagination(props) {
+    return <GridPagination ActionsComponent={Pagination} {...props} />;
+  }
+
   const fetchData = async () => {
-    const response = await axios.get(`${ip}/stocks/${channelInfo.idStock}`);
-    console.log("hello ", response.data.data.stockArticle);
-    const result = response.data.data.stockArticle.reduce(
-      (acc, item) => {
-        acc.data.push({
-          id: item.articleId,
-          name: item.article.title,
-          code: item.article.code,
-          image: item.article.cover.path,
-          author: item.article?.articleByAuthor[0]?.author?.nameAr,
-          publisher: item.article?.articleByPublishingHouse[0]?.publishingHouse.nameAr,
-          quantity: item.quantity,
-          price: 0,
-        });
-        acc.ids.push(item.articleId);
-        return acc;
-      },
-      {
-        data: [],
-        ids: [],
-      }
-    );
-
-    const responsePriceByChannel = await axios.get(
-      `http://localhost:3000/price-By-Channel/getAll`,
-      { params: { salesChannelIds: result.ids } }
-    );
-
-    result.data.forEach((article) => {
-      const priceData = responsePriceByChannel.data.find(
-        (priceItem) => priceItem.idArticle === article.id
+    let params ={take:pageSize,skip:page*pageSize }
+    const response = await axios.get(`${ip}/stocks/${channelInfo.idStock}`,{params});
+    if (response.data.data) {
+      const result = response.data.data.stockArticle.reduce(
+        (acc, item) => {
+          acc.data.push({
+            id: item.articleId,
+            name: item.article?.title,
+            code: item.article?.code,
+            image: item.article?.cover?.path,
+            author: item.article?.articleByAuthor[0]?.author?.nameAr,
+            publisher:
+              item.article?.articleByPublishingHouse[0]?.publishingHouse.nameAr,
+            quantity: item?.quantity,
+            price: 0,
+          });
+          acc.ids.push(item.articleId);
+          return acc;
+        },
+        {
+          data: [],
+          ids: [],
+        }
       );
-      if (priceData) {
-        article.price = priceData.price;
-      }
-    });
-    console.log("result", result);
-    setRows(result.data);
+
+      const responsePriceByChannel = await axios.get(
+        `${ip}/price-By-Channel/getAll`,
+        {
+          params: { salesChannelIds: [channelInfo.id], articleIds: result.ids },
+        }
+      );
+
+      result.data.forEach((article) => {
+        const priceData = responsePriceByChannel.data.find(
+          (priceItem) => priceItem.idArticle === article.id
+        );
+        if (priceData) {
+          article.price = priceData.price;
+        }
+      });
+      console.log("result", result);
+      setRows(result.data);
+      setCount(response.data.count)
+    }
   };
 
   const handleEditClick = (id) => {
@@ -121,6 +141,20 @@ export default function ArticleInChannels({ channelInfo }) {
   const handleDetails = (id) => {
     console.log("View details for ID:", id);
   };
+
+  const handlePageChange = (newPageInfo) => {
+    console.log(newPageInfo, "pagesize");
+    console.log(pageSize===newPageInfo.pageSize)
+    
+    if (pageSize===newPageInfo.pageSize) {
+      setPage(newPageInfo.page);
+      setRefresh(!refresh)
+    }
+    if (pageSize!==newPageInfo.pageSize) {
+      setPageSize(newPageInfo.pageSize)
+      setPage(0)
+      setRefresh(!refresh)
+    }}
 
   const columns = [
     {
@@ -203,9 +237,17 @@ export default function ArticleInChannels({ channelInfo }) {
         }}
         rows={rows}
         columns={columns}
+        onPaginationModelChange={(event)=>{
+          handlePageChange(event)
+        }}
+        pagination
+        pageSize={pageSize}
+        paginationMode="server"
+        rowCount={count}
         slots={{
           noResultsOverlay: CustomNoResultsOverlay,
           toolbar: GridToolbar,
+          pagination: CustomPagination,
         }}
         initialState={{
           pagination: { paginationModel: { pageSize: 10 } },

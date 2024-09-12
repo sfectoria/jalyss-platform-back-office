@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { DataGrid, GridToolbar, GridActionsCellItem } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridToolbar,
+  GridActionsCellItem,
+  gridPageCountSelector,
+  GridPagination,
+  useGridApiContext,
+  useGridSelector,
+} from "@mui/x-data-grid";
+import MuiPagination from "@mui/material/Pagination";
 import ImagePopUp from "../../../components/ImagePopUp";
 import { ip } from "../../../constants/ip";
 import axios from "axios";
@@ -9,17 +18,59 @@ import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
 
 export default function StockArticles() {
   const [data, setData] = useState([]);
-  const params = useParams();
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [count, setCount] = useState(0);
+  const [refresh, setRefresh] = useState(false);
+  const param = useParams();
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [refresh]);
+  function Pagination({ onPageChange, className }) {
+    const apiRef = useGridApiContext();
+    const pageCount = useGridSelector(apiRef, gridPageCountSelector);
+    console.log(page);
+
+    return (
+      <MuiPagination
+        color="secondary"
+        className={className}
+        count={pageCount}
+        page={page + 1}
+        onChange={(event, newPage) => {
+          setPage(newPage - 1, page);
+          onPageChange(event, newPage - 1);
+        }}
+      />
+    );
+  }
+
+  function CustomPagination(props) {
+    return <GridPagination ActionsComponent={Pagination} {...props} />;
+  }
 
   const fetchData = async () => {
-    const response = await axios.get(`${ip}/stocks/${params.id}`);
-    console.log(response.data.data.stockArticle);
-
+    let params={take:pageSize,skip:page*pageSize}
+    const response = await axios.get(`${ip}/stocks/${param.id}`,{params});
+    console.log(response.data.data.stockArticle, response.data.count);
     setData(response.data.data.stockArticle);
+    setCount(response.data.count);
+  };
+
+  const handlePageChange = (newPageInfo) => {
+    console.log(newPageInfo, "pagesize");
+    console.log(pageSize === newPageInfo.pageSize);
+
+    if (pageSize === newPageInfo.pageSize) {
+      setPage(newPageInfo.page);
+      setRefresh(!refresh);
+    }
+    if (pageSize !== newPageInfo.pageSize) {
+      setPageSize(newPageInfo.pageSize);
+      setPage(0);
+      setRefresh(!refresh);
+    }
   };
 
   const columns = [
@@ -28,7 +79,7 @@ export default function StockArticles() {
       headerName: "Image",
       width: 90,
       renderCell: ({ value, row }) => {
-        return <ImagePopUp image={row.article.cover.path} />;
+        return <ImagePopUp image={row?.article?.cover?.path} />;
       },
     },
     {
@@ -36,7 +87,7 @@ export default function StockArticles() {
       headerName: "Title",
       width: 220,
       valueGetter: (value, row) => {
-        return row?.article.title;
+        return row?.article?.title;
       },
     },
     { field: "quantity", headerName: "Quantity", width: 90 },
@@ -82,9 +133,17 @@ export default function StockArticles() {
         }}
         rows={data}
         columns={columns}
+        onPaginationModelChange={(event) => {
+          handlePageChange(event);
+        }}
+        pagination
+        pageSize={pageSize}
+        paginationMode="server"
+        rowCount={count}
         slots={{
           noResultsOverlay: CustomNoResultsOverlay,
           toolbar: GridToolbar,
+          pagination: CustomPagination,
         }}
         initialState={{
           pagination: { paginationModel: { pageSize: 10 } },

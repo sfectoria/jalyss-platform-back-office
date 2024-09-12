@@ -170,7 +170,7 @@ export default function Devis() {
           },
         }}
       />
-      <InvoiceModal
+      {isOpen&&<InvoiceModal
         showModal={isOpen}
         closeModal={closeModal}
         info={{
@@ -195,7 +195,7 @@ export default function Devis() {
         taxAmount={0}
         discountAmount={0}
         total={0}
-      />
+      />}
     </div>
   );
 }

@@ -109,15 +109,19 @@ const SearchField = ({ handelBarcode, handelNSearch, info, type }) => {
   const fetchDataStock = async () => {
     const response = await axios.get(`${ip}/stocks/${info.receiver}`);
     console.log("hhh", response.data.data.stockArticle);
-    const result = response.data.data.stockArticle.reduce((acc, item) => {
+    const findArticleResponse = await axios.get(`${ip}/articles/getAll`);
+    console.log("this is me ", findArticleResponse.data.data);
+    const result = findArticleResponse.data.data.reduce((acc, item) => {
+      console.log(item);
+      
       acc.push({
-        id: item.articleId,
-        name: item.article.title,
-        code: item.article.code,
-        image: item.article.cover.path,
-        author: null,
-        publisher: null,
-        quantity: item.quantity,
+        id: item.id,
+        name: item.title,
+        code: item.code,
+        image: item.cover&&item.cover.path,
+        author: item.articleByAuthor.length?item.articleByAuthor[0].author.nameAr:null,
+        publisher: item.articleByPublishingHouse.length?item.articleByPublishingHouse[0].publishingHouse.nameAr:null,
+        // quantity: item.quantity,
       });
       return acc;
     }, []);
