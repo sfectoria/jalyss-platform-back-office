@@ -147,9 +147,8 @@ const SearchField = ({ handelBarcode, handelNSearch, info, type }) => {
     setRows(result);
   };
   const handleInputChange = (event, value) => {
-    console.log(value,'test here',)
+    console.log(value,'test here')
     setSearchText(value);
-    setRefresh(!refresh)
   };
   const handleInputsearch = (event) => {
     console.log(event.target.value,'test here',)

@@ -1,10 +1,28 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
 import ArticleCatigorie from "./ArticleCategorie";
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
+import axios from "axios";
+import { ip } from "../../../constants/ip";
 
 export default function ArticleInfo() {
+  const [articlesNames,setArticlesNames]=useState('');
+  const [articlesAuthors,setArticlesAuthors]=useState('');
+  const [articlesPublishers,setArticlesPublishers]=useState('');
+  const [articlesCategories,setArticlesCategories]=useState('');
+  const [text,setText]=useState('');
+  useEffect(()=>{
+    fetchArticleChoices()
+  },[])
+
+  const fetchArticleChoices=async()=>{
+    let params={take:5}
+   if(text) params['text']=text
+    const response=await axios.get(`${ip}/articles/getAll`,{params})
+    console.log(response.data.data);
+   
+  }
   return <Box sx={{width:'100%'}}>
     <Box sx={{display:'flex',justifyContent:'center',mb:6}}>
             <Typography variant="h1" >
@@ -23,15 +41,8 @@ export default function ArticleInfo() {
           required
           id="outlined-required"
           label="BarCode"
-          sx={{width:'25%'}}
-        />    
-     <TextField
-          required
-          id="outlined-required"
-          type="number"
-          label="QTY"
-          sx={{width:'15%'}}
-        />    
+          sx={{width:'40%'}}
+        />       
     </Box>
     <Box sx={{display:'flex',gap:2,mb:4}} >
     <Autocomplete

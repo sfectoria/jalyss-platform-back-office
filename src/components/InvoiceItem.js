@@ -246,7 +246,7 @@ const ItemRow = ({
                   parseInt(item.quantity) *
                   (item.discount / 100)
                 ).toFixed(2)
-            )}
+            )||0}
           />
         </div>
       </td>}
