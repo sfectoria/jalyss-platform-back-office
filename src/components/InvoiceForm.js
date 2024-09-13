@@ -34,7 +34,7 @@ const InvoiceForm = () => {
   const [billFromAddress, setBillFromAddress] = useState("");
   const [notes, setNotes] = useState("");
   const [total, setTotal] = useState("0.00");
-  const [subTotal, setSubTotal] = useState("0.00");
+  const [subTotal, setSubTotal] = useState(0.0);
   const [taxRate, setTaxRate] = useState("");
   const [taxAmount, setTaxAmount] = useState("0.00");
   const [discountRate, setDiscountRate] = useState("");
@@ -548,7 +548,7 @@ const InvoiceForm = () => {
                 <div className="d-flex flex-row align-items-start justify-content-between">
                   <span className="fw-bold">Subtotal:</span>
                   <span>
-                    {subTotal}
+                    {subTotal||0}
                     {currency}
                   </span>
                 </div>
