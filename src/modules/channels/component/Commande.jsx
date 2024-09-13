@@ -7,18 +7,20 @@ import MouseOverPopover from "./cosOrForPopUp";
 import ColorToggleButton from "../../../components/ColorToggleButton";
 import axios from "axios";
 import { ip } from "../../../constants/ip";
+import { useParams } from "react-router-dom";
 
 export default function Commande() {
   const [isOpen, setIsOpen] = useState(false);
   const [rows,setRows]=useState([])
   const [count,setCount]=useState(0)
+  const param = useParams()
 
   useEffect(()=>{
     fetchData()
   },[])
 
   const fetchData=async()=>{
-    const response=await axios.get(`${ip}/purchaseOrder/getAll`)
+    const response=await axios.get(`${ip}/purchaseOrder/getAll`,{params:{salesChannelsIds:[param.id]}})
     console.log(response.data.data);
     
     setRows(response.data.data);

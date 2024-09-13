@@ -181,7 +181,7 @@ const ItemRow = ({
           onItemizedItemEdit={onItemizedItemEdit}
         />
       </td>
-     { type !== "BT"&&<td style={{ minWidth: "130px", alignContent: "center" }}>
+     { type !== "BT"&&<td style={{ minWidth: "140px", alignContent: "center" }}>
         {type === "BR" ? (
           <InputGroup className="my-1 flex-nowrap">
             <Form.Control
@@ -194,10 +194,9 @@ const ItemRow = ({
               placeholder="0.0"
               min="0.00"
               step="0.01"
-              max="100.00"
             />
             <InputGroup.Text className="bg-light fw-bold text-secondary small">
-              $
+              DT
             </InputGroup.Text>
           </InputGroup>
         ) : (
