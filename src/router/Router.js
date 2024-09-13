@@ -21,7 +21,7 @@ import DashboardRoutes from "./Modules/DashboardRoutes";
 import NewInventaire from "../modules/Inventaire/views/NewInventaire";
 
 export default function Router() {
-  const user = useSelector((state) => state.authSlice.me);
+  const user = useSelector((state) => state.authSlice.user);
 
   return (
     <BrowserRouter>
@@ -37,7 +37,7 @@ export default function Router() {
             {ArticleRoutes()}
             {FornisseursRoutes()}
             {ChannelsRoutes()}
-            <Route path="invoice" key='invoice' element={<InvoiceContainer />} />
+            <Route path="invoice/:type/:sender/:receiver" key='invoice' element={<InvoiceContainer />} />
           </Route>
           <Route key="index" path="inventaires" element={<NewInventaire />} />
         </Routes>

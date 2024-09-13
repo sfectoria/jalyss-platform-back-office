@@ -14,6 +14,8 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import Item from "../../../style/ItemStyle";
+import { ip } from "../../../constants/ip";
+import axios from "axios";
 
 const AddStock = () => {
   const defaultTheme = createTheme({
@@ -30,7 +32,7 @@ const AddStock = () => {
 
   const [open, setOpen] = React.useState(false);
   const [isCancelled, setIsCancelled] = React.useState(false);
-   const [form, setForm] = useState({});
+   
 
   const stockNames = ["tunis", "sfax", "sousse", "mahdia"];
 
@@ -45,30 +47,27 @@ const AddStock = () => {
   const handleCancel = () => {
     setIsCancelled(true);
     setOpen(true);
-    resetForm();
-    
-    console.log(form);
   };
 
-  // isVerified
-  const isVerified = (form) => {
-    if (stockNames.includes(form.stockName)) {
-      setErrors((prev) => ({
-        ...prev,
-        stockName: "Stock's name already exists",
-      }));
-      return false;
-    }
+  // // isVerified
+  // const isVerified = (form) => {
+  //   if (stockNames.includes(form.stockName)) {
+  //     setErrors((prev) => ({
+  //       ...prev,
+  //       stockName: "Stock's name already exists",
+  //     }));
+  //     return false;
+  //   }
 
-    if (addresses.includes(form.address)) {
-      setErrors((prev) => ({
-        ...prev,
-        address: "Address already exists",
-      }));
-      return false;
-    }
-    return true;
-  };
+  //   if (addresses.includes(form.address)) {
+  //     setErrors((prev) => ({
+  //       ...prev,
+  //       address: "Address already exists",
+  //     }));
+  //     return false;
+  //   }
+  //   return true;
+  // };
 
   // handleStockNameChange
   const [stockName, setStockName] = React.useState("");
@@ -96,15 +95,7 @@ const AddStock = () => {
 
   // errors
   const [errors, setErrors] = React.useState({});
- 
-  useEffect(() => {
-    setForm({
-      stockName: stockName,
-      address: address,
-      managerName: managerName,
-      managerPhoneNumber: managerPhoneNumber,
-    });
-  }, [stockName, address, managerName, managerPhoneNumber]);
+
   
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -118,23 +109,25 @@ const AddStock = () => {
 
     setErrors(newErrors);
 
-    if (Object.keys(newErrors).length === 0 && isVerified(form)) {
-      console.log(form);
+    if (Object.keys(newErrors).length === 0) {
+      handelAddStock()
       setIsCancelled(false);
       setOpen(true);
-      resetForm();
     }
-    console.log(form);
+    
   };
+  const handelAddStock=async()=>{
+    let obj ={
+      name:stockName,
+      location:address,
+      capacity:200
+    }
+     const newStock=await axios.post(`${ip}/stocks/createStock`,obj)
+     console.log('ggg',newStock.data);
+     
+  }
 
-  // resetForm
-  const resetForm = () => {
-    setStockName("");
-    setAddress("");
-    setManagerName("");
-    setManagerPhoneNumber("");
-    setErrors({});
-  };
+
   return (
     <ThemeProvider theme={defaultTheme}>
       <Paper elevation={3} sx={{ m: "5%" }}>
@@ -212,6 +205,31 @@ const AddStock = () => {
                   />
                 </Item>
               </Grid>
+              <Grid item xs={12}>
+                <Item
+                  elevation={0}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "start",
+                    gap: "14px",
+                  }}
+                >
+                  <Button
+                    className="confirm-btn"
+                    type="submit"
+                    variant="contained"
+                  >
+                    Confirm
+                  </Button>
+                  <Button
+                    className="cancel-btn"
+                    onClick={handleCancel}
+                    variant="contined"
+                  >
+                    Cancel
+                  </Button>
+                </Item>
+              </Grid>
             </Grid>
             <Grid container spacing={2}>
               <Grid
@@ -264,39 +282,6 @@ const AddStock = () => {
                     >
                       {managerPhoneNumber}
                     </Typography>
-                  </Box>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      gap: "5%",
-                    }}
-                  >
-                    <Button
-                      variant="contained"
-                      sx={{
-                        backgroundColor: (theme) => theme.palette.error.light,
-                        "&:hover": {
-                          backgroundColor: (theme) => theme.palette.error.main,
-                        },
-                      }}
-                      onClick={handleCancel}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      sx={{
-                        backgroundColor: (theme) => theme.palette.success.light,
-                        "&:hover": {
-                          backgroundColor: (theme) =>
-                            theme.palette.success.main,
-                        },
-                      }}
-                    >
-                      Confirm
-                    </Button>
                   </Box>
                 </Item>
               </Grid>

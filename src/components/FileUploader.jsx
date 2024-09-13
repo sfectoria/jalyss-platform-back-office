@@ -1,9 +1,10 @@
-import { Button, IconButton } from "@mui/material";
+import {IconButton } from "@mui/material";
 import React, { useRef, useState } from "react";
-import EditIcon from "@mui/icons-material/Edit";
-import UploadFileIcon from "@mui/icons-material/UploadFile";
+import CameraAltRoundedIcon from "@mui/icons-material/CameraAltRounded";
+
+import Tooltip from "@mui/material/Tooltip";
 function FileUploader(props) {
-  const { onSelectFile,  disabled , setFile, icon} = props;
+  const { onSelectFile , setFile, icon} = props;
   const hiddenFileInput = useRef(null);
 
   const handleClick = (event) => {
@@ -18,24 +19,44 @@ function FileUploader(props) {
   
 
   return (
-    <Button id="upload-btn" onClick={handleClick} disabled={disabled}>
-      {icon === "upload" ? (
-        <UploadFileIcon sx={{ color: "white" }} />
-      ) : (
-        <EditIcon sx={{ color: "white" }} />
-      )}
+    <Tooltip
+      title="Add Photo"
+      slotProps={{
+        popper: {
+          modifiers: [
+            {
+              name: "offset",
+              options: {
+                offset: [0, -170],
+              },
+            },
+          ],
+        },
+      }}
+    >
+      <IconButton
+        id="upload-btn"
+        onClick={handleClick}
+        sx={{
+          width: "400px",
+          height: "400px",
+        }}
+      >
+        <CameraAltRoundedIcon
+          sx={{ color: "white", width: "100px  ", height: "100px" }}
+        />
 
-      <input
-        type="file"
-        id="actual-btn"
-        accept={"image/*"}
-        ref={hiddenFileInput}
-        onChange={handleChange}
-        hidden
-        disabled={disabled}
-        data-testid="file-upload-input"
-      />
-    </Button>
+        <input
+          type="file"
+          id="actual-btn"
+          accept={"image/*"}
+          ref={hiddenFileInput}
+          onChange={handleChange}
+          hidden
+          data-testid="file-upload-input"
+        />
+      </IconButton>
+    </Tooltip>
   );
 }
 

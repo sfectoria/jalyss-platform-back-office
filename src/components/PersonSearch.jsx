@@ -1,22 +1,44 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import { Stack } from '@mui/material';
+import axios from 'axios';
+import { ip } from '../constants/ip';
 
-const rows = [
-    { id: 1, name: 'Sfax1', address: 'Sfax1/Sfax', email: "salim.sfexi@example.com", phone: "123-456-7890", details: "fff" },
-    { id: 2, name: 'Stock l mida', address: 'Mida/menzel tmim/Nabeul', email: "hamida.midawi@example.com", phone: "28527345" },
-    { id: 3, name: 'Stock sahlin', address: 'Sahlin/Sousse', email: "wael.sahloul@example.com", phone: "345-678-9012" },
-    { id: 4, name: 'Stock alia', address: 'Alia/bizerte', email: "mohamed.amin@example.com", phone: "456-789-0123" },
-    { id: 5, name: 'Targaryen', address: 'Daenerys', email: "houssem.ammar@example.com", phone: "567-890-1234" },
-    { id: 6, name: 'Melisandre', address: 'bizerte', email: "melisandre@example.com", phone: "678-901-2345" },
-    { id: 7, name: 'Clifford', address: 'Ferrara', email: "clifford.ferrara@example.com", phone: "789-012-3456" },
-    { id: 8, name: 'Frances', address: 'Rossini', email: "frances.rossini@example.com", phone: "890-123-4567" },
-    { id: 9, name: 'Roxie', address: 'Harvey', email: "roxie.harvey@example.com", phone: "901-234-5678" },
-];
+const PersonSearch = ({person,type,setName,setEmail,setAddress,setId}) => {
+  const [rows,setRows]=useState([])
+  useEffect(()=>{
+    fetchData()
+  },[])
 
-const PersonSearch = ({type,setName,setEmail,setAddress}) => {
-    const [options, setOptions] = useState(rows);
+  const fetchData = async () => {
+    if(type==='BR') {
+    const response = await axios.get(`${ip}/clients`);
+    console.log(response.data);
+    setRows(response.data)
+
+  }
+  else if (type==='BT'){
+     const response = await axios.get(`${ip}/stocks/getAll`)
+     console.log(response.data);
+     let dataStocks=response.data.map((e)=>{
+      let {name,location,...rest}=e
+      let fullName=name
+      let address=location
+      return {fullName,address,...rest}
+     })
+     setRows(dataStocks)
+     console.log(dataStocks);
+     
+       }
+  else if (type === "BL" || type === "BLF" || type === "F" || type === "Ticket" || type === "Devis" || type==='BC'){
+     const response = await axios.get(`${ip}/clients`)
+     console.log(response.data);
+     setRows(response.data)
+       }
+
+  };
+    const [options, setOptions] = useState();
     const [searchText, setSearchText] = useState('');
     const [filteredRows, setFilteredRows] = useState(rows);
 
@@ -33,9 +55,11 @@ const PersonSearch = ({type,setName,setEmail,setAddress}) => {
   };
 
   const handelNormalSearch = (event, value) => {
+ 
     if (value) {
-      setName(value.name)
-      setEmail(value.email)
+      setId(value.id)
+      setName(value.fullName)
+      setEmail('jalyss@gmail.com')
       setAddress(value.address)
       
     }
@@ -55,7 +79,7 @@ const PersonSearch = ({type,setName,setEmail,setAddress}) => {
                 options={filteredRows}
                 inputValue={searchText}
                 onInputChange={handleInputChange}
-                getOptionLabel={(option) => `${option.name}`}
+                getOptionLabel={(option) => `${option.fullName}`}
               filterOptions={(options) => options}
               onChange={handelNormalSearch}
                 renderInput={(params) => (
