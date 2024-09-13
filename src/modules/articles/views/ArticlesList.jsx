@@ -47,7 +47,7 @@ export default function ArticlesList() {
    
     return (
       <MuiPagination
-        color="primary"
+        color="secondary"
         className={className}
         count={pageCount}
         page={page+1}
@@ -89,25 +89,13 @@ export default function ArticlesList() {
       });
       console.log(response.data.data);
       
-      const ids=response.data.data.map(e=> e.id)
-      console.log('here',ids);
-      const rNoteResponse= await axios.get(`${ip}/receiptNote/all_rn`)
-      const result =rNoteResponse.data.reduce((acc, receipt) => {
-        receipt.receiptNoteLine.forEach(line => {
-          const existingArticle = acc.find(item => item.id === line.idArticle);
-          
-          if (existingArticle) {
-            existingArticle.quantity += line.quantity;
-          } else {
-            acc.push({
-              id: line.idArticle,
-              name: line.Article.title,
-              quantity: line.quantity
-            });
-          }
-        });
-        return acc;
-      }, []);
+      const result =response.data.data.map((ele) => {
+            ele.quantity=ele.stockArticle.reduce((acc,ele)=>{
+              acc+=ele.quantity
+              return acc
+            },0)
+            return ele
+      });
       
       console.log(result);
       result.forEach(({ id, quantity }) => {
@@ -116,6 +104,7 @@ export default function ArticlesList() {
           article.quantity = quantity; 
         }
       });
+      console.log('after',result);
       setRows(response.data.data);
       setCount(response.data.count);
     } catch (err) {

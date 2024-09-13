@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
-import { DataGrid, GridToolbar, GridActionsCellItem } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridToolbar,
+  GridActionsCellItem,
+  gridPageCountSelector,
+  GridPagination,
+  useGridApiContext,
+  useGridSelector,
+} from "@mui/x-data-grid";
 import MuiPagination from "@mui/material/Pagination";
-import Typography from "@mui/material/Typography";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
-import { useLocation, useNavigate } from "react-router-dom";
 import CustomNoResultsOverlay from "../../../style/NoResultStyle";
-import Item from "../../../style/ItemStyle";
 import ImagePopUp from "../../../components/ImagePopUp";
 import axios from "axios";
 import { ip } from "../../../constants/ip";
@@ -17,111 +22,83 @@ export default function ArticleInChannels({ channelInfo }) {
   const [rows, setRows] = useState([]);
   const [editRowId, setEditRowId] = useState(null);
   const [price, setPrice] = useState({});
-  const [refresh,setRefresh]=useState(true)
+  const [refresh, setRefresh] = useState(true);
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [count, setCount] = useState(0);
 
   useEffect(() => {
     fetchData();
   }, [refresh]);
-  const mergeAndSortByDate = (exitNotes, receiptNotes) => {
-    const combined = [
-      ...exitNotes.map((item) => ({
-        ...item,
-        type: "exit",
-        date: new Date(item.exitDate),
-        id: `exit-${item.id}`,
-      })),
-      ...receiptNotes.map((item) => ({
-        ...item,
-        type: "receipt",
-        date: new Date(item.receiptDate),
-        id: `receipt-${item.id}`,
-      })),
-    ];
 
-    return combined.sort((a, b) => a.date - b.date);
-  };
+  function Pagination({ onPageChange, className }) {
+    const apiRef = useGridApiContext();
+    const pageCount = useGridSelector(apiRef, gridPageCountSelector);
+   console.log(page);
+   
+    return (
+      <MuiPagination
+        color="secondary"
+        className={className}
+        count={pageCount}
+        page={page+1}
+        onChange={(event, newPage) => {
+          setPage(newPage-1,page)
+          onPageChange(event, newPage-1);
+        }}
+      />
+    );
+  }
+  
+  function CustomPagination(props) {
+    return <GridPagination ActionsComponent={Pagination} {...props} />;
+  }
+
   const fetchData = async () => {
-    const responseReceipt = await axios.get(`${ip}/receiptNote/all_rn`, {
-      params: { stocksIds: [channelInfo.idStock] },
-    });
-    console.log(responseReceipt.data);
-    const responseExit = await axios.get(`${ip}/exitNote/all_en`, {
-      params: { stocksIds: [channelInfo.idStock] },
-    });
-    console.log(responseExit.data, "exit");
-    const sortedData = mergeAndSortByDate(
-      responseExit.data,
-      responseReceipt.data
-    );
-    const responsePriceByChannel = await axios.get(
-      `http://localhost:3000/price-By-Channel/getAll`,
-      { params: { salesChannelIds: [channelInfo.id] } }
-    );
-    console.log(responsePriceByChannel.data);
-
-    const result = sortedData.reduce((acc, allData) => {
-      if (allData.type === "receipt") {
-        allData.receiptNoteLine.forEach((line) => {
-          const existingArticle = acc.find(
-            (item) => item.id === line.idArticle
-          );
-
-          if (existingArticle) {
-            existingArticle.quantity += line.quantity;
-          } else {
-            acc.push({
-              id: line.idArticle,
-              name: line.Article.title,
-              image: line.Article.cover.path,
-              author: line.Article.articleByAuthor.length
-                ? line.Article.articleByAuthor[0].author.nameAr
-                : null,
-              publisher: line.Article.articleByPublishingHouse.length
-                ? line.Article.articleByPublishingHouse[0].publisher.nameAr
-                : null,
-              quantity: line.quantity,
-              price: 0,
-              history: [],
-            });
-          }
-        });
-      } else if (allData.type === "exit") {
-        allData.exitNoteLine.forEach((line) => {
-          const existingArticle = acc.find(
-            (item) => item.id === line.articleId
-          );
-
-          if (existingArticle) {
-            existingArticle.quantity -= line.quantity;
-          } else {
-            acc.push({
-              id: line.articleId,
-              name: line.Article.title,
-              image: line.Article.cover.path,
-              author: null,
-              publisher: null,
-              quantity: -line.quantity,
-              price: 0,
-              history: [],
-            });
-          }
-        });
-      }
-
-      return acc;
-    }, []);
-
-    console.log(result, "before");
-    result.forEach((article) => {
-      const priceData = responsePriceByChannel.data.find(
-        (priceItem) => priceItem.idArticle === article.id
+    let params ={take:pageSize,skip:page*pageSize }
+    const response = await axios.get(`${ip}/stocks/${channelInfo.idStock}`,{params});
+    if (response.data.data) {
+      const result = response.data.data.stockArticle.reduce(
+        (acc, item) => {
+          acc.data.push({
+            id: item.articleId,
+            name: item.article?.title,
+            code: item.article?.code,
+            image: item.article?.cover?.path,
+            author: item.article?.articleByAuthor[0]?.author?.nameAr,
+            publisher:
+              item.article?.articleByPublishingHouse[0]?.publishingHouse.nameAr,
+            quantity: item?.quantity,
+            price: 0,
+          });
+          acc.ids.push(item.articleId);
+          return acc;
+        },
+        {
+          data: [],
+          ids: [],
+        }
       );
-      if (priceData) {
-        article.price = priceData.price;
-      }
-    });
-    console.log(result, "after");
-    setRows(result);
+
+      const responsePriceByChannel = await axios.get(
+        `${ip}/price-By-Channel/getAll`,
+        {
+          params: { salesChannelIds: [channelInfo.id], articleIds: result.ids },
+        }
+      );
+
+      result.data.forEach((article) => {
+        const priceData = responsePriceByChannel.data.find(
+          (priceItem) => priceItem.idArticle === article.id
+        );
+        if (priceData) {
+          article.price = priceData.price;
+        }
+      });
+      console.log("result", result);
+      setRows(result.data);
+      setCount(response.data.count)
+    }
   };
 
   const handleEditClick = (id) => {
@@ -133,29 +110,28 @@ export default function ArticleInChannels({ channelInfo }) {
       `http://localhost:3000/price-By-Channel/getAll`,
       { params: { salesChannelIds: [channelInfo.id], articleIds: [id] } }
     );
-    if (responseExistPrice.data.length&&price[id]&&!isNaN(price[id])) {
-        console.log(responseExistPrice.data);
-        const updatePrice = await axios.patch(
-            `http://localhost:3000/price-By-Channel/${responseExistPrice.data[0].id}`,
-            {
-              price:parseInt(price[id]),
-            }
-          );
+    if (responseExistPrice.data.length && price[id] && !isNaN(price[id])) {
+      console.log(responseExistPrice.data);
+      const updatePrice = await axios.patch(
+        `http://localhost:3000/price-By-Channel/${responseExistPrice.data[0].id}`,
+        {
+          price: parseInt(price[id]),
+        }
+      );
     } else if (responseExistPrice.data.length === 0) {
       console.log(price[id], "price");
 
       const newPrice = await axios.post(
         `http://localhost:3000/price-By-Channel/create`,
         {
-          price:parseInt(price[id]),
+          price: parseInt(price[id]),
           idArticle: id,
           idSalesChannel: channelInfo.id,
         }
       );
       console.log(newPrice);
-      
     }
-    setRefresh(!refresh)
+    setRefresh(!refresh);
     setEditRowId(null);
   };
   const handlePriceChange = (id, value) => {
@@ -165,6 +141,20 @@ export default function ArticleInChannels({ channelInfo }) {
   const handleDetails = (id) => {
     console.log("View details for ID:", id);
   };
+
+  const handlePageChange = (newPageInfo) => {
+    console.log(newPageInfo, "pagesize");
+    console.log(pageSize===newPageInfo.pageSize)
+    
+    if (pageSize===newPageInfo.pageSize) {
+      setPage(newPageInfo.page);
+      setRefresh(!refresh)
+    }
+    if (pageSize!==newPageInfo.pageSize) {
+      setPageSize(newPageInfo.pageSize)
+      setPage(0)
+      setRefresh(!refresh)
+    }}
 
   const columns = [
     {
@@ -247,9 +237,17 @@ export default function ArticleInChannels({ channelInfo }) {
         }}
         rows={rows}
         columns={columns}
+        onPaginationModelChange={(event)=>{
+          handlePageChange(event)
+        }}
+        pagination
+        pageSize={pageSize}
+        paginationMode="server"
+        rowCount={count}
         slots={{
           noResultsOverlay: CustomNoResultsOverlay,
           toolbar: GridToolbar,
+          pagination: CustomPagination,
         }}
         initialState={{
           pagination: { paginationModel: { pageSize: 10 } },
