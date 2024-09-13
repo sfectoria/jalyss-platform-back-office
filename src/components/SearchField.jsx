@@ -19,7 +19,9 @@ import { ip } from "../constants/ip";
 
 const SearchField = ({ handelBarcode, handelNSearch, info, type }) => {
   const [searchText, setSearchText] = useState("");
+  const [text, setText] = useState("");
   const [rows, setRows] = useState([]);
+  const [refresh, setRefresh] = useState(false);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
   const [filteredRows, setFilteredRows] = useState(rows);
@@ -39,7 +41,7 @@ const SearchField = ({ handelBarcode, handelNSearch, info, type }) => {
     ) {
       fetchDataChannel();
     }
-  }, []);
+  }, [refresh]);
   console.log(info, type);
 
   const mergeAndSortByDate = (exitNotes, receiptNotes) => {
@@ -74,7 +76,7 @@ const SearchField = ({ handelBarcode, handelNSearch, info, type }) => {
             id: item.articleId,
             name: item.article.title,
             code: item.article.code,
-            image: item.article.cover.path,
+            image: item.article?.cover?.path,
             author: null,
             publisher: null,
             quantity: item.quantity,
@@ -108,11 +110,11 @@ const SearchField = ({ handelBarcode, handelNSearch, info, type }) => {
   };
   const fetchDataStock = async () => {
     const response = await axios.get(`${ip}/stocks/${info.receiver}`);
-    console.log("hhh", response.data.data.stockArticle);
-    const findArticleResponse = await axios.get(`${ip}/articles/getAll`);
+    let params={take:5}
+    if(text) params['text']=text
+    const findArticleResponse = await axios.get(`${ip}/articles/getAll`,{params});
     console.log("this is me ", findArticleResponse.data.data);
     const result = findArticleResponse.data.data.reduce((acc, item) => {
-      console.log(item);
       
       acc.push({
         id: item.id,
@@ -125,8 +127,6 @@ const SearchField = ({ handelBarcode, handelNSearch, info, type }) => {
       });
       return acc;
     }, []);
-    console.log(result);
-
     setRows(result);
   };
   const fetchDataStockBt = async () => {
@@ -144,12 +144,17 @@ const SearchField = ({ handelBarcode, handelNSearch, info, type }) => {
       });
       return acc;
     }, []);
-    console.log(result);
-
     setRows(result);
   };
   const handleInputChange = (event, value) => {
+    console.log(value,'test here',)
     setSearchText(value);
+    setRefresh(!refresh)
+  };
+  const handleInputsearch = (event) => {
+    console.log(event.target.value,'test here',)
+    setText(event.target.value);
+    setRefresh(!refresh)
   };
 
   function includesAll(arr, values) {
@@ -158,25 +163,14 @@ const SearchField = ({ handelBarcode, handelNSearch, info, type }) => {
     );
   }
 
-  const handleSearch = (rows, event) => {
-    console.log(rows);
-
-    const values = event.toLowerCase().split(" ");
-    setFilteredRows(
-      rows.filter((row) => {
-        const rowValues = Object.values(row)
-          .join(" ")
-          .toLowerCase()
-          .split(/\s+/);
-        return includesAll(rowValues, values);
-      })
-    );
-  };
-
   const handelNormalSearch = (event, value) => {
+    console.log(value,'before condition');
     if (value) {
       event.target.value = "";
+      console.log(value,'after condition');
+      
       handelNSearch(event, value);
+      setText("")
     }
   };
 
@@ -214,7 +208,7 @@ const SearchField = ({ handelBarcode, handelNSearch, info, type }) => {
               freeSolo
               inputValue={searchText}
               onInputChange={handleInputChange}
-              options={filteredRows}
+              options={rows}
               onChange={handelNormalSearch}
               getOptionLabel={(option) => ``}
               filterOptions={(options) => options}
@@ -224,7 +218,7 @@ const SearchField = ({ handelBarcode, handelNSearch, info, type }) => {
                   variant="outlined"
                   fullWidth
                   placeholder="Search ..."
-                  onChange={(event) => handleSearch(rows, event.target.value)}
+                  onChange={handleInputsearch}
                 />
               )}
               renderOption={(props, option) => (

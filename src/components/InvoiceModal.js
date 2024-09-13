@@ -20,6 +20,7 @@ const InvoiceModal = ({
   info,
   itemsData,
   taxAmount,
+  subTotal,
   discountAmount,
   finishSale,
   mode
@@ -47,6 +48,7 @@ const InvoiceModal = ({
         email:info.billFromEmail
       })
       setItems(itemsData)
+      setAmount(subTotal)
       console.log(billTo,billFrom);
       
     }

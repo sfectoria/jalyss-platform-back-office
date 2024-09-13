@@ -20,7 +20,7 @@ import { ip } from "../constants/ip";
 
 const InvoiceForm = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [currency, setCurrency] = useState("$");
+  const [currency, setCurrency] = useState("DT");
   const [currentDate, setCurrentDate] = useState("");
   const [invoiceNumber, setInvoiceNumber] = useState(1);
   const [dateOfIssue, setDateOfIssue] = useState("");
@@ -245,11 +245,11 @@ const InvoiceForm = () => {
     }
   };
 
-  const handelNSearch = (event, value, rows) => {
-    handelAddItem(value, rows);
+  const handelNSearch = (event, value) => {
+    handelAddItem(value);
   };
 
-  const handelAddItem = (obj, rows) => {
+  const handelAddItem = (obj) => {
     setShowErAlert(false);
     setShowSuAlert(true);
     handleAddEvent(obj);
@@ -548,24 +548,24 @@ const InvoiceForm = () => {
                 <div className="d-flex flex-row align-items-start justify-content-between">
                   <span className="fw-bold">Subtotal:</span>
                   <span>
-                    {currency}
                     {subTotal}
+                    {currency}
                   </span>
                 </div>
                 <div className="d-flex flex-row align-items-start justify-content-between mt-2">
                   <span className="fw-bold">Discount:</span>
                   <span>
                     <span className="small">({discountRate || 0}%)</span>
-                    {currency}
                     {discountAmount || 0}
+                    {currency}
                   </span>
                 </div>
                 <div className="d-flex flex-row align-items-start justify-content-between mt-2">
                   <span className="fw-bold">Tax:</span>
                   <span>
                     <span className="small">({taxRate || 0}%)</span>
-                    {currency}
                     {taxAmount || 0}
+                    {currency}
                   </span>
                 </div>
                 <hr />
@@ -575,8 +575,8 @@ const InvoiceForm = () => {
                 >
                   <span className="fw-bold">Total:</span>
                   <span className="fw-bold">
-                    {currency}
                     {total || 0}
+                    {currency}
                   </span>
                 </div>
               </Col>
