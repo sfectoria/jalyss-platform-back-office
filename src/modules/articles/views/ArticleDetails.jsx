@@ -9,7 +9,7 @@ import { ip } from '../../../constants/ip';
 
 export default function ArticleDetails() {
   const [data,setData]=useState({})
-  const [articleInStocks,setArticleInStocks]=useState({})
+  const [articleInStocks,setArticleInStocks]=useState([])
 
   const param=useParams()
   console.log(param);
@@ -21,6 +21,8 @@ export default function ArticleDetails() {
   const fetchArticle=async()=>{
     const response=await axios.get(`${ip}/articles/${param.id}`)
     setData(response.data)
+    console.log(response.data);
+    
     setArticleInStocks(response.data.stockArticle)
   }
    
