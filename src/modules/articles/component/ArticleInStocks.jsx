@@ -1,136 +1,138 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import Box from '@mui/material/Box';
-import Collapse from '@mui/material/Collapse';
-import IconButton from '@mui/material/IconButton';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import Link from '@mui/material/Link';
-import DoneIcon from '@mui/icons-material/Done';
-import ClearIcon from '@mui/icons-material/Clear';
+import React, { useState } from "react";
+import PropTypes from "prop-types";
+import Box from "@mui/material/Box";
+import Collapse from "@mui/material/Collapse";
+import IconButton from "@mui/material/IconButton";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Typography from "@mui/material/Typography";
+import Paper from "@mui/material/Paper";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import Link from "@mui/material/Link";
+import DoneIcon from "@mui/icons-material/Done";
+import ClearIcon from "@mui/icons-material/Clear";
 
-
-
-function createData(stockName, title, quantity, author, publisher, price) {
-  return {
-    stockName,
-    title,
-    quantity,
-    author,
-    publisher,
-    price,
-    history: [
-      {
-        date: '2020-01-05',
-        customerName: null,
-        fournisseurName:'Dar el kiteb',
-        type: 'BR',
-        transfer:false,
-        quantity: 40,
-        price:5.5
-      },
-      {
-        date: '2020-01-02',
-        customerName: 'Canaux sfax',
-        fournisseurName:null,
-        type: 'BS',
-        transfer:false,
-        quantity: 40,
-        price:6
-      },
-      {
-        date: '2020-01-02',
-        customerName: 'Canaux sfax',
-        type: 'BS',
-        transfer:true,
-        quantity: 70,
-      },
-      {
-        date: '2020-01-05',
-        customerName: 'canaux gafsa',
-        type: 'BR',
-        quantity: 40,
-        price:5.5
-      },
-      {
-        date: '2020-01-02',
-        customerName: 'Canaux sfax',
-        type: 'BS',
-        quantity: 40,
-        price:6
-      },
-      {
-        date: '2020-01-02',
-        customerName: 'Canaux sfax',
-        type: 'BR',
-        transfer:true,
-        quantity: 70,
-      },
-      {
-        date: '2020-01-05',
-        customerName: 'Dar el kiteb',
-        type: 'BR',
-        quantity: 40,
-        price:5.5
-      },
-      {
-        date: '2020-01-02',
-        customerName: 'Canaux sfax',
-        type: 'BS',
-        quantity: 40,
-        price:6
-      },
-      {
-        date: '2020-01-02',
-        customerName: 'Canaux sfax',
-        type: 'BS',
-        transfer:true,
-        quantity: 70,
-      },
-      {
-        date: '2020-01-02',
-        customerName: 'Canaux sfax',
-        type: 'BS',
-        quantity: 70,
-      },
-      {
-        date: '2020-01-02',
-        customerName: 'Canaux sfax',
-        type: 'BS',
-        quantity: 70,
-      },
-    ],
-  };
-}
+const history = [
+  {
+    date: "2020-01-05",
+    customerName: null,
+    fournisseurName: "Dar el kiteb",
+    type: "BR",
+    transfer: false,
+    quantity: 40,
+    price: 5.5,
+  },
+  {
+    date: "2020-01-02",
+    customerName: "Canaux sfax",
+    fournisseurName: null,
+    type: "BS",
+    transfer: false,
+    quantity: 40,
+    price: 6,
+  },
+  {
+    date: "2020-01-02",
+    customerName: "Canaux sfax",
+    type: "BS",
+    transfer: true,
+    quantity: 70,
+  },
+  {
+    date: "2020-01-05",
+    customerName: "canaux gafsa",
+    type: "BR",
+    quantity: 40,
+    price: 5.5,
+  },
+  {
+    date: "2020-01-02",
+    customerName: "Canaux sfax",
+    type: "BS",
+    quantity: 40,
+    price: 6,
+  },
+  {
+    date: "2020-01-02",
+    customerName: "Canaux sfax",
+    type: "BR",
+    transfer: true,
+    quantity: 70,
+  },
+  {
+    date: "2020-01-05",
+    customerName: "Dar el kiteb",
+    type: "BR",
+    quantity: 40,
+    price: 5.5,
+  },
+  {
+    date: "2020-01-02",
+    customerName: "Canaux sfax",
+    type: "BS",
+    quantity: 40,
+    price: 6,
+  },
+  {
+    date: "2020-01-02",
+    customerName: "Canaux sfax",
+    type: "BS",
+    transfer: true,
+    quantity: 70,
+  },
+  {
+    date: "2020-01-02",
+    customerName: "Canaux sfax",
+    type: "BS",
+    quantity: 70,
+  },
+  {
+    date: "2020-01-02",
+    customerName: "Canaux sfax",
+    type: "BS",
+    quantity: 70,
+  },
+];
 
 function Row(props) {
   const { row } = props;
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
+ 
 
   return (
     <React.Fragment>
-      <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
+      <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
         <TableCell>
-          <IconButton
-            aria-label="expand row"
-            size="small"
-            onClick={() => setOpen(!open)}
-          >
-            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-          </IconButton>
+          {open ? (
+            <IconButton
+              aria-label="expand row"
+              size="small"
+              onClick={() => setOpen(false)}
+            >
+              <KeyboardArrowUpIcon />
+            </IconButton>
+          ) : (
+            <IconButton
+              aria-label="expand row"
+              size="small"
+              onClick={() => {
+                setOpen(true);
+                // fetchHistory();
+              }}
+            >
+              <KeyboardArrowDownIcon />
+            </IconButton>
+          )}
         </TableCell>
-        
-        <TableCell align="left">{row.stockName}</TableCell>
-        <TableCell align="left">{row.title}</TableCell>
-        <TableCell align="left">{row.quantity}</TableCell>
+
+        <TableCell align="left">{row?.stock?.name}</TableCell>
+        <TableCell align="left">{row?.stock?.location}</TableCell>
+        <TableCell align="left">{row?.quantity}</TableCell>
         {/* <TableCell align="left">{row.author}</TableCell>
         <TableCell align="left">{row.publisher}</TableCell> */}
       </TableRow>
@@ -148,59 +150,64 @@ function Row(props) {
                     <TableCell>Customer</TableCell>
                     <TableCell>Fournisseur</TableCell>
                     <TableCell>Type</TableCell>
-                    <TableCell align='center'>Transfer</TableCell>
-                    <TableCell >Quantity</TableCell>
-                    <TableCell >Price</TableCell>
-                    <TableCell >Total price ($)</TableCell>
+                    <TableCell align="center">Transfer</TableCell>
+                    <TableCell>Quantity</TableCell>
+                    <TableCell>Price</TableCell>
+                    <TableCell>Total price ($)</TableCell>
                   </TableRow>
                 </TableHead>
-                {(row.history.length>10)?
-                <TableBody>
-                  {row.history.map((historyRow,i) => {
-                    if (i<10) {return<TableRow key={historyRow.date}>
+                {history.length > 10 ? (
+                  <TableBody>
+                    {history.map((historyRow, i) => {
+                      if (i < 10) {
+                        return (
+                          <TableRow key={historyRow.date}>
+                            <TableCell component="th" scope="row">
+                              {historyRow.date}
+                            </TableCell>
+                            <TableCell>{historyRow.customerName}</TableCell>
+                            <TableCell>{historyRow.fournisseurName}</TableCell>
+                            <TableCell>{historyRow.type}</TableCell>
+                            <TableCell align="center">
+                              {historyRow.transfer ? (
+                                <DoneIcon color="success" />
+                              ) : (
+                                <ClearIcon color="error" />
+                              )}
+                            </TableCell>
+                            <TableCell>{historyRow.quantity}</TableCell>
+                            <TableCell>{historyRow.price}</TableCell>
+                            <TableCell>
+                              {(historyRow.price * historyRow.quantity * 100) /
+                                100}
+                            </TableCell>
+                          </TableRow>
+                        );
+                      } else return "";
+                    })}
+                    <Link href="#" sx={{}} underline="hover">
+                      {"...    see more"}
+                    </Link>
+                  </TableBody>
+                ) : (
+                  <TableBody>
+                    {row.history.map((historyRow, i) => (
+                      <TableRow key={historyRow.date}>
                         <TableCell component="th" scope="row">
                           {historyRow.date}
                         </TableCell>
                         <TableCell>{historyRow.customerName}</TableCell>
                         <TableCell>{historyRow.fournisseurName}</TableCell>
-                        <TableCell >{historyRow.type}</TableCell>
-                        <TableCell align='center' >{historyRow.transfer?<DoneIcon color='success'/>:<ClearIcon color='error'/>}</TableCell>
-                        <TableCell >{historyRow.quantity}</TableCell>
-                        <TableCell >{historyRow.price}</TableCell>
-                        <TableCell >
-                          {(historyRow.price * historyRow.quantity * 100) / 100}
-                        </TableCell>
-                      </TableRow>}
-                      else return '';
-                        
-                    }
-                    
-
-                  )}
-                  <Link href="#" sx={{}} underline="hover">
-  {'...    see more'}
-</Link>
-                </TableBody>: <TableBody>
-                  {row.history.map((historyRow,i) => (
-                    <TableRow key={historyRow.date}>
-                        <TableCell component="th" scope="row">
-                          {historyRow.date}
-                        </TableCell>
-                        <TableCell>{historyRow.customerName}</TableCell>
-                        <TableCell>{historyRow.fournisseurName}</TableCell>
-                        <TableCell >{historyRow.type}</TableCell>
-                        <TableCell >{historyRow.quantity}</TableCell>
-                        <TableCell >{historyRow.price}</TableCell>
-                        <TableCell >
+                        <TableCell>{historyRow.type}</TableCell>
+                        <TableCell>{historyRow.quantity}</TableCell>
+                        <TableCell>{historyRow.price}</TableCell>
+                        <TableCell>
                           {(historyRow.price * historyRow.quantity * 100) / 100}
                         </TableCell>
                       </TableRow>
-                        
-                  )
-                    
-
-                  )}
-                </TableBody>}
+                    ))}
+                  </TableBody>
+                )}
               </Table>
             </Box>
           </Collapse>
@@ -221,25 +228,27 @@ Row.propTypes = {
         quantity: PropTypes.number.isRequired,
         price: PropTypes.number.isRequired,
         date: PropTypes.string.isRequired,
-      }),
+      })
     ).isRequired,
     auther: PropTypes.string.isRequired,
     publisher: PropTypes.string.isRequired,
   }).isRequired,
 };
 
-const rows = [
-  createData('Sfax1', 'Sfax1/Sfax', 24, 'robert ti kyosaki', 'maktabat jarir' ),
-  createData('Mide', 'mida/ mez tmim /nabeul',120, 'mark manson', 'attanwir'),
-  createData('Bizerte', 'bizerte/bizerte', 160, 'iheb hamarna','molhimon'),
-  createData('Gabes', 'Gabes/Gabes', 123, 'walid mohyi e din al asghar', 'dar e salam'),
-  createData('Hay e nour', 'hay e nour / Gafsa',90, 'abd el karim bakkar','dar e salam'),
-  createData('Hay l khadhra', 'hay lkhadhra/tunis', 49, 'najib mahfoudh','dar e chourouk'),
-];
+// const rows = [
+//   createData('Sfax1', 'Sfax1/Sfax', 24, 'robert ti kyosaki', 'maktabat jarir' ),
+//   createData('Mide', 'mida/ mez tmim /nabeul',120, 'mark manson', 'attanwir'),
+//   createData('Bizerte', 'bizerte/bizerte', 160, 'iheb hamarna','molhimon'),
+//   createData('Gabes', 'Gabes/Gabes', 123, 'walid mohyi e din al asghar', 'dar e salam'),
+//   createData('Hay e nour', 'hay e nour / Gafsa',90, 'abd el karim bakkar','dar e salam'),
+//   createData('Hay l khadhra', 'hay lkhadhra/tunis', 49, 'najib mahfoudh','dar e chourouk'),
+// ];
 
-export default function ArticleInStocks() {
+export default function ArticleInStocks({ data }) {
+  console.log(data);
+
   return (
-    <TableContainer sx={{mt:5}} component={Paper}>
+    <TableContainer sx={{ mt: 5 }} component={Paper}>
       <Table aria-label="collapsible table">
         <TableHead>
           <TableRow>
@@ -252,9 +261,7 @@ export default function ArticleInStocks() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row,i) => (
-            <Row key={i} row={row} />
-          ))}
+          {data && data.map((row, i) => <Row key={i} row={row} />)}
         </TableBody>
       </Table>
     </TableContainer>

@@ -270,6 +270,7 @@ export default function Vente() {
           discountAmount={0}
           total={0}
           mode="viewer"
+          type="exit"
         />
       )}
     </div>

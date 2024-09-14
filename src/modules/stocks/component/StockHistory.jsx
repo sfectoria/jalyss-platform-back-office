@@ -14,6 +14,7 @@ export default function StockHistory() {
   const [rows, setRows] = useState([]);
   const [row, setRow] = useState({});
   const [info, setInfo] = useState({});
+  const [modalId, setModalId] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
 
   const params = useParams();
@@ -148,13 +149,16 @@ export default function StockHistory() {
       headerName: "Details",
       width: 110,
       type: "actions",
-      getActions: (params) => [
-        <GridActionsCellItem
+      renderCell: ({id}) => {
+       return <GridActionsCellItem
           icon={<DescriptionIcon />}
-          onClick={openModal}
+          onClick={(e)=>{
+            openModal(e)
+            setModalId(id);
+          }}
           label=""
-        />,
-      ],
+        />
+      },
     },
   ];
 
@@ -207,28 +211,14 @@ export default function StockHistory() {
         {isOpen&&<InvoiceModal
           showModal={isOpen}
           closeModal={closeModal}
-          info={{
-            // currentDate,
-            // dateOfIssue,
-            invoiceNumber: 1,
-            billTo: "hamadi",
-            billToEmail: "hamadi@gmail.com",
-            billToAddress: "win",
-            // billFrom,
-            // billFromEmail,
-            // billFromAddress,
-            // notes,
-            // total,
-            // subTotal,
-            // taxAmount,
-            // discountAmount
-          }}
-          items={items}
-          currency={0}
+          modalId={modalId.slice(modalId.indexOf('-')+1)}
+          currency={"DT"}
           subTotal={0}
           taxAmount={0}
           discountAmount={0}
           total={0}
+          mode="viewer"
+          type={modalId.slice(0,modalId.indexOf('-'))}
         />}
       </div>
     </div>

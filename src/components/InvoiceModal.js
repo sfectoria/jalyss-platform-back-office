@@ -20,9 +20,11 @@ const InvoiceModal = ({
   info,
   itemsData,
   taxAmount,
+  subTotal,
   discountAmount,
   finishSale,
-  mode
+  mode,
+  type
 }) => {
   const invoiceCaptureRef = useRef(null);
   const [items,setItems]=useState([])
@@ -33,7 +35,14 @@ const InvoiceModal = ({
   const [title,setTitle]=useState('')
   useEffect(()=>{
     if(mode==="viewer"){
-      fetchModalData()
+      console.log(type,'type');
+      
+      if(type==="exit"){
+        fetchModalDataExit()
+      }
+      else if (type==="receipt"){
+       fetchModalDataReceipt()
+      }
     }
     else if (mode==="creation"){
       setBillTo({
@@ -47,73 +56,91 @@ const InvoiceModal = ({
         email:info.billFromEmail
       })
       setItems(itemsData)
+      setAmount(subTotal)
       console.log(billTo,billFrom);
       
     }
   },[])
   console.log(idChannel,modalId,mode);
   
-  const fetchModalData=async()=>{
+  const fetchModalDataExit=async()=>{
     const response=await axios.get(`${ip}/exitNote/${modalId}`)
     let e =response.data
+    console.log(response.data.transferNote);
     let itemsData=e.exitNoteLine.reduce((acc,el)=>{
       let {Article,quantity}=el
       acc.data.push({...Article,quantity})
       acc.ids.push(Article.id);
       return acc;
      },{data:[],ids:[]})
-    const responsePrices = await axios.get(
-      `${ip}/price-By-Channel/getAll`,
-      { params: { salesChannelIds: [idChannel],articleIds:itemsData.ids} }
-    );
-   itemsData.data.forEach((article) => {
-    const priceData = responsePrices.data.find(
-      (priceItem) => priceItem.idArticle === article.id
-    );
-    if (priceData) {
-      article.price = priceData.price;
-    }
-  });
-     
-    if (e.salesDeliveryInvoice.length) {
+     if(e.transferNote.length){
       setBillTo({
-        name:e.salesDeliveryInvoice[0].client.fullName,
-        address:e.salesDeliveryInvoice[0].client.address,
-        email:e.salesDeliveryInvoice[0].client.email
-      })
-      setBillFrom({
-        name:e.salesDeliveryInvoice[0].salesChannels.name,
-        address:e.salesDeliveryInvoice[0].salesChannels.region,
-        email:"jalyss@gmail.com",
-      })
-      setTitle('Bon de Livraison / Facture')
-    }
-    if (e.salesDeliveryNote.length) {
-      setBillTo({
-        name:e.salesDeliveryNote[0].client.fullName,
-        address:e.salesDeliveryNote[0].client.address,
-        email:e.salesDeliveryNote[0].client.email
-      })
-      setBillFrom({
-        name:e.salesDeliveryNote[0].salesChannels.name,
-        address:e.salesDeliveryNote[0].salesChannels.region,
-        email:"jalyss@gmail.com",
-      })
-      setTitle('Bon de Livraison')
-    }
-    if (e.salesInvoice.length) {
-      setBillTo({
-        name:e.salesInvoice[0].client.fullName,
-        address:e.salesInvoice[0].client.address,
-        email:e.salesInvoice[0].client.email
-      })
-      setBillFrom({
-        name:e.salesInvoice[0].salesChannels.name,
-        address:e.salesInvoice[0].salesChannels.region,
-        email:"jalyss@gmail.com",
-      })
-      setTitle('Facture')
-    }
+        name:e.transferNote[0].stockTo.name,
+        address:e.transferNote[0].stockTo.location,
+        // email:e.transferNote[0].stockTo.email
+       })
+       setBillFrom({
+         id:e.transferNote[0].stockFrom.id,
+         name:e.transferNote[0].stockFrom.name,
+         address:e.transferNote[0].stockFrom.location,
+        //  email:"jalyss@gmail.com",
+       })
+       setTitle('Bon de Transfer')
+     }
+     if (e.salesDeliveryInvoice.length) {
+       setBillTo({
+         name:e.salesDeliveryInvoice[0].client.fullName,
+         address:e.salesDeliveryInvoice[0].client.address,
+         email:e.salesDeliveryInvoice[0].client.email
+        })
+        setBillFrom({
+          id:e.salesDeliveryInvoice[0].salesChannels.id,
+          name:e.salesDeliveryInvoice[0].salesChannels.name,
+          address:e.salesDeliveryInvoice[0].salesChannels.region,
+          email:"jalyss@gmail.com",
+        })
+        setTitle('Bon de Livraison / Facture')
+      }
+      if (e.salesDeliveryNote.length) {
+        setBillTo({
+          name:e.salesDeliveryNote[0].client.fullName,
+          address:e.salesDeliveryNote[0].client.address,
+          email:e.salesDeliveryNote[0].client.email
+        })
+        setBillFrom({
+          id:e.salesDeliveryNote[0].salesChannels.id,
+          name:e.salesDeliveryNote[0].salesChannels.name,
+          address:e.salesDeliveryNote[0].salesChannels.region,
+          email:"jalyss@gmail.com",
+        })
+        setTitle('Bon de Livraison')
+      }
+      if (e.salesInvoice.length) {
+        setBillTo({
+          name:e.salesInvoice[0].client.fullName,
+          address:e.salesInvoice[0].client.address,
+          email:e.salesInvoice[0].client.email
+        })
+        setBillFrom({
+          id:e.salesInvoice[0].salesChannels.id,
+          name:e.salesInvoice[0].salesChannels.name,
+          address:e.salesInvoice[0].salesChannels.region,
+          email:"jalyss@gmail.com",
+        })
+        setTitle('Facture')
+      }
+      const responsePrices = await axios.get(
+        `${ip}/price-By-Channel/getAll`,
+        { params: { salesChannelIds: [billFrom.id],articleIds:itemsData.ids} }
+      );
+     itemsData.data.forEach((article) => {
+      const priceData = responsePrices.data.find(
+        (priceItem) => priceItem.idArticle === article.id
+      );
+      if (priceData) {
+        article.price = priceData.price;
+      }
+    });
     
     setDate(e.exitDate)
     setAmount(e.totalAmount)
@@ -126,6 +153,79 @@ const InvoiceModal = ({
       e.name=e.title
       return e
     }))
+    
+  }
+  const fetchModalDataReceipt=async()=>{
+    const response=await axios.get(`${ip}/receiptNote/${modalId}`)
+    let e =response.data
+    let itemsData=e.receiptNoteLine.reduce((acc,el)=>{
+      let {Article,quantity,price}=el
+      acc.push({...Article,quantity,price})
+      return acc;
+     },[])
+     console.log(response.data);
+     
+     setBillTo({
+          name:e.stock.name,
+          address:e.stock.location,
+          email:"jalyss@gmail.com",
+        })
+        setDate(e.receiptDate)
+        setAmount(e.totalAmount)
+        setTitle("Bon de Reception")
+    // if (e.salesDeliveryInvoice.length) {
+    //   setBillTo({
+    //     name:e.salesDeliveryInvoice[0].client.fullName,
+    //     address:e.salesDeliveryInvoice[0].client.address,
+    //     email:e.salesDeliveryInvoice[0].client.email
+    //   })
+    //   setBillFrom({
+    //     name:e.salesDeliveryInvoice[0].salesChannels.name,
+    //     address:e.salesDeliveryInvoice[0].salesChannels.region,
+    //     email:"jalyss@gmail.com",
+    //   })
+    //   setTitle('Bon de Livraison / Facture')
+    // }
+    // if (e.salesDeliveryNote.length) {
+    //   setBillTo({
+    //     name:e.salesDeliveryNote[0].client.fullName,
+    //     address:e.salesDeliveryNote[0].client.address,
+    //     email:e.salesDeliveryNote[0].client.email
+    //   })
+    //   setBillFrom({
+    //     name:e.salesDeliveryNote[0].salesChannels.name,
+    //     address:e.salesDeliveryNote[0].salesChannels.region,
+    //     email:"jalyss@gmail.com",
+    //   })
+    //   setTitle('Bon de Livraison')
+    // }
+    // if (e.salesInvoice.length) {
+    //   setBillTo({
+    //     name:e.salesInvoice[0].client.fullName,
+    //     address:e.salesInvoice[0].client.address,
+    //     email:e.salesInvoice[0].client.email
+    //   })
+    //   setBillFrom({
+    //     name:e.salesInvoice[0].salesChannels.name,
+    //     address:e.salesInvoice[0].salesChannels.region,
+    //     email:"jalyss@gmail.com",
+    //   })
+    //   setTitle('Facture')
+    // }
+    
+    // setDate(e.exitDate)
+    // setAmount(e.totalAmount)
+    console.log(itemsData,'hello');
+    
+    setItems(itemsData.map((e)=>{
+      e.author=e.articleByAuthor.length?e.articleByAuthor[0]?.author?.nameAr:null
+      e.publisher=e.articleByPublishingHouse.length?e.articleByPublishingHouse[0]?.publishingHouse?.nameAr:null
+      e.image=e?.cover?.path
+      e.name=e.title
+      return e
+    }
+  )
+)
     
   }
 
@@ -158,7 +258,7 @@ const InvoiceModal = ({
             </div>
             <div className="text-end ms-4">
               <h6 className="fw-bold mt-1 mb-2">Amount&nbsp;Due:</h6>
-              <h5 className="fw-bold text-secondary"> {currency} {amount}</h5>
+              <h5 className="fw-bold text-secondary">{amount} {currency}</h5>
             </div>
           </div>
           <div className="p-4">

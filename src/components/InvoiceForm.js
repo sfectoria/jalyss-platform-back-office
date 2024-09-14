@@ -20,7 +20,7 @@ import { ip } from "../constants/ip";
 
 const InvoiceForm = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [currency, setCurrency] = useState("$");
+  const [currency, setCurrency] = useState("DT");
   const [currentDate, setCurrentDate] = useState("");
   const [invoiceNumber, setInvoiceNumber] = useState(1);
   const [dateOfIssue, setDateOfIssue] = useState("");
@@ -34,7 +34,7 @@ const InvoiceForm = () => {
   const [billFromAddress, setBillFromAddress] = useState("");
   const [notes, setNotes] = useState("");
   const [total, setTotal] = useState("0.00");
-  const [subTotal, setSubTotal] = useState("0.00");
+  const [subTotal, setSubTotal] = useState(0.0);
   const [taxRate, setTaxRate] = useState("");
   const [taxAmount, setTaxAmount] = useState("0.00");
   const [discountRate, setDiscountRate] = useState("");
@@ -104,8 +104,6 @@ const InvoiceForm = () => {
       setReqClient('idClient')
     } else if (type === "BC") {
       setInvoiceTitle("Bon de Commande");
-      setReqName()
-      setReqLine()
     } else if (type === "BRe") {
       setInvoiceTitle("Bon de Retour");
       setReqName()
@@ -118,7 +116,7 @@ const InvoiceForm = () => {
   };
   const finishSale = async () => {
     try {
-      if(type === "BL" || type === "BLF" || type === "F" || type === "Ticket" || type === "Devis" || type==='BC'){
+      if(type === "BL" || type === "BLF" || type === "F" || type === "Ticket" || type === "Devis"){
       const itemsWithIdArticle = items.map((e) => {
         let { id, quantity, ...rest } = e;
         const articleId = id;
@@ -136,6 +134,29 @@ const InvoiceForm = () => {
       };
       const response = await axios.post(
         `${ip}/${reqName}/create`,
+        obj
+      );
+      console.log("Response:", response.data);
+      setItems([])
+    }
+      else if(type==="BC"){
+      const itemsWithIdArticle = items.map((e) => {
+        let { id, quantity, ...rest } = e;
+        const idArticle = id;
+        return { idArticle, quantity };
+      });
+      console.log(itemsWithIdArticle);
+      
+      const obj = {
+        idClient:billToId,
+        salesChannelsId: parseInt(sender),
+        status:'Pending',
+        date:new Date(),
+        orderDate:new Date(),
+        purchaseOrderLine: itemsWithIdArticle,
+      };
+      const response = await axios.post(
+        `${ip}/purchaseOrder/create`,
         obj
       );
       console.log("Response:", response.data);
@@ -245,11 +266,11 @@ const InvoiceForm = () => {
     }
   };
 
-  const handelNSearch = (event, value, rows) => {
-    handelAddItem(value, rows);
+  const handelNSearch = (event, value) => {
+    handelAddItem(value);
   };
 
-  const handelAddItem = (obj, rows) => {
+  const handelAddItem = (obj) => {
     setShowErAlert(false);
     setShowSuAlert(true);
     handleAddEvent(obj);
@@ -548,24 +569,24 @@ const InvoiceForm = () => {
                 <div className="d-flex flex-row align-items-start justify-content-between">
                   <span className="fw-bold">Subtotal:</span>
                   <span>
+                    {subTotal||0}
                     {currency}
-                    {subTotal}
                   </span>
                 </div>
                 <div className="d-flex flex-row align-items-start justify-content-between mt-2">
                   <span className="fw-bold">Discount:</span>
                   <span>
                     <span className="small">({discountRate || 0}%)</span>
-                    {currency}
                     {discountAmount || 0}
+                    {currency}
                   </span>
                 </div>
                 <div className="d-flex flex-row align-items-start justify-content-between mt-2">
                   <span className="fw-bold">Tax:</span>
                   <span>
                     <span className="small">({taxRate || 0}%)</span>
-                    {currency}
                     {taxAmount || 0}
+                    {currency}
                   </span>
                 </div>
                 <hr />
@@ -575,8 +596,8 @@ const InvoiceForm = () => {
                 >
                   <span className="fw-bold">Total:</span>
                   <span className="fw-bold">
-                    {currency}
                     {total || 0}
+                    {currency}
                   </span>
                 </div>
               </Col>

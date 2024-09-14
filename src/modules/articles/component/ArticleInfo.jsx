@@ -1,10 +1,42 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
 import ArticleCatigorie from "./ArticleCategorie";
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
+import axios from "axios";
+import { ip } from "../../../constants/ip";
 
 export default function ArticleInfo() {
+  const [articlesNames,setArticlesNames]=useState([]);
+  const [articlesAuthors,setArticlesAuthors]=useState([]);
+  const [articlesPublishers,setArticlesPublishers]=useState([]);
+  const [articlesCategories,setArticlesCategories]=useState([]);
+  const [nameText,setNameText]=useState('');
+  const [authorText,setAuthorText]=useState('');
+  const [publisherText,setPublisherText]=useState('');
+  const [categoryText,setCategoryText]=useState('');
+  const [text,setText]=useState('');
+  const [refresh,setRefresh]=useState(false);
+  useEffect(()=>{
+    fetchArticleChoices()
+  },[refresh])
+
+  const fetchArticleChoices=async()=>{
+    let params={take:5}
+   if(nameText) params['text']=nameText
+    const response=await axios.get(`${ip}/articles/getAll`,{params})
+    console.log(response.data.data);
+    setArticlesNames(response.data.data.map(e=>e.title))
+    setArticlesAuthors(response.data.data.reduce((acc,e)=>{
+      if(e.articleByAuthor.length){
+        console.log(e.articleByAuthor[0]?.author.nameAr);
+        acc.push(e.articleByAuthor[0]?.author.nameAr)
+      }
+      return acc
+    },[]))
+   console.log(articlesAuthors);
+   
+  }
   return <Box sx={{width:'100%'}}>
     <Box sx={{display:'flex',justifyContent:'center',mb:6}}>
             <Typography variant="h1" >
@@ -16,29 +48,26 @@ export default function ArticleInfo() {
         id="free-solo-demo"
         freeSolo
         sx={{width:'55%'}}
-        options={top100Films.map((option) => option.title)}
-        renderInput={(params) => <TextField {...params} label="Title" required />}
+        options={articlesNames.map((option) => option)}
+        onInputChange={(e,value)=>{setNameText(value);
+          setRefresh(!refresh)
+        }}
+        renderInput={(params) => <TextField {...params} label="Title" required onChange={(e)=>{console.log(e.target.value);
+        }}/>}
       />
      <TextField
           required
           id="outlined-required"
           label="BarCode"
-          sx={{width:'25%'}}
-        />    
-     <TextField
-          required
-          id="outlined-required"
-          type="number"
-          label="QTY"
-          sx={{width:'15%'}}
-        />    
+          sx={{width:'40%'}}
+        />       
     </Box>
     <Box sx={{display:'flex',gap:2,mb:4}} >
     <Autocomplete
         id="free-solo-demo"
         freeSolo
         sx={{width:'47%'}}
-        options={top100Films.map((option) => option.title)}
+        options={articlesAuthors.map((option) => option)}
         renderInput={(params) => <TextField {...params} label="Author" required />}
       />
       <Autocomplete
