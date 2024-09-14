@@ -104,8 +104,6 @@ const InvoiceForm = () => {
       setReqClient('idClient')
     } else if (type === "BC") {
       setInvoiceTitle("Bon de Commande");
-      setReqName()
-      setReqLine()
     } else if (type === "BRe") {
       setInvoiceTitle("Bon de Retour");
       setReqName()
@@ -118,7 +116,7 @@ const InvoiceForm = () => {
   };
   const finishSale = async () => {
     try {
-      if(type === "BL" || type === "BLF" || type === "F" || type === "Ticket" || type === "Devis" || type==='BC'){
+      if(type === "BL" || type === "BLF" || type === "F" || type === "Ticket" || type === "Devis"){
       const itemsWithIdArticle = items.map((e) => {
         let { id, quantity, ...rest } = e;
         const articleId = id;
@@ -136,6 +134,29 @@ const InvoiceForm = () => {
       };
       const response = await axios.post(
         `${ip}/${reqName}/create`,
+        obj
+      );
+      console.log("Response:", response.data);
+      setItems([])
+    }
+      else if(type==="BC"){
+      const itemsWithIdArticle = items.map((e) => {
+        let { id, quantity, ...rest } = e;
+        const idArticle = id;
+        return { idArticle, quantity };
+      });
+      console.log(itemsWithIdArticle);
+      
+      const obj = {
+        idClient:billToId,
+        salesChannelsId: parseInt(sender),
+        status:'Pending',
+        date:new Date(),
+        orderDate:new Date(),
+        purchaseOrderLine: itemsWithIdArticle,
+      };
+      const response = await axios.post(
+        `${ip}/purchaseOrder/create`,
         obj
       );
       console.log("Response:", response.data);

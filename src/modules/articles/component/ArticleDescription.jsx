@@ -42,7 +42,7 @@ export default function ArticleDescription({data}) {
     /></Box>
             </Box>
             <img
-            width={250}
+            width={270}
       src={data?.cover?.path}
       alt={"article img"}
       loading="lazy"
