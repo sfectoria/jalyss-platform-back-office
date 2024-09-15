@@ -16,7 +16,7 @@ export default function MouseOverPopover({ name }) {
   const handlePopoverOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
-  console.log(name);
+  // console.log(name);
   
 
   const handlePopoverClose = () => {
