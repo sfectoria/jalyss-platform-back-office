@@ -16,6 +16,7 @@ import React, { useEffect, useState } from "react";
 import Item from "../../../style/ItemStyle";
 import axios from "axios";
 import { ip } from "../../../constants/ip";
+import { useNavigate } from "react-router-dom";
 
 const AddChannel = () => {
   const defaultTheme = createTheme({
@@ -37,6 +38,7 @@ const AddChannel = () => {
   const [managerName, setManagerName] = React.useState("");
   const [managerPhoneNumber, setManagerPhoneNumber] = React.useState("");
   const [errors, setErrors] = React.useState({});
+  const navigate = useNavigate(); 
 
 
   const handleClose = () => {
@@ -113,10 +115,15 @@ const AddChannel = () => {
       name:channelName,
       type:'local',
       region:address,
-      idStock:4
+      idStock:1
     }
      const newStock=await axios.post(`${ip}/selling/create`,obj)
-     console.log('ggg',newStock.data);
+     console.log("res", newStock);
+     if (newStock && newStock.status === 201) {
+      console.log("navigate ")
+      setTimeout(() => {
+        navigate('/channels'); 
+      }, 800);    }
      
   }
 

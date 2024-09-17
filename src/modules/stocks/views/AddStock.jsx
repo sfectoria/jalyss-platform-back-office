@@ -16,6 +16,7 @@ import React, { useEffect, useState } from "react";
 import Item from "../../../style/ItemStyle";
 import { ip } from "../../../constants/ip";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const AddStock = () => {
   const defaultTheme = createTheme({
@@ -48,6 +49,7 @@ const AddStock = () => {
     setIsCancelled(true);
     setOpen(true);
   };
+  const navigate = useNavigate(); 
 
   // // isVerified
   // const isVerified = (form) => {
@@ -125,6 +127,11 @@ const AddStock = () => {
      const newStock=await axios.post(`${ip}/stocks/createStock`,obj)
      console.log('ggg',newStock.data);
      
+     if (newStock && newStock.status === 201) {
+      console.log("navigate ")
+      setTimeout(() => {
+        navigate('/stock'); 
+      }, 800);    }
   }
 
 
