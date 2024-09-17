@@ -1,14 +1,33 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DataGrid, GridToolbar, GridActionsCellItem } from "@mui/x-data-grid";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import CustomNoResultsOverlay from "../../../style/NoResultStyle";
-import DoneIcon from "@mui/icons-material/Done";
-import ClearIcon from "@mui/icons-material/Clear";
 import InvoiceModal from "../../../components/InvoiceModal";
-import MouseOverPopover from "./cosOrForPopUp";
+import axios from "axios";
 
 export default function Retour() {
   const [isOpen, setIsOpen] = useState(false);
+  const [rows, setRows] = useState([]); 
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/return-note/getAll');
+        
+        const formattedData = response.data.map((item) => ({
+          id: item.id,
+          returnDate: item.returnDate,
+          customerName: item.client.fullName || "No Name", // Add customerName
+        }));
+        setRows(formattedData); 
+      } catch (error) {
+        console.error("Error fetching return notes:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   const items = [
     {
       id: (+new Date() + Math.floor(Math.random() * 999999)).toString(36),
@@ -43,13 +62,13 @@ export default function Retour() {
   };
 
   const columns = [
-    { field: "date", headerName: "Date", width: 200 },
+    { field: "returnDate", headerName: "Date", width: 200 },
     {
       field: "customerName",
       headerName: "Customer",
       width: 270,
       renderCell: (params) => (
-        <MouseOverPopover name={params.row.customerName} />
+        <div>{params.row.customerName || "No Name"}</div>
       ),
     },
     {
@@ -64,76 +83,6 @@ export default function Retour() {
           label=""
         />,
       ],
-    },
-  ];
-
-  const rows = [
-    {
-      id: 1,
-      date: "07/23/2024 6:56 PM",
-      customerName: null,
-      fournisseurName: "Salim sfexi",
-      managerNumber: "+216 28527345",
-      details: "fff",
-      bl: true,
-    },
-    {
-      id: 2,
-      date: "07/23/2024 6:56 PM",
-      customerName: "Hamida midawi",
-      fournisseurName: null,
-      ticket: true,
-    },
-    {
-      id: 3,
-      date: "07/23/2024 6:56 PM",
-      customerName: null,
-      fournisseurName: "Wael ben sahloul",
-      f: true,
-    },
-    {
-      id: 4,
-      date: "07/23/2024 6:56 PM",
-      customerName: null,
-      fournisseurName: "Stock Gabes",
-      br: true,
-      blf: true,
-    },
-    {
-      id: 5,
-      date: "07/23/2024 6:56 PM",
-      customerName: "Daenerys",
-      fournisseurName: null,
-      bl: true,
-    },
-    {
-      id: 6,
-      date: "07/23/2024 6:56 PM",
-      customerName: "houssem ben ammar",
-      fournisseurName: null,
-      ticket: true,
-    },
-    {
-      id: 7,
-      date: "07/23/2024 6:56 PM",
-      customerName: null,
-      fournisseurName: "Ferrara",
-      f: true,
-    },
-    {
-      id: 8,
-      date: "07/23/2024 6:56 PM",
-      customerName: "Stock Nabeul",
-      fournisseurName: null,
-      bs: true,
-      blf: true,
-    },
-    {
-      id: 9,
-      date: "07/23/2024 6:56 PM",
-      customerName: "Harvey",
-      fournisseurName: null,
-      bl: true,
     },
   ];
 

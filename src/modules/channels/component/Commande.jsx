@@ -21,12 +21,11 @@ export default function Commande() {
 
   const fetchData=async()=>{
     const response=await axios.get(`${ip}/purchaseOrder/getAll`,{params:{salesChannelsIds:[param.id]}})
-    console.log(response.data.data);
-    
+    console.log("res",response.data.data);
     setRows(response.data.data);
-    
   }
 
+  
   const items = [
     {
       id: (+new Date() + Math.floor(Math.random() * 999999)).toString(36),
@@ -77,7 +76,7 @@ export default function Commande() {
       headerName: "State",
       width: 400,
       renderCell: (params) => (
-        <ColorToggleButton state={params.row?.status?.toLowerCase()} />
+        <ColorToggleButton state={params.row?.status?.toLowerCase()}  idPurchaseOrder={params.row.id} saleChannelId={params.row.salesChannelsId} idClient={params.row.idClient} deliveryDate={params.row.orderDate} purchaseOrderLine={params.row.purchaseOrderLine} />
       )
       
     },
