@@ -11,7 +11,7 @@ import InvoiceItem from "./InvoiceItem";
 import InvoiceModal from "./InvoiceModal";
 import InputGroup from "react-bootstrap/InputGroup";
 import AlertAdding from "./AlertAdding";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import PersonPresent from "./PersonPresent";
 import PersonSearch from "./PersonSearch";
 import { useParams } from "react-router-dom";
@@ -19,6 +19,7 @@ import axios from "axios";
 import { ip } from "../constants/ip";
 
 const InvoiceForm = () => {
+  const navigate = useNavigate(); 
   const [isOpen, setIsOpen] = useState(false);
   const [currency, setCurrency] = useState("DT");
   const [currentDate, setCurrentDate] = useState("");
@@ -114,6 +115,7 @@ const InvoiceForm = () => {
       setReqLine()
     }
   };
+  
   const finishSale = async () => {
     try {
       if(type === "BL" || type === "BLF" || type === "F" || type === "Ticket" || type === "Devis"){
@@ -122,7 +124,7 @@ const InvoiceForm = () => {
         const articleId = id;
         return { articleId, quantity };
       });
-      console.log(itemsWithIdArticle);
+      console.log(itemsWithIdArticle, "itemsWithIdArticle");
       
       const obj = {
         exitNoteId: 0,
@@ -137,8 +139,15 @@ const InvoiceForm = () => {
         obj
       );
       console.log("Response:", response.data);
+      console.log(response.status)
+      
+    if (response && response.status === 201) {
+      console.log(response,"navigate ")
+      navigate(-1); 
+    }
       setItems([])
     }
+
       else if(type==="BC"){
       const itemsWithIdArticle = items.map((e) => {
         let { id, quantity, ...rest } = e;
@@ -162,6 +171,7 @@ const InvoiceForm = () => {
       console.log("Response:", response.data);
       setItems([])
     }
+
       else if(type === "BR"){
       const itemsWithIdArticle = items.map((e) => {
         console.log(e);
@@ -188,6 +198,7 @@ const InvoiceForm = () => {
       console.log("Response:", response.data);
       setItems([])
     }
+
       else if(type === "BT"){
       const itemsWithIdArticle = items.map((e) => {
         console.log(e);
@@ -213,11 +224,38 @@ const InvoiceForm = () => {
       console.log("Response:", response.data);
       setItems([])
     }
-  
+    else if (type === "BRe") { 
+      const itemsWithIdArticle = items.map((e) => {
+        console.log(e);
+        let { id, quantity, ...rest } = e;
+        const idArticle = id;
+        quantity = parseInt(quantity);
+        return { idArticle, quantity };
+      });
+      console.log(itemsWithIdArticle);
+
+      const obj = {
+        returnDate: new Date(),
+        lines: itemsWithIdArticle,
+        idClient: billToId,
+        idStock: parseInt(receiver),
+        receiptNoteId: 0
+      };
+      const response = await axios.post(
+        `${ip}/return-note/createRN`, 
+        obj
+      );
+      console.log("Response:", response.data);
+      setItems([]);
+    }
+
+
     } catch (error) {
       console.error("Error:", error);
     }
   };
+
+
   const handleAddEvent = (obj) => {
     const duplicate = items.find((e) => {
       return e.id === obj.id;

@@ -40,9 +40,9 @@ export default function AddButton({type,info}) {
 
 
   const handleAction = (type) => {
-    if (type === "BR" ) {
+    if (type === "BR" || type==='BRe') {
       navigate(`/invoice/${type}/0/${info.id}`);
-    } else if (type === "BS" || type ==='BL' || type ==='BLF' || type ==='F' || type ==='Ticket' || type ==='BC' || type ==='Devis' || type==='BT') {
+    } else if (type === "BS" || type ==='BL' || type ==='BLF' || type ==='F' || type ==='Ticket' || type ==='BC' || type ==='Devis' || type==='BT' ) {
       navigate(`/invoice/${type}/${info.id}/0`, {
       });
     }

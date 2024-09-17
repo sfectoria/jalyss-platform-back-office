@@ -27,7 +27,7 @@ const SearchField = ({ handelBarcode, handelNSearch, info, type }) => {
   const [filteredRows, setFilteredRows] = useState(rows);
   const [hoveredImage, setHoveredImage] = useState(null);
   useEffect(() => {
-    if (info.type === "BR") {
+    if (info.type === "BR" || info.type === "BRe") {
       fetchDataStock();
     } else if (info.type === "BT") {
       fetchDataStockBt();
