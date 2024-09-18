@@ -1,4 +1,4 @@
-import  React,{useState} from 'react';
+import  React,{useEffect, useState} from 'react';
 import Box from '@mui/material/Box';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
@@ -7,12 +7,20 @@ import {
   DataGrid,
   GridActionsCellItem,
   GridRowEditStopReasons,
+  gridPageCountSelector,
+  GridPagination,
+  useGridApiContext,
+  useGridSelector,
 } from '@mui/x-data-grid';
+import MuiPagination from "@mui/material/Pagination";
 import ImagePopUp from '../../../components/ImagePopUp';
 import CustomNoResultsOverlay from '../../../style/NoResultStyle';
 import AlertAdding from '../../../components/AlertAdding'
 import QuickSearchToolbar from '../component/QuickSearchToolbar'
 import SaveDialog from '../component/SaveDialog';
+import { ip } from '../../../constants/ip';
+import axios from 'axios';
+import { useParams } from 'react-router-dom';
 
 
 function createData(id, image, title, quantity, author, publisher, price) {
@@ -40,18 +48,61 @@ const rowss = [
 ];
 
 export default function NewInventaireTable() {
-  const [rows, setRows] = useState(rowss);
+  const [rows, setRows] = useState([]);
   const [showAlert, setShowAlert] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
+  const [count, setCount] = useState(10);
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [text, setText] = useState(null);
   const [msg, setMsg] = useState('');
+  const [refresh, setRefresh] = useState('');
   const [rowModesModel, setRowModesModel] = useState(
-    rowss.reduce((acc, row) => {
+    rows.reduce((acc, row) => {
       acc[row.id] = { mode: GridRowModes.View };
       return acc;
     }, {})
   );
-  const [searchText, setSearchText] = useState('');
 
+  const param = useParams()
+
+  useEffect(() => {
+    fetchData();
+  }, [refresh,text]);
+
+  const fetchData = async () => {
+    let params={take:pageSize,skip:page*pageSize}
+    if(text) params['text']=text
+    console.log(params);
+    
+    const response = await axios.get(`${ip}/stocks/${param.id}`,{params});
+    console.log(response.data.data.stockArticle, response.data.count);
+    setRows(response.data.data.stockArticle);
+    setCount(response.data.count);
+  };
+  function Pagination({ onPageChange, className }) {
+    const apiRef = useGridApiContext();
+    const pageCount = useGridSelector(apiRef, gridPageCountSelector);
+   console.log(page);
+   console.log(text);
+   
+    return (
+      <MuiPagination
+        color="secondary"
+        className={className}
+        count={pageCount}
+        page={page+1}
+        onChange={(event, newPage) => {
+          setPage(newPage-1,page)
+          onPageChange(event, newPage-1);
+        }}
+      />
+    );
+  }
+  
+  function CustomPagination(props) {
+    return <GridPagination ActionsComponent={Pagination} {...props} />;
+  }
   const handleRowEditStop = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
       event.defaultMuiPrevented = true;
@@ -98,13 +149,21 @@ export default function NewInventaireTable() {
     else if (editCount===0) setShowDialog(true)
   };
 
-  const filteredRows = rows.filter((row) => {
-    return (
-      row.title.toLowerCase().includes(searchText.toLowerCase()) ||
-      row.publisher.toLowerCase().includes(searchText.toLowerCase()) ||
-      row.author.toLowerCase().includes(searchText.toLowerCase())
-    );
-  });
+  const handlePageChange = (newPageInfo) => {
+    console.log(newPageInfo, "pagesize");
+    console.log(pageSize === newPageInfo.pageSize);
+
+    if (pageSize === newPageInfo.pageSize) {
+      setPage(newPageInfo.page);
+      setRefresh(!refresh);
+    }
+    if (pageSize !== newPageInfo.pageSize) {
+      setPageSize(newPageInfo.pageSize);
+      setPage(0);
+      setRefresh(!refresh);
+    }
+  };
+
 
   const columns = [
     {
@@ -113,16 +172,25 @@ export default function NewInventaireTable() {
       width: 90,
       renderCell: (params) => <ImagePopUp image={params.value} />,
     },
-    { field: 'title', headerName: 'Title', width: 270 },
+    { field: 'title', headerName: 'Title', width: 270 , valueGetter: (value, row) => {
+      return row?.article?.title;
+    },},
     {
-      field: 'quantity',
+      field: 'quantityInv',
       headerName: 'Quantity',
       width: 90,
       editable: true,
       type: 'number',
     },
-    { field: 'author', headerName: 'Author', width: 250 },
-    { field: 'publisher', headerName: 'Publisher', width: 250 },
+    { field: 'author', headerName: 'Author', width: 250, valueGetter: (value, row) => {
+      return row?.article.articleByAuthor[0]?.author?.nameAr;
+
+    }, },
+    { field: 'publisher', headerName: 'Publisher', width: 250,
+      valueGetter: (value, row) => {
+        return row?.article.articleByPublishingHouse[0]?.publishingHouse?.nameAr;
+      },
+     },
     {
       field: 'actions',
       type: 'actions',
@@ -163,7 +231,7 @@ export default function NewInventaireTable() {
   return (
     <Box
       sx={{
-        width: '75%',
+        width: '85%',
         '& .actions': {
           color: 'text.secondary',
         },
@@ -177,19 +245,29 @@ export default function NewInventaireTable() {
         <DataGrid
         rowHeight={80}
           pageSizeOptions={[7, 10, 20]}
-          rows={filteredRows}
+          onPaginationModelChange={(event)=>{
+            handlePageChange(event)
+          }}
+          rows={rows}
           columns={columns}
           editMode="row"
+          pagination
+          pageSize={pageSize}
+          paginationMode="server"
+          rowCount={count}
           rowModesModel={rowModesModel}
+          onFilterModelChange={(e)=>{setText(e.quickFilterValues[0]);
+          }}
           onRowModesModelChange={handleRowModesModelChange}
           onRowEditStop={handleRowEditStop}
           processRowUpdate={processRowUpdate}
           slots={{
             noResultsOverlay: CustomNoResultsOverlay,
             toolbar: QuickSearchToolbar,
+            pagination: CustomPagination,
           }}
           initialState={{
-            pagination: { paginationModel: { pageSize: 7 } },
+            pagination: { paginationModel: { pageSize: 10 } },
             filter: {
               filterModel: {
                 items: [],
@@ -200,7 +278,6 @@ export default function NewInventaireTable() {
           slotProps={{
             toolbar: {
               showQuickFilter: true,
-              setSearchText,
               onDoneClick: handleDoneClick,
             },
           }}

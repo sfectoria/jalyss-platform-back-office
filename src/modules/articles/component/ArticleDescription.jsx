@@ -24,7 +24,7 @@ export default function ArticleDescription({data}) {
             </Box>
             <Box sx={{display:'flex',gap:2,alignItems:'center',justifyContent:'end'}}>
             <Typography     gutterBottom sx={{fontWeight: 'bold' }}>
-            400
+            {data?.quantity}
             </Typography>
             <Typography  color='black' variant='h5'  gutterBottom sx={{fontWeight: 'bold' }}>
              الكمية الجملية

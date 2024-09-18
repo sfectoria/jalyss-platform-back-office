@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { DataGrid, GridToolbar, GridActionsCellItem } from "@mui/x-data-grid";
+import { DataGrid, GridToolbar, GridActionsCellItem,  gridPageCountSelector,
+  GridPagination,
+  useGridApiContext,
+  useGridSelector, } from "@mui/x-data-grid";
 import DescriptionIcon from '@mui/icons-material/Description';
+import MuiPagination from "@mui/material/Pagination";
 import CustomNoResultsOverlay from "../../../style/NoResultStyle";
 import DoneIcon from "@mui/icons-material/Done";
 import ClearIcon from "@mui/icons-material/Clear";
@@ -12,75 +16,50 @@ import { useParams } from "react-router-dom";
 
 export default function StockHistory() {
   const [rows, setRows] = useState([]);
-  const [row, setRow] = useState({});
-  const [info, setInfo] = useState({});
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [count, setCount] = useState(0);
   const [modalId, setModalId] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
+  const [refresh, setRefresh] = useState(false);
 
-  const params = useParams();
+  const param = useParams();
 
   useEffect(() => {
     fetchHistoryData();
-  }, []);
-
-  const mergeAndSortByDate = (exitNotes, receiptNotes) => {
-    const combined = [
-      ...exitNotes.map((item) => ({
-        ...item,
-        type: "exit",
-        date: new Date(item.exitDate),
-        id: `exit-${item.id}`,
-      })),
-      ...receiptNotes.map((item) => ({
-        ...item,
-        type: "receipt",
-        date: new Date(item.receiptDate),
-        id: `receipt-${item.id}`,
-      })),
-    ];
-
-    return combined.sort((a, b) => a.date - b.date);
-  };
+  }, [refresh]);
 
   const fetchHistoryData = async () => {
-    const responseReceipt = await axios.get(`${ip}/receiptNote/all_rn`, {
-      params: { stocksIds: [params.id] },
-    });
-    console.log(responseReceipt.data);
-    const responseExit = await axios.get(`${ip}/exitNote/all_en`, {
-      params: { stocksIds: [params.id] },
-    });
-    console.log(responseExit.data);
-    const sortedData = mergeAndSortByDate(
-      responseExit.data.data,
-      responseReceipt.data.data
-    );
-    console.log(sortedData);
-    setRows(sortedData);
+    let params={take:pageSize,skip:page*pageSize,stocksIds:[param.id]}
+    const responseHistory=await axios.get(`${ip}/movements/getAll`,{params})
+    console.log(responseHistory.data);
+    
+    setRows(responseHistory.data.data)
+    setCount(responseHistory.data.count)
   };
-  const items = [
-    {
-      id: (+new Date() + Math.floor(Math.random() * 999999)).toString(36),
-      name: "hhhh",
-      description: "a  book",
-      price: "1.00",
-      quantity: 7,
-    },
-    {
-      id: (+new Date() + Math.floor(Math.random() * 999999)).toString(36),
-      name: "halima",
-      description: "a  book",
-      price: "1.00",
-      quantity: 1,
-    },
-    {
-      id: (+new Date() + Math.floor(Math.random() * 999999)).toString(36),
-      name: "nooo",
-      description: "a  book",
-      price: "4.00",
-      quantity: 5,
-    },
-  ];
+
+  function Pagination({ onPageChange, className }) {
+    const apiRef = useGridApiContext();
+    const pageCount = useGridSelector(apiRef, gridPageCountSelector);
+    console.log(page);
+
+    return (
+      <MuiPagination
+        color="secondary"
+        className={className}
+        count={pageCount}
+        page={page + 1}
+        onChange={(event, newPage) => {
+          setPage(newPage - 1, page);
+          onPageChange(event, newPage - 1);
+        }}
+      />
+    );
+  }
+
+  function CustomPagination(props) {
+    return <GridPagination ActionsComponent={Pagination} {...props} />;
+  }
 
   const openModal = (event) => {
     event.preventDefault();
@@ -90,6 +69,22 @@ export default function StockHistory() {
   const closeModal = () => {
     setIsOpen(false);
   };
+
+  const handlePageChange = (newPageInfo) => {
+    console.log(newPageInfo, "pagesize");
+    console.log(pageSize === newPageInfo.pageSize);
+
+    if (pageSize === newPageInfo.pageSize) {
+      setPage(newPageInfo.page);
+      setRefresh(!refresh);
+    }
+    if (pageSize !== newPageInfo.pageSize) {
+      setPageSize(newPageInfo.pageSize);
+      setPage(0);
+      setRefresh(!refresh);
+    }
+  };
+
 
   const columns = [
     { field: "date", headerName: "Date", width: 200,
@@ -189,12 +184,20 @@ export default function StockHistory() {
           }}
           rows={rows}
           columns={columns}
+          onPaginationModelChange={(event) => {
+            handlePageChange(event);
+          }}
+          pagination
+          pageSize={pageSize}
+          paginationMode="server"
+          rowCount={count}
           slots={{
             noResultsOverlay: CustomNoResultsOverlay,
             toolbar: GridToolbar,
+            pagination: CustomPagination,
           }}
           initialState={{
-            pagination: { paginationModel: { pageSize: 7 } },
+            pagination: { paginationModel: { pageSize: 10 } },
             filter: {
               filterModel: {
                 items: [],

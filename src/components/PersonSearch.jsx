@@ -25,13 +25,14 @@ const PersonSearch = ({person,type,setName,setEmail,setAddress,setId}) => {
       let {name,location,...rest}=e
       let fullName=name
       let address=location
+      let email='jalyss@gmail.com'
       return {fullName,address,...rest}
      })
      setRows(dataStocks)
      console.log(dataStocks);
      
        }
-  else if (type === "BL" || type === "BLF" || type === "F" || type === "Ticket" || type === "Devis" || type==='BC'){
+  else if (type === "BL" || type === "BLF" || type === "F" || type === "Ticket" || type === "Devis" || type==='BC' || type==='BRe'){
      const response = await axios.get(`${ip}/clients`)
      console.log(response.data);
      setRows(response.data)
@@ -59,7 +60,7 @@ const PersonSearch = ({person,type,setName,setEmail,setAddress,setId}) => {
     if (value) {
       setId(value.id)
       setName(value.fullName)
-      setEmail('jalyss@gmail.com')
+      setEmail(value.email)
       setAddress(value.address)
       
     }

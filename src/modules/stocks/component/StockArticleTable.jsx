@@ -103,6 +103,9 @@ export default function StockArticles() {
       field: "publisher",
       headerName: "Publisher",
       width: 220,
+      valueGetter: (value, row) => {
+        return row?.article.articleByPublishingHouse[0]?.publishingHouse?.nameAr;
+      },
     },
     {
       field: "history",
