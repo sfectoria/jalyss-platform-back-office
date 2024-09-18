@@ -3,55 +3,30 @@ import Box from '@mui/material/Box';
 import { DataGrid, GridToolbar, GridActionsCellItem } from '@mui/x-data-grid';
 import Typography from '@mui/material/Typography';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import CustomNoResultsOverlay from '../../../style/NoResultStyle';
 import Item from '../../../style/ItemStyle';
 import axios from "axios";
 import { ip } from '../../../constants/ip';
 
-
-const getPageFromUrl = () => {
-  const params = new URLSearchParams(window.location.search);
-  return +params.get("page") || 0;
-};
-
-const getPageSizeFromUrl = () => {
-  const params = new URLSearchParams(window.location.search);
-  return +params.get("take") || 10;
-};
-
 export default function StockList() {
   const [rows,setRows]=useState([])
-  const [page, setPage] = useState(getPageFromUrl);
-  const [pageSize, setPageSize] = useState(getPageSizeFromUrl());
-  const [text, setText] = useState(null);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
 
-  const location = useLocation();
 
   const handleDetails = (ids) => {
     navigate(`/stock/${ids}`);
   };
   useEffect(() => {
-    // updateUrlParams();
     fetchData();
-  }, [location, text, page,pageSize]);
+  }, []);
 
   const fetchData = async () => {
     try {
-      let queryParams = new URLSearchParams(location.search);
-      let params = Object.fromEntries(queryParams.entries());
-      params.take=pageSize
-      params.skip= page * pageSize
-      console.log(params);
-      if (text) params["text"] = text;
-      console.log(params, text);
-      const response = await axios.get(ip + "/stocks/getAll", {
-        params,
-      });
+      const response = await axios.get(ip + "/stocks/getAll");
       setRows(response.data);
     } catch (err) {
       setError(err);

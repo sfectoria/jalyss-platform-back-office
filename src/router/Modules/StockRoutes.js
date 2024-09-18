@@ -4,6 +4,8 @@ import StockModule from "../../modules/stocks/StockModule";
 import StockDetails from "../../modules/stocks/views/StockDetails";
 import StockList from "../../modules/stocks/views/StockList";
 import AddStock from "../../modules/stocks/views/AddStock";
+import InventaireModule from "../../modules/Inventaire/InventaireModule";
+import NewInventaire from "../../modules/Inventaire/views/NewInventaire";
 
 export default function StockRoutes() {
     return[
@@ -11,6 +13,8 @@ export default function StockRoutes() {
           <Route key="index" index element={<StockList />} />
           <Route path="add-stock" element={<AddStock />} />
           <Route key="details" path=":id" element={<StockDetails />} />
+          <Route key="inv" path=":id/inv" element={<NewInventaire />} />
+
         </Route>
     ]
 } 

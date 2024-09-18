@@ -43,22 +43,22 @@ export default function ArticlesList() {
   function Pagination({ onPageChange, className }) {
     const apiRef = useGridApiContext();
     const pageCount = useGridSelector(apiRef, gridPageCountSelector);
-   console.log(page);
-   
+    console.log(page);
+
     return (
       <MuiPagination
         color="secondary"
         className={className}
         count={pageCount}
-        page={page+1}
+        page={page + 1}
         onChange={(event, newPage) => {
-          setPage(newPage-1,page)
-          onPageChange(event, newPage-1);
+          setPage(newPage - 1, page);
+          onPageChange(event, newPage - 1);
         }}
       />
     );
   }
-  
+
   function CustomPagination(props) {
     return <GridPagination ActionsComponent={Pagination} {...props} />;
   }
@@ -68,7 +68,7 @@ export default function ArticlesList() {
   };
   useEffect(() => {
     fetchData();
-  }, [location, text,]);
+  }, [location, text]);
   useEffect(() => {
     updateUrlParams();
   }, [page]);
@@ -76,10 +76,7 @@ export default function ArticlesList() {
   const fetchData = async () => {
     try {
       let queryParams = new URLSearchParams(location.search);
-      console.log(
-        "hh",
-        new URLSearchParams(location.search)
-      );
+      console.log("hh", new URLSearchParams(location.search));
       let params = Object.fromEntries(queryParams.entries());
       console.log(params);
       if (text) params["text"] = text;
@@ -88,23 +85,16 @@ export default function ArticlesList() {
         params,
       });
       console.log(response.data.data);
-      
-      const result =response.data.data.map((ele) => {
-            ele.quantity=ele.stockArticle.reduce((acc,ele)=>{
-              acc+=ele.quantity
-              return acc
-            },0)
-            return ele
+
+      const result = response.data.data.map((ele) => {
+        ele.quantity = ele.stockArticle.reduce((acc, ele) => {
+          acc += ele.quantity;
+          return acc;
+        }, 0);
+        return ele;
       });
-      
       console.log(result);
-      result.forEach(({ id, quantity }) => {
-        const article = response.data.data.find((article) => article.id === id);
-        if (article) {
-          article.quantity = quantity; 
-        }
-      });
-      console.log('after',result);
+      console.log("after", result);
       setRows(response.data.data);
       setCount(response.data.count);
     } catch (err) {
@@ -118,27 +108,27 @@ export default function ArticlesList() {
     params.set("page", page);
     params.set("take", pageSize);
     params.set("skip", page * pageSize);
-    console.log('handleuP');
+    console.log("handleuP");
     const newUrl = `${location.pathname}?${params.toString()}`;
-    navigate(newUrl)
+    navigate(newUrl);
   };
 
   const handlePageChange = (newPageInfo) => {
     console.log(newPageInfo, "pagesize");
-    console.log(pageSize===newPageInfo.pageSize)
-    
-    if (pageSize===newPageInfo.pageSize) {
+    console.log(pageSize === newPageInfo.pageSize);
+
+    if (pageSize === newPageInfo.pageSize) {
       setPage(newPageInfo.page);
     }
-    if (pageSize!==newPageInfo.pageSize) {
-      setPageSize(newPageInfo.pageSize)
+    if (pageSize !== newPageInfo.pageSize) {
+      setPageSize(newPageInfo.pageSize);
       const params = new URLSearchParams(location.search);
       params.set("page", 0);
       params.set("take", newPageInfo.pageSize);
       params.set("skip", 0);
-      console.log('handleuP');
+      console.log("handleuP");
       const newUrl = `${location.pathname}?${params.toString()}`;
-      navigate(newUrl)
+      navigate(newUrl);
     }
   };
   const columns = [
@@ -230,9 +220,10 @@ export default function ArticlesList() {
                 color: "primary.main",
               },
             }}
-            onPaginationModelChange={(event)=>{
-              handlePageChange(event)
+            onPaginationModelChange={(event) => {
+              handlePageChange(event);
             }}
+            onFilterModelChange={(e)=>{setText(e.quickFilterValues[0])}}
             rows={rows}
             columns={columns}
             pagination
@@ -242,7 +233,7 @@ export default function ArticlesList() {
             slots={{
               noResultsOverlay: CustomNoResultsOverlay,
               toolbar: GridToolbar,
-               pagination: CustomPagination,
+              pagination: CustomPagination,
             }}
             initialState={{
               pagination: { paginationModel: { pageSize: 10 } },

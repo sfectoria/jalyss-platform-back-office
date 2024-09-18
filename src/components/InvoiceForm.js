@@ -237,7 +237,7 @@ const InvoiceForm = () => {
       const obj = {
         returnDate: new Date(),
         lines: itemsWithIdArticle,
-        idClient: billToId,
+        idClient: billFromId,
         idStock: parseInt(receiver),
         receiptNoteId: 0
       };

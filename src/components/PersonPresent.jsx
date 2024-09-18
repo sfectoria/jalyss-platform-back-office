@@ -108,6 +108,31 @@ function PersonPresent({person,type,reff,setName,setEmail,setAddress}) {
             setPAddress(region)
           }
         }
+        
+        if (type==='BRe') {
+          if (reff==='sndr') {
+            const response = await axios.get(`${ip}/clients/${person}`);
+            console.log(person,response.data,'hello');
+            const {id, name, location } = response.data;
+            setName(name)
+            setPName(name)
+            setEmail('jalyss@gmail.com')
+            setPEmail('jalyss@gmail.com')
+            setAddress(location)
+            setPAddress(location)
+          }
+          if (reff==='resv') {
+            const response = await axios.get(`${ip}/selling/${person}`);
+            const { id,name, region } = response.data;
+            console.log(person,id,'hello');
+            setName(name)
+            setPName(name)
+            setEmail('jalyss@gmail.com')
+            setPEmail('jalyss@gmail.com')
+            setAddress(region)
+            setPAddress(region)
+          }
+        }
       } catch (error) {
         console.error(error);
       }
