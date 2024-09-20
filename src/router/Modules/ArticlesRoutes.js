@@ -11,6 +11,7 @@ export default function ArticleRoutes() {
               <Route index key='articles-list' element={<ArticlesList />} />
               <Route path="new-article" key='new-article' element={<AddArticle />} />
               <Route path=":id" key='article-details' element={<ArticleDetails />} />
+
             </Route>
     ]
 }

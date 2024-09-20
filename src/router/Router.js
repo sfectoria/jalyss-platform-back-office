@@ -19,6 +19,7 @@ import FornisseursRoutes from "./Modules/FornisseursRoutes";
 import ChannelsRoutes from "./Modules/ChannelsRoutes";
 import DashboardRoutes from "./Modules/DashboardRoutes";
 import NewInventaire from "../modules/Inventaire/views/NewInventaire";
+import ArticleHistory from "../modules/articles/component/ArticleHistory";
 
 export default function Router() {
   const user = useSelector((state) => state.authSlice.user);
@@ -40,6 +41,8 @@ export default function Router() {
             <Route path="invoice/:type/:sender/:receiver" key='invoice' element={<InvoiceContainer />} />
           </Route>
           <Route key="index" path="inventaires" element={<NewInventaire />} />
+          <Route key="index" path="full-history" element={<ArticleHistory/>} />
+
         </Routes>
       ) : (
         <Routes>

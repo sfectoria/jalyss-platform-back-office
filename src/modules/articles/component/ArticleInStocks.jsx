@@ -16,6 +16,8 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import Link from "@mui/material/Link";
 import DoneIcon from "@mui/icons-material/Done";
 import ClearIcon from "@mui/icons-material/Clear";
+import { Link as RouterLink } from "react-router-dom";
+
 
 const history = [
   {
@@ -185,7 +187,7 @@ function Row(props) {
                         );
                       } else return "";
                     })}
-                    <Link href="#" sx={{}} underline="hover">
+                    <Link component={RouterLink} to="/full-history" underline="hover">
                       {"...    see more"}
                     </Link>
                   </TableBody>
