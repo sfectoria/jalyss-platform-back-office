@@ -32,14 +32,13 @@ const getPageSizeFromUrl = () => {
 export default function ArticlesList() {
   const [rows, setRows] = useState([]);
   const [count, setCount] = useState(0);
-  const [error, setError] = useState(false);
-  const [loading, setLoading] = useState(true);
+  // const [error, setError] = useState(false);
+  // const [loading, setLoading] = useState(true);
   const location = useLocation();
   const [page, setPage] = useState(getPageFromUrl);
   const [pageSize, setPageSize] = useState(getPageSizeFromUrl());
   const [text, setText] = useState(null);
-  console.log(page, pageSize, "test here");
-
+ 
   function Pagination({ onPageChange, className }) {
     const apiRef = useGridApiContext();
     const pageCount = useGridSelector(apiRef, gridPageCountSelector);
@@ -174,15 +173,6 @@ export default function ArticlesList() {
     },
   ];
 
-  // const rows = [
-  //   createData(1,'https://jalyss.com/520-large_default/alabe-alghani-alabe-alfaker.jpg', 'الرجل الغني و الرجل الفقير', 24, 'robert ti kyosaki', 'maktabat jarir' ),
-  //   createData(2,'https://jalyss.com/899-large_default/The-Subtle-Art-of-Not-Giving.jpg', 'فن اللامبالات',120, 'mark manson', 'attanwir'),
-  //   createData(3,'https://jalyss.com/1064-home_default/-kon-ant.jpg', 'كن انت', 160, 'iheb hamarna','molhimon'),
-  //   createData(4,'https://jalyss.com/2759-large_default/-.jpg', 'خلق الكون في القران الكريم', 123, 'walid mohyi e din al asghar', 'dar e salam'),
-  //   createData(5,'https://jalyss.com/423-home_default/min-ajl-annajah.jpg', 'من أجل النجاح', 49, 'abd el karim bakkar','dar e salam'),
-  //   createData(6,'https://jalyss.com/1170-large_default/-.jpg', 'اولاد حارتنا', 49, 'najib mahfoudh','dar e chourouk'),
-  // ];
-
   return (
     <Box
       sx={{
@@ -200,14 +190,6 @@ export default function ArticlesList() {
         >
           Articles
         </Typography>
-        <div className="d-flex justify-content-end">
-          {" "}
-          <input
-            className="form-control col-6"
-            placeholder="Search"
-            onChange={(e) => setText(e.target.value)}
-          />
-        </div>
         <div style={{ width: "100%", color: "red" }}>
           <DataGrid
             rowHeight={70}
@@ -223,7 +205,7 @@ export default function ArticlesList() {
             onPaginationModelChange={(event) => {
               handlePageChange(event);
             }}
-            onFilterModelChange={(e)=>{setText(e.quickFilterValues[0])}}
+            onFilterModelChange={(e)=>{setText(e.quickFilterValues.join(' '))}}
             rows={rows}
             columns={columns}
             pagination

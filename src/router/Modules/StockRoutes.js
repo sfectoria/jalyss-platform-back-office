@@ -13,7 +13,7 @@ export default function StockRoutes() {
           <Route key="index" index element={<StockList />} />
           <Route path="add-stock" element={<AddStock />} />
           <Route key="details" path=":id" element={<StockDetails />} />
-          <Route key="inv" path=":id/inv" element={<NewInventaire />} />
+          <Route key="inv" path=":id/inv/:idInv" element={<NewInventaire />} />
 
         </Route>
     ]

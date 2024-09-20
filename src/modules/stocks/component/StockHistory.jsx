@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { DataGrid, GridToolbar, GridActionsCellItem,  gridPageCountSelector,
+import {
+  DataGrid,
+  GridToolbar,
+  GridActionsCellItem,
+  gridPageCountSelector,
   GridPagination,
   useGridApiContext,
-  useGridSelector, } from "@mui/x-data-grid";
-import DescriptionIcon from '@mui/icons-material/Description';
+  useGridSelector,
+} from "@mui/x-data-grid";
+import DescriptionIcon from "@mui/icons-material/Description";
 import MuiPagination from "@mui/material/Pagination";
 import CustomNoResultsOverlay from "../../../style/NoResultStyle";
 import DoneIcon from "@mui/icons-material/Done";
@@ -30,12 +35,18 @@ export default function StockHistory() {
   }, [refresh]);
 
   const fetchHistoryData = async () => {
-    let params={take:pageSize,skip:page*pageSize,stocksIds:[param.id]}
-    const responseHistory=await axios.get(`${ip}/movements/getAll`,{params})
+    let params = {
+      take: pageSize,
+      skip: page * pageSize,
+      stocksIds: [param.id],
+    };
+    const responseHistory = await axios.get(`${ip}/movements/getAll`, {
+      params,
+    });
     console.log(responseHistory.data);
-    
-    setRows(responseHistory.data.data)
-    setCount(responseHistory.data.count)
+
+    setRows(responseHistory.data.data);
+    setCount(responseHistory.data.count);
   };
 
   function Pagination({ onPageChange, className }) {
@@ -85,18 +96,19 @@ export default function StockHistory() {
     }
   };
 
-
   const columns = [
-    { field: "date", headerName: "Date", width: 200,
-      valueGetter:(value)=>(value.toString().slice(0,value.toString().indexOf('GMT')-1))
-     },
+    {
+      field: "date",
+      headerName: "Date",
+      width: 200,
+      valueGetter: (value) =>
+        value.toString().slice(0, value.toString().indexOf("GMT") - 1),
+    },
     {
       field: "customerName",
       headerName: "Customer",
       width: 270,
-      renderCell: (params) => (
-        <MouseOverPopover name={params.row.client} />
-      ),
+      renderCell: (params) => <MouseOverPopover name={params.row.client} />,
     },
     {
       field: "fournisseurName",
@@ -111,7 +123,7 @@ export default function StockHistory() {
       headerName: "BR",
       width: 50,
       renderCell: (params) =>
-        params.row.type==='receipt' ? (
+        params.row.type === "receipt" ? (
           <DoneIcon color="success" />
         ) : (
           <ClearIcon color="error" />
@@ -122,7 +134,7 @@ export default function StockHistory() {
       headerName: "BS",
       width: 50,
       renderCell: (params) =>
-        params.row.type==='exit' ? (
+        params.row.type === "exit" ? (
           <DoneIcon color="success" />
         ) : (
           <ClearIcon color="error" />
@@ -144,30 +156,20 @@ export default function StockHistory() {
       headerName: "Details",
       width: 110,
       type: "actions",
-      renderCell: ({id}) => {
-       return <GridActionsCellItem
-          icon={<DescriptionIcon />}
-          onClick={(e)=>{
-            openModal(e)
-            setModalId(id);
-          }}
-          label=""
-        />
+      renderCell: ({ id }) => {
+        return (
+          <GridActionsCellItem
+            icon={<DescriptionIcon />}
+            onClick={(e) => {
+              openModal(e);
+              setModalId(id);
+            }}
+            label=""
+          />
+        );
       },
     },
   ];
-
-  // const rows = [
-  //   { id: 1, date:'07/23/2024 6:56 PM', customerName: null, fournisseurName: 'Salim sfexi', managerNumber: '+216 28527345', details: 'fff',br:true },
-  //   { id: 2, date: '07/23/2024 6:56 PM', customerName:  'Hamida midawi' , fournisseurName:null,bs:true},
-  //   { id: 3, date: '07/23/2024 6:56 PM', customerName: null, fournisseurName: 'Wael ben sahloul',br:true },
-  //   { id: 4, date: '07/23/2024 6:56 PM', customerName: null, fournisseurName: 'Stock Gabes',br:true,bt:true },
-  //   { id: 5, date: '07/23/2024 6:56 PM', customerName: 'Daenerys', fournisseurName:null ,bs:true},
-  //   { id: 6, date: '07/23/2024 6:56 PM', customerName:  'houssem ben ammar', fournisseurName:null,bs:true },
-  //   { id: 7, date: '07/23/2024 6:56 PM', customerName: null, fournisseurName: 'Ferrara',br:true },
-  //   { id: 8, date: '07/23/2024 6:56 PM', customerName: 'Stock Nabeul', fournisseurName: null,bs:true,bt:true },
-  //   { id: 9, date: '07/23/2024 6:56 PM', customerName: 'Harvey', fournisseurName:null ,bs:true },
-  // ];
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
@@ -211,18 +213,20 @@ export default function StockHistory() {
             },
           }}
         />
-        {isOpen&&<InvoiceModal
-          showModal={isOpen}
-          closeModal={closeModal}
-          modalId={modalId.slice(modalId.indexOf('-')+1)}
-          currency={"DT"}
-          subTotal={0}
-          taxAmount={0}
-          discountAmount={0}
-          total={0}
-          mode="viewer"
-          type={modalId.slice(0,modalId.indexOf('-'))}
-        />}
+        {isOpen && (
+          <InvoiceModal
+            showModal={isOpen}
+            closeModal={closeModal}
+            modalId={modalId.slice(modalId.indexOf("-") + 1)}
+            currency={"DT"}
+            subTotal={0}
+            taxAmount={0}
+            discountAmount={0}
+            total={0}
+            mode="viewer"
+            type={modalId.slice(0, modalId.indexOf("-"))}
+          />
+        )}
       </div>
     </div>
   );

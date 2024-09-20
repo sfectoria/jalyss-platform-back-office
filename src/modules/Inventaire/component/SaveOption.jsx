@@ -6,7 +6,9 @@ import Button from '@mui/material/Button';
 import Fab from '@mui/material/Fab';
 import CheckIcon from '@mui/icons-material/Check';
 import SaveIcon from '@mui/icons-material/Save';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
+import { ip } from '../../../constants/ip';
 
 export default function SaveOption() {
   const [loading, setLoading] = useState(false);
@@ -14,6 +16,9 @@ export default function SaveOption() {
   const [draft, setDraft] = useState(false);
   const timer = React.useRef();
   const navigate=useNavigate()
+  const param = useParams()
+  console.log(param);
+  
 
   const buttonSx = {
     ...(success && {
@@ -23,26 +28,14 @@ export default function SaveOption() {
       },
     })    
   };
-  const DraftSx = {
-    ...(draft ? {
-      bgcolor: green[500],
-      '&:hover': {
-        bgcolor: green[700],
-      },
-    }:{
-      bgcolor: red[500],
-      '&:hover': {
-        bgcolor: red[700],
-    }}),
-  }
-
   React.useEffect(() => {
     return () => {
       clearTimeout(timer.current);
     };
   }, []);
 
-  const handleButtonClick = () => {
+  const handleButtonClick = async() => {
+    const updateStatus= await axios.patch(`${ip}/inventory/${param.idInv}`,{status:'confirmed'})
     if (!loading) {
       setSuccess(false);
       setLoading(true);
@@ -51,33 +44,15 @@ export default function SaveOption() {
         setLoading(false);
       }, 2000);
       timer.current = setTimeout(() => {
-        navigate('/stock/1')
+        navigate(`/stock/${param.id}`)
       }, 3000);
     }
   };
 
-  const handleButtonClickSave = () => {
-    setDraft(true)
-      timer.current = setTimeout(() => {
-        navigate('/stock/1')
-      }, 2000);
-    
-  };
 
   return (
     <Box sx={{ display: 'flex', alignItems: 'center',justifyContent:'space-between',px:6 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-      <Box sx={{ m: 1, position: 'relative' }}>
-        <Fab
-          aria-label="save"
-          color="primary"
-          sx={DraftSx}
-          onClick={handleButtonClickSave}
-        >
-          {success ? <SaveIcon /> : <SaveIcon />}
-        </Fab>
-      </Box>
-    </Box>
+    
     <Box sx={{ display: 'flex', alignItems: 'center' }}>
       <Box sx={{ m: 1, position: 'relative' }}>
         <Fab

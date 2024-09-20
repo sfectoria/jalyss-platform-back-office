@@ -23,30 +23,6 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 
 
-function createData(id, image, title, quantity, author, publisher, price) {
-  return {
-    id,
-    image,
-    title,
-    quantity,
-    author,
-    publisher,
-    price,
-  };
-}
-const rowss = [
-  createData(1, 'https://jalyss.com/520-large_default/alabe-alghani-alabe-alfaker.jpg', 'الرجل الغني و الرجل الفقير', 0, 'robert ti kyosaki', 'maktabat jarir', 120),
-  createData(2, 'https://jalyss.com/899-large_default/The-Subtle-Art-of-Not-Giving.jpg', 'فن اللامبالات', 0, 'mark manson', 'attanwir', 120),
-  createData(3, 'https://jalyss.com/1064-home_default/-kon-ant.jpg', 'كن انت', 0, 'iheb hamarna', 'molhimon', 120),
-  createData(4, 'https://jalyss.com/2759-large_default/-.jpg', 'خلق الكون في القران الكريم', 0, 'walid mohyi e din al asghar', 'dar e salam', 120),
-  createData(5, 'https://jalyss.com/423-home_default/min-ajl-annajah.jpg', 'من أجل النجاح', 0, 'abd el karim bakkar', 'dar e salam', 140),
-  createData(6, 'https://jalyss.com/1170-large_default/-.jpg', 'اولاد حارتنا', 0, 'najib mahfoudh', 'dar e chourouk', 147),
-  createData(7, 'https://jalyss.com/1170-large_default/-.jpg', 'اولاد حارتنا', 0, 'najib mahfoudh', 'dar e chourouk', 56),
-  createData(8, 'https://jalyss.com/1170-large_default/-.jpg', 'اولاد حارتنا', 0, 'najib mahfoudh', 'dar e chourouk', 25),
-  createData(9, 'https://jalyss.com/1170-large_default/-.jpg', 'اولاد حارتنا', 0, 'najib mahfoudh', 'dar e chourouk', 25),
-  createData(10, 'https://jalyss.com/1170-large_default/-.jpg', 'اولاد حارتنا', 0, 'najib mahfoudh', 'dar e chourouk', 25),
-];
-
 export default function NewInventaireTable() {
   const [rows, setRows] = useState([]);
   const [showAlert, setShowAlert] = useState(false);
@@ -74,10 +50,28 @@ export default function NewInventaireTable() {
     let params={take:pageSize,skip:page*pageSize}
     if(text) params['text']=text
     console.log(params);
-    
     const response = await axios.get(`${ip}/stocks/${param.id}`,{params});
     console.log(response.data.data.stockArticle, response.data.count);
-    setRows(response.data.data.stockArticle);
+    const ids=response.data.data.stockArticle.map(e=>{
+      return e.articleId
+    })
+    console.log(ids);
+    const responseInventory = await axios.get(`${ip}/inventory/${param.idInv}`,{params:{articlesIds:ids}})
+    const result = response.data.data.stockArticle.map((el) => {
+      const invLine = responseInventory?.data?.inventoryLine?.find(q => q.articleId === el.article.id)
+      console.log(invLine);
+      
+      return {
+        ...el.article,
+        quantity: invLine?.quantity||null,
+        reelQuantity:el.quantity,
+        idLine:invLine?.id||null
+      };
+    });
+    
+    console.log(result);
+     
+    setRows(result);
     setCount(response.data.count);
   };
   function Pagination({ onPageChange, className }) {
@@ -117,7 +111,26 @@ export default function NewInventaireTable() {
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
   };
 
-  const processRowUpdate = (newRow) => {
+  const processRowUpdate = async(newRow) => {
+    const {quantity,reelQuantity,id}=newRow
+    console.log('here',newRow);
+    const verify=rows.find((row) => row.id === id);
+    console.log(verify);
+    
+    if(verify.quantity){
+      const postInventoryLine=await axios.patch(`${ip}/inventory/line/${verify.idLine}`,{quantity:quantity})
+     console.log(postInventoryLine,'test');
+    }
+    else{
+    const obj={
+      inventoryId:param.idInv,
+      quantity,
+      reelQuatity:reelQuantity,
+      articleId:id
+    }
+     const postInventoryLine=await axios.post(`${ip}/inventory/createLine`,obj)
+     console.log(postInventoryLine,'test');
+    }
     const updatedRow = { ...newRow, isNew: false };
     setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
     return updatedRow;
@@ -170,25 +183,25 @@ export default function NewInventaireTable() {
       field: 'image',
       headerName: 'Image',
       width: 90,
-      renderCell: (params) => <ImagePopUp image={params.value} />,
+      renderCell: (params) => <ImagePopUp image={params?.row?.cover?.path} />,
     },
     { field: 'title', headerName: 'Title', width: 270 , valueGetter: (value, row) => {
-      return row?.article?.title;
+      return row?.title;
     },},
     {
-      field: 'quantityInv',
+      field: 'quantity',
       headerName: 'Quantity',
       width: 90,
       editable: true,
       type: 'number',
     },
     { field: 'author', headerName: 'Author', width: 250, valueGetter: (value, row) => {
-      return row?.article.articleByAuthor[0]?.author?.nameAr;
+      return row?.articleByAuthor[0]?.author?.nameAr;
 
     }, },
     { field: 'publisher', headerName: 'Publisher', width: 250,
       valueGetter: (value, row) => {
-        return row?.article.articleByPublishingHouse[0]?.publishingHouse?.nameAr;
+        return row?.articleByPublishingHouse[0]?.publishingHouse?.nameAr;
       },
      },
     {
@@ -256,7 +269,9 @@ export default function NewInventaireTable() {
           paginationMode="server"
           rowCount={count}
           rowModesModel={rowModesModel}
-          onFilterModelChange={(e)=>{setText(e.quickFilterValues[0]);
+          onFilterModelChange={(e)=>{setText(e.quickFilterValues.join(' '));
+            console.log(e.quickFilterValues);
+            
           }}
           onRowModesModelChange={handleRowModesModelChange}
           onRowEditStop={handleRowEditStop}

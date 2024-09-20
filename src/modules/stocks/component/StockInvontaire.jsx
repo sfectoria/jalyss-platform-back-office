@@ -1,47 +1,54 @@
-import React , {useState} from 'react';
-import { DataGrid, GridToolbar, GridActionsCellItem } from '@mui/x-data-grid';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import CustomNoResultsOverlay from '../../../style/NoResultStyle';
-import InvoiceModal from '../../../components/InvoiceModal';
-import { useNavigate } from 'react-router-dom';
-import { Typography } from '@mui/material';
-import DraftsIcon from '@mui/icons-material/Drafts';
+import React, { useEffect, useState } from "react";
+import {
+  DataGrid,
+  GridToolbar,
+  GridActionsCellItem,
+  gridPageCountSelector,
+  GridPagination,
+  useGridApiContext,
+  useGridSelector,
+} from "@mui/x-data-grid";
+import MuiPagination from "@mui/material/Pagination";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import CustomNoResultsOverlay from "../../../style/NoResultStyle";
+import InvoiceModal from "../../../components/InvoiceModal";
+import { useNavigate, useParams } from "react-router-dom";
+import { Typography } from "@mui/material";
+import DraftsIcon from "@mui/icons-material/Drafts";
+import axios from "axios";
+import { ip } from "../../../constants/ip";
 
 export default function StockInvontaire() {
   const [isOpen, setIsOpen] = useState(false);
-  const navigate=useNavigate()
-  const items=[
-    {
-      id: (+ new Date() + Math.floor(Math.random() * 999999)).toString(36),
-      name: 'hhhh',
-      description: 'a  book',
-      price: '1.00',
-      quantity: 7
-    },
-    {
-      id: (+ new Date() + Math.floor(Math.random() * 999999)).toString(36),
-      name: 'halima',
-      description: 'a  book',
-      price: '1.00',
-      quantity: 1
-    },
-    {
-      id: (+ new Date() + Math.floor(Math.random() * 999999)).toString(36),
-      name: 'nooo',
-      description: 'a  book',
-      price: '4.00',
-      quantity: 5
-    }
-  ]
+  const [data, setData] = useState([]);
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [count, setCount] = useState(0);
+  const [refresh, setRefresh] = useState(false);
 
-  const handelNavigationSee  =(ids)=>{
-    navigate(`/inventaire/${ids}`)
-  }
+  const param = useParams();
+  useEffect(() => {
+    fetchData();
+  }, [refresh]);
 
-  const handelNavigationModify =()=>{
-    navigate(`/inventaires`)
-  }
-  
+  const fetchData = async () => {
+    const response = await axios.get(`${ip}/inventory/all`, {
+      params: { take:pageSize,skip:page*pageSize,stocksIds: [param.id] },
+    });
+    console.log(response.data);
+    setData(response.data.data);
+    setCount(response.data.count);
+  };
+  const navigate = useNavigate();
+
+  const handelNavigationSee = (ids) => {
+    navigate(`/inventaire/${ids}`);
+  };
+
+  const handelNavigationModify = (ids) => {
+    navigate(`/stock/${param.id}/inv/${ids}`);
+  };
+
   const openModal = (event) => {
     event.preventDefault();
     setIsOpen(true);
@@ -51,215 +58,156 @@ export default function StockInvontaire() {
     setIsOpen(false);
   };
 
-  const columns = [
-    { field: 'title', headerName: 'Invontaire Title', width: 200 },
-    { field: 'date', headerName: 'Date', width: 170 },
-    { field: 'time', headerName: 'Time', width: 100 },
-    { field: 'customerName', headerName: 'Customer', width: 200,
-  },
-    { field: 'valid',
-      headerName: 'T', 
-      width: 50,
-      },
-    { field: 'falsy', 
-      headerName: 'F', 
-      width: 50,
-    },
-    { field: 'percentage', 
-        headerName: 'Percentage', 
-        width: 100,
-      },
-     {
-      field: 'details',
-      headerName: 'Details',
-      width: 110,
-      type: 'actions',
-      renderCell: (params) => {
-        if(params.row.status==='confirmed'){
-        return(
-          <GridActionsCellItem icon={<VisibilityIcon sx={{color:'#448aff'}} />} onClick={()=>{handelNavigationSee(params.id)}} label="" /> )
-        }
-        else if (params.row.status==='draft'){
-          return(
-            <GridActionsCellItem icon={<DraftsIcon sx={{color:'red'}} />} onClick={()=>{handelNavigationModify(params.id)}} label="" /> 
-          )
-        }
-    }},
-  ];
+  function Pagination({ onPageChange, className }) {
+    const apiRef = useGridApiContext();
+    const pageCount = useGridSelector(apiRef, gridPageCountSelector);
+    console.log(page);
 
-  const rows = [
-    { 
-      id: 1, 
-      title: 'Inventory Check A', 
-      date: '2024-08-01', 
-      time: '10:00 AM', 
-      customerName: 'Customer One', 
-      valid: 30, 
-      falsy: 10, 
-      percentage: (30 / (30 + 10)) * 100 ,
-      status:'confirmed'
+    return (
+      <MuiPagination
+        color="secondary"
+        className={className}
+        count={pageCount}
+        page={page + 1}
+        onChange={(event, newPage) => {
+          setPage(newPage - 1, page);
+          onPageChange(event, newPage - 1);
+        }}
+      />
+    );
+  }
+
+  function CustomPagination(props) {
+    return <GridPagination ActionsComponent={Pagination} {...props} />;
+  }
+
+  const handlePageChange = (newPageInfo) => {
+    console.log(newPageInfo, "pagesize");
+    console.log(pageSize === newPageInfo.pageSize);
+
+    if (pageSize === newPageInfo.pageSize) {
+      setPage(newPageInfo.page);
+      setRefresh(!refresh);
+    }
+    if (pageSize !== newPageInfo.pageSize) {
+      setPageSize(newPageInfo.pageSize);
+      setPage(0);
+      setRefresh(!refresh);
+    }
+  };
+
+  const columns = [
+    { field: "name", headerName: "Invontaire Title", width: 200 },
+    {
+      field: "date",
+      headerName: "Date",
+      width: 110,
+      valueGetter: (value) => {
+        return value?.slice(0, 10);
+      },
     },
-    { 
-      id: 2, 
-      title: 'Inventory Check B', 
-      date: '2024-08-02', 
-      time: '11:30 AM', 
-      customerName: 'Customer Two', 
-      valid: 25, 
-      falsy: 15, 
-      percentage: (25 / (25 + 15)) * 100 ,
-      status:'draft'
+    {
+      field: "time",
+      headerName: "Time",
+      width: 60,
+      valueGetter: (value, row) => {
+        return row?.date?.slice(11, 16);
+      },
     },
-    { 
-      id: 3, 
-      title: 'Inventory Check C', 
-      date: '2024-08-03', 
-      time: '02:15 PM', 
-      customerName: 'Customer Three', 
-      valid: 40, 
-      falsy: 10, 
-      percentage: (40 / (40 + 10)) * 100,
-      status:'confirmed'
+    {
+      field: "customerName",
+      headerName: "Customer",
+      width: 180,
+      valueGetter: (value, row) => {
+        return (
+          (row?.createur?.firstName ? row?.createur?.firstName : "") +
+          " " +
+          (row?.createur?.lastName ? row?.createur?.lastName : "")
+        );
+      },
     },
-    { 
-      id: 4, 
-      title: 'Inventory Check D', 
-      date: '2024-08-04', 
-      time: '09:45 AM', 
-      customerName: 'Customer Four', 
-      valid: 20, 
-      falsy: 30, 
-      percentage: (20 / (20 + 30)) * 100,
-      status:'confirmed'
+    {
+      field: "customerPhone",
+      headerName: "Phone Number",
+      width: 170,
+      valueGetter: (value, row) => {
+        return row?.createur?.phoneNumber;
+      },
     },
-    { 
-      id: 5, 
-      title: 'Inventory Check E', 
-      date: '2024-08-05', 
-      time: '03:30 PM', 
-      customerName: 'Customer Five', 
-      valid: 50, 
-      falsy: 20, 
-      percentage: (50 / (50 + 20)) * 100 ,
-      status:'draft'
-    },
-    { 
-      id: 6, 
-      title: 'Inventory Check F', 
-      date: '2024-08-06', 
-      time: '12:00 PM', 
-      customerName: 'Customer Six', 
-      valid: 45, 
-      falsy: 5, 
-      percentage: (45 / (45 + 5)) * 100 ,
-      status:'confirmed'
-    },
-    { 
-      id: 7, 
-      title: 'Inventory Check G', 
-      date: '2024-08-07', 
-      time: '04:00 PM', 
-      customerName: 'Customer Seven', 
-      valid: 10, 
-      falsy: 30, 
-      percentage: (10 / (10 + 30)) * 100 ,
-      status:'confirmed'
-    },
-    { 
-      id: 8, 
-      title: 'Inventory Check H', 
-      date: '2024-08-08', 
-      time: '01:30 PM', 
-      customerName: 'Customer Eight', 
-      valid: 35, 
-      falsy: 15, 
-      percentage: (35 / (35 + 15)) * 100 ,
-      status:'confirmed'
-    },
-    { 
-      id: 9, 
-      title: 'Inventory Check I', 
-      date: '2024-08-09', 
-      time: '10:30 AM', 
-      customerName: 'Customer Nine', 
-      valid: 28, 
-      falsy: 12, 
-      percentage: (28 / (28 + 12)) * 100 ,
-      status:'confirmed'
-    },
-    { 
-      id: 10, 
-      title: 'Inventory Check J', 
-      date: '2024-08-10', 
-      time: '11:00 AM', 
-      customerName: 'Customer Ten', 
-      valid: 22, 
-      falsy: 18, 
-      percentage: (22 / (22 + 18)) * 100 ,
-      status:'confirmed'
+    { field: "status", headerName: "Status", width: 100 },
+    { field: "percentage", headerName: "Percentage", width: 100 },
+    {
+      field: "details",
+      headerName: "Details",
+      width: 110,
+      type: "actions",
+      renderCell: (params) => {
+        if (params.row.status === "confirmed") {
+          return (
+            <GridActionsCellItem
+              icon={<VisibilityIcon sx={{ color: "#448aff" }} />}
+              onClick={() => {
+                handelNavigationSee(params.id);
+              }}
+              label=""
+            />
+          );
+        } else if (params.row.status === "draft") {
+          return (
+            <GridActionsCellItem
+              icon={<DraftsIcon sx={{ color: "red" }} />}
+              onClick={() => {
+                handelNavigationModify(params.id);
+              }}
+              label=""
+            />
+          );
+        }
+      },
     },
   ];
-  
 
   return (
-              <div style={{ width: '100%' }}>
-                  <DataGrid
-                    pageSizeOptions={[7, 10, 20]}
-                    sx={{
-                      boxShadow: 0,
-                      border: 0,
-                      borderColor: 'primary.light',
-                      '& .MuiDataGrid-cell:hover': {
-                        color: 'primary.main',
-                      },
-                    }}
-                    rows={rows}
-                    columns={columns}
-                    slots={{
-                      noResultsOverlay: CustomNoResultsOverlay,
-                      toolbar: GridToolbar,
-                    }}
-                    initialState={{
-                      pagination: { paginationModel: { pageSize: 7 } },
-                      filter: {
-                        filterModel: {
-                          items: [],
-                          quickFilterValues: [''],
-                        },
-                      },
-                    }}
-                    slotProps={{
-                      toolbar: {
-                        showQuickFilter: true,
-                      },
-                    }}
-                  />
-                  <InvoiceModal
-              showModal={isOpen}
-              closeModal={closeModal}
-              info={{
-                // currentDate,
-                // dateOfIssue,
-                invoiceNumber:1,
-                billTo:'hamadi',
-                billToEmail:'hamadi@gmail.com',
-                billToAddress:'win',
-                // billFrom,
-                // billFromEmail,
-                // billFromAddress,
-                // notes,
-                // total,
-                // subTotal,
-                // taxAmount,
-                // discountAmount
-              }}
-              items={items}
-              currency={0}
-              subTotal={0}
-              taxAmount={0}
-              discountAmount={0}
-              total={0}
-            />
-              </div>
+    <div style={{ width: "100%" }}>
+      <DataGrid
+        pageSizeOptions={[7, 10, 20]}
+        sx={{
+          boxShadow: 0,
+          border: 0,
+          borderColor: "primary.light",
+          "& .MuiDataGrid-cell:hover": {
+            color: "primary.main",
+          },
+        }}
+        rows={data}
+        columns={columns}
+        onPaginationModelChange={(event) => {
+          handlePageChange(event);
+        }}
+        pagination
+        pageSize={pageSize}
+        paginationMode="server"
+        rowCount={count}
+        slots={{
+          noResultsOverlay: CustomNoResultsOverlay,
+          toolbar: GridToolbar,
+          pagination: CustomPagination,
+        }}
+        initialState={{
+          pagination: { paginationModel: { pageSize: 10 } },
+          filter: {
+            filterModel: {
+              items: [],
+              quickFilterValues: [""],
+            },
+          },
+        }}
+        slotProps={{
+          toolbar: {
+            showQuickFilter: true,
+          },
+        }}
+      />
+    </div>
   );
 }
