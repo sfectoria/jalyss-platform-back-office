@@ -166,6 +166,7 @@ function FullWidthTabs({ channelInfo }) {
 export default function ChannelDetails() {
   const [channel, setChannel] = useState({});
   const [isOpen, setIsOpen] = useState(false);
+  const [name, setName] = useState('');
   const [stocks, setStocks] = useState([]);
   const [stock, setStock] = useState({});
   const [managers, setManagers] = useState([]);
@@ -174,7 +175,8 @@ export default function ChannelDetails() {
   const navigate = useNavigate();
   console.log(channel.idStock);
   console.log(stock);
-
+  console.log(name);
+ 
   const params = useParams();
 
   let { id } = params;
@@ -197,20 +199,19 @@ export default function ChannelDetails() {
     console.log("stock", stock, response.data.stock);
   };
 
+  const handleChangeName = (event) => {
+    setName(event.target.value);
+  };
   const handleChange = (event, newValue) => {
-    console.log(newValue);
-
     setStock(newValue);
   };
   const handleChangeEmp = (event, newValue) => {
-    console.log(newValue);
-
     setManager(newValue);
   };
 
   const handelModify=async()=>{
    const obj={
-        name:"fff",
+        name:name?name:channel.name,
         idStock:stock.id
     }
     console.log(stock);
@@ -290,15 +291,15 @@ export default function ChannelDetails() {
                 }}
                 id="outlined-helperText"
                 label="Channel Name"
+                onChange={handleChangeName}
                 defaultValue={channel.name}
-                // helperText="Some important text"
               />
               <Autocomplete
                 style={{ width: "40%" }}
-                value={stock} // Controlled by state
-                onChange={handleChange} // Update state on change
+                value={stock} 
+                onChange={handleChange} 
                 options={stocks}
-                getOptionLabel={(option) => option.name} // Display the label of the option
+                getOptionLabel={(option) => option.name} 
                 renderInput={(params) => (
                   <TextField {...params} label="Stock" />
                 )}
@@ -307,7 +308,7 @@ export default function ChannelDetails() {
                     borderRadius: "7px",
                     "& fieldset": {
                       borderRadius: "7px",
-                    }, // Modify border radius here
+                    },
                   },
                 }}
               />
@@ -315,10 +316,10 @@ export default function ChannelDetails() {
             <Box sx={{ display: "flex", gap: 4, my: 3 }}>
               <Autocomplete
                 style={{ width: "40%" }}
-                value={manager} // Controlled by state
-                onChange={handleChangeEmp} // Update state on change
+                value={manager} 
+                onChange={handleChangeEmp} 
                 options={managers}
-                getOptionLabel={(option) => option.firstName&&option?.firstName +' '+option?.lastName} // Display the label of the option
+                getOptionLabel={(option) => option.firstName&&option?.firstName +' '+option?.lastName} 
                 renderInput={(params) => (
                   <TextField {...params} label="Manager" />
                 )}
