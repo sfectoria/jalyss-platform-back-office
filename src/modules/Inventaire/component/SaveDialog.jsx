@@ -28,7 +28,7 @@ export default function SaveDialog({show,setShow}) {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-          Please Choose an option Confirm or Save as draft
+          Please Click At Save to Confirm 
           </DialogContentText>
         </DialogContent>
             <SaveOption/>

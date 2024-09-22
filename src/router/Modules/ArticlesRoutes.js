@@ -7,12 +7,12 @@ import AddArticle from "../../modules/articles/views/AddArticle";
 import ArticleHistory from "../../modules/articles/component/ArticleHistory";
 
 export default function ArticleRoutes() {
-    return[
-        <Route path="articles" key='articles-module' element={<ArticleModule />}>
-              <Route index key='articles-list' element={<ArticlesList />} />
-              <Route path="new-article" key='new-article' element={<AddArticle />} />
-              <Route path=":id" key='article-details' element={<ArticleDetails />} />
-              <Route key="index" path=":id/full-history" element={<ArticleHistory/>} />
-            </Route>
-    ]
+  return [
+    <Route path="articles" key="articles-module" element={<ArticleModule />}>
+      <Route index key="articles-list" element={<ArticlesList />} />
+      <Route path="new-article" key="new-article" element={<AddArticle />} />
+      <Route path=":id" key="article-details" element={<ArticleDetails />} />
+      <Route key="index" path=":id/full-history" element={<ArticleHistory />} />
+    </Route>,
+  ];
 }

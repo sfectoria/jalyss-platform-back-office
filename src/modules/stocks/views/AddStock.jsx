@@ -33,7 +33,6 @@ const AddStock = () => {
 
   const [open, setOpen] = React.useState(false);
   const [isCancelled, setIsCancelled] = React.useState(false);
-   
 
   const stockNames = ["tunis", "sfax", "sousse", "mahdia"];
 
@@ -49,7 +48,7 @@ const AddStock = () => {
     setIsCancelled(true);
     setOpen(true);
   };
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   // // isVerified
   // const isVerified = (form) => {
@@ -98,7 +97,6 @@ const AddStock = () => {
   // errors
   const [errors, setErrors] = React.useState({});
 
-  
   const handleSubmit = (e) => {
     e.preventDefault();
     const newErrors = {};
@@ -112,28 +110,27 @@ const AddStock = () => {
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      handelAddStock()
+      handelAddStock();
       setIsCancelled(false);
       setOpen(true);
     }
-    
   };
-  const handelAddStock=async()=>{
-    let obj ={
-      name:stockName,
-      location:address,
-      capacity:200
-    }
-     const newStock=await axios.post(`${ip}/stocks/createStock`,obj)
-     console.log('ggg',newStock.data);
-     
-     if (newStock && newStock.status === 201) {
-      console.log("navigate ")
-      setTimeout(() => {
-        navigate('/stock'); 
-      }, 800);    }
-  }
+  const handelAddStock = async () => {
+    let obj = {
+      name: stockName,
+      location: address,
+      capacity: 200,
+    };
+    const newStock = await axios.post(`${ip}/stocks/createStock`, obj);
+    console.log("ggg", newStock.data);
 
+    if (newStock && newStock.status === 201) {
+      console.log("navigate ");
+      setTimeout(() => {
+        navigate("/stock");
+      }, 800);
+    }
+  };
 
   return (
     <ThemeProvider theme={defaultTheme}>

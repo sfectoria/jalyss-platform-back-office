@@ -3,7 +3,7 @@ import Box from "@mui/material/Box";
 import { DataGrid, GridToolbar, GridActionsCellItem } from "@mui/x-data-grid";
 import Typography from "@mui/material/Typography";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import { useNavigate,useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import CustomNoResultsOverlay from "../../../style/NoResultStyle";
 import Item from "../../../style/ItemStyle";
 import { ip } from "../../../constants/ip";
@@ -21,31 +21,23 @@ const getPageSizeFromUrl = () => {
 
 
 const ChannelsList = () => {
-
   const [rows,setRows]=useState([])
-  const [page, setPage] = useState(getPageFromUrl);
-  const [pageSize, setPageSize] = useState(getPageSizeFromUrl());
-  const [text, setText] = useState(null);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
-  const location = useLocation();
 
   const handleDetails = (id) => {
     navigate(`/channels/channel-details/${id}`);
   };
  
   useEffect(() => {
-    // updateUrlParams();
     fetchData();
-  }, [location, text, page, pageSize]);
+  }, []);
 
   const fetchData = async () => {
     try {
       const response = await axios.get(ip + "/selling/getAll");
-      console.log('test',response.data);
-      
       setRows(response.data);
     } catch (err) {
       setError(err);
@@ -54,8 +46,6 @@ const ChannelsList = () => {
     }
   };
 
-  console.log(rows);
-  
   const columns = [
     { field: "name", headerName: "Channel name", width: 200 },
     { field: "region", headerName: "Address", width: 270 },
@@ -134,64 +124,3 @@ const ChannelsList = () => {
 
 export default ChannelsList;
 
-// import React, { useState } from 'react';
-// import { TextField, Autocomplete, MenuItem, Typography } from '@mui/material';
-// import 'bootstrap/dist/css/bootstrap.min.css';
-// import 'bootstrap-icons/font/bootstrap-icons.css';
-
-// const rows = [
-//   { id: 1, col1: 'Hello', col2: 'World' },
-//   { id: 2, col1: 'DataGrid', col2: 'is Awesome' },
-//   { id: 3, col1: 'Material-UI', col2: 'is Cool' },
-// ];
-
-// const SearchWithDropdown = () => {
-//   const [searchText, setSearchText] = useState('');
-
-//   const handleInputChange = (event, value) => {
-//     setSearchText(value);
-//   };
-
-//   const filteredRows = rows.filter((row) =>
-//     Object.values(row).some((field) =>
-//       String(field).toLowerCase().includes(searchText.toLowerCase())
-//     )
-//   );
-
-//   return (
-//     <div className="container mt-5">
-//       <div className="input-group" style={{ width: '30%' }}>
-//         <input type="text" className="form-control" placeholder="Search" />
-//         <button className="btn btn-outline-secondary" type="button">
-//         <i class="bi bi-upc-scan"></i>
-//         </button>
-//       </div>
-//       <Autocomplete
-//         freeSolo
-//         inputValue={searchText}
-//         onInputChange={handleInputChange}
-//         options={filteredRows}
-//         getOptionLabel={(option) => `${option.col1} ${option.col2}`}
-//         renderInput={(params) => (
-//           <TextField
-//             {...params}
-//             label="Search"
-//             variant="outlined"
-//             fullWidth
-//           />
-//         )}
-//         renderOption={(props, option) => (
-//           <MenuItem {...props} key={option.id}>
-//             <div>
-//               <Typography variant="body1">{`ID: ${option.id}`}</Typography>
-//               <Typography variant="body1">{`Column 1: ${option.col1}`}</Typography>
-//               <Typography variant="body1">{`Column 2: ${option.col2}`}</Typography>
-//             </div>
-//           </MenuItem>
-//         )}
-//       />
-//     </div>
-//   );
-// };
-
-// export default SearchWithDropdown;

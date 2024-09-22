@@ -4,20 +4,13 @@ import { TextField, Autocomplete, MenuItem, Typography } from "@mui/material";
 import axios from "axios";
 import { ip } from "../constants/ip";
 
-// function createData(id, image, title, quantity, author, publisher, barcode, price) {
-//   return {
-//     id,
-//     image,
-//     title,
-//     quantity,
-//     author,
-//     publisher,
-//     barcode,
-//     price,
-//   };
-// }
-
-const SearchField = ({ handelBarcode, handelNSearch, info, type }) => {
+const SearchField = ({
+  handelBarcodeSu,
+  handelBarcodeEr,
+  handelNSearch,
+  info,
+  type,
+}) => {
   const [searchText, setSearchText] = useState("");
   const [text, setText] = useState("");
   const [rows, setRows] = useState([]);
@@ -29,8 +22,8 @@ const SearchField = ({ handelBarcode, handelNSearch, info, type }) => {
   useEffect(() => {
     if (info.type === "BR" || info.type === "BRe") {
       fetchDataStock();
-    } else if (info.type === "BT") {
-      fetchDataStockBt();
+    } else if (info.type === "BT" || info.type === "BS") {
+      fetchDataStockBtOrBs();
     } else if (
       info.type === "BL" ||
       info.type === "BLF" ||
@@ -66,23 +59,26 @@ const SearchField = ({ handelBarcode, handelNSearch, info, type }) => {
     const findStockResponse = await axios.get(`${ip}/selling/${info.sender}`);
     console.log("this is me ", findStockResponse.data);
     if (findStockResponse.data) {
+      let params = {};
+      if (text) params["text"] = text;
       const response = await axios.get(
-        `${ip}/stocks/${findStockResponse.data.idStock}`
+        `${ip}/stocks/${findStockResponse.data.idStock}`,
+        { params }
       );
       console.log("hello ", response.data.data.stockArticle);
       const result = response.data.data.stockArticle.reduce(
         (acc, item) => {
           acc.data.push({
             id: item.articleId,
-            name: item.article.title,
-            code: item.article.code,
+            name: item.article?.title,
+            code: item.article?.code,
             image: item.article?.cover?.path,
             author: null,
             publisher: null,
             quantity: item.quantity,
-            price:0
+            price: 0,
           });
-          acc.ids.push(item.articleId)
+          acc.ids.push(item.articleId);
           return acc;
         },
         {
@@ -93,7 +89,7 @@ const SearchField = ({ handelBarcode, handelNSearch, info, type }) => {
 
       const responsePriceByChannel = await axios.get(
         `http://localhost:3000/price-By-Channel/getAll`,
-        { params: { salesChannelIds: result.ids } }
+        { params: { salesChannelIds: [info.sender],articleIds: result.ids } }
       );
 
       result.data.forEach((article) => {
@@ -110,67 +106,143 @@ const SearchField = ({ handelBarcode, handelNSearch, info, type }) => {
   };
   const fetchDataStock = async () => {
     const response = await axios.get(`${ip}/stocks/${info.receiver}`);
-    let params={take:5}
-    if(text) params['text']=text
-    const findArticleResponse = await axios.get(`${ip}/articles/getAll`,{params});
+    let params = {};
+    if (text) params["text"] = text;
+    const findArticleResponse = await axios.get(`${ip}/articles/getAll`, {
+      params,
+    });
     console.log("this is me ", findArticleResponse.data.data);
     const result = findArticleResponse.data.data.reduce((acc, item) => {
-      
       acc.push({
         id: item.id,
-        name: item.title,
-        code: item.code,
-        image: item.cover&&item.cover.path,
-        author: item.articleByAuthor.length?item.articleByAuthor[0].author.nameAr:null,
-        publisher: item.articleByPublishingHouse.length?item.articleByPublishingHouse[0].publishingHouse.nameAr:null,
+        name: item?.title,
+        code: item?.code,
+        image: item.cover && item?.cover?.path,
+        author: item?.articleByAuthor?.length
+          ? item?.articleByAuthor[0]?.author?.nameAr
+          : null,
+        publisher: item.articleByPublishingHouse.length
+          ? item.articleByPublishingHouse[0].publishingHouse.nameAr
+          : null,
         // quantity: item.quantity,
       });
       return acc;
     }, []);
     setRows(result);
   };
-  const fetchDataStockBt = async () => {
+  const fetchDataStockBtOrBs = async () => {
     const response = await axios.get(`${ip}/stocks/${info.sender}`);
     console.log("hhh", response.data.data.stockArticle);
     const result = response.data.data.stockArticle.reduce((acc, item) => {
       acc.push({
         id: item.articleId,
-        name: item.article.title,
-        code: item.article.code,
-        image: item.article.cover.path,
-        author: null,
-        publisher: null,
-        quantity: item.quantity,
+        name: item?.article?.title,
+        code: item?.article?.code,
+        image: item?.article?.cover?.path,
+        author: item?.article?.articleByAuthor[0]?.author?.nameAr,
+        publisher:
+          item?.article?.articleByPublishingHouse[0]?.publishingHouse?.nameAr,
+        quantity: item?.quantity,
       });
       return acc;
     }, []);
     setRows(result);
   };
   const handleInputChange = (event, value) => {
-    console.log(value,'test here')
+    console.log(value, "test here");
     setSearchText(value);
   };
-  const handleInputsearch = (event) => {
-    console.log(event.target.value,'test here',)
+  const handleInputSearch = (event) => {
+    console.log(event.target.value, "test here");
     setText(event.target.value);
-    setRefresh(!refresh)
+    setRefresh(!refresh);
   };
 
-  function includesAll(arr, values) {
-    return values.every((value) =>
-      arr.some((element) => element.includes(value))
-    );
-  }
-
   const handelNormalSearch = (event, value) => {
-    console.log(value,'before condition');
+    console.log(value, "before condition");
     if (value) {
       event.target.value = "";
-      console.log(value,'after condition');
-      
+      console.log(value, "after condition");
+
       handelNSearch(event, value);
-      setText("")
+      setText("");
     }
+  };
+
+  const handelBarcodeSearch = async (event) => {
+    console.log(event?.target?.value, "before condition");
+    if (type === "BR" && !!event?.target?.value) {
+      const response = await axios.get(
+        `${ip}/articles/barCode/${event?.target?.value}`
+      );
+      if (typeof response.data === "object") {
+        let e = response.data;
+        const prod = {
+          id: e?.id,
+          name: e?.title,
+          code: e?.code,
+          image: e?.cover?.path,
+          author: e?.articleByAuthor[0]?.author?.nameAr,
+          publisher: e?.articleByPublishingHouse[0]?.publishingHouse?.nameAr,
+        };
+        console.log(response);
+
+        handelBarcodeSu(prod);
+        event.target.value = "";
+      }
+      if (typeof response.data === "string") {
+        handelBarcodeEr(response.data);
+      }
+    } else if (
+      info.type === "BL" ||
+      info.type === "BLF" ||
+      info.type === "F" ||
+      info.type === "Ticket" ||
+      info.type === "Devis" ||
+      info.type === "BC"
+    ) {
+      if (!!event.target.value) {
+        const response = await axios.get(
+          `${ip}/stocks/code/${event?.target?.value}`
+        );
+        if (typeof response.data === "object") {
+          let e = response.data;
+          const responsePriceByChannel = await axios.get(
+            `http://localhost:3000/price-By-Channel/getAll`,
+            { params: {salesChannelIds: [info.sender],articleIds: [e.articleId] } }
+          );
+          console.log(responsePriceByChannel.data);
+          
+          const prod = {
+            id: e?.articleId,
+            name: e?.article?.title,
+            code: e?.article?.code,
+            image: e?.article?.cover?.path,
+            author: e?.article?.articleByAuthor[0]?.author?.nameAr,
+            publisher:
+              e?.article?.articleByPublishingHouse[0]?.publishingHouse?.nameAr,
+            quantity: e?.quantity,
+            price:responsePriceByChannel?.data[0]?.price?responsePriceByChannel?.data[0]?.price:0,
+          };
+          console.log(response);
+
+          handelBarcodeSu(prod);
+          event.target.value = "";
+        }
+      
+      if (typeof response.data === "string") {
+        handelBarcodeEr(response.data);
+      }
+    }
+    }
+
+    // if (value) {
+
+    //   console.log(value, "after condition");
+
+    //   handelNSearch(event, value);
+    //   setText("");
+    // }
   };
 
   const handleMouseEnter = (image) => {
@@ -194,7 +266,7 @@ const SearchField = ({ handelBarcode, handelNSearch, info, type }) => {
                 type="text"
                 className="form-control"
                 placeholder="Bar Code"
-                onChange={(event) => handelBarcode(event, rows)}
+                onChange={(event) => handelBarcodeSearch(event)}
               />
               <button className="btn btn-outline-secondary" type="button">
                 <i className="bi bi-upc-scan"></i>
@@ -217,7 +289,7 @@ const SearchField = ({ handelBarcode, handelNSearch, info, type }) => {
                   variant="outlined"
                   fullWidth
                   placeholder="Search ..."
-                  onChange={handleInputsearch}
+                  onChange={handleInputSearch}
                 />
               )}
               renderOption={(props, option) => (
@@ -233,7 +305,7 @@ const SearchField = ({ handelBarcode, handelNSearch, info, type }) => {
                     <div className="ms-2">
                       <Typography variant="body1">{`${option.name}`}</Typography>
                     </div>
-                    {option.price!==0 && (
+                    {option.price !== 0 && (
                       <div className="ms-2">
                         <Typography variant="body1">{` | ${option.price} DT`}</Typography>
                       </div>

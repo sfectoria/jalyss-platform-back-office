@@ -1,93 +1,11 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Table from "react-bootstrap/Table";
-import Button from "react-bootstrap/Button";
 import { BiTrash } from "react-icons/bi";
-import EditableField from "./EditableField";
 import PandMField from "./PandMField";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import SearchField from "./SearchField";
-
-function createData(
-  id,
-  image,
-  title,
-  quantity,
-  author,
-  publisher,
-  barcode,
-  price
-) {
-  return {
-    id,
-    image,
-    title,
-    quantity,
-    author,
-    publisher,
-    barcode,
-    price,
-  };
-}
-
-const rows = [
-  createData(
-    1,
-    "https://jalyss.com/520-large_default/alabe-alghani-alabe-alfaker.jpg",
-    "الرجل الغني و الرجل الفقير",
-    24,
-    "robert ti kyosaki",
-    "maktabat jarir",
-    "104725"
-  ),
-  createData(
-    2,
-    "https://jalyss.com/899-large_default/The-Subtle-Art-of-Not-Giving.jpg",
-    "فن اللامبالات",
-    120,
-    "mark manson",
-    "attanwir",
-    "104727"
-  ),
-  createData(
-    3,
-    "https://jalyss.com/1064-home_default/-kon-ant.jpg",
-    "كن انت",
-    160,
-    "iheb hamarna",
-    "molhimon",
-    "104720",
-    100
-  ),
-  createData(
-    4,
-    "https://jalyss.com/2759-large_default/-.jpg",
-    "خلق الكون في القران الكريم",
-    123,
-    "walid mohyi e din al asghar",
-    "dar e salam",
-    "104728"
-  ),
-  createData(
-    5,
-    "https://jalyss.com/423-home_default/min-ajl-annajah.jpg",
-    "من أجل النجاح",
-    49,
-    "abd el karim bakkar",
-    "dar e salam",
-    "1047254"
-  ),
-  createData(
-    6,
-    "https://jalyss.com/1170-large_default/-.jpg",
-    "اولاد حارتنا",
-    49,
-    "najib mahfoudh",
-    "dar e chourouk",
-    "104729"
-  ),
-];
 
 const InvoiceItem = (props) => {
   const {
@@ -96,7 +14,8 @@ const InvoiceItem = (props) => {
     onItemizedItemEdit,
     onRowDel,
     onRowAdd,
-    handelBarcode,
+    handelBarcodeSu,
+    handelBarcodeEr,
     handelNSearch,
     type,
     info,
@@ -133,7 +52,8 @@ const InvoiceItem = (props) => {
         <tbody>{itemTable}</tbody>
         <tfoot>
           <SearchField
-            handelBarcode={handelBarcode}
+            handelBarcodeSu={handelBarcodeSu}
+            handelBarcodeEr={handelBarcodeEr}
             handelNSearch={handelNSearch}
             info={info}
             type={type}
@@ -182,7 +102,7 @@ const ItemRow = ({
         />
       </td>
      { type !== "BT"&&<td style={{ minWidth: "140px", alignContent: "center" }}>
-        {type === "BR" ? (
+        {(type === "BR" || type ==='BS' )? (
           <InputGroup className="my-1 flex-nowrap">
             <Form.Control
               id={item.id}

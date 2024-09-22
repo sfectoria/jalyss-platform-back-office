@@ -12,14 +12,16 @@ function ChannelsRoutes() {
     <Route path="channels" key="channels-module" element={<ChannelModule />}>
       <Route index key="channels-list" element={<ChannelsList />} />
       <Route path="add-channel" element={<AddChannel />} />
-
       <Route
         key="details"
         path="channel-details/:id"
         element={<ChannelDetails />}
       />
-
-      <Route key='channel-history-details' path="/channels/channel-details/:id/history" element={<ChannelHistoryDetails/>}/>
+      <Route
+        key="channel-history-details"
+        path="/channels/channel-details/:id/history"
+        element={<ChannelHistoryDetails />}
+      />
       <Route path="new-sale" key="new-sale" element={<NewSale />} />
     </Route>,
   ];
