@@ -24,23 +24,21 @@ console.log(stocksIds, "stocks")
       }
 
       const response = await axios.get("http://localhost:3000/movements/getAll2", { params });
-      setHistory(response.data.data); // On assume que l'API renvoie un objet avec un champ `data`
+      setHistory(response.data.data); 
     } catch (error) {
       console.error("Erreur lors de la récupération des données:", error);
     }
   };
 console.log(history, "History")
-  // Appel initial pour récupérer les données avec les paramètres de l'URL
   useEffect(() => {
     fetchHistory();
   }, [stocksIds, articleId]);
 
-  // Transformation des données pour le DataGrid
   const rows = history.map((historyRow, i) => {
     const noteLines = historyRow.type === "exit" ? historyRow.exitNoteLine : historyRow.receiptNoteLine;
     const firstLine = noteLines && noteLines.length > 0 ? noteLines[0] : null;
     return {
-      id: i, // Chaque ligne doit avoir un ID unique pour le DataGrid
+      id: i, 
       date: historyRow.exitDate || historyRow.receiptDate,
       customer: historyRow.customerName || "N/A",
       fournisseur: historyRow.fournisseurName || "N/A",
@@ -55,7 +53,6 @@ console.log(history, "History")
     };
   });
 
-  // Colonnes du DataGrid
   const columns = [
     { field: "date", headerName: "Date", width: 150 },
     { field: "customer", headerName: "Customer", width: 150 },
@@ -84,7 +81,7 @@ console.log(history, "History")
       }}
     >
       <Typography variant="h5" mb={3} gutterBottom sx={{ fontWeight: "bold" }}>
-        Stock
+        Historique des Articles
       </Typography>
       <div style={{ width: "100%" }}>
         <DataGrid

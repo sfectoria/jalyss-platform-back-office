@@ -18,7 +18,7 @@ import MoreIcon from "@mui/icons-material/MoreVert";
 import { Divider, ListItemIcon, Stack } from "@mui/material";
 import { Logout, PersonAdd, Settings } from "@mui/icons-material";
 import {  useNavigate } from "react-router-dom";
-
+import AccountBoxOutlinedIcon from '@mui/icons-material/AccountBoxOutlined';
 // const Search = styled("div")(({ theme }) => ({
 //   position: "relative",
 //   borderRadius: theme.shape.borderRadius,
@@ -110,10 +110,14 @@ export default function Header({ isCollapsed, setIsCollapsed, setHeight}) {
   const handleMobileMenuClose = () => {
     setMobileMoreAnchorEl(null);
   };
-
+  const handleLogout = () => {
+    localStorage.removeItem("token"); 
+    navigate("/"); 
+    window.location.reload(); 
+  };
   const menuId = "primary-search-account-menu";
   const renderProfileMenu = (
-    <Menu
+    <Menu style={{marginTop: 30}}
       anchorEl={profileAnchorEl}
       anchorOrigin={{
         vertical: "top",
@@ -128,20 +132,14 @@ export default function Header({ isCollapsed, setIsCollapsed, setHeight}) {
       open={isProfileMenuOpen}
       onClose={handleProfileMenuClose}
     >
-      <MenuItem onClick={() => navigate("/profile")}>Profile</MenuItem>
-      <Divider
-        sx={{
-          height: "3px",
-          backgroundColor: "black",
-        }}
-      />
+      
       <MenuItem onClick={() => navigate("profile/settings")}>
         <ListItemIcon>
-          <Settings fontSize="small" />
+          <AccountBoxOutlinedIcon fontSize="small" />
         </ListItemIcon>
-        Settings
+        Profile
       </MenuItem>
-      <MenuItem>
+      <MenuItem onClick={handleLogout}>
         <ListItemIcon>
           <Logout fontSize="small" />
         </ListItemIcon>

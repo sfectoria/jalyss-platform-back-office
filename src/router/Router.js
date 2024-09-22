@@ -1,5 +1,5 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Main from "../apps/Main";
 import Auth from "../apps/Auth";
@@ -20,10 +20,18 @@ import ChannelsRoutes from "./Modules/ChannelsRoutes";
 import DashboardRoutes from "./Modules/DashboardRoutes";
 import NewInventaire from "../modules/Inventaire/views/NewInventaire";
 import ArticleHistory from "../modules/articles/component/ArticleHistory";
+import { getMe } from "../store/slices/authSlice";
 
 export default function Router() {
-  const user = useSelector((state) => state.authSlice.user);
+  const user = useSelector((store) => store.auth.me);
 
+  const dispatch = useDispatch();
+  useEffect(() => {
+    let token = localStorage.getItem("token");
+    if (token)
+      dispatch(getMe()).then((res) => {
+      });
+  }, [dispatch]);
   return (
     <BrowserRouter>
       {user ? (
