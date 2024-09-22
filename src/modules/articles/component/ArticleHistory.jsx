@@ -1,85 +1,124 @@
 import React, { useEffect, useState } from "react";
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
+import { Box, Typography } from "@mui/material";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import DoneIcon from "@mui/icons-material/Done";
 import ClearIcon from "@mui/icons-material/Clear";
+import axios from "axios";
+import { useParams } from "react-router-dom";
 
 export default function ArticleHistory() {
-    const [history, setHistory] = useState([]);
+  const [history, setHistory] = useState([]);
 
-    useEffect(() => {
-        const fetchHistory = async () => {
-          try {
-            const response = await fetch("http://localhost:3000/movements/getAll2");
-            const result = await response.json();
-            setHistory(result.data); // Accéder à la propriété "data" dans le résultat de l'API
-          } catch (error) {
-            console.error("Erreur lors de la récupération des données:", error);
-          }
-        };
-    
-        fetchHistory();
-      }, []);
+  const { stocksIds, articleId } = useParams();
+  console.log(articleId, "article")
+console.log(stocksIds, "stocks")
+  const fetchHistory = async () => {
+    try {
+      const params = {};
 
-  console.log("history", history); 
-  
+      if (stocksIds) {
+        params.stocksIds = stocksIds.split(',').map(id => id.trim()); // Transformation en array
+      }
+      if (articleId) {
+        params.articleId = articleId;
+      }
+
+      const response = await axios.get("http://localhost:3000/movements/getAll2", { params });
+      setHistory(response.data.data); // On assume que l'API renvoie un objet avec un champ `data`
+    } catch (error) {
+      console.error("Erreur lors de la récupération des données:", error);
+    }
+  };
+console.log(history, "History")
+  // Appel initial pour récupérer les données avec les paramètres de l'URL
+  useEffect(() => {
+    fetchHistory();
+  }, [stocksIds, articleId]);
+
+  // Transformation des données pour le DataGrid
+  const rows = history.map((historyRow, i) => {
+    const noteLines = historyRow.type === "exit" ? historyRow.exitNoteLine : historyRow.receiptNoteLine;
+    const firstLine = noteLines && noteLines.length > 0 ? noteLines[0] : null;
+    return {
+      id: i, // Chaque ligne doit avoir un ID unique pour le DataGrid
+      date: historyRow.exitDate || historyRow.receiptDate,
+      customer: historyRow.customerName || "N/A",
+      fournisseur: historyRow.fournisseurName || "N/A",
+      type: historyRow.type,
+      transfer: historyRow.transferNote, // Stocker la valeur booléenne
+      quantity: firstLine ? firstLine.quantity : "N/A",
+      price: firstLine ? (firstLine.price !== null ? firstLine.price : "N/A") : "N/A",
+      totalPrice:
+        firstLine && firstLine.price !== null && firstLine.quantity
+          ? (firstLine.price * firstLine.quantity).toFixed(2)
+          : "N/A",
+    };
+  });
+
+  // Colonnes du DataGrid
+  const columns = [
+    { field: "date", headerName: "Date", width: 150 },
+    { field: "customer", headerName: "Customer", width: 150 },
+    { field: "fournisseur", headerName: "Fournisseur", width: 150 },
+    { field: "type", headerName: "Type", width: 150 },
+    {
+      field: "transfer",
+      headerName: "Transfer",
+      width: 150,
+      align: "center",
+      renderCell: (params) => (
+        params.value ? <DoneIcon color="success" /> : <ClearIcon color="error" />
+      ) // Rendu des icônes en fonction de la valeur booléenne
+    },
+    { field: "quantity", headerName: "Quantity", width: 150 },
+    { field: "price", headerName: "Price", width: 150 },
+    { field: "totalPrice", headerName: "Total Price ($)", width: 150 },
+  ];
+
   return (
-    <TableContainer sx={{ mt: 5 }} component={Paper}>
-      <Table aria-label="full history table">
-        <TableHead>
-          <TableRow>
-            <TableCell>Date</TableCell>
-            <TableCell>Customer</TableCell>
-            <TableCell>Fournisseur</TableCell>
-            <TableCell>Type</TableCell>
-            <TableCell align="center">Transfer</TableCell>
-            <TableCell>Quantity</TableCell>
-            <TableCell>Price</TableCell>
-            <TableCell>Total price ($)</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {history.length > 0 ? (
-            history.map((historyRow, i) => {
-              // Récupérer les lignes d'articles selon le type (exitNoteLine ou receiptNoteLine)
-              const noteLines = historyRow.type === "exit" ? historyRow.exitNoteLine : historyRow.receiptNoteLine;
-              
-              // Si les lignes existent, on prend la première ligne pour cet exemple
-              const firstLine = noteLines && noteLines.length > 0 ? noteLines[0] : null;
-
-              return (
-                <TableRow key={i}>
-                  <TableCell component="th" scope="row">
-                    {historyRow.exitDate || historyRow.receiptDate}
-                  </TableCell>
-                  <TableCell>{historyRow.customerName || "N/A"}</TableCell>
-                  <TableCell>{historyRow.fournisseurName || "N/A"}</TableCell>
-                  <TableCell>{historyRow.type}</TableCell>
-                  <TableCell align="center">
-                    {historyRow.transferNote ? <DoneIcon color="success" /> : <ClearIcon color="error" />}
-                  </TableCell>
-                  <TableCell>
-                    {firstLine ? firstLine.quantity : "N/A"}
-                  </TableCell>
-                  <TableCell>
-                    {firstLine ? (firstLine.price !== null ? firstLine.price : "N/A") : "N/A"}
-                  </TableCell>
-                  <TableCell>
-                    {firstLine && firstLine.price !== null && firstLine.quantity
-                      ? (firstLine.price * firstLine.quantity).toFixed(2)
-                      : "N/A"}
-                  </TableCell>
-                </TableRow>
-              );
-            })
-          ) : (
-            <TableRow>
-              <TableCell colSpan={8} align="center">
-                No data available
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <Box
+      sx={{
+        bgcolor: "background.default",
+        mx: 3,
+        mt: 3,
+      }}
+    >
+      <Typography variant="h5" mb={3} gutterBottom sx={{ fontWeight: "bold" }}>
+        Stock
+      </Typography>
+      <div style={{ width: "100%" }}>
+        <DataGrid
+          pageSizeOptions={[7, 10, 20]}
+          sx={{
+            boxShadow: 0,
+            border: 0,
+            borderColor: "primary.light",
+            "& .MuiDataGrid-cell:hover": {
+              color: "primary.main",
+            },
+          }}
+          rows={rows}
+          columns={columns}
+          slots={{
+            noResultsOverlay: () => <div>No data available</div>, // Overlay personnalisé quand il n'y a pas de données
+            toolbar: GridToolbar,
+          }}
+          initialState={{
+            pagination: { paginationModel: { pageSize: 7 } },
+            filter: {
+              filterModel: {
+                items: [],
+                quickFilterValues: [""],
+              },
+            },
+          }}
+          slotProps={{
+            toolbar: {
+              showQuickFilter: true,
+            },
+          }}
+        />
+      </div>
+    </Box>
   );
 }
