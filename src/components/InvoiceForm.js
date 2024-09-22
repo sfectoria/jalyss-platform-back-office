@@ -139,8 +139,7 @@ const InvoiceForm = () => {
       console.log(response.status)
       
     if (response && response.status === 201) {
-      console.log(response,"navigate ")
-      navigate(-1); 
+      setTimeout(() => navigate(-1), 1000); 
     }
       setItems([])
     }
@@ -165,7 +164,10 @@ const InvoiceForm = () => {
         `${ip}/purchaseOrder/create`,
         obj
       );
-      console.log("Response:", response.data);
+
+      if (response && response.status === 201) {
+        setTimeout(() => navigate(-1), 1000); 
+      }
       setItems([])
     }
 
@@ -192,6 +194,9 @@ const InvoiceForm = () => {
         `${ip}/receiptNote/create_rn`,
         obj
       );
+      if (response && response.status === 201) {
+        setTimeout(() => navigate(-1), 1000); 
+      }
       console.log("Response:", response.data);
       setItems([])
     }
@@ -242,13 +247,16 @@ const InvoiceForm = () => {
         `${ip}/return-note/createRN`, 
         obj
       );
-      console.log("Response:", response.data);
-      setItems([]);
+
+if (response && response.status === 201) {
+      setTimeout(() => navigate(-1), 1000); 
+    }      setItems([]);
     }
 
 
     } catch (error) {
       console.error("Error:", error);
+      reject (error);
     }
   };
 

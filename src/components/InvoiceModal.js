@@ -10,6 +10,9 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import axios from 'axios';
 import { ip } from '../constants/ip';
+import Alert from '@mui/material/Alert';
+import Stack from '@mui/material/Stack';
+
 
 const InvoiceModal = ({
   showModal,
@@ -33,6 +36,10 @@ const InvoiceModal = ({
   const [billFrom,setBillFrom]=useState({})
   const [amount,setAmount]=useState(0)
   const [title,setTitle]=useState('')
+  const [successAlert, setSuccessAlert] = useState(false);  // State for success alert
+  const [errorAlert, setErrorAlert] = useState(false);      // State for error alert
+
+
   useEffect(()=>{
     if(mode==="viewer"){
       console.log(type,'type');
@@ -228,6 +235,17 @@ const InvoiceModal = ({
 )
     
   }
+  const handleFinishSale = async () => {
+    try {
+      await finishSale();  // Call the passed function
+      setSuccessAlert(true);  // Show success alert
+      setErrorAlert(false);   // Hide error alert
+    } catch (error) {
+      setErrorAlert(true);    // Show error alert
+      setSuccessAlert(false); // Hide success alert
+      console.error("Error:", error);
+    }
+  };
 
   const generateInvoice = () => {
     html2canvas(invoiceCaptureRef.current).then((canvas) => {
@@ -250,6 +268,19 @@ const InvoiceModal = ({
     <div>
       <Modal show={showModal} onHide={closeModal} size="lg" centered>
         <div id="invoiceCapture" ref={invoiceCaptureRef}>
+         {/* Alertes MUI */}
+         <Stack sx={{ width: '100%' }} spacing={2}>
+            {successAlert && (
+              <Alert severity="success" onClose={() => setSuccessAlert(false)} dismissible>
+                This is a success Alert.
+              </Alert>
+            )}
+            {errorAlert && (
+              <Alert severity="error" onClose={() => setErrorAlert(false)} dismissible>
+                This is an error Alert.
+              </Alert>
+            )}
+          </Stack>
           <div className="d-flex flex-row justify-content-between align-items-start bg-light w-100 p-4">
             <div className="w-100">
               <h4 className="fw-bold my-2">{title}</h4>
@@ -343,7 +374,7 @@ const InvoiceModal = ({
         <div className="pb-4 px-4">
           <Row>
             {mode!=="viewer"&&<Col md={6}>
-              <Button variant="primary" className="d-block w-100" onClick={()=>{finishSale()}}>
+              <Button variant="primary" className="d-block w-100" onClick={handleFinishSale}>
                 <BiPaperPlane style={{ width: '15px', height: '15px', marginTop: '-3px' }} className="me-2" />Finish Sale
               </Button>
             </Col>}

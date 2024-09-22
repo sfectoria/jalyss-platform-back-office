@@ -19,6 +19,7 @@ import FornisseursRoutes from "./Modules/FornisseursRoutes";
 import ChannelsRoutes from "./Modules/ChannelsRoutes";
 import DashboardRoutes from "./Modules/DashboardRoutes";
 import NewInventaire from "../modules/Inventaire/views/NewInventaire";
+import ArticleHistory from "../modules/articles/component/ArticleHistory";
 
 export default function Router() {
   const user = useSelector((state) => state.authSlice.user);
