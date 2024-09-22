@@ -5,7 +5,7 @@ import Cookies from 'js-cookie';
 
 const initialState={
   isAuthenticated: !!Cookies.get('authToken'),
-  user: 'me',
+  user: 'ghdh',
   token: Cookies.get('authToken') || null,
   error: null,
 }

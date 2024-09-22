@@ -16,7 +16,7 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import Link from "@mui/material/Link";
 import DoneIcon from "@mui/icons-material/Done";
 import ClearIcon from "@mui/icons-material/Clear";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useParams } from "react-router-dom";
 
 
 const history = [
@@ -104,7 +104,8 @@ const history = [
 function Row(props) {
   const { row } = props;
   const [open, setOpen] = useState(false);
- 
+  const params=useParams()
+  console.log(params.id,"params")
 
   return (
     <React.Fragment>
@@ -187,7 +188,7 @@ function Row(props) {
                         );
                       } else return "";
                     })}
-                    <Link component={RouterLink} to="/full-history" underline="hover">
+                    <Link href={`${params.id}/full-history`} underline="hover">
                       {"...    see more"}
                     </Link>
                   </TableBody>

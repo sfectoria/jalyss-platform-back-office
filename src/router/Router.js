@@ -41,8 +41,6 @@ export default function Router() {
             <Route path="invoice/:type/:sender/:receiver" key='invoice' element={<InvoiceContainer />} />
           </Route>
           <Route key="index" path="inventaires" element={<NewInventaire />} />
-          <Route key="index" path="full-history" element={<ArticleHistory/>} />
-
         </Routes>
       ) : (
         <Routes>
