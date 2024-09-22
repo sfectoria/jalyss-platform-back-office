@@ -9,15 +9,15 @@ import { useParams } from "react-router-dom";
 export default function ArticleHistory() {
   const [history, setHistory] = useState([]);
 
-  const { stockIds, articleId } = useParams();
+  const { stocksIds, articleId } = useParams();
   console.log(articleId, "article")
-
+console.log(stocksIds, "stocks")
   const fetchHistory = async () => {
     try {
       const params = {};
 
-      if (stockIds) {
-        params.stocksIds = stockIds.split(',').map(id => id.trim()); // Transformation en array
+      if (stocksIds) {
+        params.stocksIds = stocksIds.split(',').map(id => id.trim()); // Transformation en array
       }
       if (articleId) {
         params.articleId = articleId;
@@ -33,7 +33,7 @@ console.log(history, "History")
   // Appel initial pour récupérer les données avec les paramètres de l'URL
   useEffect(() => {
     fetchHistory();
-  }, [stockIds, articleId]);
+  }, [stocksIds, articleId]);
 
   // Transformation des données pour le DataGrid
   const rows = history.map((historyRow, i) => {

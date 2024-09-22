@@ -188,7 +188,7 @@ function Row(props) {
                         );
                       } else return "";
                     })}
-                    <Link href={`${params.id}/full-history`} underline="hover">
+                    <Link href={`${params.id}/stocks/${row.stock.id}/full-history`} underline="hover">
                       {"...    see more"}
                     </Link>
                   </TableBody>
