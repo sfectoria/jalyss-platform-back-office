@@ -54,7 +54,7 @@ function a11yProps(index) {
   };
 }
 
-function FullWidthTabs({stockInfo}) {
+function FullWidthTabs({ stockInfo }) {
   const theme = useTheme();
   const [value, setValue] = useState(0);
 
@@ -167,7 +167,7 @@ export default function StockDetails() {
             </Typography>
           </Breadcrumbs>
         </div>
-        <FullWidthTabs stockInfo={stockInfo}/>
+        <FullWidthTabs stockInfo={stockInfo} />
       </Item>
     </Box>
   );

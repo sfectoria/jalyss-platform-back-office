@@ -11,9 +11,7 @@ import {
 import MuiPagination from "@mui/material/Pagination";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import CustomNoResultsOverlay from "../../../style/NoResultStyle";
-import InvoiceModal from "../../../components/InvoiceModal";
 import { useNavigate, useParams } from "react-router-dom";
-import { Typography } from "@mui/material";
 import DraftsIcon from "@mui/icons-material/Drafts";
 import axios from "axios";
 import { ip } from "../../../constants/ip";
@@ -49,14 +47,6 @@ export default function StockInvontaire() {
     navigate(`/stock/${param.id}/inv/${ids}`);
   };
 
-  const openModal = (event) => {
-    event.preventDefault();
-    setIsOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsOpen(false);
-  };
 
   function Pagination({ onPageChange, className }) {
     const apiRef = useGridApiContext();

@@ -27,7 +27,7 @@ export default function Router() {
     <BrowserRouter>
       {user ? (
         <Routes>
-          <Route path="/" key='main' element={<Main />}>
+          <Route path="/" key="main" element={<Main />}>
             {DashboardRoutes()}
             {StockRoutes()}
             {InventaireRoutes()}
@@ -37,9 +37,12 @@ export default function Router() {
             {ArticleRoutes()}
             {FornisseursRoutes()}
             {ChannelsRoutes()}
-            <Route path="invoice/:type/:sender/:receiver" key='invoice' element={<InvoiceContainer />} />
+            <Route
+              path="invoice/:type/:sender/:receiver"
+              key="invoice"
+              element={<InvoiceContainer />}
+            />
           </Route>
-          <Route key="index" path="inventaires" element={<NewInventaire />} />
         </Routes>
       ) : (
         <Routes>

@@ -15,8 +15,7 @@ function AddInventaire() {
       status: "draft",
       date: new Date(),
       stockId: +param.id,
-      inventoryLine: [
-      ],
+      inventoryLine: [],
     };
     const createInv = await axios.post(`${ip}/inventory/create`, obj);
     if (createInv.data) {

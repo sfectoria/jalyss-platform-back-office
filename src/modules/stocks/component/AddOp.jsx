@@ -23,9 +23,9 @@ export default function AddButton(props) {
       setActions([{ icon: <ExitToAppOutlinedIcon />, name: "BR" }]);
     } else if (type === "commande") {
       setActions([{ icon: <ExitToAppOutlinedIcon />, name: "BC" }]);
-    } else if(type === 'devis'){
+    } else if (type === "devis") {
       setActions([{ icon: <ExitToAppOutlinedIcon />, name: "Devis" }]);
-    } else if (type === 'histStock') {
+    } else if (type === "histStock") {
       setActions([
         { icon: <ExitToAppOutlinedIcon />, name: "BR" },
         { icon: <ReceiptIcon />, name: "BS" },
@@ -53,41 +53,39 @@ export default function AddButton(props) {
       navigate("/invoice", {
         state: { title: "Bon de Sortie", sender: { info }, receiver: {} },
       });
-    } else if (type === 'BT') {
+    } else if (type === "BT") {
       navigate("/invoice", {
         state: { title: "Bon de Transfert", sender: { info }, receiver: {} },
       });
-    } else if (type === 'BL') {
+    } else if (type === "BL") {
       navigate("/invoice", {
         state: { title: "Bon de Livraison", sender: { info }, receiver: {} },
       });
-    }
-    else if (type === 'BL/F') {
+    } else if (type === "BL/F") {
       navigate("/invoice", {
-        state: { title: "Bon de Livraison/Facture", sender: { info }, receiver: {} },
+        state: {
+          title: "Bon de Livraison/Facture",
+          sender: { info },
+          receiver: {},
+        },
       });
-    }
-    else if (type === 'F') {
+    } else if (type === "F") {
       navigate("/invoice", {
         state: { title: "Facture", sender: { info }, receiver: {} },
       });
-    }
-    else if (type === 'Ticket') {
+    } else if (type === "Ticket") {
       navigate("/invoice", {
         state: { title: "Ticket de Caisse", sender: { info }, receiver: {} },
       });
-    }
-    else if (type === 'BC') {
+    } else if (type === "BC") {
       navigate("/invoice", {
         state: { title: "Bon de Commande", sender: { info }, receiver: {} },
       });
-    }
-    else if (type === 'Devis') {
+    } else if (type === "Devis") {
       navigate("/invoice", {
         state: { title: "Devis", sender: { info }, receiver: {} },
       });
     }
-
   };
 
   return (
