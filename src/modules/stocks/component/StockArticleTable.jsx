@@ -51,8 +51,8 @@ export default function StockArticles() {
   }
 
   const fetchData = async () => {
-    let params={take:pageSize,skip:page*pageSize}
-    const response = await axios.get(`${ip}/stocks/${param.id}`,{params});
+    let params = { take: pageSize, skip: page * pageSize };
+    const response = await axios.get(`${ip}/stocks/${param.id}`, { params });
     console.log(response.data.data.stockArticle, response.data.count);
     setData(response.data.data.stockArticle);
     setCount(response.data.count);
@@ -104,7 +104,8 @@ export default function StockArticles() {
       headerName: "Publisher",
       width: 220,
       valueGetter: (value, row) => {
-        return row?.article.articleByPublishingHouse[0]?.publishingHouse?.nameAr;
+        return row?.article.articleByPublishingHouse[0]?.publishingHouse
+          ?.nameAr;
       },
     },
     {

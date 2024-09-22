@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
-import ArticleCatigorie from "./ArticleCategorie";
+import ArticleCategory from "./ArticleCategorie";
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import axios from "axios";
@@ -86,7 +86,7 @@ export default function ArticleInfo() {
           rows={4}
           sx={{width:'100%',mb:2}}
         />
-  <ArticleCatigorie/>
+  <ArticleCategory/>
     </Box>;
 }
 

@@ -32,7 +32,7 @@ const PersonSearch = ({person,type,setName,setEmail,setAddress,setId}) => {
      console.log(dataStocks);
      
        }
-  else if (type === "BL" || type === "BLF" || type === "F" || type === "Ticket" || type === "Devis" || type==='BC' || type==='BRe'){
+  else if (type==='BS' || type === "BL" || type === "BLF" || type === "F" || type === "Ticket" || type === "Devis" || type==='BC' || type==='BRe'){
      const response = await axios.get(`${ip}/clients`)
      console.log(response.data);
      setRows(response.data)

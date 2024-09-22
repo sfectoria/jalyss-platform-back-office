@@ -4,7 +4,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack';
 
-export default function ArticleCatigorie() {
+export default function ArticleCategory() {
   return (
     <Stack spacing={3} sx={{ width: '100%' }}>
       <Autocomplete
@@ -12,7 +12,6 @@ export default function ArticleCatigorie() {
         id="tags-outlined"
         options={bookCategories}
         getOptionLabel={(option) => option.title}
-        // defaultValue={[top100Films[13]]}
         filterSelectedOptions
         renderInput={(params) => (
           <TextField

@@ -5,11 +5,16 @@ const PandMField = ({ onItemizedItemEdit, quantity,id }) => {
 
   
   const triggerChange = (newValue) => {
-    const event = { target: { value: newValue,name:'quantity',id:id } };
+    console.log(newValue);
+    
+    const event = { target: { value: parseInt(newValue),name:'quantity',id:id } };
+    console.log(event);
     handleChange(event);
   };
 
   const handleIncrement = () => {
+    console.log(quantity);
+    
     triggerChange(quantity + 1);
   };
 
@@ -20,6 +25,8 @@ const PandMField = ({ onItemizedItemEdit, quantity,id }) => {
   };
 
   const handleChange = (e) => {
+    console.log(e);
+    
       onItemizedItemEdit(e);
   };
 

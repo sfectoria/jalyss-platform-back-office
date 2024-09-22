@@ -12,7 +12,6 @@ export default function ArticleDetails() {
   const [articleInStocks, setArticleInStocks] = useState([]);
 
   const param = useParams();
-  console.log(param);
 
   useEffect(() => {
     fetchArticle();
@@ -27,8 +26,6 @@ export default function ArticleDetails() {
     response.data.quantity = result;
 
     setData(response.data);
-    console.log(response.data);
-
     setArticleInStocks(response.data.stockArticle);
   };
 

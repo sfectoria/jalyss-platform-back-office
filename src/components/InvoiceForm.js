@@ -40,19 +40,16 @@ const InvoiceForm = () => {
   const [taxAmount, setTaxAmount] = useState("0.00");
   const [discountRate, setDiscountRate] = useState("");
   const [discountAmount, setDiscountAmount] = useState("0.00");
-  const ids = (+new Date() + Math.floor(Math.random() * 999999)).toString(36);
   const [items, setItems] = useState([]);
   const [showSuAlert, setShowSuAlert] = useState(false);
   const [showErAlert, setShowErAlert] = useState(false);
-  const [senderInv, setSenderInv] = useState({});
-  const [receiverInv, setReceiverInv] = useState({});
+  const [msgArticle, setMsgArticle] = useState("");
   const [invoiceTitle, setInvoiceTitle] = useState("");
   const [reqName, setReqName] = useState("");
   const [reqClient, setReqClient] = useState("");
   const [reqChannel, setReqChannel] = useState("");
   const [reqLine, setReqLine] = useState("");
   const [reqDate, setReqDate] = useState('date');
-  const location = useLocation();
   const param = useParams();
   console.log(param);
 
@@ -290,19 +287,22 @@ const InvoiceForm = () => {
     handleCalculateTotal();
   };
 
-  const handelBarcode = (e, rows) => {
-    const prod = rows.find((element) => {
-      console.log(element, e.target.value);
-      return element.code == e.target.value;
-    });
-    if (prod) {
-      handleAddEvent(prod);
-      setShowSuAlert(true);
-      e.target.value = "";
-    } else if (e.target.value.length) {
-      setShowErAlert(true);
-    }
+  const handelBarcodeSu = (e) => {
+    console.log(e);
+
+    handelShow()
+    handleAddEvent(e);
+    setShowSuAlert(true);
   };
+
+  const handelBarcodeEr = (e) => {
+    console.log(e);
+    handelShow()
+    setMsgArticle(e)
+    setShowErAlert(true);
+    
+  }
+  
 
   const handelNSearch = (event, value) => {
     handelAddItem(value);
@@ -357,7 +357,8 @@ const InvoiceForm = () => {
     console.log(name, value, id);
     const updatedItems = items.map((item) => {
       if (item.id == id) {
-        return { ...item, [name]: value };
+        if(name==='quantity'&&value!=='') return { ...item, [name]: parseInt(value) };
+       else return { ...item, [name]: value };
       }
       return item;
     });
@@ -441,7 +442,7 @@ const InvoiceForm = () => {
         <AlertAdding
           showAlert={showErAlert}
           handelShow={handelShow}
-          msg={" We Can't Find This Article"}
+          msg={msgArticle}
           status={"error"}
         />
       )}
@@ -596,7 +597,8 @@ const InvoiceForm = () => {
                 onRowDel={handleRowDel}
                 currency={currency}
                 items={items}
-                handelBarcode={handelBarcode}
+                handelBarcodeSu={handelBarcodeSu}
+                handelBarcodeEr={handelBarcodeEr}
                 handelNSearch={handelNSearch}
                 type={type}
                 info={param}
