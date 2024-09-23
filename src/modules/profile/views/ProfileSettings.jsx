@@ -2,36 +2,37 @@ import {
   Box,
   createTheme,
   FormControl,
-  InputLabel,
   ThemeProvider,
   Typography,
   TextField,
-  OutlinedInput,
   InputAdornment,
   IconButton,
   Stack,
   Button,
-  Badge,
   FormHelperText,
+  Card,
+  CardContent,
+  CardActions,
+  Chip,
 } from "@mui/material";
-
-import Divider from "@mui/material/Divider";
-
 import Avatar from "@mui/material/Avatar";
-
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import Grid from "@mui/material/Unstable_Grid2";
 import Item from "../../../style/ItemStyle";
 import FileUploader from "../../../components/FileUploader";
 import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+import { useDispatch, useSelector } from "react-redux";
+import { getMe, updateProfile, verifyPassword } from "../../../store/slices/authSlice.js"; // Assurez-vous d'importer verifyPassword
 
 const ProfileSettings = () => {
+  const dispatch = useDispatch();
+  const user = useSelector((store) => store.auth.me);
+
   const defaultTheme = createTheme({
     components: {
       MuiTypography: {
@@ -45,62 +46,87 @@ const ProfileSettings = () => {
   });
 
   const [showPassword, setShowPassword] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
   const [file, setFile] = useState(null);
   const [fileName, setFileName] = useState("");
+
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
-
-  const [open, setOpen] = React.useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [open, setOpen] = useState(false);
   const [isCancelled, setIsCancelled] = useState(false);
+  const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    dispatch(getMe());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (user) {
+      setUsername(user.userName || "");
+      setEmail(user.email || "");
+    }
+  }, [user]);
 
   const handleClose = () => {
     setOpen(false);
   };
 
   const resetForm = () => {
-    setUsername("");
+    setUsername(user?.userName || "");
+    setEmail(user?.email || "");
     setCurrentPassword("");
     setNewPassword("");
     setFile(null);
-    setFileName("");
     setErrors({});
+    setEditMode(false);
   };
 
-  const [errors, setErrors] = useState({});
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {};
-
-    if (!currentPassword)
+  
+    if (!currentPassword) {
       newErrors.currentPassword = "Current password is required";
+    }
     setErrors(newErrors);
+  
     if (Object.keys(newErrors).length === 0) {
-      console.log(form);
-      setIsCancelled(false);
-      setOpen(true);
-      resetForm();
+      const userId = user?.id;
+  
+      const isValidPassword = await dispatch(verifyPassword({ id: userId, password: currentPassword }));
+  console.log("test", isValidPassword)
+      if (isValidPassword.payload === 'valid password') {
+        dispatch(
+          updateProfile({
+            id: userId,
+            body: {
+              userName: username,
+              email,
+            },
+          })
+        )
+        .then(() => {
+          setIsCancelled(false);
+          setOpen(true);
+          resetForm();
+        })
+        .catch((err) => {
+          console.error("Error updating profile:", err);
+        });
+      } else {
+        setErrors({ currentPassword: "Invalid password" });
+      }
     }
   };
+  
 
   const handleCancel = () => {
     setIsCancelled(true);
     setOpen(true);
     resetForm();
   };
-
-  const [form, setForm] = useState({});
-
-  useEffect(() => {
-    setForm({
-      username: username,
-      currentPassword: currentPassword,
-      newPassword: newPassword,
-      fileName: fileName,
-      fileUrl: file,
-    });
-  }, [username, currentPassword, newPassword, fileName, file]);
 
   const onSelectFileHandler = (e) => {
     const uploadedFile = e.target.files[0];
@@ -115,135 +141,106 @@ const ProfileSettings = () => {
       <Box m={10}>
         <Grid container spacing={2}>
           <Grid xs={8}>
-            <Item
-              sx={{
-                padding: 5,
-              }}
-            >
-              <Typography variant="h2" color="initial">
-                Settings
+            <Item sx={{ padding: 5 }}>
+              <Typography variant="h2" gutterBottom>
+                My Profile
               </Typography>
-              <Box>
-                <form>
-                  <TextField
-                    margin="normal"
-                    fullWidth
-                    id="username"
-                    label="Username"
-                    name="username"
-                    autoComplete="username"
-                    autoFocus
-                    onChange={(e) => {
-                      setUsername(e.target.value);
-                      // console.log(e.target.value);
-                    }}
-                    inputProps={{
-                      maxLength: 20,
-                    }}
-                    value={username}
-                  />
-                  <FormControl
-                    margin="normal"
-                    fullWidth
-                    required
-                    error={!!errors.currentPassword}
-                    variant="outlined"
-                  >
-                    <TextField
-                      required
-                      value={currentPassword}
-                      onChange={(event) => {
-                        setCurrentPassword(event.target.value);
-                      }}
-                      id="currentPassword"
-                      type={showPassword ? "text" : "password"}
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <IconButton
-                              onClick={() => setShowPassword((show) => !show)}
-                              onMouseDown={(event) => {
-                                event.preventDefault();
-                              }}
-                              aria-label="toggle password visibility"
-                              edge="end"
-                            >
-                              {showPassword ? (
-                                <VisibilityOff />
-                              ) : (
-                                <Visibility />
-                              )}
-                            </IconButton>
-                          </InputAdornment>
-                        ),
-                      }}
-                      label="Current Password"
-                      name="password"
-                    />
-                    <FormHelperText>{errors.currentPassword}</FormHelperText>
-                  </FormControl>
-                  <FormControl margin="normal" fullWidth variant="outlined">
-                    <TextField
-                      required
-                      value={newPassword}
-                      onChange={(event) => {
-                        setNewPassword(event.target.value);
-                      }}
-                      id="newPassword"
-                      type={showNewPassword ? "text" : "password"}
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <IconButton
-                              onClick={() =>
-                                setShowNewPassword((show) => !show)
-                              }
-                              onMouseDown={(event) => {
-                                event.preventDefault();
-                              }}
-                              aria-label="toggle new password visibility"
-                              edge="end"
-                            >
-                              {showNewPassword ? (
-                                <VisibilityOff />
-                              ) : (
-                                <Visibility />
-                              )}
-                            </IconButton>
-                          </InputAdornment>
-                        ),
-                      }}
-                      label="New Password"
-                      name="newPassword"
-                    />
-                  </FormControl>
-                  <Grid item xs={12}>
-                    <Item
-                      elevation={0}
-                      sx={{
-                        display: "flex",
-                        justifyContent: "start",
-                        gap: "14px",
-                      }}
-                    >
-                      <Button
-                        className="confirm-btn"
-                        type="submit"
-                        variant="contained"
+
+              <Card variant="outlined">
+                <CardContent>
+                  {!editMode ? (
+                    <>
+                      <Stack direction="row" spacing={1} alignItems="center">
+                        <Typography variant="h6">Username:</Typography>
+                        <Chip label={username} color="primary" />
+                      </Stack>
+                      <Typography variant="h6" sx={{ mt: 2 }}>
+                        Email: {email}
+                      </Typography>
+                      <Typography variant="h6" sx={{ mt: 2 }}>
+                        Current Password: ••••••••
+                      </Typography>
+                    </>
+                  ) : (
+                    <>
+                      <TextField
+                        margin="normal"
+                        fullWidth
+                        id="username"
+                        label="Username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                      />
+                      <TextField
+                        margin="normal"
+                        fullWidth
+                        id="email"
+                        label="Email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                      />
+                      <FormControl
+                        margin="normal"
+                        fullWidth
+                        required
+                        error={!!errors.currentPassword}
+                        variant="outlined"
                       >
-                        Confirm
+                        <TextField
+                          required
+                          value={currentPassword}
+                          onChange={(event) =>
+                            setCurrentPassword(event.target.value)
+                          }
+                          id="currentPassword"
+                          type={showPassword ? "text" : "password"}
+                          InputProps={{
+                            endAdornment: (
+                              <InputAdornment position="end">
+                                <IconButton
+                                  onClick={() =>
+                                    setShowPassword((show) => !show)
+                                  }
+                                >
+                                  {showPassword ? (
+                                    <VisibilityOff />
+                                  ) : (
+                                    <Visibility />
+                                  )}
+                                </IconButton>
+                              </InputAdornment>
+                            ),
+                          }}
+                          label="Current Password"
+                        />
+                        <FormHelperText sx={{ color: "red" }}>
+                          {errors.currentPassword}
+                        </FormHelperText>
+                      </FormControl>
+                    </>
+                  )}
+                </CardContent>
+                <CardActions>
+                  {!editMode ? (
+                    <Button variant="contained" onClick={() => setEditMode(true)}>
+                      Modify
+                    </Button>
+                  ) : (
+                    <>
+                      <Button variant="contained" type="submit" onClick={handleSubmit}>
+                        Save
                       </Button>
                       <Button
-                        className="cancel-btn"
+                        variant="contained"
                         onClick={handleCancel}
-                        variant="contined"
+                        color="error"
                       >
                         Cancel
                       </Button>
-                    </Item>
-                  </Grid>
-                </form>
-              </Box>
+                    </>
+                  )}
+                </CardActions>
+              </Card>
             </Item>
           </Grid>
           <Grid xs={4}>
@@ -255,20 +252,17 @@ const ProfileSettings = () => {
                 justifyContent: "center",
               }}
             >
-              <Stack
-                spacing={4}
-              >
+              <Stack spacing={4}>
                 <Avatar
                   src={file}
                   sx={{
-                    width: "300px  ",
+                    width: "300px",
                     height: "300px",
                     bgcolor: "#48184C",
                   }}
                 >
                   <FileUploader
                     onSelectFile={onSelectFileHandler}
-                    setFile={setFile}
                     icon={"upload"}
                   />
                 </Avatar>
@@ -287,32 +281,15 @@ const ProfileSettings = () => {
           </Grid>
         </Grid>
       </Box>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-        sx={{
-          "& .MuiPaper-root": {
-            borderColor: isCancelled ? "error.main" : "success.main",
-            borderWidth: 3,
-            borderStyle: "solid",
-            bgcolor: isCancelled ? "error.light" : "success.light",
-          },
-        }}
-      >
-        <DialogTitle
-          id="alert-dialog-title"
-          color={"white"}
-          sx={{ fontWeight: "bold" }}
-        >
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle sx={{ color: isCancelled ? "red" : "green" }}>
           {isCancelled ? "Changes cancelled!" : "Submitted successfully!"}
         </DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description" color={"white"}>
+          <DialogContentText>
             {isCancelled
               ? "The changes you have made are not saved"
-              : "The changes you have made are saved "}
+              : "The changes you have made are saved."}
           </DialogContentText>
         </DialogContent>
       </Dialog>
