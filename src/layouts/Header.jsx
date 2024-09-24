@@ -19,6 +19,8 @@ import { Divider, ListItemIcon, Stack } from "@mui/material";
 import { Logout, PersonAdd, Settings } from "@mui/icons-material";
 import {  useNavigate } from "react-router-dom";
 import AccountBoxOutlinedIcon from '@mui/icons-material/AccountBoxOutlined';
+import { getMe } from "../store/slices/authSlice";
+import { useDispatch, useSelector } from "react-redux";
 // const Search = styled("div")(({ theme }) => ({
 //   position: "relative",
 //   borderRadius: theme.shape.borderRadius,
@@ -61,7 +63,12 @@ import AccountBoxOutlinedIcon from '@mui/icons-material/AccountBoxOutlined';
 
 export default function Header({ isCollapsed, setIsCollapsed, setHeight}) {
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
+  const user = useSelector((store) => store.auth.me);
+console.log(user,"user")
+  React.useEffect(() => {
+    dispatch(getMe());
+  }, [dispatch]);
   
   const [profileAnchorEl, setProfileAnchorEl] = React.useState(null);
   const [messagesAnchorEl, setMessagesAnchorEl] = React.useState(null);
@@ -132,7 +139,7 @@ export default function Header({ isCollapsed, setIsCollapsed, setHeight}) {
       open={isProfileMenuOpen}
       onClose={handleProfileMenuClose}
     >
-      
+
       <MenuItem onClick={() => navigate("profile/settings")}>
         <ListItemIcon>
           <AccountBoxOutlinedIcon fontSize="small" />
@@ -332,6 +339,8 @@ export default function Header({ isCollapsed, setIsCollapsed, setHeight}) {
             >
               <AccountCircle />
             </IconButton>
+            <Box fontWeight="fontWeightBold" marginTop={1.5} marginLeft={1}>{user.userName}</Box>
+
           </Box>
           {/* <Box sx={{ display: { xs: "flex", md: "none" } }}>
             <IconButton
