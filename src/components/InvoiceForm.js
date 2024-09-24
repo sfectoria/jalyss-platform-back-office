@@ -19,9 +19,11 @@ import axios from "axios";
 import { ip } from "../constants/ip";
 
 const InvoiceForm = () => {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [currency, setCurrency] = useState("DT");
+  const [paymentType, setPaymentType] = useState("Cash");
+  const [paymentStatus, setPaymentStatus] = useState("Payed");
   const [currentDate, setCurrentDate] = useState("");
   const [invoiceNumber, setInvoiceNumber] = useState(1);
   const [dateOfIssue, setDateOfIssue] = useState("");
@@ -35,6 +37,7 @@ const InvoiceForm = () => {
   const [billFromAddress, setBillFromAddress] = useState("");
   const [notes, setNotes] = useState("");
   const [total, setTotal] = useState("0.00");
+  const [payedAmount, setPayedAmount] = useState(0);
   const [subTotal, setSubTotal] = useState(0.0);
   const [taxRate, setTaxRate] = useState("");
   const [taxAmount, setTaxAmount] = useState("0.00");
@@ -49,7 +52,7 @@ const InvoiceForm = () => {
   const [reqClient, setReqClient] = useState("");
   const [reqChannel, setReqChannel] = useState("");
   const [reqLine, setReqLine] = useState("");
-  const [reqDate, setReqDate] = useState('date');
+  const [reqDate, setReqDate] = useState("date");
   const param = useParams();
   console.log(param);
 
@@ -70,226 +73,235 @@ const InvoiceForm = () => {
   const handelInfo = () => {
     if (type === "BR") {
       setInvoiceTitle("Bon de Reception");
-      setReqName()
-      setReqLine()
+      setReqName();
+      setReqLine();
     } else if (type === "BS") {
       setInvoiceTitle("Bon de Sortie");
-      setReqName()
-      setReqLine()
+      setReqName();
+      setReqLine();
     } else if (type === "BT") {
       setInvoiceTitle("Bon de Transfer");
-      setReqName()
-      setReqLine()
+      setReqName();
+      setReqLine();
     } else if (type === "BL") {
       setInvoiceTitle("Bon de Livraison");
-      setReqName('salesDeliveryNote')
-      setReqLine('salesDeliveryNoteLine')
-      setReqChannel('saleChannelId')
-      setReqClient('idClient')
-      setReqDate('deliveryDate')
+      setReqName("salesDeliveryNote");
+      setReqLine("salesDeliveryNoteLine");
+      setReqChannel("saleChannelId");
+      setReqClient("idClient");
+      setReqDate("deliveryDate");
     } else if (type === "BLF") {
       setInvoiceTitle("Bon de Livraison/Facture");
-      setReqName('salesDeliveryInvoice')
-      setReqLine('salesDeliveryInvoicelines')
-      setReqChannel('salesChannelsId')
-      setReqClient('clientId')
-      setReqDate('deliveryDate')
+      setReqName("salesDeliveryInvoice");
+      setReqLine("salesDeliveryInvoicelines");
+      setReqChannel("salesChannelsId");
+      setReqClient("clientId");
+      setReqDate("deliveryDate");
     } else if (type === "F") {
       setInvoiceTitle("Facture");
-      setReqName('sales-invoices')
-      setReqLine('salesInvoiceLine')
-      setReqChannel('saleChannelId')
-      setReqClient('idClient')
+      setReqName("sales-invoices");
+      setReqLine("salesInvoiceLine");
+      setReqChannel("saleChannelId");
+      setReqClient("idClient");
     } else if (type === "BC") {
       setInvoiceTitle("Bon de Commande");
     } else if (type === "BRe") {
       setInvoiceTitle("Bon de Retour");
-      setReqName()
-      setReqLine()
+      setReqName();
+      setReqLine();
     } else if (type === "Ticket" || type === "Devis") {
       setInvoiceTitle(type);
-      setReqName()
-      setReqLine()
+      setReqName();
+      setReqLine();
     }
   };
-  
+
   const finishSale = async () => {
     try {
-      if(type === "BL" || type === "BLF" || type === "F" || type === "Ticket" || type === "Devis"){
-      const itemsWithIdArticle = items.map((e) => {
-        let { id, quantity, ...rest } = e;
-        const articleId = id;
-        return { articleId, quantity };
-      });
-      console.log(itemsWithIdArticle, "itemsWithIdArticle");
-      
-      const obj = {
-        exitNoteId: 0,
-        [reqClient]:billToId,
-        [reqChannel]: parseInt(sender),
-        [reqDate]:new Date(),
-        totalAmount:parseFloat(total),
-        [reqLine]: itemsWithIdArticle,
-      };
-      const response = await axios.post(
-        `${ip}/${reqName}/create`,
-        obj
-      );
-      console.log("Response:", response.data);
-      console.log(response.status)
-      
-    if (response && response.status === 201) {
-      setTimeout(() => navigate(-1), 1000); 
-    }
-      setItems([])
-    }
+      if (
+        type === "BL" ||
+        type === "BLF" ||
+        type === "F" ||
+        type === "Ticket" ||
+        type === "Devis"
+      ) {
+        const itemsWithIdArticle = items.map((e) => {
+          let { id, quantity, price, discount, ...rest } = e;
+          const articleId = id;
+          price = parseFloat(price);
+          discount = parseFloat(discount);
+          return { articleId, quantity, price, discount };
+        });
+        console.log(itemsWithIdArticle, "itemsWithIdArticle");
 
-      else if(type==="BC"){
-      const itemsWithIdArticle = items.map((e) => {
-        let { id, quantity, ...rest } = e;
-        const idArticle = id;
-        return { idArticle, quantity };
-      });
-      console.log(itemsWithIdArticle);
-      
-      const obj = {
-        idClient:billToId,
-        salesChannelsId: parseInt(sender),
-        status:'Pending',
-        date:new Date(),
-        orderDate:new Date(),
-        purchaseOrderLine: itemsWithIdArticle,
-      };
-      const response = await axios.post(
-        `${ip}/purchaseOrder/create`,
-        obj
-      );
+        const obj = {
+          exitNoteId: 0,
+          [reqClient]: billToId,
+          [reqChannel]: parseInt(sender),
+          [reqDate]: new Date(),
+          totalAmount: parseFloat(total),
+          payedAmount: payedAmount
+            ? parseFloat(payedAmount)
+            : parseFloat(total),
+          restedAmount: payedAmount
+            ? parseFloat(total) - parseFloat(payedAmount)
+            : 0,
+          tax: taxRate ? parseFloat(taxRate) : 0,
+          discount: discountAmount ? parseFloat(discountAmount) : 0,
+          paymentType: paymentType,
+          paymentStatus: paymentStatus,
+          [reqLine]: itemsWithIdArticle,
+        };
+        const response = await axios.post(`${ip}/${reqName}/create`, obj);
+        console.log("Response:", response.data);
+        console.log(response.status);
 
-      if (response && response.status === 201) {
-        setTimeout(() => navigate(-1), 1000); 
-      }
-      setItems([])
-    }
+        if (response && response.status === 201) {
+          setTimeout(() => navigate(-1), 1000);
+        }
+        setItems([]);
+      } else if (type === "BC") {
+        const itemsWithIdArticle = items.map((e) => {
+          let { id, quantity, ...rest } = e;
+          const idArticle = id;
+          return { idArticle, quantity };
+        });
+        console.log(itemsWithIdArticle);
 
-      else if(type === "BR"){
-      const itemsWithIdArticle = items.map((e) => {
-        console.log(e);
-        let { id, quantity,price, ...rest } = e;
-        const idArticle = id;
-        price=parseFloat(price)
-        quantity=parseInt(quantity)
-        return { idArticle, quantity ,price};
-      });
-      console.log(itemsWithIdArticle);
-      
-      const obj = {
+        const obj = {
+          idClient: billToId,
+          salesChannelsId: parseInt(sender),
+          status: "Pending",
+          date: new Date(),
+          orderDate: new Date(),
+          purchaseOrderLine: itemsWithIdArticle,
+        };
+        const response = await axios.post(`${ip}/purchaseOrder/create`, obj);
+
+        if (response && response.status === 201) {
+          setTimeout(() => navigate(-1), 1000);
+        }
+        setItems([]);
+      } else if (type === "BR") {
+        const itemsWithIdArticle = items.map((e) => {
+          console.log(e);
+          let { id, quantity, price, discount, ...rest } = e;
+          const idArticle = id;
+          price = parseFloat(price);
+          discount = parseFloat(discount);
+          quantity = parseInt(quantity);
+          return { idArticle, quantity, price, discount };
+        });
+        console.log(itemsWithIdArticle);
+
+        const obj = {
           typeReceipt: "achat",
           receiptDate: new Date(),
           idStock: parseInt(receiver),
-          totalAmount:parseFloat(total) ,
+          totalAmount: parseFloat(total),
+          payedAmount: payedAmount
+            ? parseFloat(payedAmount)
+            : parseFloat(total),
+          restedAmount: payedAmount
+            ? parseFloat(total) - parseFloat(payedAmount)
+            : 0,
+          tax: taxRate ? parseFloat(taxRate) : 0,
+          discount: discountAmount ? parseFloat(discountAmount) : 0,
+          paymentType: paymentType,
+          paymentStatus: paymentStatus,
           lines: itemsWithIdArticle,
-          numReceiptNote: 0
+          numReceiptNote: 0,
+        };
+        const response = await axios.post(`${ip}/receiptNote/create_rn`, obj);
+        if (response && response.status === 201) {
+          setTimeout(() => navigate(-1), 1000);
         }
-      const response = await axios.post(
-        `${ip}/receiptNote/create_rn`,
-        obj
-      );
-      if (response && response.status === 201) {
-        setTimeout(() => navigate(-1), 1000); 
+        console.log("Response:", response.data);
+        setItems([]);
+      } else if (type === "BT") {
+        const itemsWithIdArticle = items.map((e) => {
+          console.log(e);
+          let { id, quantity, ...rest } = e;
+          const idArticle = id;
+          quantity = parseInt(quantity);
+          return { idArticle, quantity };
+        });
+        console.log(itemsWithIdArticle);
+
+        const obj = {
+          from: parseInt(sender),
+          to: billToId,
+          date: new Date(),
+          idReceiptNote: 0,
+          idExitNote: 0,
+          lines: itemsWithIdArticle,
+        };
+        const response = await axios.post(`${ip}/transfer-note/createTN`, obj);
+        console.log("Response:", response.data);
+        setItems([]);
+      } else if (type === "BRe") {
+        const itemsWithIdArticle = items.map((e) => {
+          console.log(e);
+          let { id, quantity, ...rest } = e;
+          const idArticle = id;
+          quantity = parseInt(quantity);
+          return { idArticle, quantity };
+        });
+        console.log(itemsWithIdArticle);
+
+        const obj = {
+          returnDate: new Date(),
+          lines: itemsWithIdArticle,
+          idClient: billFromId,
+          idStock: parseInt(receiver),
+          receiptNoteId: 0,
+        };
+        const response = await axios.post(`${ip}/return-note/createRN`, obj);
+
+        if (response && response.status === 201) {
+          setTimeout(() => navigate(-1), 1000);
+        }
+        setItems([]);
       }
-      console.log("Response:", response.data);
-      setItems([])
-    }
-
-      else if(type === "BT"){
-      const itemsWithIdArticle = items.map((e) => {
-        console.log(e);
-        let { id, quantity,...rest } = e;
-        const idArticle = id;
-        quantity=parseInt(quantity)
-        return { idArticle, quantity };
-      });
-      console.log(itemsWithIdArticle);
-      
-      const obj = {
-        from: parseInt(sender),
-        to: billToId,
-        date: new Date(),
-        idReceiptNote: 0,
-        idExitNote: 0,
-        lines:itemsWithIdArticle
-        }
-      const response = await axios.post(
-        `${ip}/transfer-note/createTN`,
-        obj
-      );
-      console.log("Response:", response.data);
-      setItems([])
-    }
-    else if (type === "BRe") { 
-      const itemsWithIdArticle = items.map((e) => {
-        console.log(e);
-        let { id, quantity, ...rest } = e;
-        const idArticle = id;
-        quantity = parseInt(quantity);
-        return { idArticle, quantity };
-      });
-      console.log(itemsWithIdArticle);
-
-      const obj = {
-        returnDate: new Date(),
-        lines: itemsWithIdArticle,
-        idClient: billFromId,
-        idStock: parseInt(receiver),
-        receiptNoteId: 0
-      };
-      const response = await axios.post(
-        `${ip}/return-note/createRN`, 
-        obj
-      );
-
-if (response && response.status === 201) {
-      setTimeout(() => navigate(-1), 1000); 
-    }      setItems([]);
-    }
-
-
     } catch (error) {
       console.error("Error:", error);
-      reject (error);
     }
   };
-
 
   const handleAddEvent = (obj) => {
     const duplicate = items.find((e) => {
       return e.id === obj.id;
     });
     if (duplicate) {
+      let verify= 0
       const doubleQ = items.map((e) => {
-        if (e.id === obj.id) {
+        if (e.id === obj.id&&e.quantity<e.stockQuantity) {
           e.quantity = e.quantity + 1;
+          verify+=1
         }
         return e;
       });
-      setItems(items);
-      return doubleQ;
+      var hhh=JSON.stringify(verify)===JSON.stringify(doubleQ)
+      console.log(hhh,verify);
+      verify?(setShowSuAlert(true))
+      :(setShowErAlert(true), setMsgArticle("You've reached the maximum limit."))
+      setItems(doubleQ);
     } else {
       console.log(obj);
-      
+
       const newItem = {
         id: obj.id,
         name: obj.name,
         price: obj.price,
         barcode: "",
         quantity: 1,
-        publisher:obj.publisher,
-        author:obj.author,
-        stockQuantity:obj.quantity,
+        publisher: obj.publisher,
+        author: obj.author,
+        stockQuantity: obj.quantity,
         discount: 0,
       };
-      console.log(newItem,'tt');
-      
+      console.log(newItem, "tt");
+      setShowSuAlert(true);
       setItems([...items, newItem]);
     }
     handleCalculateTotal();
@@ -298,19 +310,17 @@ if (response && response.status === 201) {
   const handelBarcodeSu = (e) => {
     console.log(e);
 
-    handelShow()
+    handelShow();
     handleAddEvent(e);
-    setShowSuAlert(true);
+    // setShowSuAlert(true);
   };
 
   const handelBarcodeEr = (e) => {
     console.log(e);
-    handelShow()
-    setMsgArticle(e)
+    handelShow();
+    setMsgArticle(e);
     setShowErAlert(true);
-    
-  }
-  
+  };
 
   const handelNSearch = (event, value) => {
     handelAddItem(value);
@@ -318,7 +328,7 @@ if (response && response.status === 201) {
 
   const handelAddItem = (obj) => {
     setShowErAlert(false);
-    setShowSuAlert(true);
+    // setShowSuAlert(true);
     handleAddEvent(obj);
   };
   const handelSearchPerson = (event, type, rows) => {
@@ -365,8 +375,9 @@ if (response && response.status === 201) {
     console.log(name, value, id);
     const updatedItems = items.map((item) => {
       if (item.id == id) {
-        if(name==='quantity'&&value!=='') return { ...item, [name]: parseInt(value) };
-       else return { ...item, [name]: value };
+        if (name === "quantity" && value !== "")
+          return { ...item, [name]: parseInt(value) };
+        else return { ...item, [name]: value };
       }
       return item;
     });
@@ -378,7 +389,7 @@ if (response && response.status === 201) {
     setShowErAlert(false);
     setShowSuAlert(false);
   };
-  console.log(billTo,billToId, billFrom,billFromId);
+  console.log(billTo, billToId, billFrom, billFromId);
 
   const editField = (event) => {
     const { name, value } = event.target;
@@ -416,11 +427,15 @@ if (response && response.status === 201) {
       case "discountRate":
         setDiscountRate(value);
         break;
+      case "payedAmount":
+        setPayedAmount(value);
+        break;
       default:
         break;
     }
     handleCalculateTotal();
   };
+  console.log(payedAmount, total);
 
   const openModal = (event) => {
     event.preventDefault();
@@ -434,6 +449,9 @@ if (response && response.status === 201) {
 
   const handleCurrencyChange = (event) => {
     setCurrency(event.target.value);
+  };
+  const handlePTypeChange = (event) => {
+    setPaymentType(event.target.value);
   };
 
   return (
@@ -563,17 +581,6 @@ if (response && response.status === 201) {
                       setEmail={setBillFromEmail}
                       setAddress={setBillFromAddress}
                     />
-                    {/* <Form.Control
-                      placeholder={"Who is this invoice from?"}
-                      rows={3}
-                      value={billFrom}
-                      type="text"
-                      name="billFrom"
-                      className="my-2"
-                      onChange={editField}
-                      autoComplete="name"
-                      required
-                    /> */}
                     <Form.Control
                       placeholder={"Email address"}
                       value={billFromEmail}
@@ -617,7 +624,7 @@ if (response && response.status === 201) {
                 <div className="d-flex flex-row align-items-start justify-content-between">
                   <span className="fw-bold">Subtotal:</span>
                   <span>
-                    {subTotal||0}
+                    {subTotal || 0}
                     {currency}
                   </span>
                 </div>
@@ -668,34 +675,36 @@ if (response && response.status === 201) {
             <Button variant="primary" type="submit" className="d-block w-100">
               Review Invoice
             </Button>
-            {isOpen&&<InvoiceModal
-              showModal={isOpen}
-              closeModal={closeModal}
-              info={{
-                currentDate,
-                dateOfIssue,
-                invoiceNumber,
-                billTo,
-                billToEmail,
-                billToAddress,
-                billFrom,
-                billFromEmail,
-                billFromAddress,
-                notes,
-                total,
-                subTotal,
-                taxAmount,
-                discountAmount,
-              }}
-              itemsData={items}
-              currency={currency}
-              subTotal={subTotal}
-              taxAmount={taxAmount}
-              discountAmount={discountAmount}
-              total={total}
-              finishSale={finishSale}
-              mode='creation'
-            />}
+            {isOpen && (
+              <InvoiceModal
+                showModal={isOpen}
+                closeModal={closeModal}
+                info={{
+                  currentDate,
+                  dateOfIssue,
+                  invoiceNumber,
+                  billTo,
+                  billToEmail,
+                  billToAddress,
+                  billFrom,
+                  billFromEmail,
+                  billFromAddress,
+                  notes,
+                  total,
+                  subTotal,
+                  taxAmount,
+                  discountAmount,
+                }}
+                itemsData={items}
+                currency={currency}
+                subTotal={subTotal}
+                taxAmount={taxAmount}
+                discountAmount={discountAmount}
+                total={total}
+                finishSale={finishSale}
+                mode="creation"
+              />
+            )}
             <Form.Group className="mb-3">
               <Form.Label className="fw-bold">Currency:</Form.Label>
               <Form.Select
@@ -714,6 +723,107 @@ if (response && response.status === 201) {
                 <option value="₿">BTC (Bitcoin)</option>
               </Form.Select>
             </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label className="fw-bold">Payment:</Form.Label>
+              <Form.Select
+                onChange={handlePTypeChange}
+                className="btn btn-light my-1"
+                aria-label="Change Currency"
+              >
+                <option value="Cash">💰 Cash </option>
+                <option value="CreditCard">💳 Credit Card </option>
+                <option value="Checks">🧾 Checks </option>
+                <option value="BankTransfers">🏦 Bank Transfers </option>
+              </Form.Select>
+
+              <Form.Group className="my-3">
+                <div className="d-flex gap-3">
+                  {paymentStatus === "Payed" ? (
+                    <button
+                      type="button"
+                      class="btn btn-success"
+                      onClick={() => {
+                        setPaymentStatus("Payed");
+                      }}
+                    >
+                      Payed
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      class="btn btn-outline-success"
+                      onClick={() => {
+                        setPaymentStatus("Payed");
+                      }}
+                    >
+                      Payed
+                    </button>
+                  )}
+                  {paymentStatus === "PartiallyPayed" ? (
+                    <button
+                      type="button"
+                      class="btn btn-warning"
+                      onClick={() => {
+                        setPaymentStatus("PartiallyPayed");
+                      }}
+                    >
+                      Partially
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      class="btn btn-outline-warning"
+                      onClick={() => {
+                        setPaymentStatus("PartiallyPayed");
+                      }}
+                    >
+                      Partially
+                    </button>
+                  )}
+                  {paymentStatus === "NotPayed" ? (
+                    <button
+                      type="button"
+                      class="btn btn-danger"
+                      onClick={() => {
+                        setPaymentStatus("NotPayed");
+                      }}
+                    >
+                      Not Payed
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      class="btn btn-outline-danger"
+                      onClick={() => {
+                        setPaymentStatus("NotPayed");
+                      }}
+                    >
+                      Not Payed
+                    </button>
+                  )}
+                </div>
+              </Form.Group>
+            </Form.Group>
+            {paymentStatus === "PartiallyPayed" && (
+              <Form.Group className="my-3">
+                <Form.Label className="fw-bold">Payed Amount</Form.Label>
+                <InputGroup className="my-1 flex-nowrap">
+                  <Form.Control
+                    name="payedAmount"
+                    type="number"
+                    value={payedAmount}
+                    onChange={editField}
+                    className="bg-white border"
+                    placeholder="0.0"
+                    min="0.00"
+                    step="0.01"
+                  />
+                  <InputGroup.Text className="bg-light fw-bold text-secondary small">
+                    {currency}
+                  </InputGroup.Text>
+                </InputGroup>
+              </Form.Group>
+            )}
             <Form.Group className="my-3">
               <Form.Label className="fw-bold">Tax rate:</Form.Label>
               <InputGroup className="my-1 flex-nowrap">

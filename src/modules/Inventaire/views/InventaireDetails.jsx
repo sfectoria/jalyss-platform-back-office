@@ -97,7 +97,7 @@ export default function InventaireDetails() {
       },
     },
     { field: "quantity", headerName: "Quantity", width: 90 },
-    { field: "reelQuatity", headerName: "R-Quantity", width: 90 },
+    { field: "reelQuantity", headerName: "R-Quantity", width: 90 },
     {
       field: "author",
       headerName: "Author",

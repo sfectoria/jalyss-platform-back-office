@@ -98,6 +98,7 @@ const ItemRow = ({
         <PandMField
           id={item.id}
           quantity={item.quantity}
+          stockQuantity={item.stockQuantity}
           onItemizedItemEdit={onItemizedItemEdit}
         />
       </td>
