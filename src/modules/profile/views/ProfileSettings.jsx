@@ -193,6 +193,7 @@ const ProfileSettings = () => {
                       </Stack>
                     </>
                   ) : (
+                    <>
                     <TextField
                       margin="normal"
                       fullWidth
@@ -201,6 +202,35 @@ const ProfileSettings = () => {
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
                     />
+                                 <FormControl
+                        margin="normal"
+                        fullWidth
+                        required
+                        error={!!errors.currentPassword}
+                        variant="outlined"
+                      >
+                        <TextField
+                          required
+                          value={currentPassword}
+                          onChange={(event) => setCurrentPassword(event.target.value)}
+                          id="currentPassword"
+                          type={showPassword ? "text" : "password"}
+                          label="Current Password"
+                          InputProps={{
+                            endAdornment: (
+                              <InputAdornment position="end">
+                                <IconButton onClick={() => setShowPassword((show) => !show)}>
+                                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                                </IconButton>
+                              </InputAdornment>
+                            ),
+                          }}
+                        />
+                        <FormHelperText sx={{ color: "red" }}>
+                          {errors.currentPassword}
+                        </FormHelperText>
+                      </FormControl>
+                    </>
                   )}
                 </CardContent>
                 <CardActions>

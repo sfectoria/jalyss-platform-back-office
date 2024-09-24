@@ -36,7 +36,7 @@ export default function Router() {
     <BrowserRouter>
       {user ? (
         <Routes>
-          <Route path="/" key="main" element={<Main />}>
+          <Route path="/" key="main" element={<Main/>}>
             {DashboardRoutes()}
             {StockRoutes()}
             {InventaireRoutes()}
