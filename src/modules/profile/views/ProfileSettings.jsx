@@ -27,7 +27,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useDispatch, useSelector } from "react-redux";
-import { getMe, updateProfile, verifyPassword } from "../../../store/slices/authSlice.js"; // Assurez-vous d'importer verifyPassword
+import { getMe, updateProfile, verifyPassword } from "../../../store/slices/authSlice.js";
 
 const ProfileSettings = () => {
   const dispatch = useDispatch();
@@ -48,12 +48,12 @@ const ProfileSettings = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [file, setFile] = useState(null);
   const [fileName, setFileName] = useState("");
-
   const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [editMode, setEditMode] = useState(false);
+  const [editPasswordMode, setEditPasswordMode] = useState(false); // New state for password edit mode
   const [open, setOpen] = useState(false);
   const [isCancelled, setIsCancelled] = useState(false);
   const [errors, setErrors] = useState({});
@@ -65,7 +65,6 @@ const ProfileSettings = () => {
   useEffect(() => {
     if (user) {
       setUsername(user.userName || "");
-      setEmail(user.email || "");
     }
   }, [user]);
 
@@ -75,12 +74,13 @@ const ProfileSettings = () => {
 
   const resetForm = () => {
     setUsername(user?.userName || "");
-    setEmail(user?.email || "");
     setCurrentPassword("");
     setNewPassword("");
+    setConfirmPassword("");
     setFile(null);
     setErrors({});
     setEditMode(false);
+    setEditPasswordMode(false);
   };
 
   const handleSubmit = async (e) => {
@@ -96,14 +96,12 @@ const ProfileSettings = () => {
       const userId = user?.id;
   
       const isValidPassword = await dispatch(verifyPassword({ id: userId, password: currentPassword }));
-  console.log("test", isValidPassword)
       if (isValidPassword.payload === 'valid password') {
         dispatch(
           updateProfile({
             id: userId,
             body: {
               userName: username,
-              email,
             },
           })
         )
@@ -120,7 +118,45 @@ const ProfileSettings = () => {
       }
     }
   };
-  
+
+  const handlePasswordSubmit = async (e) => {
+    e.preventDefault();
+    const newErrors = {};
+
+    if (!currentPassword) {
+      newErrors.currentPassword = "Current password is required";
+    }
+    if (newPassword !== confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
+    }
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length === 0) {
+      const userId = user?.id;
+
+      const isValidPassword = await dispatch(verifyPassword({ id: userId, password: currentPassword }));
+      if (isValidPassword.payload === 'valid password') {
+        dispatch(
+          updateProfile({
+            id: userId,
+            body: {
+              password: newPassword,
+            },
+          })
+        )
+        .then(() => {
+          setIsCancelled(false);
+          setOpen(true);
+          resetForm();
+        })
+        .catch((err) => {
+          console.error("Error updating password:", err);
+        });
+      } else {
+        setErrors({ currentPassword: "Invalid password" });
+      }
+    }
+  };
 
   const handleCancel = () => {
     setIsCancelled(true);
@@ -141,6 +177,7 @@ const ProfileSettings = () => {
       <Box m={10}>
         <Grid container spacing={2}>
           <Grid xs={8}>
+            {/* Username Card */}
             <Item sx={{ padding: 5 }}>
               <Typography variant="h2" gutterBottom>
                 My Profile
@@ -154,31 +191,48 @@ const ProfileSettings = () => {
                         <Typography variant="h6">Username:</Typography>
                         <Chip label={username} color="primary" />
                       </Stack>
-                      <Typography variant="h6" sx={{ mt: 2 }}>
-                        Email: {email}
-                      </Typography>
-                      <Typography variant="h6" sx={{ mt: 2 }}>
-                        Current Password: ••••••••
-                      </Typography>
+                    </>
+                  ) : (
+                    <TextField
+                      margin="normal"
+                      fullWidth
+                      id="username"
+                      label="Username"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                    />
+                  )}
+                </CardContent>
+                <CardActions>
+                  {!editMode ? (
+                    <Button variant="contained" onClick={() => setEditMode(true)}>
+                      Modify
+                    </Button>
+                  ) : (
+                    <>
+                      <Button variant="contained" onClick={handleSubmit}>
+                        Save
+                      </Button>
+                      <Button variant="contained" color="error" onClick={handleCancel}>
+                        Cancel
+                      </Button>
+                    </>
+                  )}
+                </CardActions>
+              </Card>
+            </Item>
+
+            {/* Password Card */}
+            <Item sx={{ padding: 5, mt: 4 }}>
+              <Card variant="outlined">
+                <CardContent>
+                  {!editPasswordMode ? (
+                    <>
+                      <Typography variant="h6">Change Password</Typography>
+                      <Typography variant="body1">••••••••</Typography>
                     </>
                   ) : (
                     <>
-                      <TextField
-                        margin="normal"
-                        fullWidth
-                        id="username"
-                        label="Username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                      />
-                      <TextField
-                        margin="normal"
-                        fullWidth
-                        id="email"
-                        label="Email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                      />
                       <FormControl
                         margin="normal"
                         fullWidth
@@ -189,52 +243,59 @@ const ProfileSettings = () => {
                         <TextField
                           required
                           value={currentPassword}
-                          onChange={(event) =>
-                            setCurrentPassword(event.target.value)
-                          }
+                          onChange={(event) => setCurrentPassword(event.target.value)}
                           id="currentPassword"
                           type={showPassword ? "text" : "password"}
+                          label="Current Password"
                           InputProps={{
                             endAdornment: (
                               <InputAdornment position="end">
-                                <IconButton
-                                  onClick={() =>
-                                    setShowPassword((show) => !show)
-                                  }
-                                >
-                                  {showPassword ? (
-                                    <VisibilityOff />
-                                  ) : (
-                                    <Visibility />
-                                  )}
+                                <IconButton onClick={() => setShowPassword((show) => !show)}>
+                                  {showPassword ? <VisibilityOff /> : <Visibility />}
                                 </IconButton>
                               </InputAdornment>
                             ),
                           }}
-                          label="Current Password"
                         />
                         <FormHelperText sx={{ color: "red" }}>
                           {errors.currentPassword}
                         </FormHelperText>
                       </FormControl>
+                      <TextField
+                        margin="normal"
+                        fullWidth
+                        required
+                        type="password"
+                        label="New Password"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                      />
+                      <TextField
+                        margin="normal"
+                        fullWidth
+                        required
+                        type="password"
+                        label="Confirm New Password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                      />
+                      <FormHelperText sx={{ color: "red" }}>
+                        {errors.confirmPassword}
+                      </FormHelperText>
                     </>
                   )}
                 </CardContent>
                 <CardActions>
-                  {!editMode ? (
-                    <Button variant="contained" onClick={() => setEditMode(true)}>
-                      Modify
+                  {!editPasswordMode ? (
+                    <Button variant="contained" onClick={() => setEditPasswordMode(true)}>
+                      Change Password
                     </Button>
                   ) : (
                     <>
-                      <Button variant="contained" type="submit" onClick={handleSubmit}>
-                        Save
+                      <Button variant="contained" onClick={handlePasswordSubmit}>
+                        Save Password
                       </Button>
-                      <Button
-                        variant="contained"
-                        onClick={handleCancel}
-                        color="error"
-                      >
+                      <Button variant="contained" color="error" onClick={handleCancel}>
                         Cancel
                       </Button>
                     </>
@@ -244,35 +305,16 @@ const ProfileSettings = () => {
             </Item>
           </Grid>
           <Grid xs={4}>
-            <Item
-              sx={{
-                p: 5,
-                height: "100%",
-                display: "flex",
-                justifyContent: "center",
-              }}
-            >
+            <Item sx={{ p: 5, height: "100%", display: "flex", justifyContent: "center" }}>
               <Stack spacing={4}>
                 <Avatar
                   src={file}
-                  sx={{
-                    width: "300px",
-                    height: "300px",
-                    bgcolor: "#48184C",
-                  }}
+                  sx={{ width: "300px", height: "300px", bgcolor: "#48184C" }}
                 >
-                  <FileUploader
-                    onSelectFile={onSelectFileHandler}
-                    icon={"upload"}
-                  />
+                  <FileUploader onSelectFile={onSelectFileHandler} icon={"upload"} />
                 </Avatar>
                 <Item elevation={0}>
-                  <Typography
-                    variant="h6"
-                    color="initial"
-                    m={"3px"}
-                    sx={{ textAlign: "center" }}
-                  >
+                  <Typography variant="h6" sx={{ textAlign: "center" }}>
                     {username}
                   </Typography>
                 </Item>
