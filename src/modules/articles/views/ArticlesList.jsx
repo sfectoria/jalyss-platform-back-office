@@ -32,8 +32,8 @@ const getPageSizeFromUrl = () => {
 export default function ArticlesList() {
   const [rows, setRows] = useState([]);
   const [count, setCount] = useState(0);
-  // const [error, setError] = useState(false);
-  // const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(true);
   const location = useLocation();
   const [page, setPage] = useState(getPageFromUrl);
   const [pageSize, setPageSize] = useState(getPageSizeFromUrl());
