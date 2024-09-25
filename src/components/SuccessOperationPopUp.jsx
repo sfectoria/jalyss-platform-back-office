@@ -36,13 +36,13 @@ function SuccessOperationPopUp({}) {
             alignItems: 'center',
             justifyContent: 'center',
             padding: 2,
-            minWidth: 200, // Adjust this to your needs
+            minWidth: 200,
           }}
         >
           <img
             src={sale}
             alt="Placeholder"
-            style={{ marginTop: '2px' ,width:300}} // Add margin for spacing
+            style={{ marginTop: '2px' ,width:300}}
           />
         </Box>
   </Popover>

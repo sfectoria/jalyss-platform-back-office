@@ -120,6 +120,7 @@ const InvoiceForm = () => {
 
   const finishSale = async () => {
     try {
+      let saleStatus = false
       if (
         type === "BL" ||
         type === "BLF" ||
@@ -160,8 +161,10 @@ const InvoiceForm = () => {
 
         if (response && response.status === 201) {
           setTimeout(() => navigate(-1), 2500);
+          setItems([]);
+          saleStatus = true
         }
-        setItems([]);
+      
       } else if (type === "BC") {
         const itemsWithIdArticle = items.map((e) => {
           let { id, quantity, ...rest } = e;
@@ -182,8 +185,9 @@ const InvoiceForm = () => {
 
         if (response && response.status === 201) {
           setTimeout(() => navigate(-1), 2500);
+          setItems([]);
+          saleStatus = true
         }
-        setItems([]);
       } else if (type === "BR") {
         const itemsWithIdArticle = items.map((e) => {
           console.log(e);
@@ -217,9 +221,9 @@ const InvoiceForm = () => {
         const response = await axios.post(`${ip}/receiptNote/create_rn`, obj);
         if (response && response.status === 201) {
           setTimeout(() => navigate(-1), 2500);
+          setItems([]);
+          saleStatus = true
         }
-        console.log("Response:", response.data);
-        setItems([]);
       } else if (type === "BT") {
         const itemsWithIdArticle = items.map((e) => {
           console.log(e);
@@ -239,8 +243,12 @@ const InvoiceForm = () => {
           lines: itemsWithIdArticle,
         };
         const response = await axios.post(`${ip}/transfer-note/createTN`, obj);
-        console.log("Response:", response.data);
-        setItems([]);
+        if (response && response.status === 201) {
+          setTimeout(() => navigate(-1), 2500);
+          setItems([]);
+          saleStatus = true
+        }
+        
       } else if (type === "BRe") {
         const itemsWithIdArticle = items.map((e) => {
           console.log(e);
@@ -262,11 +270,13 @@ const InvoiceForm = () => {
 
         if (response && response.status === 201) {
           setTimeout(() => navigate(-1), 2500);
+          setItems([]);
+          saleStatus=true
         }
-        setItems([]);
       }
       closeModal()
-      setSuOp(true)
+      saleStatus&&setSuOp(true)
+      return saleStatus
     } catch (error) {
       console.error("Error:", error);
     }
