@@ -17,6 +17,7 @@ import PersonSearch from "./PersonSearch";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { ip } from "../constants/ip";
+import SuccessOperationPopUp from "./SuccessOperationPopUp";
 
 const InvoiceForm = () => {
   const navigate = useNavigate();
@@ -53,6 +54,7 @@ const InvoiceForm = () => {
   const [reqChannel, setReqChannel] = useState("");
   const [reqLine, setReqLine] = useState("");
   const [reqDate, setReqDate] = useState("date");
+  const [suOp,setSuOp]=useState(null)
   const param = useParams();
   console.log(param);
 
@@ -157,7 +159,7 @@ const InvoiceForm = () => {
         console.log(response.status);
 
         if (response && response.status === 201) {
-          setTimeout(() => navigate(-1), 1000);
+          setTimeout(() => navigate(-1), 2500);
         }
         setItems([]);
       } else if (type === "BC") {
@@ -179,7 +181,7 @@ const InvoiceForm = () => {
         const response = await axios.post(`${ip}/purchaseOrder/create`, obj);
 
         if (response && response.status === 201) {
-          setTimeout(() => navigate(-1), 1000);
+          setTimeout(() => navigate(-1), 2500);
         }
         setItems([]);
       } else if (type === "BR") {
@@ -214,7 +216,7 @@ const InvoiceForm = () => {
         };
         const response = await axios.post(`${ip}/receiptNote/create_rn`, obj);
         if (response && response.status === 201) {
-          setTimeout(() => navigate(-1), 1000);
+          setTimeout(() => navigate(-1), 2500);
         }
         console.log("Response:", response.data);
         setItems([]);
@@ -259,10 +261,12 @@ const InvoiceForm = () => {
         const response = await axios.post(`${ip}/return-note/createRN`, obj);
 
         if (response && response.status === 201) {
-          setTimeout(() => navigate(-1), 1000);
+          setTimeout(() => navigate(-1), 2500);
         }
         setItems([]);
       }
+      closeModal()
+      setSuOp(true)
     } catch (error) {
       console.error("Error:", error);
     }
@@ -275,7 +279,11 @@ const InvoiceForm = () => {
     if (duplicate) {
       let verify= 0
       const doubleQ = items.map((e) => {
-        if (e.id === obj.id&&e.quantity<e.stockQuantity) {
+        if (e.id === obj.id&&e.quantity<e.stockQuantity&&type!=='BR') {
+          e.quantity = e.quantity + 1;
+          verify+=1
+        }
+        else if (e.id === obj.id&&type==='BR'){
           e.quantity = e.quantity + 1;
           verify+=1
         }
@@ -300,7 +308,6 @@ const InvoiceForm = () => {
         stockQuantity: obj.quantity,
         discount: 0,
       };
-      console.log(newItem, "tt");
       setShowSuAlert(true);
       setItems([...items, newItem]);
     }
@@ -456,6 +463,7 @@ const InvoiceForm = () => {
 
   return (
     <Form onSubmit={openModal}>
+      {suOp&&<SuccessOperationPopUp open={true} />}
       {showSuAlert && (
         <AlertAdding
           showAlert={showSuAlert}

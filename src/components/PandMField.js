@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const PandMField = ({ onItemizedItemEdit, quantity,stockQuantity,id }) => {
+const PandMField = ({ onItemizedItemEdit, quantity,stockQuantity,id,type }) => {
 
   
   const triggerChange = (newValue) => {
@@ -10,8 +10,8 @@ const PandMField = ({ onItemizedItemEdit, quantity,stockQuantity,id }) => {
   };
 
   const handleIncrement = () => {
-    console.log(quantity);
-    if(stockQuantity>quantity){
+    console.log(quantity,type);
+    if(stockQuantity>quantity||type==='BR'){
     triggerChange(quantity + 1);
   }
   };
@@ -24,7 +24,7 @@ const PandMField = ({ onItemizedItemEdit, quantity,stockQuantity,id }) => {
 
   const handleChange = (e) => {
     console.log(e.target.value)
-     if(stockQuantity>=e.target.value){
+     if(stockQuantity>=e.target.value||type==='BR'){
       onItemizedItemEdit(e);
     }
   };
