@@ -98,7 +98,9 @@ const ItemRow = ({
         <PandMField
           id={item.id}
           quantity={item.quantity}
+          stockQuantity={item.stockQuantity}
           onItemizedItemEdit={onItemizedItemEdit}
+          type={type}
         />
       </td>
      { type !== "BT"&&<td style={{ minWidth: "140px", alignContent: "center" }}>

@@ -125,7 +125,7 @@ export default function NewInventaireTable() {
     const obj={
       inventoryId:param.idInv,
       quantity,
-      reelQuatity:reelQuantity,
+      reelQuantity:reelQuantity,
       articleId:id
     }
      const postInventoryLine=await axios.post(`${ip}/inventory/createLine`,obj)

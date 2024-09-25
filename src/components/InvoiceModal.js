@@ -237,9 +237,11 @@ const InvoiceModal = ({
   }
   const handleFinishSale = async () => {
     try {
-      await finishSale();  // Call the passed function
-      setSuccessAlert(true);  // Show success alert
-      setErrorAlert(false);   // Hide error alert
+      const saleStatus=await finishSale();  // Call the passed function
+      console.log(saleStatus);
+      if(!saleStatus) {setErrorAlert(true) 
+          setSuccessAlert(false)}
+
     } catch (error) {
       setErrorAlert(true);    // Show error alert
       setSuccessAlert(false); // Hide success alert
