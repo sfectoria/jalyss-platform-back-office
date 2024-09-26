@@ -1,220 +1,154 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, forwardRef, useImperativeHandle } from "react";
 import { Box, Typography } from "@mui/material";
 import ArticleCategory from "./ArticleCategorie";
-import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
+import TextField from "@mui/material/TextField";
+import Autocomplete from "@mui/material/Autocomplete";
 import axios from "axios";
 import { ip } from "../../../constants/ip";
+import { Button } from "react-bootstrap";
+import Alert from '@mui/material/Alert';
+import Stack from '@mui/material/Stack';
 
-export default function ArticleInfo() {
-  const [articlesNames,setArticlesNames]=useState([]);
-  const [articlesAuthors,setArticlesAuthors]=useState([]);
-  const [articlesPublishers,setArticlesPublishers]=useState([]);
-  const [articlesCategories,setArticlesCategories]=useState([]);
-  const [nameText,setNameText]=useState('');
-  const [authorText,setAuthorText]=useState('');
-  const [publisherText,setPublisherText]=useState('');
-  const [categoryText,setCategoryText]=useState('');
-  const [text,setText]=useState('');
-  const [refresh,setRefresh]=useState(false);
-  useEffect(()=>{
-    fetchArticleChoices()
-  },[refresh])
+const ArticleInfo = forwardRef(({ onSubmit }, ref) => {
+  const [articlesNames, setArticlesNames] = useState([]);
+  const [articlesAuthors, setArticlesAuthors] = useState([]);
+  const [articlesPublishers, setArticlesPublishers] = useState([]);
+  const [nameText, setNameText] = useState("");
+  const [authorText, setAuthorText] = useState("");
+  const [publisherText, setPublisherText] = useState("");
+  const [description, setDescription] = useState("");
+  const [barcode, setBarcode] = useState("");
+  const [refresh, setRefresh] = useState(false);
+  const [successAlert, setSuccessAlert] = useState(false);  
+  const [errorAlert, setErrorAlert] = useState(false);  
 
-  const fetchArticleChoices=async()=>{
-    let params={take:5}
-   if(nameText) params['text']=nameText
-    const response=await axios.get(`${ip}/articles/getAll`,{params})
-    console.log(response.data.data);
-    setArticlesNames(response.data.data.map(e=>e.title))
-    setArticlesAuthors(response.data.data.reduce((acc,e)=>{
-      if(e.articleByAuthor.length){
-        console.log(e.articleByAuthor[0]?.author.nameAr);
-        acc.push(e.articleByAuthor[0]?.author.nameAr)
+  useEffect(() => {
+    fetchArticleChoices();
+  }, [refresh]);
+
+  const fetchArticleChoices = async () => {
+    let params = { take: 5 };
+    if (nameText) params["text"] = nameText;
+    const response = await axios.get(`${ip}/articles/getAll`, { params });
+    setArticlesNames(response.data.data.map((e) => e.title));
+    setArticlesAuthors(
+      response.data.data.reduce((acc, e) => {
+        if (e.articleByAuthor.length) {
+          acc.push(e.articleByAuthor[0]?.author.nameAr);
+        }
+        return acc;
+      }, [])
+    );
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const newArticle = {
+        title: nameText,
+        code: barcode,
+        longDescriptionEn: description,
+        articleByAuthor: [{ nameAr: authorText }],
+        articleByPublishingHouse: [{ nameAr: publisherText }],
+      };
+      console.log("newArticle: ", newArticle);
+
+      const response = await axios.post(`${ip}/articles/create`, newArticle);
+      console.log("Article created:", response.data);
+      console.log("response: ", response.status);
+
+      // Check response status
+      if (response.status === 201) {
+        setSuccessAlert(true);
+        setErrorAlert(false);  
+      } else {
+        setErrorAlert(true);
+        setSuccessAlert(false);  
       }
-      return acc
-    },[]))
-   console.log(articlesAuthors);
-   
-  }
-  return <Box sx={{width:'100%'}}>
-    <Box sx={{display:'flex',justifyContent:'center',mb:6}}>
-            <Typography variant="h1" >
-            New Article
-        </Typography>
-        </Box>
-    <Box sx={{display:'flex',gap:2,mb:4}} >
-    <Autocomplete
-        id="free-solo-demo"
-        freeSolo
-        sx={{width:'55%'}}
-        options={articlesNames.map((option) => option)}
-        onInputChange={(e,value)=>{setNameText(value);
-          setRefresh(!refresh)
-        }}
-        renderInput={(params) => <TextField {...params} label="Title" required onChange={(e)=>{console.log(e.target.value);
-        }}/>}
-      />
-     <TextField
+      setRefresh(!refresh);
+    } catch (error) {
+      setErrorAlert(true);
+      setSuccessAlert(false);  
+      console.error("Error creating article:", error);
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+    submit: handleSubmit,
+  }));
+
+  return (
+    <Box sx={{ width: "100%" }}>
+      <Box sx={{ display: "flex", justifyContent: "center", mb: 6 }}>
+        <Typography variant="h1">New Article</Typography>
+      </Box>
+      <Box sx={{ display: "flex", gap: 2, mb: 4 }}>
+        <Autocomplete
+          id="free-solo-demo"
+          freeSolo
+          sx={{ width: "55%" }}
+          options={articlesNames ? articlesNames.map((option) => option) : []}
+          onInputChange={(e, value) => {
+            setNameText(value);
+            setRefresh(!refresh);
+          }}
+          renderInput={(params) => (
+            <TextField {...params} label="Title" required />
+          )}
+        />
+        <TextField
           required
           id="outlined-required"
           label="BarCode"
-          sx={{width:'40%'}}
-        />       
-    </Box>
-    <Box sx={{display:'flex',gap:2,mb:4}} >
-    <Autocomplete
-        id="free-solo-demo"
-        freeSolo
-        sx={{width:'47%'}}
-        options={articlesAuthors.map((option) => option)}
-        renderInput={(params) => <TextField {...params} label="Author" required />}
-      />
-      <Autocomplete
-        id="free-solo-demo"
-        freeSolo
-        sx={{width:'47%'}}
-        options={top100Films.map((option) => option.title)}
-        renderInput={(params) => <TextField {...params} label="Publisher" required />}
-      />    
-    </Box>
-    
-    <TextField
-          id="outlined-multiline-static"
-          label="Description"
-          multiline
-          rows={4}
-          sx={{width:'100%',mb:2}}
+          sx={{ width: "40%" }}
+          value={barcode}
+          onChange={(e) => setBarcode(e.target.value)}
         />
-  <ArticleCategory/>
-    </Box>;
-}
+      </Box>
+      <Box sx={{ display: "flex", gap: 2, mb: 4 }}>
+        <Autocomplete
+          id="free-solo-demo"
+          freeSolo
+          sx={{ width: "47%" }}
+          options={articlesAuthors.map((option) => option)}
+          onInputChange={(e, value) => setAuthorText(value)}
+          renderInput={(params) => (
+            <TextField {...params} label="Author" required />
+          )}
+        />
+        <TextField
+          required
+          id="outlined-required"
+          label="Publisher"
+          sx={{ width: "40%" }}
+          value={publisherText}
+          onChange={(e) => setPublisherText(e.target.value)}
+        />
+      </Box>
 
+      <TextField
+        id="outlined-multiline-static"
+        label="Description"
+        rows={4}
+        sx={{ width: "100%", mb: 2 }}
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+      />
+      <ArticleCategory />
 
+      <Stack sx={{ width: '100%' }} spacing={2}>
+        {successAlert && (
+          <Alert severity="success" onClose={() => setSuccessAlert(false)}>
+            Article created successfully!
+          </Alert>
+        )}
+        {errorAlert && (
+          <Alert severity="error" onClose={() => setErrorAlert(false)}>
+            Error creating article. Please try again.
+          </Alert>
+        )}
+      </Stack>
+    </Box>
+  );
+});
 
-const top100Films = [
-    { title: 'The Shawshank Redemption', year: 1994 },
-    { title: 'The Godfather', year: 1972 },
-    { title: 'The Godfather: Part II', year: 1974 },
-    { title: 'The Dark Knight', year: 2008 },
-    { title: '12 Angry Men', year: 1957 },
-    { title: "Schindler's List", year: 1993 },
-    { title: 'Pulp Fiction', year: 1994 },
-    {
-      title: 'The Lord of the Rings: The Return of the King',
-      year: 2003,
-    },
-    { title: 'The Good, the Bad and the Ugly', year: 1966 },
-    { title: 'Fight Club', year: 1999 },
-    {
-      title: 'The Lord of the Rings: The Fellowship of the Ring',
-      year: 2001,
-    },
-    {
-      title: 'Star Wars: Episode V - The Empire Strikes Back',
-      year: 1980,
-    },
-    { title: 'Forrest Gump', year: 1994 },
-    { title: 'Inception', year: 2010 },
-    {
-      title: 'The Lord of the Rings: The Two Towers',
-      year: 2002,
-    },
-    { title: "One Flew Over the Cuckoo's Nest", year: 1975 },
-    { title: 'Goodfellas', year: 1990 },
-    { title: 'The Matrix', year: 1999 },
-    { title: 'Seven Samurai', year: 1954 },
-    {
-      title: 'Star Wars: Episode IV - A New Hope',
-      year: 1977,
-    },
-    { title: 'City of God', year: 2002 },
-    { title: 'Se7en', year: 1995 },
-    { title: 'The Silence of the Lambs', year: 1991 },
-    { title: "It's a Wonderful Life", year: 1946 },
-    { title: 'Life Is Beautiful', year: 1997 },
-    { title: 'The Usual Suspects', year: 1995 },
-    { title: 'Léon: The Professional', year: 1994 },
-    { title: 'Spirited Away', year: 2001 },
-    { title: 'Saving Private Ryan', year: 1998 },
-    { title: 'Once Upon a Time in the West', year: 1968 },
-    { title: 'American History X', year: 1998 },
-    { title: 'Interstellar', year: 2014 },
-    { title: 'Casablanca', year: 1942 },
-    { title: 'City Lights', year: 1931 },
-    { title: 'Psycho', year: 1960 },
-    { title: 'The Green Mile', year: 1999 },
-    { title: 'The Intouchables', year: 2011 },
-    { title: 'Modern Times', year: 1936 },
-    { title: 'Raiders of the Lost Ark', year: 1981 },
-    { title: 'Rear Window', year: 1954 },
-    { title: 'The Pianist', year: 2002 },
-    { title: 'The Departed', year: 2006 },
-    { title: 'Terminator 2: Judgment Day', year: 1991 },
-    { title: 'Back to the Future', year: 1985 },
-    { title: 'Whiplash', year: 2014 },
-    { title: 'Gladiator', year: 2000 },
-    { title: 'Memento', year: 2000 },
-    { title: 'The Prestige', year: 2006 },
-    { title: 'The Lion King', year: 1994 },
-    { title: 'Apocalypse Now', year: 1979 },
-    { title: 'Alien', year: 1979 },
-    { title: 'Sunset Boulevard', year: 1950 },
-    {
-      title: 'Dr. Strangelove or: How I Learned to Stop Worrying and Love the Bomb',
-      year: 1964,
-    },
-    { title: 'The Great Dictator', year: 1940 },
-    { title: 'Cinema Paradiso', year: 1988 },
-    { title: 'The Lives of Others', year: 2006 },
-    { title: 'Grave of the Fireflies', year: 1988 },
-    { title: 'Paths of Glory', year: 1957 },
-    { title: 'Django Unchained', year: 2012 },
-    { title: 'The Shining', year: 1980 },
-    { title: 'WALL·E', year: 2008 },
-    { title: 'American Beauty', year: 1999 },
-    { title: 'The Dark Knight Rises', year: 2012 },
-    { title: 'Princess Mononoke', year: 1997 },
-    { title: 'Aliens', year: 1986 },
-    { title: 'Oldboy', year: 2003 },
-    { title: 'Once Upon a Time in America', year: 1984 },
-    { title: 'Witness for the Prosecution', year: 1957 },
-    { title: 'Das Boot', year: 1981 },
-    { title: 'Citizen Kane', year: 1941 },
-    { title: 'North by Northwest', year: 1959 },
-    { title: 'Vertigo', year: 1958 },
-    {
-      title: 'Star Wars: Episode VI - Return of the Jedi',
-      year: 1983,
-    },
-    { title: 'Reservoir Dogs', year: 1992 },
-    { title: 'Braveheart', year: 1995 },
-    { title: 'M', year: 1931 },
-    { title: 'Requiem for a Dream', year: 2000 },
-    { title: 'Amélie', year: 2001 },
-    { title: 'A Clockwork Orange', year: 1971 },
-    { title: 'Like Stars on Earth', year: 2007 },
-    { title: 'Taxi Driver', year: 1976 },
-    { title: 'Lawrence of Arabia', year: 1962 },
-    { title: 'Double Indemnity', year: 1944 },
-    {
-      title: 'Eternal Sunshine of the Spotless Mind',
-      year: 2004,
-    },
-    { title: 'Amadeus', year: 1984 },
-    { title: 'To Kill a Mockingbird', year: 1962 },
-    { title: 'Toy Story 3', year: 2010 },
-    { title: 'Logan', year: 2017 },
-    { title: 'Full Metal Jacket', year: 1987 },
-    { title: 'Dangal', year: 2016 },
-    { title: 'The Sting', year: 1973 },
-    { title: '2001: A Space Odyssey', year: 1968 },
-    { title: "Singin' in the Rain", year: 1952 },
-    { title: 'Toy Story', year: 1995 },
-    { title: 'Bicycle Thieves', year: 1948 },
-    { title: 'The Kid', year: 1921 },
-    { title: 'Inglourious Basterds', year: 2009 },
-    { title: 'Snatch', year: 2000 },
-    { title: '3 Idiots', year: 2009 },
-    { title: 'Monty Python and the Holy Grail', year: 1975 },
-  ];
+export default ArticleInfo;
