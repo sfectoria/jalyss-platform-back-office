@@ -28,7 +28,15 @@ export default function AddArticle() {
             <ArticleInfo onSubmit={handleArticleSubmit} ref={formRef} />
             <Box sx={{ display: "flex", justifyContent: "center", margin: 4 }}>
               <Button
-                sx={{ width: 250, height: 50 }}
+                sx={{
+                  width: 250,
+                  height: 50,
+                  backgroundColor: "#48184d",
+                  color: "white",
+                  "&:hover": {
+                    backgroundColor: "#48184d", // Optional hover effect
+                  },
+                }}
                 variant="outlined"
                 onClick={() => {
                   if (formRef.current) {
@@ -36,7 +44,7 @@ export default function AddArticle() {
                   }
                 }}
               >
-                Add
+                Add Article
               </Button>
             </Box>
           </Box>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, forwardRef, useImperativeHandle } from "react";
-import { Box, Typography } from "@mui/material";
+import { Avatar, Box, Typography } from "@mui/material";
 import ArticleCategory from "./ArticleCategorie";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
@@ -8,6 +8,7 @@ import { ip } from "../../../constants/ip";
 import { Button } from "react-bootstrap";
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
+import logo from '../../../assets/JALYSS.png';
 
 const ArticleInfo = forwardRef(({ onSubmit }, ref) => {
   const [articlesNames, setArticlesNames] = useState([]);
@@ -78,8 +79,13 @@ const ArticleInfo = forwardRef(({ onSubmit }, ref) => {
 
   return (
     <Box sx={{ width: "100%" }}>
+     {/* <Avatar
+          alt="Logo" 
+          src={logo} 
+          sx={{ width: 200, height: 150, marginRight: 100}} // Taille du logo et espacement
+        /> */}
       <Box sx={{ display: "flex", justifyContent: "center", mb: 6 }}>
-        <Typography variant="h1">New Article</Typography>
+        <Typography variant="h1" sx={{ mr: 2 }}>New Article</Typography>
       </Box>
       <Box sx={{ display: "flex", gap: 2, mb: 4 }}>
         <Autocomplete
