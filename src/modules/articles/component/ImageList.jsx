@@ -1,13 +1,16 @@
 import React ,{useState}from 'react';
 import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
-import { Box } from '@mui/material';
+import { Avatar, Box } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import logo from '../../../assets/new.png'
 import ImageUpload from './ImageUpload'
+
+
 
 export default function Imagelist() {
   const [itemData, setItemData] = useState( []);
-  const [displayedImage, setDisplayedImage] = useState('https://images.unsplash.com/photo-1522770179533-24471fcdba45');
+  const [displayedImage, setDisplayedImage] = useState(logo);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -30,6 +33,11 @@ export default function Imagelist() {
   };
   return (
       <Box>
+       {/* <Avatar
+          alt="Logo" 
+          src={logo} 
+          sx={{ width: 200, height: 150 , marginRight: 40}} // Taille du logo et espacement
+        /> */}
       <Box> 
       <img
             

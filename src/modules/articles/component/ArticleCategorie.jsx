@@ -3,6 +3,7 @@ import Chip from '@mui/material/Chip';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack';
+import axios from 'axios';
 
 export default function ArticleCategory() {
   return (
@@ -38,3 +39,5 @@ const bookCategories = [
     { id: 10, title: 'Children\'s' }
   ];
   
+  // const bookCategories = await axios.get('http://localhost:3000/catgoryArticle/all')
+  // console.log("categories: " , bookCategories.data)
