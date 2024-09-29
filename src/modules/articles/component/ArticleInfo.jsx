@@ -22,6 +22,7 @@ const ArticleInfo = forwardRef(({ onSubmit }, ref) => {
   const [refresh, setRefresh] = useState(false);
   const [successAlert, setSuccessAlert] = useState(false);  
   const [errorAlert, setErrorAlert] = useState(false);  
+  const [selectedCategories, setSelectedCategories] = useState([]); // État pour les catégories sélectionnées
 
   useEffect(() => {
     fetchArticleChoices();
@@ -50,6 +51,8 @@ const ArticleInfo = forwardRef(({ onSubmit }, ref) => {
         longDescriptionEn: description,
         articleByAuthor: [{ nameAr: authorText }],
         articleByPublishingHouse: [{ nameAr: publisherText }],
+        articleByCategory: selectedCategories.map((cat) =>  ({ name: cat.name })), // Ajoute les catégories sélectionnées
+
       };
       console.log("newArticle: ", newArticle);
 
@@ -139,7 +142,7 @@ const ArticleInfo = forwardRef(({ onSubmit }, ref) => {
         value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
-      <ArticleCategory />
+      <ArticleCategory onCategoryChange={setSelectedCategories}/>
 
       <Stack sx={{ width: '100%' }} spacing={2}>
         {successAlert && (

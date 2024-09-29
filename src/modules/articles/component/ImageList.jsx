@@ -10,7 +10,7 @@ import ImageUpload from './ImageUpload'
 
 export default function Imagelist() {
   const [itemData, setItemData] = useState( []);
-  const [displayedImage, setDisplayedImage] = useState(logo);
+  const [displayedImage, setDisplayedImage] = useState('https://img.freepik.com/vecteurs-premium/concept-conception-moderne-conception-sans-image-trouvee_637684-247.jpg?w=740');
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
