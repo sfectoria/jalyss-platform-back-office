@@ -65,8 +65,6 @@ export default function Imagelist() {
       ))}
       {itemData.length<4&&   <ImageUpload handleFileChange={handleFileChange}/>}
     </ImageList>
- 
-
     </Box>
   );
 }
