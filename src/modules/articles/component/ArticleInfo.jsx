@@ -9,6 +9,7 @@ import { Button } from "react-bootstrap";
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
 import logo from '../../../assets/JALYSS.png';
+import { useNavigate } from "react-router-dom";
 
 const ArticleInfo = forwardRef(({ onSubmit }, ref) => {
   const [articlesNames, setArticlesNames] = useState([]);
@@ -42,6 +43,7 @@ const ArticleInfo = forwardRef(({ onSubmit }, ref) => {
       }, [])
     );
   };
+  const navigate = useNavigate();
 
   const handleSubmit = async () => {
     try {
@@ -60,10 +62,11 @@ const ArticleInfo = forwardRef(({ onSubmit }, ref) => {
       console.log("Article created:", response.data);
       console.log("response: ", response.status);
 
-      // Check response status
       if (response.status === 201) {
         setSuccessAlert(true);
         setErrorAlert(false);  
+       setTimeout(() => navigate("/articles"), 2500);
+
       } else {
         setErrorAlert(true);
         setSuccessAlert(false);  
