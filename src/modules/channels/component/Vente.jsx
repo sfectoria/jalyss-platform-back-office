@@ -68,14 +68,18 @@ export default function Vente() {
     });
     if (response.data.data.length) {
       const result = response.data.data.map((e) => {
+        e.type=[]
         if (e.salesDeliveryInvoice.length) {
-          e.type = "BLF";
+          e.type.push("BLF")
         }
         if (e.salesDeliveryNote.length) {
-          e.type = "BL";
+          e.type.push("BL")
         }
         if (e.salesInvoice.length) {
-          e.type = "F";
+          e.type.push("F")
+        }
+        if (e.salesReceipt.length){
+         e.type.push("Ticket")
         }
         return e;
       });
@@ -136,12 +140,15 @@ export default function Vente() {
       width: 270,
       renderCell: (params) => {
         let client = {};
-        if (params.row.type === "BL") {
+        if (params.row.type.includes("BL")) {
           client = params.row.salesDeliveryNote[0].client;
-        } else if (params.row.type === "BLF") {
+        } else if (params.row.type.includes("BLF")) {
           client = params.row.salesDeliveryInvoice[0].client;
-        } else if (params.row.type === "F") {
+        } else if (params.row.type.includes("F")) {
           client = params.row.salesInvoice[0].client;
+        }
+        else if (params.row.type.includes("Ticket")) {
+          client = params.row.salesReceipt[0].client;
         }
         return <MouseOverPopover name={client} />;
       },
@@ -151,7 +158,7 @@ export default function Vente() {
       headerName: "BL",
       width: 50,
       renderCell: (params) =>
-        params.row.type === "BL" ? (
+        params.row.type.includes("BL") ? (
           <DoneIcon color="success" />
         ) : (
           <ClearIcon color="error" />
@@ -162,7 +169,7 @@ export default function Vente() {
       headerName: "BL/F",
       width: 50,
       renderCell: (params) =>
-        params.row.type === "BLF" ? (
+        params.row.type.includes("BLF") ? (
           <DoneIcon color="success" />
         ) : (
           <ClearIcon color="error" />
@@ -173,7 +180,7 @@ export default function Vente() {
       headerName: "F",
       width: 50,
       renderCell: (params) =>
-        params.row.type === "F" ? (
+        params.row.type.includes("F") ? (
           <DoneIcon color="success" />
         ) : (
           <ClearIcon color="error" />
@@ -184,7 +191,7 @@ export default function Vente() {
       headerName: "Ticket",
       width: 50,
       renderCell: (params) =>
-        params.row.ticket ? (
+        params.row.type.includes('Ticket') ? (
           <DoneIcon color="success" />
         ) : (
           <ClearIcon color="error" />
@@ -194,7 +201,9 @@ export default function Vente() {
       field: "payed",
       headerName: "Payed/Not",
       width: 90,
-      renderCell: (params) => <div style={{ color: "green" }}>Payed</div>,
+      renderCell: (params) => {
+        
+     return <div style={{ color: "green" }}>{params.row.paymentStatus}</div>}
     },
     { field: "totalAmount", headerName: "Total Amount", width: 100 },
     {
