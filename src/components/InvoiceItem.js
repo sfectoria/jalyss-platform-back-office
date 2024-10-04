@@ -116,6 +116,7 @@ const ItemRow = ({
               placeholder="0.0"
               min="0.00"
               step="0.01"
+              required
             />
             <InputGroup.Text className="bg-light fw-bold text-secondary small">
               DT

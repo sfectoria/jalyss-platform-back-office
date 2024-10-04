@@ -77,7 +77,6 @@ const InvoiceForm = () => {
       setInvoiceTitle("Bon de Reception");
     } else if (type === "BS") {
       setInvoiceTitle("Bon de Sortie");
-      setReqName(exit);
       setReqLine();
     } else if (type === "BT") {
       setInvoiceTitle("Bon de Transfer");
@@ -605,17 +604,6 @@ const InvoiceForm = () => {
                       setEmail={setBillToEmail}
                       setAddress={setBillToAddress}
                     />
-                    {/* <Form.Control
-                  placeholder={"Who is this invoice to?"}
-                  rows={3}
-                  value={billTo}
-                  type="text"
-                  name="billTo"
-                  className="my-2"
-                  onChange={editField}
-                  autoComplete="name"
-                  required
-                />  */}
 
                     <Form.Control
                       placeholder={"Email address"}
