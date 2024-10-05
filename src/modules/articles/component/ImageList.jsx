@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
-import { Box, Button } from '@mui/material';
+import { Box, Button, IconButton } from '@mui/material';
 import axios from 'axios';
-import { FileUpload } from 'primereact/fileupload';
+import CancelIcon from '@mui/icons-material/Cancel'; // Nouvelle icône
+import ImageUpload from './ImageUpload'
 
 export default function Imagelist() {
   const [itemData, setItemData] = useState(null); // Store only one image
@@ -21,7 +22,7 @@ export default function Imagelist() {
 
 
   const handleFileChange = (event) => {
-    const selectedFile = event.files[0]; 
+    const selectedFile = event.target.files[0]; 
     if (selectedFile) {
       setFile(selectedFile);
       console.log("file",selectedFile)
@@ -41,22 +42,39 @@ export default function Imagelist() {
     setItemData(null);
     setDisplayedImage('https://img.freepik.com/vecteurs-premium/concept-conception-moderne-conception-sans-image-trouvee_637684-247.jpg?w=740');
     setFile(null);
-    localStorage.removeItem('uploadedFile'); // Remove from localStorage
+    localStorage.removeItem('uploadedFile'); 
   };
 
   return (
     <Box>
-      <Box>
-        <img
+      <Box sx={{ position: 'relative', display: 'inline-block' }}>
+      <img
           src={displayedImage} // Display the selected/uploaded image
           alt="Displayed"
           loading="lazy"
           width={500}
           height={500}
         />
+           {itemData && (
+          <IconButton 
+            sx={{ 
+              position: 'absolute', 
+              top: 8, 
+              right: 8, 
+              bgcolor: 'red', // Changer le fond en rouge
+              color: 'white', // Couleur du "X"
+              '&:hover': {
+                bgcolor: 'darkred' // Couleur du fond au hover
+              }
+            }} 
+            onClick={handleRemoveImage}
+          >
+            <CancelIcon />
+          </IconButton>
+        )}
       </Box>
       <ImageList sx={{ width: 500, mt: 2 }} cols={4} gap={10}>
-        {itemData && (
+        {/* {itemData && (
           <ImageListItem key={itemData.img}>
             <Box sx={{ width: 120, height: 120 }}>
               <img
@@ -68,19 +86,13 @@ export default function Imagelist() {
               />
             </Box>
           </ImageListItem>
-        )}
+        )} */}
         {!itemData && (
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <FileUpload mode="basic" onSelect={handleFileChange} /> {/* onSelect instead of onChange */}
+          <ImageUpload handleFileChange={handleFileChange} />
           </Box>
         )}
       </ImageList>
-      
-      {itemData && (
-        <Button variant="contained" color="error" onClick={handleRemoveImage} sx={{ mt: 2 }}>
-          Remove Image
-        </Button>
-      )}
     </Box>
   );
 }

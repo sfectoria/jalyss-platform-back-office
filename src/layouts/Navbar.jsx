@@ -8,7 +8,7 @@ const Navbar = ({ isCollapsed }) => {
 
   // Fonction pour vérifier si l'un des enfants est actif
   const isChildActive = (children) => {
-    return children.some((child) => location.pathname === child.link);
+    return children.some((child) => location.pathname.includes (child.link));
   };
 
   return (
