@@ -50,11 +50,11 @@ const InvoiceForm = () => {
   const [msgArticle, setMsgArticle] = useState("");
   const [invoiceTitle, setInvoiceTitle] = useState("");
   const [reqName, setReqName] = useState("");
-  const [reqClient, setReqClient] = useState("");
-  const [reqChannel, setReqChannel] = useState("");
+  const [reqClient, setReqClient] = useState("idClient");
+  const [reqChannel, setReqChannel] = useState("salesChannelId");
   const [reqLine, setReqLine] = useState("");
   const [reqDate, setReqDate] = useState("date");
-  const [suOp,setSuOp]=useState(null)
+  const [suOp, setSuOp] = useState(null);
   const param = useParams();
   console.log(param);
 
@@ -72,14 +72,11 @@ const InvoiceForm = () => {
     setItems(updatedItems);
     handleCalculateTotal();
   };
-  const handelInfo = () => {
+  const handelInfo = (type) => {
     if (type === "BR") {
       setInvoiceTitle("Bon de Reception");
-      setReqName();
-      setReqLine();
     } else if (type === "BS") {
       setInvoiceTitle("Bon de Sortie");
-      setReqName();
       setReqLine();
     } else if (type === "BT") {
       setInvoiceTitle("Bon de Transfer");
@@ -89,8 +86,6 @@ const InvoiceForm = () => {
       setInvoiceTitle("Bon de Livraison");
       setReqName("salesDeliveryNote");
       setReqLine("salesDeliveryNoteLine");
-      setReqChannel("saleChannelId");
-      setReqClient("idClient");
       setReqDate("deliveryDate");
     } else if (type === "BLF") {
       setInvoiceTitle("Bon de Livraison/Facture");
@@ -103,30 +98,31 @@ const InvoiceForm = () => {
       setInvoiceTitle("Facture");
       setReqName("sales-invoices");
       setReqLine("salesInvoiceLine");
-      setReqChannel("saleChannelId");
-      setReqClient("idClient");
+    } else if (type === "Ticket") {
+      setInvoiceTitle("Ticket");
+      setReqName("sales-receipt");
+      setReqLine("salesReceiptLine");
+      setReqChannel("salesChannelId");
+      setReqDate("deliveryDate");
     } else if (type === "BC") {
       setInvoiceTitle("Bon de Commande");
     } else if (type === "BRe") {
       setInvoiceTitle("Bon de Retour");
       setReqName();
       setReqLine();
-    } else if (type === "Ticket" || type === "Devis") {
-      setInvoiceTitle(type);
-      setReqName();
-      setReqLine();
+    } else if (type === "Devis") {
+      setInvoiceTitle("Devis");
     }
   };
 
   const finishSale = async () => {
     try {
-      let saleStatus = false
+      let saleStatus = false;
       if (
         type === "BL" ||
         type === "BLF" ||
         type === "F" ||
-        type === "Ticket" ||
-        type === "Devis"
+        type === "Ticket"
       ) {
         const itemsWithIdArticle = items.map((e) => {
           let { id, quantity, price, discount, ...rest } = e;
@@ -155,6 +151,8 @@ const InvoiceForm = () => {
           paymentStatus: paymentStatus,
           [reqLine]: itemsWithIdArticle,
         };
+        console.log(obj);
+
         const response = await axios.post(`${ip}/${reqName}/create`, obj);
         console.log("Response:", response.data);
         console.log(response.status);
@@ -162,9 +160,46 @@ const InvoiceForm = () => {
         if (response && response.status === 201) {
           setTimeout(() => navigate(-1), 2500);
           setItems([]);
-          saleStatus = true
+          saleStatus = true;
         }
-      
+      }
+      else if (type === "BS") {
+        const itemsWithIdArticle = items.map((e) => {
+          let { id, quantity, price, discount, ...rest } = e;
+          const articleId = id;
+          price = parseFloat(price);
+          discount = parseFloat(discount);
+          return { articleId, quantity, price, discount };
+        });
+        console.log(itemsWithIdArticle, "itemsWithIdArticle");
+
+        const obj = {
+          numExitNote:0,
+          // idClient: billToId,
+          stockId: parseInt(sender),
+          exitDate: new Date(),
+          totalAmount: parseFloat(total),
+          payedAmount: payedAmount
+            ? parseFloat(payedAmount)
+            : parseFloat(total),
+          restedAmount: payedAmount
+            ? parseFloat(total) - parseFloat(payedAmount)
+            : 0,
+          tax: taxRate ? parseFloat(taxRate) : 0,
+          discount: discountAmount ? parseFloat(discountAmount) : 0,
+          paymentType: paymentType,
+          paymentStatus: paymentStatus,
+          lines: itemsWithIdArticle,
+        };
+
+        const response = await axios.post(`${ip}/exitNote/create_exitNote`, obj);
+        console.log("Response:", response.data);
+        console.log(response.status);
+        if (response && response.status === 201) {
+          setTimeout(() => navigate(-1), 2500);
+          setItems([]);
+          saleStatus = true;
+        }
       } else if (type === "BC") {
         const itemsWithIdArticle = items.map((e) => {
           let { id, quantity, ...rest } = e;
@@ -186,7 +221,33 @@ const InvoiceForm = () => {
         if (response && response.status === 201) {
           setTimeout(() => navigate(-1), 2500);
           setItems([]);
-          saleStatus = true
+          saleStatus = true;
+        }
+      } else if (type === "Devis") {
+        const itemsWithIdArticle = items.map((e) => {
+          let { id, quantity, discount, price, ...rest } = e;
+          const idArticle = id;
+          price = parseFloat(price);
+          discount = parseFloat(discount);
+          return { idArticle, quantity, price, discount };
+        });
+        console.log(itemsWithIdArticle);
+
+        const obj = {
+          idClient: billToId,
+          salesChannelId: parseInt(sender),
+          date: new Date(),
+          totalAmount: parseFloat(total),
+          tax: taxRate ? parseFloat(taxRate) : 0,
+          discount: discountAmount ? parseFloat(discountAmount) : 0,
+          estimateLine: itemsWithIdArticle,
+        };
+        const response = await axios.post(`${ip}/estimate/create`, obj);
+
+        if (response && response.status === 201) {
+          setTimeout(() => navigate(-1), 2500);
+          setItems([]);
+          saleStatus = true;
         }
       } else if (type === "BR") {
         const itemsWithIdArticle = items.map((e) => {
@@ -222,7 +283,7 @@ const InvoiceForm = () => {
         if (response && response.status === 201) {
           setTimeout(() => navigate(-1), 2500);
           setItems([]);
-          saleStatus = true
+          saleStatus = true;
         }
       } else if (type === "BT") {
         const itemsWithIdArticle = items.map((e) => {
@@ -246,9 +307,8 @@ const InvoiceForm = () => {
         if (response && response.status === 201) {
           setTimeout(() => navigate(-1), 2500);
           setItems([]);
-          saleStatus = true
+          saleStatus = true;
         }
-        
       } else if (type === "BRe") {
         const itemsWithIdArticle = items.map((e) => {
           console.log(e);
@@ -271,12 +331,12 @@ const InvoiceForm = () => {
         if (response && response.status === 201) {
           setTimeout(() => navigate(-1), 2500);
           setItems([]);
-          saleStatus=true
+          saleStatus = true;
         }
       }
-      closeModal()
-      saleStatus&&setSuOp(true)
-      return saleStatus
+      closeModal();
+      saleStatus && setSuOp(true);
+      return saleStatus;
     } catch (error) {
       console.error("Error:", error);
     }
@@ -287,22 +347,23 @@ const InvoiceForm = () => {
       return e.id === obj.id;
     });
     if (duplicate) {
-      let verify= 0
+      let verify = 0;
       const doubleQ = items.map((e) => {
-        if (e.id === obj.id&&e.quantity<e.stockQuantity&&type!=='BR') {
+        if (e.id === obj.id && e.quantity < e.stockQuantity && type !== "BR") {
           e.quantity = e.quantity + 1;
-          verify+=1
-        }
-        else if (e.id === obj.id&&type==='BR'){
+          verify += 1;
+        } else if (e.id === obj.id && type === "BR") {
           e.quantity = e.quantity + 1;
-          verify+=1
+          verify += 1;
         }
         return e;
       });
-      var hhh=JSON.stringify(verify)===JSON.stringify(doubleQ)
-      console.log(hhh,verify);
-      verify?(setShowSuAlert(true))
-      :(setShowErAlert(true), setMsgArticle("You've reached the maximum limit."))
+      var hhh = JSON.stringify(verify) === JSON.stringify(doubleQ);
+      console.log(hhh, verify);
+      verify
+        ? setShowSuAlert(true)
+        : (setShowErAlert(true),
+          setMsgArticle("You've reached the maximum limit."));
       setItems(doubleQ);
     } else {
       console.log(obj);
@@ -473,7 +534,7 @@ const InvoiceForm = () => {
 
   return (
     <Form onSubmit={openModal}>
-      {suOp&&<SuccessOperationPopUp open={true} />}
+      {suOp && <SuccessOperationPopUp open={true} />}
       {showSuAlert && (
         <AlertAdding
           showAlert={showSuAlert}
@@ -543,17 +604,6 @@ const InvoiceForm = () => {
                       setEmail={setBillToEmail}
                       setAddress={setBillToAddress}
                     />
-                    {/* <Form.Control
-                  placeholder={"Who is this invoice to?"}
-                  rows={3}
-                  value={billTo}
-                  type="text"
-                  name="billTo"
-                  className="my-2"
-                  onChange={editField}
-                  autoComplete="name"
-                  required
-                />  */}
 
                     <Form.Control
                       placeholder={"Email address"}
