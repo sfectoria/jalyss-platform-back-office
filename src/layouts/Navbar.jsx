@@ -28,6 +28,9 @@ const Navbar = ({ isCollapsed }) => {
               // Changer la couleur du texte du sous-menu si l'un de ses enfants est actif
               style={{
                 color: isChildActive(element.children) ? "#800080" : "inherit", // Mauve si un enfant est actif
+                textDecoration: isChildActive(element.children) ? "underline" : "none", // Souligné si actif
+                textUnderlineOffset: isChildActive(element.children) ? "3px" : "0px", // Ajouter de l'espace sous la ligne
+
               }}
             >
               {element.children.map((el, index) => (
@@ -35,7 +38,6 @@ const Navbar = ({ isCollapsed }) => {
                   icon={el.icon}
                   key={index}
                   component={<Link to={el.link} />}
-                  // Appliquer des styles si l'URL actuelle correspond
                   style={{
                     backgroundColor:
                       location.pathname === el.link ? "#800080" : "inherit", // Couleur mauve si actif
@@ -52,7 +54,6 @@ const Navbar = ({ isCollapsed }) => {
               component={<Link to={element.link} />}
               key={element.title}
               icon={element.icon}
-              // Appliquer des styles si l'URL actuelle correspond
               style={{
                 backgroundColor:
                   location.pathname === element.link ? "#800080" : "inherit", // Couleur mauve si actif
