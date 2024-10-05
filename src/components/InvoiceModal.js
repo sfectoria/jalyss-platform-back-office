@@ -27,7 +27,8 @@ const InvoiceModal = ({
   discountAmount,
   finishSale,
   mode,
-  type
+  type,
+  invoiceTitle
 }) => {
   const invoiceCaptureRef = useRef(null);
   const [items,setItems]=useState([])
@@ -64,6 +65,7 @@ const InvoiceModal = ({
       })
       setItems(itemsData)
       setAmount(subTotal)
+      setTitle(invoiceTitle)
       console.log(billTo,billFrom);
       
     }
@@ -237,14 +239,14 @@ const InvoiceModal = ({
   }
   const handleFinishSale = async () => {
     try {
-      const saleStatus=await finishSale();  // Call the passed function
+      const saleStatus=await finishSale();  
       console.log(saleStatus);
       if(!saleStatus) {setErrorAlert(true) 
           setSuccessAlert(false)}
 
     } catch (error) {
-      setErrorAlert(true);    // Show error alert
-      setSuccessAlert(false); // Hide success alert
+      setErrorAlert(true);   
+      setSuccessAlert(false); 
       console.error("Error:", error);
     }
   };
