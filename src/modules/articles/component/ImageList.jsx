@@ -1,70 +1,86 @@
-import React ,{useState}from 'react';
+import React, { useEffect, useState } from 'react';
 import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
-import { Avatar, Box } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import logo from '../../../assets/new.png'
-import ImageUpload from './ImageUpload'
-
-
+import { Box, Button } from '@mui/material';
+import axios from 'axios';
+import { FileUpload } from 'primereact/fileupload';
 
 export default function Imagelist() {
-  const [itemData, setItemData] = useState( []);
+  const [itemData, setItemData] = useState(null); // Store only one image
   const [displayedImage, setDisplayedImage] = useState('https://img.freepik.com/vecteurs-premium/concept-conception-moderne-conception-sans-image-trouvee_637684-247.jpg?w=740');
+  const [file, setFile] = useState(null);
+
+
+  useEffect(() => {
+    const storedFile = localStorage.getItem('uploadedFile');
+    if (storedFile) {
+      setDisplayedImage(storedFile); // nitfa9dou el localStorage ken fih image or not first
+      setItemData({ img: storedFile, title: 'Uploaded Image' }); 
+    }
+  }, []);
+
 
   const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
+    const selectedFile = event.files[0]; 
+    if (selectedFile) {
+      setFile(selectedFile);
+      console.log("file",selectedFile)
       const reader = new FileReader();
-      reader.onload = (e,i) => {
-        const obj={
-          img:e.target.result ,
-          title: i,
-        }
-        setItemData([...itemData,obj]);
-        console.log(itemData);
+      reader.onload = (e) => {
+        const base64String = e.target.result; //n7awlou lil string 9bal
+        console.log("str",base64String)
+        localStorage.setItem('uploadedFile', base64String); 
+        setItemData({ img: base64String, title: selectedFile.name }); 
+        setDisplayedImage(base64String); 
       };
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(selectedFile); // Read file as URL
     }
   };
 
-  const handleImageHover = (imgSrc) => {
-    setDisplayedImage(imgSrc);
+  const handleRemoveImage = () => {
+    setItemData(null);
+    setDisplayedImage('https://img.freepik.com/vecteurs-premium/concept-conception-moderne-conception-sans-image-trouvee_637684-247.jpg?w=740');
+    setFile(null);
+    localStorage.removeItem('uploadedFile'); // Remove from localStorage
   };
+
   return (
+    <Box>
       <Box>
-       {/* <Avatar
-          alt="Logo" 
-          src={logo} 
-          sx={{ width: 200, height: 150 , marginRight: 40}} // Taille du logo et espacement
-        /> */}
-      <Box> 
-      <img
-            
-            src={displayedImage}
-            alt="Displayed"
-            loading="lazy"
-            width={500}
-            height={500}
-          />
-          </Box>
-    <ImageList sx={{ width: 500,mt:2}} cols={4} gap={10} >
-      {itemData&&itemData.map((item) => (
-        <ImageListItem key={item.img}>
-          <Box sx={{width:120,height:120}}>
-          <img
-            src={item.img}
-            alt={item.title}
-            loading="lazy"
-            onMouseEnter={() => handleImageHover(item.img)}
-            height={'100%'}
-            width={'100%'}
-            />
+        <img
+          src={displayedImage} // Display the selected/uploaded image
+          alt="Displayed"
+          loading="lazy"
+          width={500}
+          height={500}
+        />
+      </Box>
+      <ImageList sx={{ width: 500, mt: 2 }} cols={4} gap={10}>
+        {itemData && (
+          <ImageListItem key={itemData.img}>
+            <Box sx={{ width: 120, height: 120 }}>
+              <img
+                src={itemData.img}
+                alt={itemData.title}
+                loading="lazy"
+                height={'100%'}
+                width={'100%'}
+              />
             </Box>
-        </ImageListItem>
-      ))}
-      {itemData.length<4&&   <ImageUpload handleFileChange={handleFileChange}/>}
-    </ImageList>
+          </ImageListItem>
+        )}
+        {!itemData && (
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <FileUpload mode="basic" onSelect={handleFileChange} /> {/* onSelect instead of onChange */}
+          </Box>
+        )}
+      </ImageList>
+      
+      {itemData && (
+        <Button variant="contained" color="error" onClick={handleRemoveImage} sx={{ mt: 2 }}>
+          Remove Image
+        </Button>
+      )}
     </Box>
   );
 }
