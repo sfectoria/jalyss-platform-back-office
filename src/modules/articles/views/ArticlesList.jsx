@@ -139,7 +139,8 @@ export default function ArticlesList() {
         return <ImagePopUp image={value?.row?.cover?.path} />;
       },
     },
-    { field: "title", headerName: "Title", width: 270 },
+    { field: "title", headerName: "Title", width: 210 },
+    { field: "code", headerName: "Bar Code", width: 120 },
     { field: "quantity", headerName: "Quantity", width: 90 },
     {
       field: "author",

@@ -202,8 +202,13 @@ export default function Vente() {
       headerName: "Payed/Not",
       width: 90,
       renderCell: (params) => {
-        
-     return <div style={{ color: "green" }}>{params.row.paymentStatus}</div>}
+      let status =params?.row?.paymentStatus
+      console.log(status);
+      
+        if(status==='Payed') return <div style={{ color: "green" }}>{params.row.paymentStatus}</div>
+        else if (status ==='NotPayed') return <div style={{ color: "red" }}>{'Not Payed'}</div>
+        else if (status ==='PartiallyPayed') return <div style={{ color: "orange" }}>{'Part Payed'}</div>
+      }
     },
     { field: "totalAmount", headerName: "Total Amount", width: 100 },
     {

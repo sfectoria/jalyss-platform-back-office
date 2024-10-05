@@ -72,7 +72,7 @@ const InvoiceForm = () => {
     setItems(updatedItems);
     handleCalculateTotal();
   };
-  const handelInfo = (type) => {
+  const handelInfo = () => {
     if (type === "BR") {
       setInvoiceTitle("Bon de Reception");
     } else if (type === "BS") {
@@ -127,7 +127,7 @@ const InvoiceForm = () => {
         const itemsWithIdArticle = items.map((e) => {
           let { id, quantity, price, discount, ...rest } = e;
           const articleId = id;
-          price = parseFloat(price);
+          price = price? parseFloat(price):0;
           discount = parseFloat(discount);
           return { articleId, quantity, price, discount };
         });
@@ -162,8 +162,7 @@ const InvoiceForm = () => {
           setItems([]);
           saleStatus = true;
         }
-      }
-      else if (type === "BS") {
+      } else if (type === "BS") {
         const itemsWithIdArticle = items.map((e) => {
           let { id, quantity, price, discount, ...rest } = e;
           const articleId = id;
@@ -174,7 +173,7 @@ const InvoiceForm = () => {
         console.log(itemsWithIdArticle, "itemsWithIdArticle");
 
         const obj = {
-          numExitNote:0,
+          numExitNote: 0,
           // idClient: billToId,
           stockId: parseInt(sender),
           exitDate: new Date(),
@@ -192,7 +191,10 @@ const InvoiceForm = () => {
           lines: itemsWithIdArticle,
         };
 
-        const response = await axios.post(`${ip}/exitNote/create_exitNote`, obj);
+        const response = await axios.post(
+          `${ip}/exitNote/create_exitNote`,
+          obj
+        );
         console.log("Response:", response.data);
         console.log(response.status);
         if (response && response.status === 201) {
@@ -360,10 +362,11 @@ const InvoiceForm = () => {
       });
       var hhh = JSON.stringify(verify) === JSON.stringify(doubleQ);
       console.log(hhh, verify);
-      verify
-        ? setShowSuAlert(true)
-        : (setShowErAlert(true),
-          setMsgArticle("You've reached the maximum limit."));
+      if (verify) setShowSuAlert(true);
+      else {
+        setShowErAlert(true);
+        setMsgArticle("You've reached the maximum limit.");
+      }
       setItems(doubleQ);
     } else {
       console.log(obj);
@@ -771,6 +774,7 @@ const InvoiceForm = () => {
                 total={total}
                 finishSale={finishSale}
                 mode="creation"
+                invoiceTitle={invoiceTitle}
               />
             )}
             <Form.Group className="mb-3">
