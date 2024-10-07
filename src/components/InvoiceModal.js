@@ -66,6 +66,7 @@ const InvoiceModal = ({
       setItems(itemsData)
       setAmount(subTotal)
       setTitle(invoiceTitle)
+      setDate(new Date().toISOString())
       console.log(billTo,billFrom);
       
     }
@@ -181,7 +182,16 @@ const InvoiceModal = ({
         })
         setDate(e.receiptDate)
         setAmount(e.totalAmount)
-        setTitle("Bon de Reception")
+        if(e.transferNote.length){
+          setBillFrom({
+            id:e.transferNote[0].stockFrom.id,
+            name:e.transferNote[0].stockFrom.name,
+            address:e.transferNote[0].stockFrom.location,
+            email:"jalyss@gmail.com",
+          })
+          setTitle('Bon de Transfer')
+        }
+        else setTitle("Bon de Reception")
     // if (e.salesDeliveryInvoice.length) {
     //   setBillTo({
     //     name:e.salesDeliveryInvoice[0].client.fullName,
@@ -291,10 +301,10 @@ const InvoiceModal = ({
               <h6 className="fw-bold text-secondary mb-1">
                 Invoice #: {''} </h6>
             </div>
-            <div className="text-end ms-4">
+            {title!=='Bon de Transfer'&& <div className="text-end ms-4">
               <h6 className="fw-bold mt-1 mb-2">Amount&nbsp;Due:</h6>
               <h5 className="fw-bold text-secondary">{amount} {currency}</h5>
-            </div>
+            </div>}
           </div>
           <div className="p-4">
             <Row className="mb-4">
@@ -321,8 +331,9 @@ const InvoiceModal = ({
                 <tr>
                   <th>QTY</th>
                   <th>Title</th>
-                  <th className="text-end">PRICE</th>
-                  <th className="text-end">AMOUNT</th>
+                  <th className="text-end">QTY</th>
+                 {title!=='Bon de Transfer'&&<> <th className="text-end">PRICE</th>
+                  <th className="text-end">AMOUNT</th></>}
                 </tr>
               </thead>
               <tbody>
@@ -330,8 +341,9 @@ const InvoiceModal = ({
                   <tr key={i}>
                     <td style={{ width: '70px' }}>{item.quantity}</td>
                     <td>{item.name} - {item?.author} - {item?.publisher}</td>
-                    <td className="text-end" style={{ width: '100px' }}>{item.price} {currency}</td>
-                    <td className="text-end" style={{ width: '100px' }}>{item.price * item.quantity} {currency}</td>
+                    <td className="text-end" style={{ width: '100px' }}>{item.quantity}</td>
+                   {title!=='Bon de Transfer'&&<><td className="text-end" style={{ width: '100px' }}>{item.price} {currency}</td>
+                    <td className="text-end" style={{ width: '100px' }}>{item.price * item.quantity} {currency}</td></>}
                   </tr>
                 ))}
               </tbody>
@@ -343,11 +355,11 @@ const InvoiceModal = ({
                   <td>&nbsp;</td>
                   <td>&nbsp;</td>
                 </tr>
-                <tr className="text-end">
+                {title!=='Bon de Transfer'&&<> <tr className="text-end">
                   <td></td>
                   <td className="fw-bold" style={{ width: '100px' }}>SUBTOTAL</td>
                   <td className="text-end" style={{ width: '100px' }}>{amount} {currency}</td>
-                </tr>
+                </tr></>}
                 {taxAmount !== '0.00' &&
                   <tr className="text-end">
                     <td></td>
@@ -362,11 +374,11 @@ const InvoiceModal = ({
                     <td className="text-end" style={{ width: '100px' }}>{discountAmount} {currency}</td>
                   </tr>
                 }
-                <tr className="text-end">
+                {title!=='Bon de Transfer'&&<><tr className="text-end">
                   <td></td>
                   <td className="fw-bold" style={{ width: '100px' }}>TOTAL</td>
                   <td className="text-end" style={{ width: '100px' }}>{amount} {currency}</td>
-                </tr>
+                </tr></>}
               </tbody>
             </Table>
             {/* { &&

@@ -174,7 +174,6 @@ const InvoiceForm = () => {
 
         const obj = {
           numExitNote: 0,
-          // idClient: billToId,
           stockId: parseInt(sender),
           exitDate: new Date(),
           totalAmount: parseFloat(total),
@@ -690,7 +689,7 @@ const InvoiceForm = () => {
                 info={param}
               />
             </div>
-            <Row className="mt-4 justify-content-end">
+          { type!=='BT' &&<Row className="mt-4 justify-content-end">
               <Col lg={6}>
                 <div className="d-flex flex-row align-items-start justify-content-between">
                   <span className="fw-bold">Subtotal:</span>
@@ -727,7 +726,7 @@ const InvoiceForm = () => {
                   </span>
                 </div>
               </Col>
-            </Row>
+            </Row>}
             <hr className="my-4" />
             <Form.Label className="fw-bold">Notes:</Form.Label>
             <Form.Control
@@ -746,7 +745,7 @@ const InvoiceForm = () => {
             <Button variant="primary" type="submit" className="d-block w-100">
               Review Invoice
             </Button>
-            {isOpen && (
+           {isOpen && (
               <InvoiceModal
                 showModal={isOpen}
                 closeModal={closeModal}
@@ -777,7 +776,8 @@ const InvoiceForm = () => {
                 invoiceTitle={invoiceTitle}
               />
             )}
-            <Form.Group className="mb-3">
+            
+            {type!=='BT'&&<Form.Group className="mb-3 mt-3">
               <Form.Label className="fw-bold">Currency:</Form.Label>
               <Form.Select
                 onChange={handleCurrencyChange}
@@ -794,7 +794,8 @@ const InvoiceForm = () => {
                 <option value="¥">CNY (Chinese Renminbi)</option>
                 <option value="₿">BTC (Bitcoin)</option>
               </Form.Select>
-            </Form.Group>
+            </Form.Group>}
+            {(type!=='BC' && type!=='BT')&& <>
             <Form.Group className="mb-3">
               <Form.Label className="fw-bold">Payment:</Form.Label>
               <Form.Select
@@ -933,7 +934,7 @@ const InvoiceForm = () => {
                   %
                 </InputGroup.Text>
               </InputGroup>
-            </Form.Group>
+            </Form.Group> </>}
           </div>
         </Col>
       </Row>
