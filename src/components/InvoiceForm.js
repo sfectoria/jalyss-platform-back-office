@@ -72,7 +72,7 @@ const InvoiceForm = () => {
     setItems(updatedItems);
     handleCalculateTotal();
   };
-  const handelInfo = (type) => {
+  const handelInfo = () => {
     if (type === "BR") {
       setInvoiceTitle("Bon de Reception");
     } else if (type === "BS") {
@@ -127,7 +127,7 @@ const InvoiceForm = () => {
         const itemsWithIdArticle = items.map((e) => {
           let { id, quantity, price, discount, ...rest } = e;
           const articleId = id;
-          price = parseFloat(price);
+          price = price? parseFloat(price):0;
           discount = parseFloat(discount);
           return { articleId, quantity, price, discount };
         });
@@ -162,8 +162,7 @@ const InvoiceForm = () => {
           setItems([]);
           saleStatus = true;
         }
-      }
-      else if (type === "BS") {
+      } else if (type === "BS") {
         const itemsWithIdArticle = items.map((e) => {
           let { id, quantity, price, discount, ...rest } = e;
           const articleId = id;
@@ -174,8 +173,7 @@ const InvoiceForm = () => {
         console.log(itemsWithIdArticle, "itemsWithIdArticle");
 
         const obj = {
-          numExitNote:0,
-          // idClient: billToId,
+          numExitNote: 0,
           stockId: parseInt(sender),
           exitDate: new Date(),
           totalAmount: parseFloat(total),
@@ -192,7 +190,10 @@ const InvoiceForm = () => {
           lines: itemsWithIdArticle,
         };
 
-        const response = await axios.post(`${ip}/exitNote/create_exitNote`, obj);
+        const response = await axios.post(
+          `${ip}/exitNote/create_exitNote`,
+          obj
+        );
         console.log("Response:", response.data);
         console.log(response.status);
         if (response && response.status === 201) {
@@ -360,10 +361,11 @@ const InvoiceForm = () => {
       });
       var hhh = JSON.stringify(verify) === JSON.stringify(doubleQ);
       console.log(hhh, verify);
-      verify
-        ? setShowSuAlert(true)
-        : (setShowErAlert(true),
-          setMsgArticle("You've reached the maximum limit."));
+      if (verify) setShowSuAlert(true);
+      else {
+        setShowErAlert(true);
+        setMsgArticle("You've reached the maximum limit.");
+      }
       setItems(doubleQ);
     } else {
       console.log(obj);
@@ -687,7 +689,7 @@ const InvoiceForm = () => {
                 info={param}
               />
             </div>
-            <Row className="mt-4 justify-content-end">
+          { type!=='BT' &&<Row className="mt-4 justify-content-end">
               <Col lg={6}>
                 <div className="d-flex flex-row align-items-start justify-content-between">
                   <span className="fw-bold">Subtotal:</span>
@@ -724,7 +726,7 @@ const InvoiceForm = () => {
                   </span>
                 </div>
               </Col>
-            </Row>
+            </Row>}
             <hr className="my-4" />
             <Form.Label className="fw-bold">Notes:</Form.Label>
             <Form.Control
@@ -743,7 +745,7 @@ const InvoiceForm = () => {
             <Button variant="primary" type="submit" className="d-block w-100">
               Review Invoice
             </Button>
-            {isOpen && (
+           {isOpen && (
               <InvoiceModal
                 showModal={isOpen}
                 closeModal={closeModal}
@@ -771,9 +773,11 @@ const InvoiceForm = () => {
                 total={total}
                 finishSale={finishSale}
                 mode="creation"
+                invoiceTitle={invoiceTitle}
               />
             )}
-            <Form.Group className="mb-3">
+            
+            {type!=='BT'&&<Form.Group className="mb-3 mt-3">
               <Form.Label className="fw-bold">Currency:</Form.Label>
               <Form.Select
                 onChange={handleCurrencyChange}
@@ -790,7 +794,8 @@ const InvoiceForm = () => {
                 <option value="¥">CNY (Chinese Renminbi)</option>
                 <option value="₿">BTC (Bitcoin)</option>
               </Form.Select>
-            </Form.Group>
+            </Form.Group>}
+            {(type!=='BC' && type!=='BT')&& <>
             <Form.Group className="mb-3">
               <Form.Label className="fw-bold">Payment:</Form.Label>
               <Form.Select
@@ -929,7 +934,7 @@ const InvoiceForm = () => {
                   %
                 </InputGroup.Text>
               </InputGroup>
-            </Form.Group>
+            </Form.Group> </>}
           </div>
         </Col>
       </Row>
