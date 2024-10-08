@@ -51,7 +51,7 @@ const InvoiceForm = () => {
   const [invoiceTitle, setInvoiceTitle] = useState("");
   const [reqName, setReqName] = useState("");
   const [reqClient, setReqClient] = useState("idClient");
-  const [reqChannel, setReqChannel] = useState("salesChannelId");
+  const [reqChannel, setReqChannel] = useState("saleChannelId");
   const [reqLine, setReqLine] = useState("");
   const [reqDate, setReqDate] = useState("date");
   const [suOp, setSuOp] = useState(null);
@@ -139,16 +139,16 @@ const InvoiceForm = () => {
           [reqChannel]: parseInt(sender),
           [reqDate]: new Date(),
           totalAmount: parseFloat(total),
-          payedAmount: payedAmount
-            ? parseFloat(payedAmount)
-            : parseFloat(total),
-          restedAmount: payedAmount
-            ? parseFloat(total) - parseFloat(payedAmount)
-            : 0,
-          tax: taxRate ? parseFloat(taxRate) : 0,
-          discount: discountAmount ? parseFloat(discountAmount) : 0,
-          paymentType: paymentType,
-          paymentStatus: paymentStatus,
+          // payedAmount: payedAmount
+          //   ? parseFloat(payedAmount)
+          //   : parseFloat(total),
+          // restedAmount: payedAmount
+          //   ? parseFloat(total) - parseFloat(payedAmount)
+          //   : 0,
+          // tax: taxRate ? parseFloat(taxRate) : 0,
+          // discount: discountAmount ? parseFloat(discountAmount) : 0,
+          // paymentType: paymentType,
+          // paymentStatus: paymentStatus,
           [reqLine]: itemsWithIdArticle,
         };
         console.log(obj);
