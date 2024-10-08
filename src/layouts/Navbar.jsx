@@ -6,11 +6,16 @@ import { Link, useLocation } from "react-router-dom";
 const Navbar = ({ isCollapsed }) => {
   const location = useLocation();
 
-  // Fonction pour vérifier si l'un des enfants est actif
-  const isChildActive = (children) => {
-    return children.some((child) => location.pathname.includes (child.link));
+  const isActive = (path) => {
+    if (path === "/") {
+      return location.pathname === "/"; 
+    }
+    return location.pathname.startsWith(path);
   };
 
+  const isChildActive = (children) => {
+    return children.some((child) => isActive(child.link));
+  };
   return (
     <Sidebar
       collapsed={isCollapsed}
@@ -25,7 +30,6 @@ const Navbar = ({ isCollapsed }) => {
               key={element.title}
               icon={element.icon}
               label={element.title}
-              // Changer la couleur du texte du sous-menu si l'un de ses enfants est actif
               style={{
                 color: isChildActive(element.children) ? "#800080" : "inherit", // Mauve si un enfant est actif
                 textDecoration: isChildActive(element.children) ? "underline" : "none", // Souligné si actif
