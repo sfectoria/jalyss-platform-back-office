@@ -21,6 +21,8 @@ import DashboardRoutes from "./Modules/DashboardRoutes";
 import NewInventaire from "../modules/Inventaire/views/NewInventaire";
 import ArticleHistory from "../modules/articles/component/ArticleHistory";
 import { getMe } from "../store/slices/authSlice";
+import VentRoutes from "./Modules/VenteRoutes";
+import SalesRoutes from "./Modules/SalesRoutes";
 
 export default function Router() {
   const user = useSelector((store) => store.auth.me);
@@ -46,6 +48,8 @@ export default function Router() {
             {ArticleRoutes()}
             {FornisseursRoutes()}
             {ChannelsRoutes()}
+            {VentRoutes()}
+            {SalesRoutes()}
             <Route
               path="invoice/:type/:sender/:receiver"
               key="invoice"

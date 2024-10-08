@@ -72,6 +72,38 @@ export const sidebarData = [
     ],
   },
   {
+    title: "Achat",
+    icon: <WarehouseIcon />,
+    children: [
+      {
+        title: "Achat List",
+        icon: <ListIcon />,
+        link: "/sales",
+      },
+      {
+        title: "Add Achat",
+        icon: <PlaylistAddIcon />,
+        link: "/sales/add-sale",
+      },
+    ],
+  },
+  {
+    title: "Vente",
+    icon: <WarehouseIcon />,
+    children: [
+      {
+        title: "Vente List",
+        icon: <ListIcon />,
+        link: "/vente",
+      },
+      {
+        title: "Add Vente",
+        icon: <PlaylistAddIcon />,
+        link: "/vente/add-vente",
+      },
+    ],
+  },
+  {
     title: "Stock",
     icon: <WarehouseIcon />,
     children: [
