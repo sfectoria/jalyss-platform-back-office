@@ -51,7 +51,7 @@ const InvoiceForm = () => {
   const [invoiceTitle, setInvoiceTitle] = useState("");
   const [reqName, setReqName] = useState("");
   const [reqClient, setReqClient] = useState("idClient");
-  const [reqChannel, setReqChannel] = useState("salesChannelId");
+  const [reqChannel, setReqChannel] = useState("saleChannelId");
   const [reqLine, setReqLine] = useState("");
   const [reqDate, setReqDate] = useState("date");
   const [suOp, setSuOp] = useState(null);
