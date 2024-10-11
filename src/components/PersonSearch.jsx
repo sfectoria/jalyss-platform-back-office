@@ -15,6 +15,9 @@ const PersonSearch = ({
   reff,
 }) => {
   const [rows, setRows] = useState([]);
+  const [options, setOptions] = useState();
+  const [searchText, setSearchText] = useState("");
+  const [filteredRows, setFilteredRows] = useState(rows);
   useEffect(() => {
     fetchData();
   }, []);
@@ -83,13 +86,11 @@ const PersonSearch = ({
           return { id, fullName, address, email, ...rest };
         });
         setRows(dataStocks);
-      }t
+      }
     }
     
   };
-  const [options, setOptions] = useState();
-  const [searchText, setSearchText] = useState("");
-  const [filteredRows, setFilteredRows] = useState(rows);
+
 
   function includesAll(arr, values) {
     return values.every((value) =>

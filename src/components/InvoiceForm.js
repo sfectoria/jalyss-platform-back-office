@@ -161,7 +161,6 @@ const InvoiceForm = () => {
           paymentType: paymentType,
           paymentStatus: paymentStatus,
           lines: itemsWithIdArticle,
-          numReceiptNote: 0,
         };
         const response = await axios.post(`${ip}/${reqName}/create`, obj);
         if (response && response.status === 201) {
