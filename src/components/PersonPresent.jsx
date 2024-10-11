@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios';
 import { ip } from '../constants/ip';
 
-function PersonPresent({person,type,reff,setName,setEmail,setAddress}) {
+function PersonPresent({person,type,reff,setName,setEmail,setAddress,setId}) {
     const [pName,setPName]=useState('')
     const [pEmail,setPEmail]=useState('')
     const [pAddress,setPAddress]=useState('')
@@ -18,6 +18,7 @@ function PersonPresent({person,type,reff,setName,setEmail,setAddress}) {
             const response = await axios.get(`${ip}/stocks/${person}`);
             console.log(person,response.data,'hello');
             const {id, name, location } = response.data.data;
+            setId(id)
             setName(name)
             setPName(name)
             setEmail('jalyss@gmail.com')
@@ -28,6 +29,7 @@ function PersonPresent({person,type,reff,setName,setEmail,setAddress}) {
           if (reff==='sndr') {
             const response = await axios.get(`${ip}/forniseurs/${person}`);
             const { id,name, location } = response.data;
+            setId(id)
             setName(name)
             setPName(name)
             setEmail('jalyss@gmail.com')
@@ -41,6 +43,7 @@ function PersonPresent({person,type,reff,setName,setEmail,setAddress}) {
             const response = await axios.get(`${ip}/stocks/${person}`);
             console.log(person,response.data,'hello');
             const {id, name, location } = response.data.data;
+            setId(id)
             setName(name)
             setPName(name)
             setEmail('jalyss@gmail.com')
@@ -51,6 +54,7 @@ function PersonPresent({person,type,reff,setName,setEmail,setAddress}) {
           if (reff==='sndr') {
             const response = await axios.get(`${ip}/stocks/${person}`);
             const {id, name, location } = response.data.data;
+            setId(id)
             setName(name)
             setPName(name)
             setEmail('jalyss@gmail.com')
@@ -65,6 +69,7 @@ function PersonPresent({person,type,reff,setName,setEmail,setAddress}) {
             const response = await axios.get(`${ip}/forniseurs/${person}`);
             console.log(person,response.data,'hello');
             const {id, name, location } = response.data;
+            setId(id)
             setName(name)
             setPName(name)
             setEmail('jalyss@gmail.com')
@@ -75,6 +80,7 @@ function PersonPresent({person,type,reff,setName,setEmail,setAddress}) {
           if (reff==='sndr') {
             const response = await axios.get(`${ip}/stocks/${person}`);
             const {id, name, location } = response.data.data;
+            setId(id)
             setName(name)
             setPName(name)
             setEmail('jalyss@gmail.com')
@@ -89,6 +95,7 @@ function PersonPresent({person,type,reff,setName,setEmail,setAddress}) {
             const response = await axios.get(`${ip}/clients/${person}`);
             console.log(person,response.data,'hello');
             const {id, name, location } = response.data;
+            setId(id)
             setName(name)
             setPName(name)
             setEmail('jalyss@gmail.com')
@@ -100,6 +107,7 @@ function PersonPresent({person,type,reff,setName,setEmail,setAddress}) {
             const response = await axios.get(`${ip}/selling/${person}`);
             const { id,name, region } = response.data;
             console.log(person,id,'hello');
+            setId(id)
             setName(name)
             setPName(name)
             setEmail('jalyss@gmail.com')
@@ -114,6 +122,7 @@ function PersonPresent({person,type,reff,setName,setEmail,setAddress}) {
             const response = await axios.get(`${ip}/clients/${person}`);
             console.log(person,response.data,'hello');
             const {id, name, location } = response.data;
+            setId(id)
             setName(name)
             setPName(name)
             setEmail('jalyss@gmail.com')
@@ -125,6 +134,7 @@ function PersonPresent({person,type,reff,setName,setEmail,setAddress}) {
             const response = await axios.get(`${ip}/selling/${person}`);
             const { id,name, region } = response.data;
             console.log(person,id,'hello');
+            setId(id)
             setName(name)
             setPName(name)
             setEmail('jalyss@gmail.com')
