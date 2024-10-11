@@ -26,14 +26,19 @@ export default function StockList() {
   const fetchData = async () => {
     try {
       const response = await axios.get(ip + "/stocks/getAll");
-      setRows(response.data);
+      const modifiedData = response.data.map((stock) => ({
+        ...stock,
+        managerName: stock.employee ? `${stock.employee.firstName} ${stock.employee.lastName}` : "N/A",
+        managerNumber: stock.employee ? stock.employee.phoneNumber : "N/A",
+      }));
+      setRows(modifiedData);
     } catch (err) {
       setError(err);
     } finally {
       setLoading(false);
     }
   };
-
+console.log(rows)
   const columns = [
     { field: "name", headerName: "Stock name", width: 200 },
     { field: "location", headerName: "Address", width: 270 },
