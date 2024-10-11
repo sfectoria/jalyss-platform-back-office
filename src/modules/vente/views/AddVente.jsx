@@ -1,8 +1,9 @@
 import React from 'react'
+import InvoiceContainer from '../../../components/InvoiceContainer'
 
 function AddVent() {
   return (
-    <div>AddVent</div>
+   <InvoiceContainer/>
   )
 }
 

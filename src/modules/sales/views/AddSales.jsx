@@ -1,8 +1,9 @@
 import React from 'react'
+import InvoiceContainer from '../../../components/InvoiceContainer'
 
 function AddSales() {
   return (
-    <div>AddSales</div>
+    <InvoiceContainer/>
   )
 }
 

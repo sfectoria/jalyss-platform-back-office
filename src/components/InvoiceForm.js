@@ -18,6 +18,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { ip } from "../constants/ip";
 import SuccessOperationPopUp from "./SuccessOperationPopUp";
+import { handelInfo } from "./helperFunctions/handelInfo";
 
 const InvoiceForm = () => {
   const navigate = useNavigate();
@@ -32,7 +33,7 @@ const InvoiceForm = () => {
   const [billTo, setBillTo] = useState("");
   const [billToEmail, setBillToEmail] = useState("");
   const [billToAddress, setBillToAddress] = useState("");
-  const [billFromId, setBillFromId] = useState("");
+  const [billFromId, setBillFromId] = useState(0);
   const [billFrom, setBillFrom] = useState("");
   const [billFromEmail, setBillFromEmail] = useState("");
   const [billFromAddress, setBillFromAddress] = useState("");
@@ -52,16 +53,24 @@ const InvoiceForm = () => {
   const [reqName, setReqName] = useState("");
   const [reqClient, setReqClient] = useState("idClient");
   const [reqChannel, setReqChannel] = useState("saleChannelId");
-  const [reqLine, setReqLine] = useState("");
+  const [reqLine, setReqLine] = useState("lines");
   const [reqDate, setReqDate] = useState("date");
   const [suOp, setSuOp] = useState(null);
+  const [info, setInfo] = useState({});
   const param = useParams();
-  console.log(param);
 
   const { type, receiver, sender } = param;
   console.log(items);
   useEffect(() => {
-    handelInfo();
+    handelInfo(
+      type,
+      setInvoiceTitle,
+      setReqName,
+      setReqLine,
+      setReqChannel,
+      setReqClient,
+      setReqDate
+    );
     handleCalculateTotal();
     setCurrentDate(new Date().toLocaleDateString());
   }, [items]);
@@ -71,48 +80,6 @@ const InvoiceForm = () => {
     const updatedItems = items.filter((item) => item.id !== itemToDelete.id);
     setItems(updatedItems);
     handleCalculateTotal();
-  };
-  const handelInfo = () => {
-    if (type === "BR") {
-      setInvoiceTitle("Bon de Reception");
-    } else if (type === "BS") {
-      setInvoiceTitle("Bon de Sortie");
-      setReqLine();
-    } else if (type === "BT") {
-      setInvoiceTitle("Bon de Transfer");
-      setReqName();
-      setReqLine();
-    } else if (type === "BL") {
-      setInvoiceTitle("Bon de Livraison");
-      setReqName("salesDeliveryNote");
-      setReqLine("salesDeliveryNoteLine");
-      setReqDate("deliveryDate");
-    } else if (type === "BLF") {
-      setInvoiceTitle("Bon de Livraison/Facture");
-      setReqName("salesDeliveryInvoice");
-      setReqLine("salesDeliveryInvoicelines");
-      setReqChannel("salesChannelsId");
-      setReqClient("clientId");
-      setReqDate("deliveryDate");
-    } else if (type === "F") {
-      setInvoiceTitle("Facture");
-      setReqName("sales-invoices");
-      setReqLine("salesInvoiceLine");
-    } else if (type === "Ticket") {
-      setInvoiceTitle("Ticket");
-      setReqName("sales-receipt");
-      setReqLine("salesReceiptLine");
-      setReqChannel("salesChannelId");
-      setReqDate("deliveryDate");
-    } else if (type === "BC") {
-      setInvoiceTitle("Bon de Commande");
-    } else if (type === "BRe") {
-      setInvoiceTitle("Bon de Retour");
-      setReqName();
-      setReqLine();
-    } else if (type === "Devis") {
-      setInvoiceTitle("Devis");
-    }
   };
 
   const finishSale = async () => {
@@ -127,7 +94,7 @@ const InvoiceForm = () => {
         const itemsWithIdArticle = items.map((e) => {
           let { id, quantity, price, discount, ...rest } = e;
           const articleId = id;
-          price = price? parseFloat(price):0;
+          price = price ? parseFloat(price) : 0;
           discount = parseFloat(discount);
           return { articleId, quantity, price, discount };
         });
@@ -136,7 +103,7 @@ const InvoiceForm = () => {
         const obj = {
           exitNoteId: 0,
           [reqClient]: billToId,
-          [reqChannel]: parseInt(sender),
+          [reqChannel]: billFromId,
           [reqDate]: new Date(),
           totalAmount: parseFloat(total),
           payedAmount: payedAmount
@@ -162,6 +129,45 @@ const InvoiceForm = () => {
           setItems([]);
           saleStatus = true;
         }
+      } else if (
+        type === "Bl" ||
+        type === "Blf" ||
+        type === "f" ||
+        type === "ticket"
+      ) {
+        const itemsWithIdArticle = items.map((e) => {
+          let { id, quantity, price, discount, ...rest } = e;
+          const idArticle = id;
+          price = parseFloat(price);
+          discount = parseFloat(discount);
+          quantity = parseInt(quantity);
+          return { idArticle, quantity, price, discount };
+        });
+        console.log(itemsWithIdArticle);
+
+        const obj = {
+          deliveryDate: new Date(),
+          idStock: billFromId,
+          idReceiptNote: 0,
+          totalAmount: parseFloat(total),
+          payedAmount: payedAmount
+            ? parseFloat(payedAmount)
+            : parseFloat(total),
+          restedAmount: payedAmount
+            ? parseFloat(total) - parseFloat(payedAmount)
+            : 0,
+          tax: taxRate ? parseFloat(taxRate) : 0,
+          discount: discountAmount ? parseFloat(discountAmount) : 0,
+          paymentType: paymentType,
+          paymentStatus: paymentStatus,
+          lines: itemsWithIdArticle,
+        };
+        const response = await axios.post(`${ip}/${reqName}/create`, obj);
+        if (response && response.status === 201) {
+          setTimeout(() => navigate(-1), 2500);
+          setItems([]);
+          saleStatus = true;
+        }
       } else if (type === "BS") {
         const itemsWithIdArticle = items.map((e) => {
           let { id, quantity, price, discount, ...rest } = e;
@@ -174,7 +180,7 @@ const InvoiceForm = () => {
 
         const obj = {
           numExitNote: 0,
-          stockId: parseInt(sender),
+          stockId: billFromId,
           exitDate: new Date(),
           totalAmount: parseFloat(total),
           payedAmount: payedAmount
@@ -211,7 +217,7 @@ const InvoiceForm = () => {
 
         const obj = {
           idClient: billToId,
-          salesChannelsId: parseInt(sender),
+          salesChannelsId: billFromId,
           status: "Pending",
           date: new Date(),
           orderDate: new Date(),
@@ -236,7 +242,7 @@ const InvoiceForm = () => {
 
         const obj = {
           idClient: billToId,
-          salesChannelId: parseInt(sender),
+          salesChannelId: billFromId,
           date: new Date(),
           totalAmount: parseFloat(total),
           tax: taxRate ? parseFloat(taxRate) : 0,
@@ -265,7 +271,7 @@ const InvoiceForm = () => {
         const obj = {
           typeReceipt: "achat",
           receiptDate: new Date(),
-          idStock: parseInt(receiver),
+          idStock: billFromId,
           totalAmount: parseFloat(total),
           payedAmount: payedAmount
             ? parseFloat(payedAmount)
@@ -297,7 +303,7 @@ const InvoiceForm = () => {
         console.log(itemsWithIdArticle);
 
         const obj = {
-          from: parseInt(sender),
+          from: billFromId,
           to: billToId,
           date: new Date(),
           idReceiptNote: 0,
@@ -324,7 +330,7 @@ const InvoiceForm = () => {
           returnDate: new Date(),
           lines: itemsWithIdArticle,
           idClient: billFromId,
-          idStock: parseInt(receiver),
+          idStock: billToId,
           receiptNoteId: 0,
         };
         const response = await axios.post(`${ip}/return-note/createRN`, obj);
@@ -350,10 +356,25 @@ const InvoiceForm = () => {
     if (duplicate) {
       let verify = 0;
       const doubleQ = items.map((e) => {
-        if (e.id === obj.id && e.quantity < e.stockQuantity && type !== "BR") {
+        if (
+          e.id === obj.id &&
+          e.quantity < e.stockQuantity &&
+          type !== "BR" &&
+          type !== "Bl" &&
+          type !== "Blf" &&
+          type !== "f" &&
+          type !== "ticket"
+        ) {
           e.quantity = e.quantity + 1;
           verify += 1;
-        } else if (e.id === obj.id && type === "BR") {
+        } else if (
+          e.id === obj.id &&
+          (type === "BR" ||
+            type === "Bl" ||
+            type === "Blf" ||
+            type === "f" ||
+            type === "ticket")
+        ) {
           e.quantity = e.quantity + 1;
           verify += 1;
         }
@@ -592,6 +613,7 @@ const InvoiceForm = () => {
                     person={receiver}
                     type={type}
                     reff={"resv"}
+                    setId={setBillToId}
                     setName={setBillTo}
                     setEmail={setBillToEmail}
                     setAddress={setBillToAddress}
@@ -601,6 +623,7 @@ const InvoiceForm = () => {
                     <PersonSearch
                       person={receiver}
                       type={type}
+                      reff={"resv"}
                       setId={setBillToId}
                       setName={setBillTo}
                       setEmail={setBillToEmail}
@@ -637,6 +660,7 @@ const InvoiceForm = () => {
                     person={sender}
                     type={type}
                     reff={"sndr"}
+                    setId={setBillFromId}
                     setName={setBillFrom}
                     setEmail={setBillFromEmail}
                     setAddress={setBillFromAddress}
@@ -646,6 +670,7 @@ const InvoiceForm = () => {
                     <PersonSearch
                       person={sender}
                       type={type}
+                      reff={"sndr"}
                       setId={setBillFromId}
                       setName={setBillFrom}
                       setEmail={setBillFromEmail}
@@ -686,47 +711,53 @@ const InvoiceForm = () => {
                 handelBarcodeEr={handelBarcodeEr}
                 handelNSearch={handelNSearch}
                 type={type}
-                info={param}
+                info={{
+                  type: type,
+                  receiver: billToId,
+                  sender: billFromId,
+                }}
               />
             </div>
-          { type!=='BT' &&<Row className="mt-4 justify-content-end">
-              <Col lg={6}>
-                <div className="d-flex flex-row align-items-start justify-content-between">
-                  <span className="fw-bold">Subtotal:</span>
-                  <span>
-                    {subTotal || 0}
-                    {currency}
-                  </span>
-                </div>
-                <div className="d-flex flex-row align-items-start justify-content-between mt-2">
-                  <span className="fw-bold">Discount:</span>
-                  <span>
-                    <span className="small">({discountRate || 0}%)</span>
-                    {discountAmount || 0}
-                    {currency}
-                  </span>
-                </div>
-                <div className="d-flex flex-row align-items-start justify-content-between mt-2">
-                  <span className="fw-bold">Tax:</span>
-                  <span>
-                    <span className="small">({taxRate || 0}%)</span>
-                    {taxAmount || 0}
-                    {currency}
-                  </span>
-                </div>
-                <hr />
-                <div
-                  className="d-flex flex-row align-items-start justify-content-between"
-                  style={{ fontSize: "1.125rem" }}
-                >
-                  <span className="fw-bold">Total:</span>
-                  <span className="fw-bold">
-                    {total || 0}
-                    {currency}
-                  </span>
-                </div>
-              </Col>
-            </Row>}
+            {type !== "BT" && (
+              <Row className="mt-4 justify-content-end">
+                <Col lg={6}>
+                  <div className="d-flex flex-row align-items-start justify-content-between">
+                    <span className="fw-bold">Subtotal:</span>
+                    <span>
+                      {subTotal || 0}
+                      {currency}
+                    </span>
+                  </div>
+                  <div className="d-flex flex-row align-items-start justify-content-between mt-2">
+                    <span className="fw-bold">Discount:</span>
+                    <span>
+                      <span className="small">({discountRate || 0}%)</span>
+                      {discountAmount || 0}
+                      {currency}
+                    </span>
+                  </div>
+                  <div className="d-flex flex-row align-items-start justify-content-between mt-2">
+                    <span className="fw-bold">Tax:</span>
+                    <span>
+                      <span className="small">({taxRate || 0}%)</span>
+                      {taxAmount || 0}
+                      {currency}
+                    </span>
+                  </div>
+                  <hr />
+                  <div
+                    className="d-flex flex-row align-items-start justify-content-between"
+                    style={{ fontSize: "1.125rem" }}
+                  >
+                    <span className="fw-bold">Total:</span>
+                    <span className="fw-bold">
+                      {total || 0}
+                      {currency}
+                    </span>
+                  </div>
+                </Col>
+              </Row>
+            )}
             <hr className="my-4" />
             <Form.Label className="fw-bold">Notes:</Form.Label>
             <Form.Control
@@ -745,7 +776,7 @@ const InvoiceForm = () => {
             <Button variant="primary" type="submit" className="d-block w-100">
               Review Invoice
             </Button>
-           {isOpen && (
+            {isOpen && (
               <InvoiceModal
                 showModal={isOpen}
                 closeModal={closeModal}
@@ -776,165 +807,170 @@ const InvoiceForm = () => {
                 invoiceTitle={invoiceTitle}
               />
             )}
-            
-            {type!=='BT'&&<Form.Group className="mb-3 mt-3">
-              <Form.Label className="fw-bold">Currency:</Form.Label>
-              <Form.Select
-                onChange={handleCurrencyChange}
-                className="btn btn-light my-1"
-                aria-label="Change Currency"
-              >
-                <option value="DT">DT (Tunisian Dinar)</option>
-                <option value="$">USD (United States Dollar)</option>
-                <option value="£">GBP (British Pound Sterling)</option>
-                <option value="¥">JPY (Japanese Yen)</option>
-                <option value="$">CAD (Canadian Dollar)</option>
-                <option value="$">AUD (Australian Dollar)</option>
-                <option value="$">SGD (Signapore Dollar)</option>
-                <option value="¥">CNY (Chinese Renminbi)</option>
-                <option value="₿">BTC (Bitcoin)</option>
-              </Form.Select>
-            </Form.Group>}
-            {(type!=='BC' && type!=='BT')&& <>
-            <Form.Group className="mb-3">
-              <Form.Label className="fw-bold">Payment:</Form.Label>
-              <Form.Select
-                onChange={handlePTypeChange}
-                className="btn btn-light my-1"
-                aria-label="Change Currency"
-              >
-                <option value="Cash">💰 Cash </option>
-                <option value="CreditCard">💳 Credit Card </option>
-                <option value="Checks">🧾 Checks </option>
-                <option value="BankTransfers">🏦 Bank Transfers </option>
-              </Form.Select>
 
-              <Form.Group className="my-3">
-                <div className="d-flex gap-3">
-                  {paymentStatus === "Payed" ? (
-                    <button
-                      type="button"
-                      class="btn btn-success"
-                      onClick={() => {
-                        setPaymentStatus("Payed");
-                      }}
-                    >
-                      Payed
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      class="btn btn-outline-success"
-                      onClick={() => {
-                        setPaymentStatus("Payed");
-                      }}
-                    >
-                      Payed
-                    </button>
-                  )}
-                  {paymentStatus === "PartiallyPayed" ? (
-                    <button
-                      type="button"
-                      class="btn btn-warning"
-                      onClick={() => {
-                        setPaymentStatus("PartiallyPayed");
-                      }}
-                    >
-                      Partially
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      class="btn btn-outline-warning"
-                      onClick={() => {
-                        setPaymentStatus("PartiallyPayed");
-                      }}
-                    >
-                      Partially
-                    </button>
-                  )}
-                  {paymentStatus === "NotPayed" ? (
-                    <button
-                      type="button"
-                      class="btn btn-danger"
-                      onClick={() => {
-                        setPaymentStatus("NotPayed");
-                      }}
-                    >
-                      Not Payed
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      class="btn btn-outline-danger"
-                      onClick={() => {
-                        setPaymentStatus("NotPayed");
-                      }}
-                    >
-                      Not Payed
-                    </button>
-                  )}
-                </div>
-              </Form.Group>
-            </Form.Group>
-            {paymentStatus === "PartiallyPayed" && (
-              <Form.Group className="my-3">
-                <Form.Label className="fw-bold">Payed Amount</Form.Label>
-                <InputGroup className="my-1 flex-nowrap">
-                  <Form.Control
-                    name="payedAmount"
-                    type="number"
-                    value={payedAmount}
-                    onChange={editField}
-                    className="bg-white border"
-                    placeholder="0.0"
-                    min="0.00"
-                    step="0.01"
-                  />
-                  <InputGroup.Text className="bg-light fw-bold text-secondary small">
-                    {currency}
-                  </InputGroup.Text>
-                </InputGroup>
+            {type !== "BT" && (
+              <Form.Group className="mb-3 mt-3">
+                <Form.Label className="fw-bold">Currency:</Form.Label>
+                <Form.Select
+                  onChange={handleCurrencyChange}
+                  className="btn btn-light my-1"
+                  aria-label="Change Currency"
+                >
+                  <option value="DT">DT (Tunisian Dinar)</option>
+                  <option value="$">USD (United States Dollar)</option>
+                  <option value="£">GBP (British Pound Sterling)</option>
+                  <option value="¥">JPY (Japanese Yen)</option>
+                  <option value="$">CAD (Canadian Dollar)</option>
+                  <option value="$">AUD (Australian Dollar)</option>
+                  <option value="$">SGD (Signapore Dollar)</option>
+                  <option value="¥">CNY (Chinese Renminbi)</option>
+                  <option value="₿">BTC (Bitcoin)</option>
+                </Form.Select>
               </Form.Group>
             )}
-            <Form.Group className="my-3">
-              <Form.Label className="fw-bold">Tax rate:</Form.Label>
-              <InputGroup className="my-1 flex-nowrap">
-                <Form.Control
-                  name="taxRate"
-                  type="number"
-                  value={taxRate}
-                  onChange={editField}
-                  className="bg-white border"
-                  placeholder="0.0"
-                  min="0.00"
-                  step="0.01"
-                  max="100.00"
-                />
-                <InputGroup.Text className="bg-light fw-bold text-secondary small">
-                  %
-                </InputGroup.Text>
-              </InputGroup>
-            </Form.Group>
-            <Form.Group className="my-3">
-              <Form.Label className="fw-bold">Discount rate:</Form.Label>
-              <InputGroup className="my-1 flex-nowrap">
-                <Form.Control
-                  name="discountRate"
-                  type="number"
-                  value={discountRate}
-                  onChange={editField}
-                  className="bg-white border"
-                  placeholder="0.0"
-                  min="0.00"
-                  step="0.01"
-                  max="100.00"
-                />
-                <InputGroup.Text className="bg-light fw-bold text-secondary small">
-                  %
-                </InputGroup.Text>
-              </InputGroup>
-            </Form.Group> </>}
+            {type !== "BC" && type !== "BT" && (
+              <>
+                <Form.Group className="mb-3">
+                  <Form.Label className="fw-bold">Payment:</Form.Label>
+                  <Form.Select
+                    onChange={handlePTypeChange}
+                    className="btn btn-light my-1"
+                    aria-label="Change Currency"
+                  >
+                    <option value="Cash">💰 Cash </option>
+                    <option value="CreditCard">💳 Credit Card </option>
+                    <option value="Checks">🧾 Checks </option>
+                    <option value="BankTransfers">🏦 Bank Transfers </option>
+                  </Form.Select>
+
+                  <Form.Group className="my-3">
+                    <div className="d-flex gap-3">
+                      {paymentStatus === "Payed" ? (
+                        <button
+                          type="button"
+                          class="btn btn-success"
+                          onClick={() => {
+                            setPaymentStatus("Payed");
+                          }}
+                        >
+                          Payed
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          class="btn btn-outline-success"
+                          onClick={() => {
+                            setPaymentStatus("Payed");
+                          }}
+                        >
+                          Payed
+                        </button>
+                      )}
+                      {paymentStatus === "PartiallyPayed" ? (
+                        <button
+                          type="button"
+                          class="btn btn-warning"
+                          onClick={() => {
+                            setPaymentStatus("PartiallyPayed");
+                          }}
+                        >
+                          Partially
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          class="btn btn-outline-warning"
+                          onClick={() => {
+                            setPaymentStatus("PartiallyPayed");
+                          }}
+                        >
+                          Partially
+                        </button>
+                      )}
+                      {paymentStatus === "NotPayed" ? (
+                        <button
+                          type="button"
+                          class="btn btn-danger"
+                          onClick={() => {
+                            setPaymentStatus("NotPayed");
+                          }}
+                        >
+                          Not Payed
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          class="btn btn-outline-danger"
+                          onClick={() => {
+                            setPaymentStatus("NotPayed");
+                          }}
+                        >
+                          Not Payed
+                        </button>
+                      )}
+                    </div>
+                  </Form.Group>
+                </Form.Group>
+                {paymentStatus === "PartiallyPayed" && (
+                  <Form.Group className="my-3">
+                    <Form.Label className="fw-bold">Payed Amount</Form.Label>
+                    <InputGroup className="my-1 flex-nowrap">
+                      <Form.Control
+                        name="payedAmount"
+                        type="number"
+                        value={payedAmount}
+                        onChange={editField}
+                        className="bg-white border"
+                        placeholder="0.0"
+                        min="0.00"
+                        step="0.01"
+                      />
+                      <InputGroup.Text className="bg-light fw-bold text-secondary small">
+                        {currency}
+                      </InputGroup.Text>
+                    </InputGroup>
+                  </Form.Group>
+                )}
+                <Form.Group className="my-3">
+                  <Form.Label className="fw-bold">Tax rate:</Form.Label>
+                  <InputGroup className="my-1 flex-nowrap">
+                    <Form.Control
+                      name="taxRate"
+                      type="number"
+                      value={taxRate}
+                      onChange={editField}
+                      className="bg-white border"
+                      placeholder="0.0"
+                      min="0.00"
+                      step="0.01"
+                      max="100.00"
+                    />
+                    <InputGroup.Text className="bg-light fw-bold text-secondary small">
+                      %
+                    </InputGroup.Text>
+                  </InputGroup>
+                </Form.Group>
+                <Form.Group className="my-3">
+                  <Form.Label className="fw-bold">Discount rate:</Form.Label>
+                  <InputGroup className="my-1 flex-nowrap">
+                    <Form.Control
+                      name="discountRate"
+                      type="number"
+                      value={discountRate}
+                      onChange={editField}
+                      className="bg-white border"
+                      placeholder="0.0"
+                      min="0.00"
+                      step="0.01"
+                      max="100.00"
+                    />
+                    <InputGroup.Text className="bg-light fw-bold text-secondary small">
+                      %
+                    </InputGroup.Text>
+                  </InputGroup>
+                </Form.Group>{" "}
+              </>
+            )}
           </div>
         </Col>
       </Row>
