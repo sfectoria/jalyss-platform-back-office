@@ -5,6 +5,7 @@ import StockDetails from "../../modules/stocks/views/StockDetails";
 import StockList from "../../modules/stocks/views/StockList";
 import AddStock from "../../modules/stocks/views/AddStock";
 import NewInventaire from "../../modules/Inventaire/views/NewInventaire";
+import ArticleHistory from "../../modules/articles/component/ArticleHistory";
 
 export default function StockRoutes() {
   return [
@@ -13,6 +14,7 @@ export default function StockRoutes() {
       <Route path="add-stock" element={<AddStock />} />
       <Route key="details" path=":id" element={<StockDetails />} />
       <Route key="inv" path=":id/inv/:idInv" element={<NewInventaire />} />
+      <Route key="index" path=":stocksIds/articles/:articleId/full-history" element={<ArticleHistory />} />
     </Route>,
   ];
 }

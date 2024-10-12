@@ -606,21 +606,11 @@ const InvoiceForm = () => {
             </div>
             <hr className="my-4" />
             <Row className="mb-5">
-              <Col>
-                <Form.Label className="fw-bold">Bill to:</Form.Label>
-                {param.receiver !== "0" ? (
-                  <PersonPresent
-                    person={receiver}
-                    type={type}
-                    reff={"resv"}
-                    setId={setBillToId}
-                    setName={setBillTo}
-                    setEmail={setBillToEmail}
-                    setAddress={setBillToAddress}
-                  />
-                ) : (
-                  <div>
-                    <PersonSearch
+              {type !== "Ticket" && (
+                <Col>
+                  <Form.Label className="fw-bold">Bill to:</Form.Label>
+                  {param.receiver !== "0" ? (
+                    <PersonPresent
                       person={receiver}
                       type={type}
                       reff={"resv"}
@@ -629,30 +619,43 @@ const InvoiceForm = () => {
                       setEmail={setBillToEmail}
                       setAddress={setBillToAddress}
                     />
+                  ) : (
+                    <div>
+                      <PersonSearch
+                        person={receiver}
+                        type={type}
+                        reff={"resv"}
+                        setId={setBillToId}
+                        setName={setBillTo}
+                        setEmail={setBillToEmail}
+                        setAddress={setBillToAddress}
+                      />
 
-                    <Form.Control
-                      placeholder={"Email address"}
-                      value={billToEmail}
-                      type="email"
-                      name="billToEmail"
-                      className="my-2"
-                      onChange={editField}
-                      autoComplete="email"
-                      required
-                    />
-                    <Form.Control
-                      placeholder={"Billing address"}
-                      value={billToAddress}
-                      type="text"
-                      name="billToAddress"
-                      className="my-2"
-                      autoComplete="address"
-                      onChange={editField}
-                      required
-                    />
-                  </div>
-                )}
-              </Col>
+                      <Form.Control
+                        placeholder={"Email address"}
+                        value={billToEmail}
+                        type="email"
+                        name="billToEmail"
+                        className="my-2"
+                        onChange={editField}
+                        autoComplete="email"
+                        required
+                      />
+                      <Form.Control
+                        placeholder={"Billing address"}
+                        value={billToAddress}
+                        type="text"
+                        name="billToAddress"
+                        className="my-2"
+                        autoComplete="address"
+                        onChange={editField}
+                        required
+                      />
+                    </div>
+                  )}
+                </Col>
+              )}
+
               <Col>
                 <Form.Label className="fw-bold">Bill from:</Form.Label>
                 {param.sender !== "0" ? (
