@@ -1,17 +1,39 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import { DataGrid,GridToolbar,GridActionsCellItem  } from '@mui/x-data-grid';
 import { useDemoData } from '@mui/x-data-grid-generator';
 import Typography from '@mui/material/Typography';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import ModeEditOutlineIcon from '@mui/icons-material/ModeEditOutline';
 import { useNavigate } from 'react-router-dom';
 import CustomNoResultsOverlay from '../../../style/NoResultStyle'
 import Item from '../../../style/ItemStyle';
 import Avatar from '@mui/material/Avatar';
 import Stack from '@mui/material/Stack';
 import { deepOrange } from '@mui/material/colors';
+import { ip } from '../../../constants/ip';
+import axios from 'axios';
+import ClearIcon from '@mui/icons-material/Clear';
 
 export default function ClientsList() {
+  const [clients, setClients] = useState([]); 
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`${ip}/clients`)
+        setClients(response.data); 
+        console.log("from clients",response.data);
+      } catch (error) {
+        console.log("Error fetching data:", error); 
+      }
+    };
+
+    fetchData(); 
+  }, []); 
+
+    
+
   const { data } = useDemoData({
     dataSet: 'Commodity',
     rowLength: 500,
@@ -21,6 +43,17 @@ export default function ClientsList() {
   const handelDetails = (ids)=>{
     navigate(`/clients/${ids}`)
   }
+
+  const handelDelete = async (id) => {
+    try {
+      await axios.delete(`${ip}/clients/${id}`); 
+      setClients(clients.filter(client => client.id !== id)); 
+    } catch (error) {
+      console.log("Error deleting client:", error);
+    }
+  };
+
+
   const columns = [
     { field: 'id', headerName: 'ID', width: 70 },
     {
@@ -45,12 +78,12 @@ export default function ClientsList() {
       width: 200,
     },
     {
-      field: 'clientEmail',
+      field: 'email',
       headerName: 'Client Email',
       width: 220,
     },
     {
-      field: 'clientNumber',
+      field: 'phoneNumber',
       headerName: 'Phone Number',
       width: 150,
     },
@@ -66,6 +99,15 @@ export default function ClientsList() {
       type: 'actions',
       getActions: ({id}) => [
         <GridActionsCellItem icon={<VisibilityIcon/>} onClick={()=>{handelDetails(id)}} label="Print" />,
+      ]
+    },
+    {
+      field: 'DELETE',
+      headerName: 'Delete',
+      width: 110,
+      type: 'actions',
+      getActions: ({id}) => [
+        <GridActionsCellItem icon={<ClearIcon/>} onClick={()=>{handelDelete(id)}} label="Print" />,
       ]
     }
     
@@ -106,7 +148,7 @@ export default function ClientsList() {
         '& .MuiDataGrid-cell:hover': {
           color: 'primary.main',
         }}}
-        rows={rows}
+        rows={clients}
         columns={columns}
        slots={{
         noResultsOverlay: CustomNoResultsOverlay,
@@ -129,6 +171,7 @@ export default function ClientsList() {
       }}
       />
     </div>
+  
          </Item>          
          </Box>
   );
