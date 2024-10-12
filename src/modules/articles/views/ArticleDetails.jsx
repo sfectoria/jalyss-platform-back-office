@@ -19,6 +19,8 @@ export default function ArticleDetails() {
 
   const fetchArticle = async () => {
     const response = await axios.get(`${ip}/articles/${param.id}`);
+    console.log("from articles id",response.data);
+    
     const result = response.data.stockArticle.reduce((acc, ele) => {
       acc += ele.quantity;
       return acc;

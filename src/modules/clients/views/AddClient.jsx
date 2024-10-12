@@ -9,22 +9,19 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Divider,
   Grid,
   IconButton,
-  InputLabel,
   Paper,
-  Stack,
   TextField,
   ThemeProvider,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import Item from "../../../style/ItemStyle";
-import Autocomplete from "@mui/material/Autocomplete";
 import FileUploader from "../../../components/FileUploader";
-import { EditNotifications } from "@mui/icons-material";
+import React, { useState } from "react";
+import Item from "../../../style/ItemStyle";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { ip } from "../../../constants/ip";
+import axios from "axios";
 
 export default function AddClient() {
   const defaultTheme = createTheme({
@@ -39,152 +36,90 @@ export default function AddClient() {
     },
   });
 
-  const names = ["iyed", "oussema", "khalil", "meycem", "yassmine"];
-  const emails = [
-    "iyediyedammari@gmail.com",
-    "khalil@gmail.com",
-    "oussema@gmail.com",
-    "yassmine@gmail.com",
-    "meycem@gmail.com",
-  ];
-  const phoneNumbers = ["12345678", "50712106", "28283596", "87654321"];
-  const comapanies = ["maktabat jarir", "attanwir", "molhimon", "dar e salam"];
+  const [formData, setFormData] = useState({
+    fullName: "",
+    phoneNumber: "",
+    address: "",
+    email: "",
+    registrationDate: new Date().toISOString(),
+    idCategoryClient: 1,
+  });
 
-  const [firstName, setFirstName] = useState("");
-  const handleFirstNameChange = (e) => {
-    const newValue = e.target.value;
-    setFirstName(newValue);
-    console.log(newValue);
+  const [errors, setErrors] = useState({});
+  const [open, setOpen] = useState(false);
+  const [isCancelled, setIsCancelled] = useState(false);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
-  const [lastName, setLastName] = useState("");
-  const handleLastNameChange = (e) => {
-    const newValue = e.target.value;
-    setLastName(newValue);
-    console.log(newValue);
-  };
-
-  const [companyName, setCompanyName] = useState("");
-  const handleCompanyNameChange = (e) => {
-    const newValue = e.target.value;
-    setCompanyName(newValue);
-    console.log(newValue);
-  };
-
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const handlePhoneNumberChange = (e) => {
-    const newValue = e.target.value;
-    setPhoneNumber(newValue);
-    console.log(newValue);
-  };
-
-  const [email, setEmail] = useState("");
-  const handleEmailChange = (e) => {
-    const newValue = e.target.value;
-    setEmail(newValue);
-    console.log(newValue);
-  
-  };
-
-  const [file, setFile] = useState(null);
-  const [fileName, setFileName] = useState("");
-  const onSelectFileHandler = (e) => {
+  const handleFileChange = (e) => {
     const uploadedFile = e.target.files[0];
-    setFileName(uploadedFile?.name);
-    if (uploadedFile) {
-      setFile(URL.createObjectURL(uploadedFile));
-    }
+    setFormData((prevData) => ({
+      ...prevData,
+      fileName: uploadedFile?.name,
+      mediaId: uploadedFile ? URL.createObjectURL(uploadedFile) : null,
+    }));
   };
 
-  const onDeleteFileHandler = () => {
-    setFile(null);
-    setFileName("");
+  const handleDeleteFile = () => {
+    setFormData((prevData) => ({
+      ...prevData,
+      fileName: "",
+      fileUrl: null,
+    }));
+  };
+
+  const validateForm = () => {
+    let newErrors = {};
+    if (!formData.fullName) newErrors.fullName = "First Name is required";
+    if (!formData.address) newErrors.address = "Address is required";
+    if (!formData.phoneNumber)
+      newErrors.phoneNumber = "Phone Number is required";
+    else if (formData.phoneNumber.length !== 8)
+      newErrors.phoneNumber = "Phone number must be 8 digits";
+    if (!formData.email) newErrors.email = "Email is required";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (validateForm()) {
+      try {
+        const response = await axios.post(ip + "/clients", formData);
+        console.log("Submitted:", response.data);
+        setIsCancelled(false);
+        setOpen(true);
+        resetForm();
+      } catch (error) {
+        console.error("Error submitting form:", error);
+      }
+    }
   };
 
   const resetForm = () => {
-    setFirstName("");
-    setLastName("");
-    setCompanyName('')
-    setPhoneNumber("");
-    setEmail("");
-    setFile(null);
-    setFileName("");
-    setErrors({})
-    console.log(form);
+    setFormData({
+      fullName: "",
+      phoneNumber: "",
+      address: "",
+      email: "",
+      registrationDate: new Date().toISOString(),
+      idCategoryClient: 1,
+    });
+    setErrors({});
   };
 
-  const [errors, setErrors] = useState({});
-
-  const isVerified = (form) => {
-    if (names.includes(form.firstName.toLowerCase())) {
-      setErrors({ firstName: "First Name already exists" });
-      return false;
-    }
-
-    if (phoneNumber.toString().length != 8) {
-      setErrors({
-        phoneNumber: "Phone number must be 8 digits",
-      });
-      return false;
-    } else if (phoneNumbers.includes(form.phoneNumber)) {
-      setErrors({ phoneNumber: "Phone number already exists" });
-      return false;
-    }
-
-    if (emails.includes(form.email)) {
-      setErrors({ email: "Email already exists" });
-      return false;
-    }
-
-    if (comapanies.includes(form.companyName)){
-      setErrors({ companyName: "Company's Name already exists" });
-      return false;
-    }
-
-    return true;
-  };
-
-  const [form, setForm] = useState({});
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const newErrors = {};
-
-    if (!firstName) newErrors.firstName = "First Name is required";
-    if (!lastName) newErrors.lastName = "Last Name is required";
-    if (!companyName) newErrors.companyName = "Company's Name is required";
-    if (!phoneNumber) newErrors.phoneNumber = "Phone Number is required";
-    if (!email) newErrors.email = "Email is required";
-
-    setErrors(newErrors);
-
-    if (Object.keys(newErrors).length === 0 && isVerified(form)) {
-      console.log(form);
-      setIsCancelled(false);
-      setOpen(true);
-      resetForm();
-    }
-  };
-
-  const [isCancelled, setIsCancelled] = useState(false);
   const handleCancel = () => {
     setIsCancelled(true);
     setOpen(true);
     resetForm();
   };
-
-  useEffect(() => {
-    setForm({
-      firstName: firstName,
-      lastName: lastName,
-      companyName: companyName,
-      phoneNumber: phoneNumber,
-      email: email,
-      fileName: fileName,
-      fileUrl: file,
-    });
-  }, [firstName, lastName, phoneNumber, companyName, email, fileName, file]);
-
-  const [open, setOpen] = useState(false);
 
   const handleClose = () => {
     setOpen(false);
@@ -194,7 +129,7 @@ export default function AddClient() {
     <ThemeProvider theme={defaultTheme}>
       <Paper elevation={3} sx={{ m: "5%" }}>
         <Box sx={{ padding: 5 }}>
-          <Typography variant="h2" color="initial" gutterBottom>
+          <Typography variant="h2" gutterBottom>
             Client's informations
           </Typography>
           <form onSubmit={handleSubmit} className="emp-form">
@@ -206,15 +141,12 @@ export default function AddClient() {
                     margin="normal"
                     fullWidth
                     id="firstName"
-                    label="First Name"
-                    name="firstName"
-                    onChange={handleFirstNameChange}
-                    inputProps={{
-                      maxLength: 20,
-                    }}
-                    value={firstName}
-                    error={!!errors.firstName}
-                    helperText={errors.firstName}
+                    label="Full Name"
+                    name="fullName"
+                    onChange={handleChange}
+                    value={formData.fullName}
+                    error={!!errors.fullName}
+                    helperText={errors.fullName}
                   />
                 </Item>
               </Grid>
@@ -225,38 +157,17 @@ export default function AddClient() {
                     required
                     margin="normal"
                     fullWidth
-                    id="lastName"
-                    label="Last Name"
-                    name="lastName"
-                    onChange={handleLastNameChange}
-                    inputProps={{
-                      maxLength: 20,
-                    }}
-                    value={lastName}
-                    error={!!errors.lastName}
-                    helperText={errors.lastName}
+                    id="address"
+                    label="Address"
+                    name="address"
+                    onChange={handleChange}
+                    value={formData.address}
+                    error={!!errors.address}
+                    helperText={errors.address}
                   />
                 </Item>
               </Grid>
-              <Grid item xs={12}>
-                <Item elevation={0}>
-                  <TextField
-                    required
-                    margin="normal"
-                    fullWidth
-                    id="companyName"
-                    label="Company's Name"
-                    name="companyName"
-                    onChange={handleCompanyNameChange}
-                    inputProps={{
-                      maxLength: 20,
-                    }}
-                    value={companyName}
-                    error={!!errors.companyName}
-                    helperText={errors.companyName}
-                  />
-                </Item>
-              </Grid>
+
               <Grid item xs={12}>
                 <Item elevation={0}>
                   <TextField
@@ -267,8 +178,8 @@ export default function AddClient() {
                     id="phoneNumber"
                     label="Phone Number"
                     name="phoneNumber"
-                    onChange={handlePhoneNumberChange}
-                    value={phoneNumber}
+                    onChange={handleChange}
+                    value={formData.phoneNumber}
                     error={!!errors.phoneNumber}
                     helperText={errors.phoneNumber}
                   />
@@ -284,8 +195,8 @@ export default function AddClient() {
                     id="email"
                     label="Email"
                     name="email"
-                    onChange={handleEmailChange}
-                    value={email}
+                    onChange={handleChange}
+                    value={formData.email}
                     error={!!errors.email}
                     helperText={errors.email}
                   />
@@ -317,7 +228,7 @@ export default function AddClient() {
                   <Button
                     className="cancel-btn"
                     onClick={handleCancel}
-                    variant="contined"
+                    variant="contained"
                   >
                     Cancel
                   </Button>
@@ -348,14 +259,14 @@ export default function AddClient() {
                         <IconButton
                           id="delete-btn"
                           sx={{ height: "60px", width: "60px" }}
-                          onClick={onDeleteFileHandler}
+                          onClick={handleDeleteFile}
                         >
                           <DeleteIcon sx={{ color: "white" }} />
                         </IconButton>
                       }
                     >
                       <Avatar
-                        src={file}
+                        // src={file}
                         sx={{
                           width: "300px  ",
                           height: "300px",
@@ -363,51 +274,12 @@ export default function AddClient() {
                         }}
                       >
                         <FileUploader
-                          onSelectFile={onSelectFileHandler}
-                          setFile={setFile}
+                          // onSelectFile={handleFileChange}
+                          // setFile={setFile}
                           icon={"upload"}
                         />
                       </Avatar>
                     </Badge>
-                  </Box>
-                  <Box mt mb>
-                    <Typography
-                      variant="h5"
-                      color="initial"
-                      textAlign={"center"}
-                    >
-                      {firstName}
-                    </Typography>
-                    <Typography
-                      variant="h5"
-                      color="initial"
-                      sx={{
-                        display: "flex",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {lastName}
-                    </Typography>
-                    <Typography
-                      variant="h5"
-                      color="initial"
-                      sx={{
-                        display: "flex",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {phoneNumber}
-                    </Typography>
-                    <Typography
-                      variant="h5"
-                      color="initial"
-                      sx={{
-                        display: "flex",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {email}
-                    </Typography>
                   </Box>
                 </Item>
               </Grid>
@@ -440,10 +312,69 @@ export default function AddClient() {
           <DialogContentText id="alert-dialog-description" color={"white"}>
             {isCancelled
               ? "The changes you have made are not saved"
-              : "The changes you have made are saved "}
+              : "The changes you have made are saved"}
           </DialogContentText>
         </DialogContent>
       </Dialog>
     </ThemeProvider>
   );
+}
+
+{
+  /* <Grid item xs={12}>
+                <Item elevation={0}>
+                <TextField
+                    required
+                    margin="normal"
+                    fullWidth
+                    id="companyName"
+                    label="Company's Name"
+                    name="companyName"
+                    onChange={handleChange}
+                    value={formData.companyName}
+                    error={!!errors.companyName}
+                    helperText={errors.companyName}
+                  />
+                </Item>
+              </Grid> */
+}
+
+{
+  /* <Typography
+                      variant="h5"
+                      color="initial"
+                      textAlign={"center"}
+                    >
+                      {firstName}
+                    </Typography>
+                    <Typography
+                      variant="h5"
+                      color="initial"
+                      sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {lastName}
+                    </Typography>
+                    <Typography
+                      variant="h5"
+                      color="initial"
+                      sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {phoneNumbers}
+                    </Typography>
+                    <Typography
+                      variant="h5"
+                      color="initial"
+                      sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {emails}
+                    </Typography> */
 }

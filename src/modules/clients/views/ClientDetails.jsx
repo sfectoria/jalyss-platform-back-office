@@ -5,6 +5,7 @@ import { Box } from '@mui/material';
 import Item from '../../../style/ItemStyle';
 
 
+
 export default function ClientDetails() {
 
   return (

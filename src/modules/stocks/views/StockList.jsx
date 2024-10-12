@@ -27,6 +27,8 @@ export default function StockList() {
     try {
       const response = await axios.get(ip + "/stocks/getAll");
       setRows(response.data);
+      console.log("from stock",response.data);
+      
     } catch (err) {
       setError(err);
     } finally {
