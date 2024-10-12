@@ -18,6 +18,14 @@ export default function AddButton({type,info}) {
         { icon: <ReceiptIcon />, name: "F" },
         { icon: <ReceiptIcon />, name: "Ticket" },
       ]);
+    } 
+    else if (type === "achat") {
+      setActions([
+        { icon: <ExitToAppOutlinedIcon />, name: "Bl" },
+        { icon: <ReceiptIcon />, name: "Blf" },
+        { icon: <ReceiptIcon />, name: "f" },
+        { icon: <ReceiptIcon />, name: "ticket" },
+      ]);
     } else if (type === "retour") {
       setActions([{ icon: <ExitToAppOutlinedIcon />, name: "BRe" }]);
     } else if (type === "commande") {
@@ -40,7 +48,7 @@ export default function AddButton({type,info}) {
 
 
   const handleAction = (type) => {
-    if (type === "BR" || type==='BRe') {
+    if (type === "BR" || type==='BRe' || type ==='Bl'|| type ==='Blf' || type ==='f' || type ==='ticket') {
       navigate(`/invoice/${type}/0/${info.id}`);
     } else if (type === "BS" || type ==='BL' || type ==='BLF' || type ==='F' || type ==='Ticket' || type ==='BC' || type ==='Devis' || type==='BT' ) {
       navigate(`/invoice/${type}/${info.id}/0`, {

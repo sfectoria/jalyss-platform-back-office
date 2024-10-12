@@ -1,19 +1,32 @@
-import React, { useState } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import React, { useState } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
 
-const PandMField = ({ onItemizedItemEdit, quantity,stockQuantity,id,type }) => {
-
-  
+const PandMField = ({
+  onItemizedItemEdit,
+  quantity,
+  stockQuantity,
+  id,
+  type,
+}) => {
   const triggerChange = (newValue) => {
-    const event = { target: { value: parseInt(newValue),name:'quantity',id:id } };
+    const event = {
+      target: { value: parseInt(newValue), name: "quantity", id: id },
+    };
     handleChange(event);
   };
 
   const handleIncrement = () => {
-    console.log(quantity,type);
-    if(stockQuantity>quantity||type==='BR'){
-    triggerChange(quantity + 1);
-  }
+    console.log(quantity, type);
+    if (
+      stockQuantity > quantity ||
+      type === "BR " ||
+      type === "Bl" ||
+      type === "Blf" ||
+      type === "f" ||
+      type === "ticket"
+    ) {
+      triggerChange(quantity + 1);
+    }
   };
 
   const handleDecrement = () => {
@@ -23,37 +36,39 @@ const PandMField = ({ onItemizedItemEdit, quantity,stockQuantity,id,type }) => {
   };
 
   const handleChange = (e) => {
-    console.log(e.target.value)
-     if(stockQuantity>=e.target.value||type==='BR'){
+    console.log(e.target.value);
+    if (
+      stockQuantity >= e.target.value ||
+      type === "BR" ||
+      type === "Bl" ||
+      type === "Blf" ||
+      type === "f" ||
+      type === "ticket"
+    ) {
       onItemizedItemEdit(e);
     }
   };
 
   return (
-    <div className="d-flex input-group border rounded-2" style={{ margin: 'auto' }}>
+    <div
+      className="d-flex input-group border rounded-2"
+      style={{ margin: "auto" }}
+    >
       <div className="input-group-prepend">
-        <button 
-          className="btn" 
-          type="button" 
-          onClick={handleDecrement}
-        >
+        <button className="btn" type="button" onClick={handleDecrement}>
           -
         </button>
       </div>
-      <input 
-        type="text" 
-        className="form-control text-center border-0" 
+      <input
+        type="text"
+        className="form-control text-center border-0"
         id={id}
-        name={'quantity'}
-        value={quantity} 
+        name={"quantity"}
+        value={quantity}
         onChange={handleChange}
       />
       <div className="input-group-append">
-        <button 
-          className="btn" 
-          type="button" 
-          onClick={handleIncrement}
-        >
+        <button className="btn" type="button" onClick={handleIncrement}>
           +
         </button>
       </div>
