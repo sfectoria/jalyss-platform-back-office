@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import { DataGrid,GridToolbar,GridActionsCellItem  } from '@mui/x-data-grid';
 import { useDemoData } from '@mui/x-data-grid-generator';
@@ -10,6 +10,8 @@ import Item from '../../../style/ItemStyle';
 import { Pagination, Stack } from '@mui/material';
 import { GridPagination } from "@mui/x-data-grid";
 import { styled } from "@mui/material/styles";
+import axios from 'axios';
+import { ip } from '../../../constants/ip';
 
 function BasicPagination() {
   return (
@@ -20,6 +22,25 @@ function BasicPagination() {
 }
 
 export default function EmployeesList() {
+
+const [employer,setEmployer]=useState([])
+
+useEffect(()=>{
+  const fetchEmplyer = async()=>{
+    try {
+      const response = await axios.get(`${ip}/employees/all`)
+      setEmployer(response.data)
+      console.log("from employers",response.data);
+      
+    } catch (error) {
+      console.log("error fetching data",error);
+    }
+  }
+  fetchEmplyer()
+},[])
+
+
+
   const { data } = useDemoData({
     dataSet: 'Commodity',
     rowLength: 500,
@@ -31,12 +52,12 @@ export default function EmployeesList() {
   }
   const columns = [
     {
-      field: 'fullName',
+      field: `firstName`,
       headerName: 'Employer Name',
       width: 200,
     },
     {
-      field: 'post',
+      field: 'position',
       headerName: 'Post',
       width: 200,
     },
@@ -46,12 +67,12 @@ export default function EmployeesList() {
       width: 200,
     },
     {
-      field: 'empEmail',
+      field: 'email',
       headerName: 'Email',
       width: 220,
     },
     {
-      field: 'empNumber',
+      field: 'phoneNumber',
       headerName: 'Phone Number',
       width: 150,
     },
@@ -72,17 +93,17 @@ export default function EmployeesList() {
     
   ];
   
-  const rows = [
-    { id: 1, post: 'Manager', postLocation: 'Sfax1/Sfax', fullName: "Salim sfexi" ,empEmail:"slouma@gmail.com", details:"fff"},
-    { id: 2, post: 'Vendure', postLocation: 'Boutique Nabeul',empEmail:"hamidamidawi@gmail.com", fullName: "Hamida midawi" },
-    { id: 3, post: 'Manager', postLocation: 'Stock Sahlin',empEmail:"waelbensahloul@gmail.com", fullName: "Wael ben sahloul" },
-    { id: 4, post: '', postLocation: 'Stock alia', fullName: "Mouhamed Amin ben yahya" },
-    { id: 5, post: 'Targaryen', postLocation: 'Daenerys', fullName: "houssem ben ammar" },
-    { id: 6, post: 'Melisandre', postLocation: null, fullName: 150 },
-    { id: 7, post: 'Clifford', postLocation: 'Ferrara', fullName: 44 },
-    { id: 8, post: 'Frances', postLocation: 'Rossini', fullName: 36 },
-    { id: 9, post: 'Roxie', postLocation: 'Harvey', fullName: 65 },
-  ];
+  // const rows = [
+  //   { id: 1, post: 'Manager', postLocation: 'Sfax1/Sfax', fullName: "Salim sfexi" ,empEmail:"slouma@gmail.com", details:"fff"},
+  //   { id: 2, post: 'Vendure', postLocation: 'Boutique Nabeul',empEmail:"hamidamidawi@gmail.com", fullName: "Hamida midawi" },
+  //   { id: 3, post: 'Manager', postLocation: 'Stock Sahlin',empEmail:"waelbensahloul@gmail.com", fullName: "Wael ben sahloul" },
+  //   { id: 4, post: '', postLocation: 'Stock alia', fullName: "Mouhamed Amin ben yahya" },
+  //   { id: 5, post: 'Targaryen', postLocation: 'Daenerys', fullName: "houssem ben ammar" },
+  //   { id: 6, post: 'Melisandre', postLocation: null, fullName: 150 },
+  //   { id: 7, post: 'Clifford', postLocation: 'Ferrara', fullName: 44 },
+  //   { id: 8, post: 'Frances', postLocation: 'Rossini', fullName: 36 },
+  //   { id: 9, post: 'Roxie', postLocation: 'Harvey', fullName: 65 },
+  // ];
   return (
     <Box
       sx={{
@@ -106,7 +127,7 @@ export default function EmployeesList() {
                 color: "primary.main",
               },
             }}
-            rows={rows}
+            rows={employer}
             columns={columns}
             slots={{
               noResultsOverlay: CustomNoResultsOverlay,

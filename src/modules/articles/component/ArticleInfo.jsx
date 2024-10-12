@@ -110,7 +110,7 @@ const ArticleInfo = forwardRef(({ onSubmit }, ref) => {
             headers: { 'Content-Type': 'multipart/form-data' },
           });
           console.log("Image uploaded:", uploadResponse.data);
-          uploadedImageUrl = uploadResponse.data.id; // Assuming the response contains the image ID
+          uploadedImageUrl = uploadResponse.data.id; 
         }
   
         if (uploadedImageUrl) {
@@ -120,7 +120,7 @@ const ArticleInfo = forwardRef(({ onSubmit }, ref) => {
         setSuccessAlert(true);
         setErrorAlert(false);  
         setTimeout(() => navigate("/articles"), 2500);
-        localStorage.removeItem('uploadedFile'); // Remove from localStorage
+        localStorage.removeItem('uploadedFile'); 
       } else {
         setErrorAlert(true);
         setSuccessAlert(false);  

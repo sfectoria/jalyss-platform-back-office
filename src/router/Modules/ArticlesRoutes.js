@@ -14,6 +14,7 @@ export default function ArticleRoutes() {
       <Route index key="articles-list" element={<ArticlesList />} />
       <Route path="new-article" key="new-article" element={<AddArticle />} />
       <Route path=":id" key="article-details" element={<ArticleDetails />} />
+      <Route path=":id" key="article-update" element={<UpdateArticle />} />
       <Route key="index" path=":articleId/stocks/:stocksIds/full-history" element={<ArticleHistory />} />
       <Route path="publishingHouses" key="publishing-houses" element={<PublishingHouse />} />
       <Route path="authors" key="authors" element={<Authors />} />

@@ -9,24 +9,20 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Divider,
   Grid,
   IconButton,
-  InputLabel,
   Paper,
-  Stack,
   TextField,
   ThemeProvider,
-  Tooltip,
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import Item from "../../../style/ItemStyle";
 import Autocomplete from "@mui/material/Autocomplete";
 import FileUploader from "../../../components/FileUploader";
-import { EditNotifications } from "@mui/icons-material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import CameraAltRoundedIcon from "@mui/icons-material/CameraAltRounded";
+import axios from "axios";
+import { ip } from "../../../constants/ip";
 
 export default function AddEmployee() {
   const defaultTheme = createTheme({
@@ -41,159 +37,77 @@ export default function AddEmployee() {
     },
   });
 
-  const roleData = ["admin", "manager", "seller"];
-  const locationData = ["Sfax", "Tunis", "Sousse"];
-  const names = ["iyed", "oussema", "khalil", "meycem", "yassmine"];
-  const emails = [
-    "iyediyedammari@gmail.com",
-    "khalil@gmail.com",
-    "oussema@gmail.com",
-    "yassmine@gmail.com",
-    "meycem@gmail.com",
-  ];
-  const phoneNumbers = ["12345678", "50712106", "28283596", "87654321"];
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    phoneNumber: "",
+    email: "",
+    position: "",
+    address: "",
+  });
 
-  const [firstName, setFirstName] = useState("");
-  const handleFirstNameChange = (e) => {
-    const newValue = e.target.value;
-    setFirstName(newValue);
-    console.log(newValue);
+  const [errors, setErrors] = useState({});
+  const [open, setOpen] = useState(false);
+  const [isCancelled, setIsCancelled] = useState(false);
+
+  const positionOptions = ["admin", "manager", "seller"];
+  const addressOptions = ["Sfax", "Tunis", "Sousse"];
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const [lastName, setLastName] = useState("");
-  const handleLastNameChange = (e) => {
-    const newValue = e.target.value;
-    setLastName(newValue);
-    console.log(newValue);
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.firstName) newErrors.firstName = "First Name is required";
+    if (!formData.lastName) newErrors.lastName = "Last Name is required";
+    if (!formData.phoneNumber) newErrors.phoneNumber = "Phone Number is required";
+    if (!formData.email) newErrors.email = "Email is required";
+    if (!formData.position) newErrors.position = "Role is required";
+    if (!formData.address) newErrors.address = "Location is required";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0; 
   };
 
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const handlePhoneNumberChange = (e) => {
-    const newValue = e.target.value;
-    setPhoneNumber(newValue);
-    console.log(newValue);
-  };
-
-  const [email, setEmail] = useState("");
-  const handleEmailChange = (e) => {
-    const newValue = e.target.value;
-    setEmail(newValue);
-    console.log(newValue);
-  };
-
-  const [role, setRole] = useState("");
-  const handleRoleChange = (e, newValue) => {
-    setRole(newValue);
-    console.log(newValue);
-  };
-
-  const [location, setLocation] = useState("");
-  const handleLocationChange = (e, newValue) => {
-    setLocation(newValue);
-    console.log(newValue);
-  };
-
-  const [file, setFile] = useState(null);
-  const [fileName, setFileName] = useState("");
-  const onSelectFileHandler = (e) => {
-    const uploadedFile = e.target.files[0];
-    setFileName(uploadedFile?.name);
-    if (uploadedFile) {
-      setFile(URL.createObjectURL(uploadedFile));
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (validateForm()) {
+      try {
+        const response = await axios.post(`${ip}/employees`, formData);
+        console.log("Response:", response.data); 
+        setIsCancelled(false);
+        setOpen(true);
+        resetForm();
+      } catch (error) {
+        console.error("Error submitting form:", error);
+        alert("An error occurred while submitting the form. Please try again.");
+      }
     }
-  };
-
-  const onDeleteFileHandler = () => {
-    setFile(null);
-    setFileName("");
   };
 
   const resetForm = () => {
-    setFirstName("");
-    setLastName("");
-    setPhoneNumber("");
-    setEmail("");
-    setRole("");
-    setLocation("");
-    setFile(null);
-    setFileName("");
+    setFormData({
+      firstName: "",
+      lastName: "",
+      phoneNumber: "",
+      email: "",
+      position: "",
+      address: "",
+    });
     setErrors({});
-    console.log(form);
   };
 
-  const [errors, setErrors] = useState({});
-
-  const isVerified = (form) => {
-    if (names.includes(form.firstName.toLowerCase())) {
-      setErrors({ firstName: "First Name already exists" });
-      return false;
-    }
-
-    if (phoneNumber.toString().length != 8) {
-      setErrors({
-        phoneNumber: "Phone number must be 8 digits",
-      });
-      return false;
-    } else if (phoneNumbers.includes(form.phoneNumber)) {
-      setErrors({ phoneNumber: "Phone number already exists" });
-      return false;
-    }
-
-    if (emails.includes(form.email)) {
-      setErrors({ email: "Email already exists" });
-      return false;
-    }
-
-    return true;
-  };
-
-  const [form, setForm] = useState({});
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const newErrors = {};
-
-    if (!firstName) newErrors.firstName = "First Name is required";
-    if (!lastName) newErrors.lastName = "Last Name is required";
-    if (!phoneNumber) newErrors.phoneNumber = "Phone Number is required";
-    if (!email) newErrors.email = "Email is required";
-    if (!role) newErrors.role = "Role is required";
-    if (!location) newErrors.location = "Location is required";
-
-    setErrors(newErrors);
-
-    if (Object.keys(newErrors).length === 0 && isVerified(form)) {
-      console.log(form);
-      setIsCancelled(false);
-      setOpen(true);
-      resetForm();
-    }
-  };
-
-  const [isCancelled, setIsCancelled] = useState(false);
   const handleCancel = () => {
     setIsCancelled(true);
     setOpen(true);
     resetForm();
   };
 
-  useEffect(() => {
-    setForm({
-      firstName: firstName,
-      lastName: lastName,
-      phoneNumber: phoneNumber,
-      email: email,
-      role: role,
-      location: location,
-      fileName: fileName,
-      fileUrl: file,
-    });
-  }, [firstName, lastName, phoneNumber, email, role, location, fileName, file]);
-
-  const [open, setOpen] = useState(false);
-
   const handleClose = () => {
     setOpen(false);
   };
+
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -204,7 +118,7 @@ export default function AddEmployee() {
           </Typography>
           <form onSubmit={handleSubmit} className="emp-form">
             <Grid container spacing={2}>
-              <Grid item xs={12}>
+            <Grid item xs={12}>
                 <Item elevation={0}>
                   <TextField
                     required
@@ -213,17 +127,16 @@ export default function AddEmployee() {
                     id="firstName"
                     label="First Name"
                     name="firstName"
-                    onChange={handleFirstNameChange}
                     inputProps={{
                       maxLength: 20,
                     }}
-                    value={firstName}
+                    value={formData.firstName}
+                    onChange={handleInputChange}
                     error={!!errors.firstName}
                     helperText={errors.firstName}
                   />
                 </Item>
               </Grid>
-
               <Grid item xs={12}>
                 <Item elevation={0}>
                   <TextField
@@ -233,11 +146,11 @@ export default function AddEmployee() {
                     id="lastName"
                     label="Last Name"
                     name="lastName"
-                    onChange={handleLastNameChange}
                     inputProps={{
                       maxLength: 20,
                     }}
-                    value={lastName}
+                    value={formData.lastName}
+                    onChange={handleInputChange}
                     error={!!errors.lastName}
                     helperText={errors.lastName}
                   />
@@ -253,8 +166,8 @@ export default function AddEmployee() {
                     id="phoneNumber"
                     label="Phone Number"
                     name="phoneNumber"
-                    onChange={handlePhoneNumberChange}
-                    value={phoneNumber}
+                    value={formData.phoneNumber}
+                    onChange={handleInputChange}
                     error={!!errors.phoneNumber}
                     helperText={errors.phoneNumber}
                   />
@@ -270,33 +183,30 @@ export default function AddEmployee() {
                     id="email"
                     label="Email"
                     name="email"
-                    onChange={handleEmailChange}
-                    value={email}
+                    value={formData.email}
+                    onChange={handleInputChange}
                     error={!!errors.email}
                     helperText={errors.email}
                   />
                 </Item>
               </Grid>
+            
               <Grid item xs={12}>
                 <Item elevation={0}>
                   <Autocomplete
-                    onInputChange={handleRoleChange}
-                    inputValue={role}
-                    value={role}
-                    sx={{ mt: "1.5%" }}
-                    disablePortal
-                    id="role"
-                    options={roleData}
-                    isOptionEqualToValue={(option, value) => option === value}
-                    // getOptionDisabled={(option) => option === roleData[0]}
+                    options={positionOptions}
+                    value={formData.position}
+                    onChange={(event, newValue) => {
+                      setFormData((prev) => ({ ...prev, position: newValue }));
+                    }}
                     renderInput={(params) => (
                       <TextField
                         {...params}
-                        label="Role"
+                        label="Position"
                         required
                         fullWidth
-                        error={!!errors.role}
-                        helperText={errors.role}
+                        error={!!errors.position}
+                        helperText={errors.position}
                       />
                     )}
                   />
@@ -305,32 +215,22 @@ export default function AddEmployee() {
               <Grid item xs={12}>
                 <Item elevation={0}>
                   <Autocomplete
-                    onInputChange={handleLocationChange}
-                    value={location}
-                    inputValue={location}
-                    sx={{ mt: "2%" }}
-                    disablePortal
-                    id="role"
-                    options={locationData}
-                    isOptionEqualToValue={(option, value) => option === value}
+                    options={addressOptions}
+                    value={formData.address}
+                    onChange={(event, newValue) => {
+                      setFormData((prev) => ({ ...prev, address: newValue }));
+                    }}
                     renderInput={(params) => (
                       <TextField
                         {...params}
-                        label="Location"
+                        label="Address"
                         required
                         fullWidth
-                        error={!!errors.location}
-                        helperText={errors.location}
+                        error={!!errors.address}
+                        helperText={errors.address}
                       />
                     )}
                   />
-                </Item>
-              </Grid>
-              <Grid item xs={12}>
-                <Item elevation={0}>
-                  <Alert severity="info">
-                    Choosing a profile picture is optional.
-                  </Alert>
                 </Item>
               </Grid>
               <Grid item xs={12}>
@@ -383,14 +283,14 @@ export default function AddEmployee() {
                         <IconButton
                           id="delete-btn"
                           sx={{ height: "60px", width: "60px" }}
-                          onClick={onDeleteFileHandler}
+                          // onClick={onDeleteFileHandler}
                         >
                           <DeleteIcon sx={{ color: "white" }} />
                         </IconButton>
                       }
                     >
                       <Avatar
-                        src={file}
+                        // src={file}
                         sx={{
                           width: "300px  ",
                           height: "300px",
@@ -398,71 +298,12 @@ export default function AddEmployee() {
                         }}
                       >
                         <FileUploader
-                          onSelectFile={onSelectFileHandler}
-                          setFile={setFile}
+                          // onSelectFile={onSelectFileHandler}
+                          // setFile={setFile}
                           icon={"upload"}
                         />
                       </Avatar>
                     </Badge>
-                  </Box>
-                  <Box mt mb>
-                    <Typography
-                      variant="h5"
-                      color="initial"
-                      textAlign={"center"}
-                    >
-                      {firstName}
-                    </Typography>
-                    <Typography
-                      variant="h5"
-                      color="initial"
-                      sx={{
-                        display: "flex",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {lastName}
-                    </Typography>
-                    <Typography
-                      variant="h5"
-                      color="initial"
-                      sx={{
-                        display: "flex",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {phoneNumber}
-                    </Typography>
-                    <Typography
-                      variant="h5"
-                      color="initial"
-                      sx={{
-                        display: "flex",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {email}
-                    </Typography>
-                    <Typography
-                      variant="h5"
-                      color="initial"
-                      sx={{
-                        display: "flex",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {role}
-                    </Typography>
-                    <Typography
-                      variant="h5"
-                      color="initial"
-                      sx={{
-                        display: "flex",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {location}
-                    </Typography>
                   </Box>
                 </Item>
               </Grid>
