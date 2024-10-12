@@ -13,12 +13,14 @@ import axios from "axios";
 import ModeEditOutlineIcon from "@mui/icons-material/ModeEditOutline";
 import { Navigate, useParams } from "react-router-dom";
 import { ip } from "../../../constants/ip";
-import ClientUpdate from "../views/ClientUpdate";
+import ClientUpdate from "./ClientUpdate";
 
 export default function ClientInfo() {
   const { id } = useParams();
   const [one, setOne] = useState({});
   const [isEdit, setIsEdit] = useState(false);
+  const [refresh, setRefresh] = useState(false);
+
   const getOne = async () => {
     try {
       const response = await axios.get(`${ip}/clients/${id}`);
@@ -31,7 +33,7 @@ export default function ClientInfo() {
 
   useEffect(() => {
     getOne();
-  }, [id]);
+  }, [refresh]);
 
   const handleEditClick = () => {
     setIsEdit(!isEdit);
@@ -129,7 +131,7 @@ export default function ClientInfo() {
           </>
         ) : (
           <Box sx={{ mt: 3, display: "flex", justifyContent: "center" }}>
-            <ClientUpdate setIsEdit={setIsEdit} />
+            <ClientUpdate setIsEdit={setIsEdit} refresh={refresh} setRefresh={setRefresh}/>
           </Box>
         )}
       </Box>

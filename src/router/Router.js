@@ -51,7 +51,7 @@ export default function Router() {
             {VentRoutes()}
             {SalesRoutes()}
             <Route
-              path="invoice/:type/:sender/:receiver"
+              path="invoice/:state/:type/:sender/:receiver"
               key="invoice"
               element={<InvoiceContainer />}
             />

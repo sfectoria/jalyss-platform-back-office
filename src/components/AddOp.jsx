@@ -48,11 +48,14 @@ export default function AddButton({type,info}) {
 
 
   const handleAction = (type) => {
-    if (type === "BR" || type==='BRe' || type ==='Bl'|| type ==='Blf' || type ==='f' || type ==='ticket') {
-      navigate(`/invoice/${type}/0/${info.id}`);
-    } else if (type === "BS" || type ==='BL' || type ==='BLF' || type ==='F' || type ==='Ticket' || type ==='BC' || type ==='Devis' || type==='BT' ) {
-      navigate(`/invoice/${type}/${info.id}/0`, {
-      });
+    if (type === "BR" || type ==='Bl'|| type ==='Blf' || type ==='f' || type ==='ticket') {
+      navigate(`/invoice/purchase/${type}/0/${info.id}`);
+    } else if (type === "BS" || type ==='BL' || type ==='BLF' || type ==='F' || type ==='Ticket' || type ==='BC' || type ==='Devis' ) {
+      navigate(`/invoice/sale/${type}/${info.id}/0`);
+    } else if (type==='BRe') {
+      navigate(`/invoice/return/${type}/0/${info.id}`);
+    } else if (type==='BT') {
+      navigate(`/invoice/transfer/${type}/${info.id}/0`);
     }
 
   };
