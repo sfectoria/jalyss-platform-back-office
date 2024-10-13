@@ -39,6 +39,8 @@ const ChannelsList = () => {
     try {
       const response = await axios.get(ip + "/selling/getAll");
       setRows(response.data);
+      console.log("from channels",response.data);
+      
     } catch (err) {
       setError(err);
     } finally {

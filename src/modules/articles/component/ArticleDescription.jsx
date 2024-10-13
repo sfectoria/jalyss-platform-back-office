@@ -1,10 +1,30 @@
-import React from "react";
+import React, { useState } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+import ModeEditOutlineIcon from "@mui/icons-material/ModeEditOutline";
+import UpdateArticle from "../views/UpdateArticle";
 
 export default function ArticleDescription({ data }) {
+  const [isEditMode, setIsEditMode] = useState(false); 
+
+  const handleEditClick = () => {
+    setIsEditMode(!isEditMode); 
+  };
+  
+
+
   return (
     <Box sx={{ display: "flex", justifyContent: "end", gap: 10 }}>
+      <Box>
+        <ModeEditOutlineIcon
+          onClick={handleEditClick} 
+          sx={{ cursor: "pointer" }}
+        />
+      </Box>
+      {isEditMode && (
+        <UpdateArticle setIsEditMode={setIsEditMode} isEditMode={isEditMode} data1={data} />
+      )}
+
       <Box>
         <Typography
           align="right"
