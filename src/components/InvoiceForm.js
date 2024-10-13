@@ -41,8 +41,8 @@ const InvoiceForm = () => {
   const [total, setTotal] = useState("0.00");
   const [payedAmount, setPayedAmount] = useState(0);
   const [subTotal, setSubTotal] = useState(0.0);
-  const [taxRate, setTaxRate] = useState("");
-  const [taxAmount, setTaxAmount] = useState("0.00");
+  // const [taxRate, setTaxRate] = useState("");
+  // const [taxAmount, setTaxAmount] = useState("0.00");
   const [discountRate, setDiscountRate] = useState("");
   const [discountAmount, setDiscountAmount] = useState("0.00");
   const [items, setItems] = useState([]);
@@ -112,7 +112,7 @@ const InvoiceForm = () => {
           restedAmount: payedAmount
             ? parseFloat(total) - parseFloat(payedAmount)
             : 0,
-          tax: taxRate ? parseFloat(taxRate) : 0,
+          // tax: taxRate ? parseFloat(taxRate) : 0,
           discount: discountAmount ? parseFloat(discountAmount) : 0,
           paymentType: paymentType,
           paymentStatus: paymentStatus,
@@ -156,7 +156,7 @@ const InvoiceForm = () => {
           restedAmount: payedAmount
             ? parseFloat(total) - parseFloat(payedAmount)
             : 0,
-          tax: taxRate ? parseFloat(taxRate) : 0,
+          // tax: taxRate ? parseFloat(taxRate) : 0,
           discount: discountAmount ? parseFloat(discountAmount) : 0,
           paymentType: paymentType,
           paymentStatus: paymentStatus,
@@ -189,7 +189,7 @@ const InvoiceForm = () => {
           restedAmount: payedAmount
             ? parseFloat(total) - parseFloat(payedAmount)
             : 0,
-          tax: taxRate ? parseFloat(taxRate) : 0,
+          // tax: taxRate ? parseFloat(taxRate) : 0,
           discount: discountAmount ? parseFloat(discountAmount) : 0,
           paymentType: paymentType,
           paymentStatus: paymentStatus,
@@ -245,7 +245,7 @@ const InvoiceForm = () => {
           salesChannelId: billFromId,
           date: new Date(),
           totalAmount: parseFloat(total),
-          tax: taxRate ? parseFloat(taxRate) : 0,
+          // tax: taxRate ? parseFloat(taxRate) : 0,
           discount: discountAmount ? parseFloat(discountAmount) : 0,
           estimateLine: itemsWithIdArticle,
         };
@@ -279,7 +279,7 @@ const InvoiceForm = () => {
           restedAmount: payedAmount
             ? parseFloat(total) - parseFloat(payedAmount)
             : 0,
-          tax: taxRate ? parseFloat(taxRate) : 0,
+          // tax: taxRate ? parseFloat(taxRate) : 0,
           discount: discountAmount ? parseFloat(discountAmount) : 0,
           paymentType: paymentType,
           paymentStatus: paymentStatus,
@@ -457,8 +457,8 @@ const InvoiceForm = () => {
       );
       setSubTotal(subTotal.toFixed(2));
     });
-    const taxAmt = parseFloat(subTotal * (taxRate / 100) || 0).toFixed(2);
-    setTaxAmount(taxAmt);
+    // const taxAmt = parseFloat(subTotal * (taxRate / 100) || 0).toFixed(2);
+    // setTaxAmount(taxAmt);
 
     const discountAmt = parseFloat(
       subTotal * (discountRate / 100) || 0
@@ -466,7 +466,8 @@ const InvoiceForm = () => {
     setDiscountAmount(discountAmt);
 
     const totalAmt = parseFloat(
-      subTotal - discountAmt + parseFloat(taxAmt)
+      subTotal - discountAmt 
+      // + parseFloat(taxAmt)
     ).toFixed(2);
     setTotal(totalAmt);
   };
@@ -522,9 +523,9 @@ const InvoiceForm = () => {
       case "notes":
         setNotes(value);
         break;
-      case "taxRate":
-        setTaxRate(value);
-        break;
+      // case "taxRate":
+      //   setTaxRate(value);
+      //   break;
       case "discountRate":
         setDiscountRate(value);
         break;
@@ -736,14 +737,14 @@ const InvoiceForm = () => {
                       {currency}
                     </span>
                   </div>
-                  <div className="d-flex flex-row align-items-start justify-content-between mt-2">
+                  {/* <div className="d-flex flex-row align-items-start justify-content-between mt-2">
                     <span className="fw-bold">Tax:</span>
                     <span>
                       <span className="small">({taxRate || 0}%)</span>
                       {taxAmount || 0}
                       {currency}
                     </span>
-                  </div>
+                  </div> */}
                   <hr />
                   <div
                     className="d-flex flex-row align-items-start justify-content-between"
@@ -793,13 +794,13 @@ const InvoiceForm = () => {
                   notes,
                   total,
                   subTotal,
-                  taxAmount,
+                  // taxAmount,
                   discountAmount,
                 }}
                 itemsData={items}
                 currency={currency}
                 subTotal={subTotal}
-                taxAmount={taxAmount}
+                // taxAmount={taxAmount}
                 discountAmount={discountAmount}
                 total={total}
                 finishSale={finishSale}
@@ -931,7 +932,7 @@ const InvoiceForm = () => {
                     </InputGroup>
                   </Form.Group>
                 )}
-                <Form.Group className="my-3">
+                {/* <Form.Group className="my-3">
                   <Form.Label className="fw-bold">Tax rate:</Form.Label>
                   <InputGroup className="my-1 flex-nowrap">
                     <Form.Control
@@ -949,7 +950,7 @@ const InvoiceForm = () => {
                       %
                     </InputGroup.Text>
                   </InputGroup>
-                </Form.Group>
+                </Form.Group> */}
                 <Form.Group className="my-3">
                   <Form.Label className="fw-bold">Discount rate:</Form.Label>
                   <InputGroup className="my-1 flex-nowrap">

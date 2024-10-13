@@ -220,7 +220,7 @@ export default function StockHistory() {
             modalId={modalId.slice(modalId.indexOf("-") + 1)}
             currency={"DT"}
             subTotal={0}
-            taxAmount={0}
+            // taxAmount={0}
             discountAmount={0}
             total={0}
             mode="viewer"

@@ -295,7 +295,7 @@ function SalesList() {
           idChannel={param.id}
           currency={"DT"}
           subTotal={0}
-          taxAmount={0}
+          // taxAmount={0}
           discountAmount={0}
           total={0}
           mode="viewer"
