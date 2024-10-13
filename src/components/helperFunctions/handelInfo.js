@@ -1,6 +1,7 @@
 // handel info function
 
 export const handelInfo = (
+  state,
   type,
   setInvoiceTitle,
   setReqName,

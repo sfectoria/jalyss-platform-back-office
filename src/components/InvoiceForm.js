@@ -19,6 +19,7 @@ import axios from "axios";
 import { ip } from "../constants/ip";
 import SuccessOperationPopUp from "./SuccessOperationPopUp";
 import { handelInfo } from "./helperFunctions/handelInfo";
+import jalyssImage from "../assets/jalyss-image-preview.png";
 
 const InvoiceForm = () => {
   const navigate = useNavigate();
@@ -32,17 +33,17 @@ const InvoiceForm = () => {
   const [billToId, setBillToId] = useState(0);
   const [billTo, setBillTo] = useState("");
   const [billToEmail, setBillToEmail] = useState("");
+  const [billToPhone, setBillToPhone] = useState("");
   const [billToAddress, setBillToAddress] = useState("");
   const [billFromId, setBillFromId] = useState(0);
   const [billFrom, setBillFrom] = useState("");
   const [billFromEmail, setBillFromEmail] = useState("");
+  const [billFromPhone, setBillFromPhone] = useState("");
   const [billFromAddress, setBillFromAddress] = useState("");
   const [notes, setNotes] = useState("");
   const [total, setTotal] = useState("0.00");
   const [payedAmount, setPayedAmount] = useState(0);
   const [subTotal, setSubTotal] = useState(0.0);
-  // const [taxRate, setTaxRate] = useState("");
-  // const [taxAmount, setTaxAmount] = useState("0.00");
   const [discountRate, setDiscountRate] = useState("");
   const [discountAmount, setDiscountAmount] = useState("0.00");
   const [items, setItems] = useState([]);
@@ -59,10 +60,11 @@ const InvoiceForm = () => {
   const [info, setInfo] = useState({});
   const param = useParams();
 
-  const { type, receiver, sender } = param;
-  console.log(items);
+  const { state, type, receiver, sender } = param;
+  console.log(items, param);
   useEffect(() => {
     handelInfo(
+      state,
       type,
       setInvoiceTitle,
       setReqName,
@@ -112,7 +114,6 @@ const InvoiceForm = () => {
           restedAmount: payedAmount
             ? parseFloat(total) - parseFloat(payedAmount)
             : 0,
-          // tax: taxRate ? parseFloat(taxRate) : 0,
           discount: discountAmount ? parseFloat(discountAmount) : 0,
           paymentType: paymentType,
           paymentStatus: paymentStatus,
@@ -144,10 +145,11 @@ const InvoiceForm = () => {
           return { idArticle, quantity, price, discount };
         });
         console.log(itemsWithIdArticle);
+        console.log(billFromId);
 
         const obj = {
           deliveryDate: new Date(),
-          idStock: billFromId,
+          idStock: billToId,
           idReceiptNote: 0,
           totalAmount: parseFloat(total),
           payedAmount: payedAmount
@@ -156,7 +158,6 @@ const InvoiceForm = () => {
           restedAmount: payedAmount
             ? parseFloat(total) - parseFloat(payedAmount)
             : 0,
-          // tax: taxRate ? parseFloat(taxRate) : 0,
           discount: discountAmount ? parseFloat(discountAmount) : 0,
           paymentType: paymentType,
           paymentStatus: paymentStatus,
@@ -189,7 +190,6 @@ const InvoiceForm = () => {
           restedAmount: payedAmount
             ? parseFloat(total) - parseFloat(payedAmount)
             : 0,
-          // tax: taxRate ? parseFloat(taxRate) : 0,
           discount: discountAmount ? parseFloat(discountAmount) : 0,
           paymentType: paymentType,
           paymentStatus: paymentStatus,
@@ -245,7 +245,6 @@ const InvoiceForm = () => {
           salesChannelId: billFromId,
           date: new Date(),
           totalAmount: parseFloat(total),
-          // tax: taxRate ? parseFloat(taxRate) : 0,
           discount: discountAmount ? parseFloat(discountAmount) : 0,
           estimateLine: itemsWithIdArticle,
         };
@@ -271,7 +270,7 @@ const InvoiceForm = () => {
         const obj = {
           typeReceipt: "achat",
           receiptDate: new Date(),
-          idStock: billFromId,
+          idStock: billToId,
           totalAmount: parseFloat(total),
           payedAmount: payedAmount
             ? parseFloat(payedAmount)
@@ -279,7 +278,6 @@ const InvoiceForm = () => {
           restedAmount: payedAmount
             ? parseFloat(total) - parseFloat(payedAmount)
             : 0,
-          // tax: taxRate ? parseFloat(taxRate) : 0,
           discount: discountAmount ? parseFloat(discountAmount) : 0,
           paymentType: paymentType,
           paymentStatus: paymentStatus,
@@ -457,8 +455,6 @@ const InvoiceForm = () => {
       );
       setSubTotal(subTotal.toFixed(2));
     });
-    // const taxAmt = parseFloat(subTotal * (taxRate / 100) || 0).toFixed(2);
-    // setTaxAmount(taxAmt);
 
     const discountAmt = parseFloat(
       subTotal * (discountRate / 100) || 0
@@ -466,8 +462,7 @@ const InvoiceForm = () => {
     setDiscountAmount(discountAmt);
 
     const totalAmt = parseFloat(
-      subTotal - discountAmt 
-      // + parseFloat(taxAmt)
+      subTotal - discountAmt
     ).toFixed(2);
     setTotal(totalAmt);
   };
@@ -523,9 +518,6 @@ const InvoiceForm = () => {
       case "notes":
         setNotes(value);
         break;
-      // case "taxRate":
-      //   setTaxRate(value);
-      //   break;
       case "discountRate":
         setDiscountRate(value);
         break;
@@ -586,6 +578,9 @@ const InvoiceForm = () => {
                   </div>
                 </div>
                 <div className="d-flex flex-row align-items-center">
+                  <p className="h4 fw-bold " style={{ color: 'purple' }}>{}</p>
+                  </div>
+                <div className="d-flex flex-row align-items-center">
                   <span className="fw-bold d-block me-2">
                     Current&nbsp;Date:&nbsp;
                   </span>
@@ -593,16 +588,7 @@ const InvoiceForm = () => {
                 </div>
               </div>
               <div className="d-flex flex-row align-items-center">
-                <span className="fw-bold me-2">Invoice&nbsp;Number:&nbsp;</span>
-                <Form.Control
-                  type="number"
-                  value={invoiceNumber}
-                  name="invoiceNumber"
-                  onChange={editField}
-                  min="1"
-                  style={{ maxWidth: "70px" }}
-                  required
-                />
+                <img src={jalyssImage} style={{ width: "150px" }} />
               </div>
             </div>
             <hr className="my-4" />
@@ -617,6 +603,7 @@ const InvoiceForm = () => {
                     setId={setBillToId}
                     setName={setBillTo}
                     setEmail={setBillToEmail}
+                    setPhone={setBillToPhone}
                     setAddress={setBillToAddress}
                   />
                 ) : (
@@ -627,11 +614,21 @@ const InvoiceForm = () => {
                       reff={"resv"}
                       setId={setBillToId}
                       setName={setBillTo}
+                      setPhone={setBillToPhone}
                       setEmail={setBillToEmail}
                       setAddress={setBillToAddress}
                     />
 
-                    <Form.Control
+                    <div className="mt-1 ms-2">
+                      <span>{billToEmail}</span>
+                    </div>
+                    <div className="mt-4 ms-2">
+                      <span>{billToPhone}</span>
+                    </div>
+                    <div className="mt-4 ms-2">
+                      <span>{billToAddress}</span>
+                    </div>
+                    {/* <Form.Control
                       placeholder={"Email address"}
                       value={billToEmail}
                       type="email"
@@ -650,7 +647,7 @@ const InvoiceForm = () => {
                       autoComplete="address"
                       onChange={editField}
                       required
-                    />
+                    /> */}
                   </div>
                 )}
               </Col>
@@ -663,40 +660,31 @@ const InvoiceForm = () => {
                     reff={"sndr"}
                     setId={setBillFromId}
                     setName={setBillFrom}
+                    setPhone={setBillFromPhone}
                     setEmail={setBillFromEmail}
                     setAddress={setBillFromAddress}
                   />
                 ) : (
                   <div>
                     <PersonSearch
-                      person={sender}
+                      state={state}
                       type={type}
                       reff={"sndr"}
                       setId={setBillFromId}
                       setName={setBillFrom}
+                      setPhone={setBillFromPhone}
                       setEmail={setBillFromEmail}
                       setAddress={setBillFromAddress}
                     />
-                    <Form.Control
-                      placeholder={"Email address"}
-                      value={billFromEmail}
-                      type="email"
-                      name="billFromEmail"
-                      className="my-2"
-                      onChange={editField}
-                      autoComplete="email"
-                      required
-                    />
-                    <Form.Control
-                      placeholder={"Billing address"}
-                      value={billFromAddress}
-                      type="text"
-                      name="billFromAddress"
-                      className="my-2"
-                      autoComplete="address"
-                      onChange={editField}
-                      required
-                    />
+                    <div className="mt-1 ms-2">
+                      <span>{billFromEmail}</span>
+                    </div>
+                    <div className="mt-4 ms-2">
+                      <span>{billFromPhone}</span>
+                    </div>
+                    <div className="mt-4 ms-2">
+                      <span>{billFromAddress}</span>
+                    </div>
                   </div>
                 )}
               </Col>
@@ -737,14 +725,6 @@ const InvoiceForm = () => {
                       {currency}
                     </span>
                   </div>
-                  {/* <div className="d-flex flex-row align-items-start justify-content-between mt-2">
-                    <span className="fw-bold">Tax:</span>
-                    <span>
-                      <span className="small">({taxRate || 0}%)</span>
-                      {taxAmount || 0}
-                      {currency}
-                    </span>
-                  </div> */}
                   <hr />
                   <div
                     className="d-flex flex-row align-items-start justify-content-between"
@@ -787,20 +767,20 @@ const InvoiceForm = () => {
                   invoiceNumber,
                   billTo,
                   billToEmail,
+                  billToPhone,
                   billToAddress,
                   billFrom,
                   billFromEmail,
+                  billFromPhone,
                   billFromAddress,
                   notes,
                   total,
                   subTotal,
-                  // taxAmount,
                   discountAmount,
                 }}
                 itemsData={items}
                 currency={currency}
                 subTotal={subTotal}
-                // taxAmount={taxAmount}
                 discountAmount={discountAmount}
                 total={total}
                 finishSale={finishSale}
@@ -932,25 +912,6 @@ const InvoiceForm = () => {
                     </InputGroup>
                   </Form.Group>
                 )}
-                {/* <Form.Group className="my-3">
-                  <Form.Label className="fw-bold">Tax rate:</Form.Label>
-                  <InputGroup className="my-1 flex-nowrap">
-                    <Form.Control
-                      name="taxRate"
-                      type="number"
-                      value={taxRate}
-                      onChange={editField}
-                      className="bg-white border"
-                      placeholder="0.0"
-                      min="0.00"
-                      step="0.01"
-                      max="100.00"
-                    />
-                    <InputGroup.Text className="bg-light fw-bold text-secondary small">
-                      %
-                    </InputGroup.Text>
-                  </InputGroup>
-                </Form.Group> */}
                 <Form.Group className="my-3">
                   <Form.Label className="fw-bold">Discount rate:</Form.Label>
                   <InputGroup className="my-1 flex-nowrap">
