@@ -29,6 +29,7 @@ const InvoiceForm = () => {
   const [paymentStatus, setPaymentStatus] = useState("Payed");
   const [currentDate, setCurrentDate] = useState("");
   const [invoiceNumber, setInvoiceNumber] = useState(1);
+  const [invoiceState, setInvoiceState] = useState("");
   const [dateOfIssue, setDateOfIssue] = useState("");
   const [billToId, setBillToId] = useState(0);
   const [billTo, setBillTo] = useState("");
@@ -71,7 +72,8 @@ const InvoiceForm = () => {
       setReqLine,
       setReqChannel,
       setReqClient,
-      setReqDate
+      setReqDate,
+      setInvoiceState
     );
     handleCalculateTotal();
     setCurrentDate(new Date().toLocaleDateString());
@@ -578,7 +580,7 @@ const InvoiceForm = () => {
                   </div>
                 </div>
                 <div className="d-flex flex-row align-items-center">
-                  <p className="h4 fw-bold " style={{ color: 'purple' }}>{}</p>
+                  <p className="h5 fw-bold " style={{ color: 'purple' }}>{invoiceState}</p>
                   </div>
                 <div className="d-flex flex-row align-items-center">
                   <span className="fw-bold d-block me-2">
@@ -593,6 +595,7 @@ const InvoiceForm = () => {
             </div>
             <hr className="my-4" />
             <Row className="mb-5">
+            {(type !== "Ticket"&& type!=='ticket') && (
               <Col>
                 <Form.Label className="fw-bold">Bill to:</Form.Label>
                 {param.receiver !== "0" ? (
@@ -606,19 +609,17 @@ const InvoiceForm = () => {
                     setPhone={setBillToPhone}
                     setAddress={setBillToAddress}
                   />
-                ) : (
-                  <div>
-                    <PersonSearch
-                      person={receiver}
-                      type={type}
-                      reff={"resv"}
-                      setId={setBillToId}
-                      setName={setBillTo}
-                      setPhone={setBillToPhone}
-                      setEmail={setBillToEmail}
-                      setAddress={setBillToAddress}
-                    />
-
+                  ) : (
+                    <div>
+                      <PersonSearch
+                        person={receiver}
+                        type={type}
+                        reff={"resv"}
+                        setId={setBillToId}
+                        setName={setBillTo}
+                        setEmail={setBillToEmail}
+                        setAddress={setBillToAddress}
+                      />
                     <div className="mt-1 ms-2">
                       <span>{billToEmail}</span>
                     </div>
@@ -650,7 +651,7 @@ const InvoiceForm = () => {
                     /> */}
                   </div>
                 )}
-              </Col>
+              </Col>)}
               <Col>
                 <Form.Label className="fw-bold">Bill from:</Form.Label>
                 {param.sender !== "0" ? (
@@ -705,6 +706,7 @@ const InvoiceForm = () => {
                   receiver: billToId,
                   sender: billFromId,
                 }}
+                state={state}
               />
             </div>
             {type !== "BT" && (
@@ -783,6 +785,7 @@ const InvoiceForm = () => {
                 subTotal={subTotal}
                 discountAmount={discountAmount}
                 total={total}
+                invoiceState={invoiceState}
                 finishSale={finishSale}
                 mode="creation"
                 invoiceTitle={invoiceTitle}

@@ -5,11 +5,11 @@ import SalesList from "../../modules/sales/views/SalesList";
 import AddSales from "../../modules/sales/views/AddSales";
 
 
-export default function SalesRoutes() {
+export default function AchatRoutes() {
   return [
-    <Route key="sales" path="sales" element={<SalesModule />}>
+    <Route key="achat" path="achat" element={<SalesModule />}>
       <Route key="index" index element={<SalesList />} />
-      <Route path="add-sale" element={<AddSales />} />
+      <Route path="add-achat" element={<AddSales />} />
     </Route>,
   ];
 }

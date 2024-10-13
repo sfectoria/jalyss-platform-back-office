@@ -19,6 +19,7 @@ const InvoiceItem = (props) => {
     handelNSearch,
     type,
     info,
+    state
   } = props;
 
   const handleRowDel = (item) => {
@@ -33,6 +34,7 @@ const InvoiceItem = (props) => {
       onItemizedItemEdit={onItemizedItemEdit}
       onDelEvent={() => handleRowDel(item)}
       type={type}
+      state={state}
     />
   ));
 
@@ -72,6 +74,7 @@ const ItemRow = ({
   handelBarcode,
   handelNSearch,
   type,
+  state
 }) => {
   const handleDelEvent = () => {
     onDelEvent();
@@ -104,7 +107,7 @@ const ItemRow = ({
         />
       </td>
      { type !== "BT"&&<td style={{ minWidth: "140px", alignContent: "center" }}>
-        {(type === "BR" || type ==='BS' )? (
+        {(state === "purchase" || type ==='BS' )? (
           <InputGroup className="my-1 flex-nowrap">
             <Form.Control
               id={item.id}

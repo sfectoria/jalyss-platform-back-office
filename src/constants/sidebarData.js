@@ -12,7 +12,11 @@ import SvgBumpChartIcon from "../icons/BumpChartIcon";
 import ViewCompactIcon from "@mui/icons-material/ViewCompact";
 import ListIcon from "@mui/icons-material/List";
 import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
-
+import MapsHomeWorkOutlinedIcon from '@mui/icons-material/MapsHomeWorkOutlined';
+import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 export const sidebarData = [
   {
     title: "Dashboard",
@@ -73,23 +77,23 @@ export const sidebarData = [
   },
   {
     title: "Achat",
-    icon: <WarehouseIcon />,
+    icon: <ShoppingCartIcon />,
     children: [
       {
         title: "Achat List",
         icon: <ListIcon />,
-        link: "/sales",
+        link: "/achat",
       },
       {
         title: "Add Achat",
         icon: <PlaylistAddIcon />,
-        link: "/sales/add-sale",
+        link: "/achat/add-sale",
       },
     ],
   },
   {
     title: "Vente",
-    icon: <WarehouseIcon />,
+    icon: <MonetizationOnIcon />,
     children: [
       {
         title: "Vente List",
@@ -148,6 +152,16 @@ export const sidebarData = [
         title: "Add Article",
         icon: <PlaylistAddIcon />,
         link: "/articles/new-article",
+      },
+      {
+        title: "Publishing House",
+        icon: <MapsHomeWorkOutlinedIcon/>,
+        link: "/articles/publishingHouses",
+      },
+      {
+        title: "Author",
+        icon: <PeopleOutlinedIcon />,
+        link: "/articles/authors",
       },
     ],
   },

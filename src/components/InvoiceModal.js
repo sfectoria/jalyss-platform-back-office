@@ -12,6 +12,7 @@ import axios from 'axios';
 import { ip } from '../constants/ip';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
+import jalyssImage from "../assets/jalyss-image-preview.png";
 
 
 const InvoiceModal = ({
@@ -27,7 +28,8 @@ const InvoiceModal = ({
   finishSale,
   mode,
   type,
-  invoiceTitle
+  invoiceTitle,
+  invoiceState
 }) => {
   const invoiceCaptureRef = useRef(null);
   const [items,setItems]=useState([])
@@ -36,8 +38,8 @@ const InvoiceModal = ({
   const [billFrom,setBillFrom]=useState({})
   const [amount,setAmount]=useState(0)
   const [title,setTitle]=useState('')
-  const [successAlert, setSuccessAlert] = useState(false);  // State for success alert
-  const [errorAlert, setErrorAlert] = useState(false);      // State for error alert
+  const [successAlert, setSuccessAlert] = useState(false); 
+  const [errorAlert, setErrorAlert] = useState(false);      
 
 
   useEffect(()=>{
@@ -82,6 +84,16 @@ const InvoiceModal = ({
       acc.ids.push(Article.id);
       return acc;
      },{data:[],ids:[]})
+     setBillTo({
+      name:e.client?.fullName,
+      address:e.client?.address,
+      email:e.client?.email,
+     })
+     setBillFrom({
+      name:e.stock?.name,
+      address:e.stock?.location,
+      // email:e.stock.email
+     })
      if(e.transferNote.length){
       setBillTo({
         name:e.transferNote[0].stockTo.name,
@@ -181,6 +193,11 @@ const InvoiceModal = ({
         })
         setDate(e.receiptDate)
         setAmount(e.totalAmount)
+        setBillFrom({
+          name:e.provider?.nameProvider,
+          address:e.provider?.adresse,
+          email:e.provider?.email,
+        })
         if(e.transferNote.length){
           setBillFrom({
             id:e.transferNote[0].stockFrom.id,
@@ -298,12 +315,11 @@ const InvoiceModal = ({
             <div className="w-100">
               <h4 className="fw-bold my-2">{title}</h4>
               <h6 className="fw-bold text-secondary mb-1">
-                Invoice #: {''} </h6>
+                ~ {invoiceState} ~</h6>
             </div>
-            {title!=='Bon de Transfer'&& <div className="text-end ms-4">
-              <h6 className="fw-bold mt-1 mb-2">Amount&nbsp;Due:</h6>
-              <h5 className="fw-bold text-secondary">{amount} {currency}</h5>
-            </div>}
+            <div className="text-end ms-4">
+            <img src={jalyssImage} style={{ width: "150px" }} />
+            </div>
           </div>
           <div className="p-4">
             <Row className="mb-4">
