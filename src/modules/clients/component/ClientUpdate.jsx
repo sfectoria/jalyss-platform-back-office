@@ -3,7 +3,7 @@ import { Button, TextField, Grid, Box } from "@mui/material";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 
-const ClientUpdate = ({ setIsEdit }) => {
+const ClientUpdate = ({ setIsEdit,refresh,setRefresh }) => {
   const { id } = useParams();
   const [clientData, setClientData] = useState({
     fullName: "",
@@ -29,7 +29,9 @@ const ClientUpdate = ({ setIsEdit }) => {
 
       if (response.status === 200) {
         alert("Client updated successfully!");
-        setIsEdit(false); 
+        setRefresh(!refresh) 
+        setIsEdit(false);
+        
       }
     } catch (error) {
       console.error("Error updating client:", error);

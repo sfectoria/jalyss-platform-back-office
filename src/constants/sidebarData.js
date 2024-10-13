@@ -82,12 +82,12 @@ export const sidebarData = [
       {
         title: "Achat List",
         icon: <ListIcon />,
-        link: "/sales",
+        link: "/achat",
       },
       {
         title: "Add Achat",
         icon: <PlaylistAddIcon />,
-        link: "/sales/add-sale",
+        link: "/achat/add-sale",
       },
     ],
   },
