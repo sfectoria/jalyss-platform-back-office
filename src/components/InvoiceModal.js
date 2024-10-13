@@ -83,6 +83,16 @@ const InvoiceModal = ({
       acc.ids.push(Article.id);
       return acc;
      },{data:[],ids:[]})
+     setBillTo({
+      name:e.client?.fullName ||"N/A",
+      address:e.client?.address ||"N/A",
+      email:e.client?.email ||"N/A",
+     })
+     setBillFrom({
+      name:e.stock?.name ||"N/A",
+      address:e.stock?.location ||"N/A",
+      // email:e.stock.email ||"N/A",
+     })
      if(e.transferNote.length){
       setBillTo({
         name:e.transferNote[0].stockTo.name,
@@ -182,6 +192,11 @@ const InvoiceModal = ({
         })
         setDate(e.receiptDate)
         setAmount(e.totalAmount)
+        setBillFrom({
+          name:e.provider?.nameProvider ||"N/A",
+          address:e.provider?.adresse ||"N/A",
+          email:e.provider?.email||"N/A",
+        })
         if(e.transferNote.length){
           setBillFrom({
             id:e.transferNote[0].stockFrom.id,

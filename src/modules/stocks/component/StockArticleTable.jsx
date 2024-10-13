@@ -12,7 +12,7 @@ import MuiPagination from "@mui/material/Pagination";
 import ImagePopUp from "../../../components/ImagePopUp";
 import { ip } from "../../../constants/ip";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import CustomNoResultsOverlay from "../../../style/NoResultStyle";
 import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
 
@@ -23,7 +23,7 @@ export default function StockArticles() {
   const [count, setCount] = useState(0);
   const [refresh, setRefresh] = useState(false);
   const param = useParams();
-
+  const navigate = useNavigate();
   useEffect(() => {
     fetchData();
   }, [refresh]);
@@ -31,7 +31,6 @@ export default function StockArticles() {
     const apiRef = useGridApiContext();
     const pageCount = useGridSelector(apiRef, gridPageCountSelector);
     console.log(page);
-
     return (
       <MuiPagination
         color="secondary"
@@ -57,6 +56,7 @@ export default function StockArticles() {
     setData(response.data.data.stockArticle);
     setCount(response.data.count);
   };
+  console.log("id",data)
 
   const handlePageChange = (newPageInfo) => {
     console.log(newPageInfo, "pagesize");
@@ -80,6 +80,7 @@ export default function StockArticles() {
       width: 90,
       renderCell: ({ value, row }) => {
         return <ImagePopUp image={row?.article?.cover?.path} />;
+        console.log("row",row)
       },
     },
     {
@@ -113,10 +114,10 @@ export default function StockArticles() {
       headerName: "History",
       width: 110,
       type: "actions",
-      getActions: ({ id }) => [
+    getActions: (params) => [
         <GridActionsCellItem
           icon={<RequestQuoteIcon />}
-          onClick={() => console.log("history")}
+          onClick={() => navigate(`articles/${params.row.articleId}/full-history`)}
           label="View"
         />,
       ],

@@ -5,6 +5,8 @@ import ArticleDetails from "../../modules/articles/views/ArticleDetails";
 import ArticlesList from "../../modules/articles/views/ArticlesList";
 import AddArticle from "../../modules/articles/views/AddArticle";
 import ArticleHistory from "../../modules/articles/component/ArticleHistory";
+import PublishingHouse from "../../modules/articles/views/PublishingHouse";
+import Authors from "../../modules/articles/views/Authors";
 import UpdateArticle from "../../modules/articles/views/UpdateArticle";
 
 export default function ArticleRoutes() {
@@ -15,6 +17,9 @@ export default function ArticleRoutes() {
       <Route path=":id" key="article-details" element={<ArticleDetails />} />
       <Route path=":id" key="article-update" element={<UpdateArticle />} />
       <Route key="index" path=":articleId/stocks/:stocksIds/full-history" element={<ArticleHistory />} />
+      <Route path="publishingHouses" key="publishing-houses" element={<PublishingHouse />} />
+      <Route path="authors" key="authors" element={<Authors />} />
+
     </Route>,
   ];
 }
