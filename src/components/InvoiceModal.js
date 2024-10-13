@@ -22,7 +22,7 @@ const InvoiceModal = ({
   idChannel,
   info,
   itemsData,
-  taxAmount,
+  // taxAmount,
   subTotal,
   discountAmount,
   finishSale,
@@ -375,13 +375,13 @@ const InvoiceModal = ({
                   <td className="fw-bold" style={{ width: '100px' }}>SUBTOTAL</td>
                   <td className="text-end" style={{ width: '100px' }}>{amount} {currency}</td>
                 </tr></>}
-                {taxAmount !== '0.00' &&
+                {/* {taxAmount !== '0.00' &&
                   <tr className="text-end">
                     <td></td>
                     <td className="fw-bold" style={{ width: '100px' }}>TAX</td>
                     <td className="text-end" style={{ width: '100px' }}>{taxAmount} {currency}</td>
                   </tr>
-                }
+                } */}
                 {discountAmount !== '0.00' &&
                   <tr className="text-end">
                     <td></td>
