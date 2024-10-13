@@ -7,6 +7,7 @@ import AddArticle from "../../modules/articles/views/AddArticle";
 import ArticleHistory from "../../modules/articles/component/ArticleHistory";
 import PublishingHouse from "../../modules/articles/views/PublishingHouse";
 import Authors from "../../modules/articles/views/Authors";
+import UpdateArticle from "../../modules/articles/views/UpdateArticle";
 
 export default function ArticleRoutes() {
   return [
