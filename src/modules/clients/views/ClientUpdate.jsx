@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { Button, TextField, Grid, Box } from "@mui/material";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { ip } from "../../../constants/ip";
 
 const ClientUpdate = ({ setIsEdit }) => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [clientData, setClientData] = useState({
     fullName: "",
     phoneNumber: "",
@@ -22,14 +24,25 @@ const ClientUpdate = ({ setIsEdit }) => {
 
   const handleUpdate = async () => {
     try {
+      const existingClientResponse = await axios.get(`${ip}/clients/${id}`);
+      const existingClientData = existingClientResponse.data;
+      const updatedClientData = {
+        fullName: clientData.fullName || existingClientData.fullName,
+        email: clientData.email || existingClientData.email,
+        phoneNumber: clientData.phoneNumber || existingClientData.phoneNumber,
+        address: clientData.address || existingClientData.address,
+      };
       const response = await axios.patch(
-        `http://localhost:3000/clients/${id}`,
-        clientData
+        `${ip}/clients/${id}`,
+        updatedClientData
       );
 
       if (response.status === 200) {
         alert("Client updated successfully!");
-        setIsEdit(false); 
+        setIsEdit(false);
+        setTimeout(() => {
+          navigate('/clients');
+        }, 2000);
       }
     } catch (error) {
       console.error("Error updating client:", error);
@@ -45,13 +58,13 @@ const ClientUpdate = ({ setIsEdit }) => {
     <div style={{ padding: "10px" }}>
       <Box
         sx={{
-          p: 2, 
+          p: 2,
           border: "1px solid #ccc",
           borderRadius: 2,
-          boxShadow: 1, 
+          boxShadow: 1,
           maxWidth: 400,
           margin: "auto",
-          mt: 3, 
+          mt: 3,
         }}
       >
         <Grid container spacing={1}>
@@ -66,7 +79,7 @@ const ClientUpdate = ({ setIsEdit }) => {
               name="fullName"
               value={clientData.fullName}
               onChange={handleInputChange}
-              size="small" 
+              size="small"
             />
           </Grid>
           <Grid item xs={12} sm={6}>

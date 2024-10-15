@@ -56,6 +56,22 @@ export const sidebarData = [
     ],
   },
   {
+    title: "Authors",
+    icon: <GroupIcon />,
+    children: [
+      {
+        title: "All Authors",
+        icon: <ListIcon />,
+        link: "/author",
+      },
+      {
+        title: "Add Authors",
+        icon: <PlaylistAddIcon />,
+        link: "/author/add-author",
+      },
+    ],
+  },
+  {
     title: "Client",
     icon: <AssignmentIndIcon />,
     children: [

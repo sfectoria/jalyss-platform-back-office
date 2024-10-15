@@ -6,7 +6,7 @@ import Item from "../../../style/ItemStyle";
 
 export default function AddArticle() {
   const [submittedArticle, setSubmittedArticle] = useState(null);
-  const formRef = useRef(null); // Utilisation de useRef pour le formulaire
+  const formRef = useRef(null); 
 
   const handleArticleSubmit = (article) => {
     setSubmittedArticle(article);
@@ -24,7 +24,6 @@ export default function AddArticle() {
       <Item sx={{ pt: 7, pb: 1, px: 7, borderRadius: 10 }} elevation={5}>
         <Box sx={{ display: "flex", gap: 5 }}>
           <Box sx={{ width: "50%" }}>
-            {/* Passer le ref au composant ArticleInfo */}
             <ArticleInfo onSubmit={handleArticleSubmit} ref={formRef} />
             <Box sx={{ display: "flex", justifyContent: "center", margin: 4 }}>
               <Button
@@ -34,13 +33,13 @@ export default function AddArticle() {
                   backgroundColor: "#48184d",
                   color: "white",
                   "&:hover": {
-                    backgroundColor: "#48184d", // Optional hover effect
+                    backgroundColor: "#48184d",
                   },
                 }}
                 variant="outlined"
                 onClick={() => {
                   if (formRef.current) {
-                    formRef.current.submit(); // Appel de la fonction handleSubmit exposée via le ref
+                    formRef.current.submit(); 
                   }
                 }}
               >

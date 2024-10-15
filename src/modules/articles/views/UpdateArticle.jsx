@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Box, Typography, TextField, Autocomplete, Stack, Alert, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { ip } from "../../../constants/ip";
 
-const UpdateArticle = ({ data1, setIsEditMode,isEditMode}) => {
+const UpdateArticle = ({ data1, setIsEditMode, isEditMode }) => {
   const id = data1.id;
   const [nameText, setNameText] = useState("");
   const [barcode, setBarcode] = useState("");
@@ -12,17 +12,30 @@ const UpdateArticle = ({ data1, setIsEditMode,isEditMode}) => {
   const [publisherText, setPublisherText] = useState("");
   const [description, setDescription] = useState("");
   const [selectedCategories, setSelectedCategories] = useState([]);
-  const [articlesNames, setArticlesNames] = useState([]);
   const [articlesAuthors, setArticlesAuthors] = useState([]);
   const [successAlert, setSuccessAlert] = useState(false);
   const [errorAlert, setErrorAlert] = useState(false);
-  const [refresh, setRefresh] = useState(false);
   const navigate = useNavigate();
+
+
+  const fetchAuthors = async () => {
+    try {
+      const response = await axios.get(`${ip}/author`);
+      setArticlesAuthors(response.data);
+    } catch (error) {
+      console.error("Error fetching authors data:", error);
+    }
+  };
+
+
+  useEffect(() => {
+    fetchAuthors();
+  }, []);
 
   const handleUpdate = async () => {
     try {
       const updatedArticle = {
-        title: nameText,
+        title: nameText, 
         code: barcode,
         longDescriptionEn: description,
         articleByAuthor: [{ nameAr: authorText }],
@@ -31,14 +44,13 @@ const UpdateArticle = ({ data1, setIsEditMode,isEditMode}) => {
       };
 
       const response = await axios.patch(`${ip}/articles/${id}`, updatedArticle);
-      console.log("Article updated:", response.data);
 
       if (response.status === 200) {
         setSuccessAlert(true);
         setErrorAlert(false);
         setTimeout(() => {
-            navigate('/articles');
-          }, 2000);
+          navigate('/articles');
+        }, 2000);
       } else {
         setErrorAlert(true);
         setSuccessAlert(false);
@@ -65,14 +77,14 @@ const UpdateArticle = ({ data1, setIsEditMode,isEditMode}) => {
       <Typography variant="h4" align="center" sx={{ marginBottom: 2 }}>
         Update Article
       </Typography>
+
       <Box sx={{ display: "flex", gap: 2, marginBottom: 4 }}>
-        <Autocomplete
-          freeSolo
-          sx={{ width: "55%" }}
-          options={articlesNames.map((option) => option)}
-          onInputChange={(e, value) => setNameText(value)}
+        <TextField
+          required
+          label="Title"
+          sx={{ width: "47%" }}
           value={nameText}
-          renderInput={(params) => <TextField {...params} label="Title" required />}
+          onChange={(e) => setNameText(e.target.value)}
         />
         <TextField
           required
@@ -82,11 +94,12 @@ const UpdateArticle = ({ data1, setIsEditMode,isEditMode}) => {
           onChange={(e) => setBarcode(e.target.value)}
         />
       </Box>
+
       <Box sx={{ display: "flex", gap: 2, marginBottom: 4 }}>
         <Autocomplete
           freeSolo
           sx={{ width: "47%" }}
-          options={articlesAuthors.map((option) => option)}
+          options={articlesAuthors.map((option) => option.nameAr)}  
           onInputChange={(e, value) => setAuthorText(value)}
           value={authorText}
           renderInput={(params) => <TextField {...params} label="Author" required />}
@@ -103,7 +116,7 @@ const UpdateArticle = ({ data1, setIsEditMode,isEditMode}) => {
       <TextField
         label="Description"
         rows={4}
-        sx={{ width: "100%",}}
+        sx={{ width: "100%" }}
         value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
@@ -132,7 +145,7 @@ const UpdateArticle = ({ data1, setIsEditMode,isEditMode}) => {
         <Button
           variant="outlined"
           sx={{ borderColor: "#48184c", color: "#48184c", "&:hover": { backgroundColor: "#f5f5f5" } }}
-          onClick={()=>setIsEditMode(!isEditMode)}
+          onClick={() => setIsEditMode(!isEditMode)}
         >
           Cancel
         </Button>

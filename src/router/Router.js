@@ -18,11 +18,13 @@ import EmployeesRoutes from "./Modules/EmployeesRoutes";
 import FornisseursRoutes from "./Modules/FornisseursRoutes";
 import ChannelsRoutes from "./Modules/ChannelsRoutes";
 import DashboardRoutes from "./Modules/DashboardRoutes";
+import AuthorModule from "./Modules/AuthorRoutes";
 import NewInventaire from "../modules/Inventaire/views/NewInventaire";
 import ArticleHistory from "../modules/articles/component/ArticleHistory";
 import { getMe } from "../store/slices/authSlice";
 import VentRoutes from "./Modules/VenteRoutes";
 import SalesRoutes from "./Modules/SalesRoutes";
+import AuthorRoutes from "./Modules/AuthorRoutes";
 
 export default function Router() {
   const user = useSelector((store) => store.auth.me);
@@ -41,6 +43,7 @@ export default function Router() {
           <Route path="/" key="main" element={<Main/>}>
             {DashboardRoutes()}
             {StockRoutes()}
+            {AuthorRoutes()}
             {InventaireRoutes()}
             {ClientsRoutes()}
             {EmployeesRoutes()}
