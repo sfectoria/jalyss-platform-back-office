@@ -60,10 +60,13 @@ const InvoiceForm = () => {
   const [suOp, setSuOp] = useState(null);
   const [info, setInfo] = useState({});
   const param = useParams();
-
-  const { state, type, receiver, sender } = param;
+  
+  const { state, type, receiver, sender,mode } = param;
   console.log(items, param);
   useEffect(() => {
+    if(mode.includes('cnf')){
+      handelCommendToSale()
+    }
     handelInfo(
       state,
       type,
@@ -85,7 +88,20 @@ const InvoiceForm = () => {
     setItems(updatedItems);
     handleCalculateTotal();
   };
-
+ const handelCommendToSale = async() =>{
+  const response = await axios.get(`${ip}/purchaseOrder/${2}`)
+  console.log(response.data);
+  let articles = response.data.purchaseOrderLine.map(e=>{
+    let {title,articleByPublishingHouse,articleByAuthor,...rest}= e.article
+    let name= title
+    // let author = articleByAuthor[0]?author?.nameAr || null
+    // let publisher= articleByPublishingHouse[0]?publishingHouse?.nameAr || null
+    return {name}
+  })
+  
+ }
+ console.log(items);
+ 
   const finishSale = async () => {
     try {
       let saleStatus = false;
