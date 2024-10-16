@@ -179,7 +179,7 @@ console.log("man",managers)
               <Item elevation={0}>
                 <Autocomplete
                   options={managers}
-                  getOptionLabel={(option) => `${option.firstName} ${option.lastName}`} 
+                  getOptionLabel={(option) => `${option.firstName} ${option.lastName} / ${option.phoneNumber}`} 
                   value={selectedManager}
                   onChange={(event, newValue) => setSelectedManager(newValue)}
                   renderInput={(params) => (
