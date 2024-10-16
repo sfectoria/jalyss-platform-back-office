@@ -42,7 +42,6 @@ export default function ArticlesList() {
   function Pagination({ onPageChange, className }) {
     const apiRef = useGridApiContext();
     const pageCount = useGridSelector(apiRef, gridPageCountSelector);
-    console.log(page);
 
     return (
       <MuiPagination
@@ -75,16 +74,11 @@ export default function ArticlesList() {
   const fetchData = async () => {
     try {
       let queryParams = new URLSearchParams(location.search);
-      console.log("hh", new URLSearchParams(location.search));
       let params = Object.fromEntries(queryParams.entries());
-      console.log(params);
       if (text) params["text"] = text;
-      console.log(params, text);
       const response = await axios.get(ip + "/articles/getAll", {
         params,
       });
-      console.log(response.data.data);
-
       const result = response.data.data.map((ele) => {
         ele.quantity = ele.stockArticle.reduce((acc, ele) => {
           acc += ele.quantity;
@@ -92,8 +86,6 @@ export default function ArticlesList() {
         }, 0);
         return ele;
       });
-      console.log(result);
-      console.log("after", result);
       setRows(response.data.data);
       setCount(response.data.count);
     } catch (err) {
@@ -107,17 +99,13 @@ export default function ArticlesList() {
     params.set("page", page);
     params.set("take", pageSize);
     params.set("skip", page * pageSize);
-    console.log("handleuP");
     const newUrl = `${location.pathname}?${params.toString()}`;
     navigate(newUrl);
   };
 
   const handlePageChange = (newPageInfo) => {
-    console.log(newPageInfo, "pagesize");
-    console.log(pageSize === newPageInfo.pageSize);
-
     if (pageSize === newPageInfo.pageSize) {
-      setPage(newPageInfo.page);
+      setPage(newPageInfo.page)
     }
     if (pageSize !== newPageInfo.pageSize) {
       setPageSize(newPageInfo.pageSize);
@@ -125,7 +113,6 @@ export default function ArticlesList() {
       params.set("page", 0);
       params.set("take", newPageInfo.pageSize);
       params.set("skip", 0);
-      console.log("handleuP");
       const newUrl = `${location.pathname}?${params.toString()}`;
       navigate(newUrl);
     }

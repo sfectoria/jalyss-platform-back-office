@@ -21,6 +21,7 @@ import {  useNavigate } from "react-router-dom";
 import AccountBoxOutlinedIcon from '@mui/icons-material/AccountBoxOutlined';
 import { getMe } from "../store/slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
+import imageWhite from '../assets/jalyss-image-white.png'
 // const Search = styled("div")(({ theme }) => ({
 //   position: "relative",
 //   borderRadius: theme.shape.borderRadius,
@@ -289,14 +290,12 @@ console.log(user,"user")
           >
             <MenuIcon />
           </IconButton>
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{ display: { xs: "none", sm: "block" } }}
-          >
-            Jalyss
-          </Typography>
+          <img
+        src={imageWhite}
+        alt={'Jalyss'}
+        style={{width:150}}
+        loading="lazy"
+      />
           {/* <Search>
             <SearchIconWrapper>
               <SearchIcon />

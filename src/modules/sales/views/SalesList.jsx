@@ -243,7 +243,7 @@ function SalesList() {
           gutterBottom
           sx={{ fontWeight: "bold" }}
         >
-          Sales List
+          Achat List
         </Typography>
         <div style={{ width: "100%", color: "red" }}>
           <DataGrid
