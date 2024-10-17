@@ -15,24 +15,37 @@ import { ip } from '../../../constants/ip';
 import axios from 'axios';
 import ClearIcon from '@mui/icons-material/Clear';
 
+
+
+
 export default function ClientsList() {
   const [clients, setClients] = useState([]); 
-  
+  const [categories, setCategories] = useState([]);
+
+
   useEffect(() => {
-    const fetchData = async () => {
+    // Fetch clients
+    const fetchClients = async () => {
       try {
-        const response = await axios.get(`${ip}/clients`)
-        setClients(response.data); 
-        console.log("from clients",response.data);
+        const response = await axios.get(`${ip}/clients`);
+        setClients(response.data);
       } catch (error) {
-        console.log("Error fetching data:", error); 
+        console.error('Error fetching clients:', error);
       }
     };
 
-    fetchData(); 
-  }, []); 
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(`${ip}/categoryClients`);
+        setCategories(response.data);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
 
-    
+    fetchClients();
+    fetchCategories();
+  }, []);
 
   const { data } = useDemoData({
     dataSet: 'Commodity',
@@ -52,7 +65,10 @@ export default function ClientsList() {
       console.log("Error deleting client:", error);
     }
   };
-
+  const categoryMap = categories.reduce((acc, category) => {
+    acc[category.id] = category.name;
+    return acc;
+  }, {});
 
   const columns = [
     { field: 'id', headerName: 'ID', width: 70 },
@@ -73,9 +89,13 @@ export default function ClientsList() {
       // getActions:({})=>{}
     },
     {
-      field: 'companyName',
-      headerName: 'Company Name',
+      field: 'categoryClient',
+      headerName: 'Category',
       width: 200,
+      renderCell: (params) => {
+        const categoryName = categoryMap[params.row.idCategoryClient] ;
+        return <Typography>{categoryName}</Typography>;
+      },
     },
     {
       field: 'email',
@@ -93,37 +113,27 @@ export default function ClientsList() {
       width: 190,
     },
     {
-      field: 'details',
-      headerName: 'More Details',
-      width: 110,
+      field: 'actions',
+      headerName: 'Actions',
+      width: 100,
       type: 'actions',
-      getActions: ({id}) => [
-        <GridActionsCellItem icon={<VisibilityIcon/>} onClick={()=>{handelDetails(id)}} label="Print" />,
-      ]
-    },
-    {
-      field: 'DELETE',
-      headerName: 'Delete',
-      width: 110,
-      type: 'actions',
-      getActions: ({id}) => [
-        <GridActionsCellItem icon={<ClearIcon/>} onClick={()=>{handelDelete(id)}} label="Print" />,
-      ]
+      getActions: ({ id }) => {
+        return [
+          <GridActionsCellItem
+          icon={<VisibilityIcon />}
+          label="Details"
+          onClick={() => handelDetails(id)} 
+          />,
+          <GridActionsCellItem
+            icon={<ClearIcon />}
+            label="Delete"
+            onClick={() => handelDelete(id)}
+            color="inherit"
+          />,
+        ];
+      },
     }
-    
-  ];
-  
-  const rows = [
-    { id: 1, fullName: 'Sfax1', companyName: 'Sfax1/Sfax', clientEmail: "Salim sfexi" , details:"fff"},
-    { id: 2, fullName: 'Stock l mida', companyName: 'Mida/menzel tmim/Nabeul', clientEmail: "Hamida midawi" },
-    { id: 3, fullName: 'Stock sahlin', companyName: 'Sahlin/Sousse', clientEmail: "Wael ben sahloul" },
-    { id: 4, fullName: 'Stock alia', companyName: 'Alia/bizerte', clientEmail: "Mouhamed Amin ben yahya" },
-    { id: 5, fullName: 'Targaryen', companyName: 'Daenerys', clientEmail: "houssem ben ammar" },
-    { id: 6, fullName: 'Melisandre', companyName: null, clientEmail: 150 },
-    { id: 7, fullName: 'Clifford', companyName: 'Ferrara', clientEmail: 44 },
-    { id: 8, fullName: 'Frances', companyName: 'Rossini', clientEmail: 36 },
-    { id: 9, fullName: 'Roxie', companyName: 'Harvey', clientEmail: 65 },
-  ];
+  ]
 
 
   return (
@@ -155,7 +165,6 @@ export default function ClientsList() {
         toolbar: GridToolbar,
       }} 
       initialState={{
-        ...data.initialState,
         pagination: { paginationModel: { pageSize: 7 } },
         filter: {
           filterModel: {
