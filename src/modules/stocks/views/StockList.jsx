@@ -62,6 +62,7 @@ export default function StockList() {
         bgcolor: "background.default",
         mx: 3,
         mt: 3,
+        height: '100vh',
       }}
     >
       <Item sx={{ py: 5, px: 7, borderRadius: 10 }} elevation={5}>
@@ -73,7 +74,7 @@ export default function StockList() {
         >
           Stock
         </Typography>
-        <div style={{ width: "100%" }}>
+        <div style={{ width: "100%" , height : 500 }}>
           <DataGrid
             pageSizeOptions={[7, 10, 20]}
             sx={{
