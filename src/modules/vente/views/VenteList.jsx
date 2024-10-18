@@ -254,7 +254,7 @@ function VentList() {
         >
           Vente List
         </Typography>
-        <div style={{ width: "100%", color: "red" }}>
+        <div style={{ width: "100%", color: "red" , height : 500 }}>
           <DataGrid
             rowHeight={70}
             pageSizeOptions={[7, 10, 20]}

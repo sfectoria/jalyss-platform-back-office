@@ -65,6 +65,7 @@ console.log(rows)
         bgcolor: "background.default",
         mx: 3,
         mt: 3,
+        height: '100vh',
       }}
     >
       <Item sx={{ py: 5, px: 7, borderRadius: 10 }} elevation={5}>
@@ -76,7 +77,7 @@ console.log(rows)
         >
           Stock
         </Typography>
-        <div style={{ width: "100%" }}>
+        <div style={{ width: "100%" , height : 500 }}>
           <DataGrid
             pageSizeOptions={[7, 10, 20]}
             sx={{

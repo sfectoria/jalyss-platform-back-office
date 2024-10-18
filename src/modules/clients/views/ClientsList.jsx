@@ -131,14 +131,15 @@ export default function ClientsList() {
           sx={{
             bgcolor: 'background.default',
             mx:3,
-            mt:3
+            mt:3,
+            height: '100vh',
           }}
         >   
             <Item sx={{pt:7,pb:1,px:7,borderRadius:10}} elevation={5}>
             <Typography variant="h5" mb={3} gutterBottom sx={{ fontWeight: 'bold' }}>
          Clients
         </Typography>
-    <div style={{width:'100%'}}>
+    <div style={{width:'100%', height : 500}}>
       <DataGrid
       pageSizeOptions={[7, 10,20]}
        sx={{

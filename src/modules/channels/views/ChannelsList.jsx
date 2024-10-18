@@ -38,11 +38,18 @@ const ChannelsList = () => {
   const fetchData = async () => {
     try {
       const response = await axios.get(ip + "/selling/getAll");
-      setRows(response.data);
-      console.log("from channels",response.data);
+      console.log(response.data)
+      if (response.data && response.data.length === 0) {
+        setRows([]);
+      } else {
+        setRows(response.data);
+      }
+      
+      // console.log("from channels",response.data);
       
     } catch (err) {
       setError(err);
+      setRows([])
     } finally {
       setLoading(false);
     }
@@ -75,6 +82,7 @@ const ChannelsList = () => {
         bgcolor: "background.default",
         mx: 3,
         mt: 3,
+        height: '100vh',
       }}
     >
       <Item sx={{ py: 5, px: 7, borderRadius: 10 }} elevation={5}>
@@ -86,7 +94,7 @@ const ChannelsList = () => {
         >
           Channels
         </Typography>
-        <div style={{ width: "100%" }}>
+        <div style={{ width: "100%", height: 500  }}>
           <DataGrid
             pageSizeOptions={[7, 10, 20]}
             sx={{
@@ -99,6 +107,7 @@ const ChannelsList = () => {
             }}
             rows={rows}
             columns={columns}
+            loading ={loading}
             slots={{
               noResultsOverlay: CustomNoResultsOverlay,
               toolbar: GridToolbar,
