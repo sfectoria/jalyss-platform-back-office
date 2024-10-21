@@ -18,12 +18,10 @@ import EmployeesRoutes from "./Modules/EmployeesRoutes";
 import FornisseursRoutes from "./Modules/FornisseursRoutes";
 import ChannelsRoutes from "./Modules/ChannelsRoutes";
 import DashboardRoutes from "./Modules/DashboardRoutes";
-import AuthorModule from "./Modules/AuthorRoutes";
 import NewInventaire from "../modules/Inventaire/views/NewInventaire";
 import ArticleHistory from "../modules/articles/component/ArticleHistory";
 import { getMe } from "../store/slices/authSlice";
 import VentRoutes from "./Modules/VenteRoutes";
-import AuthorRoutes from "./Modules/AuthorRoutes";
 import AchatRoutes from "./Modules/AchatRoutes";
 
 export default function Router() {
@@ -43,7 +41,6 @@ export default function Router() {
           <Route path="/" key="main" element={<Main/>}>
             {DashboardRoutes()}
             {StockRoutes()}
-            {AuthorRoutes()}
             {InventaireRoutes()}
             {ClientsRoutes()}
             {EmployeesRoutes()}
