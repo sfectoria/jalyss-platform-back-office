@@ -8,6 +8,7 @@ import ArticleHistory from "../../modules/articles/component/ArticleHistory";
 import PublishingHouse from "../../modules/articles/views/PublishingHouse";
 import Authors from "../../modules/articles/views/Authors";
 import UpdateArticle from "../../modules/articles/views/UpdateArticle";
+import PublishingHouseDetails from "../../modules/articles/views/PublishingHouseDetail";
 
 export default function ArticleRoutes() {
   return [
@@ -18,6 +19,7 @@ export default function ArticleRoutes() {
       <Route path=":id" key="article-update" element={<UpdateArticle />} />
       <Route key="index" path=":articleId/stocks/:stocksIds/full-history" element={<ArticleHistory />} />
       <Route path="publishingHouses" key="publishing-houses" element={<PublishingHouse />} />
+      <Route path=":id" key="publishing-houses-details"element={<PublishingHouseDetails />}/>
       <Route path="authors" key="authors" element={<Authors />} />
 
     </Route>,
