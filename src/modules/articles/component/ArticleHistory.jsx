@@ -67,9 +67,23 @@ export default function ArticleHistory() {
     {
       field: "date",
       headerName: "Date",
-      width: 200,
-      valueGetter: (value) =>
-        value.toString().slice(0, value.toString().indexOf("GMT") - 1),
+      width: 150,
+      valueGetter: (value) => {
+        if (value.slice(0, 10) === new Date().toISOString().slice(0, 10))
+          return "Today";
+        else return new Date(value).toString().slice(0, 16);
+      },
+    },
+    {
+      field: "time",
+      headerName: "Time",
+      width: 100,
+      valueGetter: (value, row) => {
+        return row.date.slice(
+          row.date.indexOf("T") + 1,
+          row.date.indexOf("T") + 6
+        );
+      },
     },
     { field: "customer", headerName: "Customer", width: 150 },
     { field: "fournisseur", headerName: "Fournisseur", width: 150 },
