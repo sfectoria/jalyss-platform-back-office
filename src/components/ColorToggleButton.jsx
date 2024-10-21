@@ -35,12 +35,7 @@ export default function ColorToggleButton({
   deliveryDate,
   purchaseOrderLine,
 }) {
-  // console.log("idPurchaseOrder", idPurchaseOrder);
-  // console.log("saleChannelId", saleChannelId);
-  // console.log("idClient", idClient);
-  // console.log("deliveryDate", deliveryDate);
-  // console.log("purchaseOrderLine",purchaseOrderLine)
-
+  
   const navigate = useNavigate();
   const [alignment, setAlignment] = React.useState(state);
   const [open, setOpen] = React.useState(false);
@@ -109,71 +104,32 @@ export default function ColorToggleButton({
   };
 
   const handleInvoiceSelection = async (invoice) => {
-    let apiUrl = "";
-    let salesLineName = "";
-    let saleChannelIdKey = "";
-    let purchaseOrderIdKey = "";
-    let deliveryDateKey = "";
-    let clientIdKey = "";
+   console.log(invoice);
+   
+ let type;
 
     switch (invoice) {
         case "Bon de livraison":
-            apiUrl = "http://localhost:3000/salesDeliveryNote/create";
-            salesLineName = "salesDeliveryNoteLine";
-            saleChannelIdKey = "saleChannelId";
-            purchaseOrderIdKey = "idPurchaseOrder";
-            deliveryDateKey = "deliveryDate";
-            clientIdKey = "idClient";
+  
+            type ='BL'
             break;
         case "Facture":
-            apiUrl = "http://localhost:3000/sales-invoices/create";
-            salesLineName = "salesInvoiceLine";
-            saleChannelIdKey = "saleChannelId";
-            purchaseOrderIdKey = "idPurchaseOrder";
-            deliveryDateKey = "date";
-            clientIdKey = "idClient";
+            type ='F'
             break;
         case "Bon de livraison/facture":
-            apiUrl = "http://localhost:3000/salesDeliveryInvoice/create";
-            salesLineName = "salesDeliveryInvoicelines";
-            saleChannelIdKey = "salesChannelsId";
-            purchaseOrderIdKey = "purchaseOrderId";
-            deliveryDateKey = "deliveryDate";
-            clientIdKey = "clientId";
+            type ='BLF'
+            break;
+        case "Ticket de caisse":
+            type ='Ticket'
             break;
         default:
             break;
     }
 
-    if (apiUrl) {
+    if (type) {
         try {
-            // Ensure deliveryDate is a valid ISO string before sending
-            const formattedOrderDate = new Date(deliveryDate).toISOString();
-            const salesLine = purchaseOrderLine.map((line) => ({
-                articleId: line.idArticle,
-                quantity: line.quantity,
-            }));
-
-            const requestPayload = {
-                [purchaseOrderIdKey]: idPurchaseOrder,
-                [saleChannelIdKey]: saleChannelId,
-                [clientIdKey]: idClient,
-                [deliveryDateKey]: formattedOrderDate,
-                [salesLineName]: salesLine,
-            };
-
-            console.log("Request Payload", requestPayload);
-            // Send the invoice creation request
-            const response = await axios.post(apiUrl, requestPayload);
-            console.log("API Response:", response.data);
-
-            // Update the purchase order status to "confirmed"
-            await axios.patch(`http://localhost:3000/purchaseOrder/${idPurchaseOrder}`, {
-                status: "Confirmed",
-            });
-            console.log("Purchase Order Status Updated to Confirmed");
-
-            setAlignment("confirmed");
+            navigate(`/invoice/sale/${type}/${saleChannelId}/${idClient}/cnf${idPurchaseOrder}`)
+            
         } catch (error) {
             console.error("Error making API request or updating status:", error);
         }

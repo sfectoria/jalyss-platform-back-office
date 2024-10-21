@@ -13,12 +13,14 @@ import axios from "axios";
 import ModeEditOutlineIcon from "@mui/icons-material/ModeEditOutline";
 import { Navigate, useParams } from "react-router-dom";
 import { ip } from "../../../constants/ip";
-import ClientUpdate from "../views/ClientUpdate";
+import ClientUpdate from "./ClientUpdate";
 
 export default function ClientInfo() {
   const { id } = useParams();
   const [one, setOne] = useState({});
   const [isEdit, setIsEdit] = useState(false);
+  const [refresh, setRefresh] = useState(false);
+
   const getOne = async () => {
     try {
       const response = await axios.get(`${ip}/clients/${id}`);
@@ -31,7 +33,7 @@ export default function ClientInfo() {
 
   useEffect(() => {
     getOne();
-  }, [id]);
+  }, [refresh]);
 
   const handleEditClick = () => {
     setIsEdit(!isEdit);
@@ -39,42 +41,41 @@ export default function ClientInfo() {
 
   return (
     <Box sx={{ mx: 3, my: 6, display: "flex", position: "relative" }}>
-      {!isEdit ? (
-        <>
-          <Box>
-            <Stack direction="row" spacing={2}>
-              <Avatar
-                sx={{ bgcolor: "#e6c440", width: 140, height: 140, fontSize: 50 }}
-              >
-                {one.fullName
-                  ? one.fullName
-                      .split(" ")
-                      .map((namePart) => namePart[0])
-                      .join("")
-                  : "?"}
-              </Avatar>
-            </Stack>
-            <Typography sx={{ pt: 4, fontSize: 30, fontWeight: "bold" }}>
-              {one.fullName}
-            </Typography>
-          </Box>
+      <Box>
+        <Stack direction="row" spacing={2}>
+          <Avatar
+            sx={{ bgcolor: "#e6c440", width: 140, height: 140, fontSize: 50 }}
+          >
+            {one.fullName
+              ? one.fullName
+                  .split(" ")
+                  .map((namePart) => namePart[0])
+                  .join("")
+              : "?"}
+          </Avatar>
+        </Stack>
+        <Typography sx={{ pt: 4, fontSize: 30, fontWeight: "bold" }}>
+          {one.fullName}
+        </Typography>
+      </Box>
 
-          <Box>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <EmailIcon />
-              <Typography sx={{ p: 1, fontSize: 19 }}>{one.email}</Typography>
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <LocalPhoneIcon />
-              <Typography sx={{ p: 1, fontSize: 19 }}>{one.phoneNumber}</Typography>
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <LocationCityIcon />
-              <Typography sx={{ p: 1, fontSize: 19 }}>{one.address}</Typography>
-            </Box>
-          </Box>
-
-          <Box sx={{ mx: 4, position: "relative" }}>
+      <Box>
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <EmailIcon />
+          <Typography sx={{ p: 1, fontSize: 19 }}>{one.email}</Typography>
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <LocalPhoneIcon />
+          <Typography sx={{ p: 1, fontSize: 19 }}>{one.phoneNumber}</Typography>
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <LocationCityIcon />
+          <Typography sx={{ p: 1, fontSize: 19 }}>{one.address}</Typography>
+        </Box>
+      </Box>
+      <Box sx={{ mx: 4, position: "relative" }}>
+        {!isEdit ? (
+          <>
             <Box
               sx={{
                 mb: 1,
@@ -119,7 +120,7 @@ export default function ClientInfo() {
                 position: "absolute",
                 top: -9,
                 right: 0,
-                marginRight: "-1cm",
+                marginRight: "-5cm",
               }}
             >
               <ModeEditOutlineIcon
@@ -127,13 +128,13 @@ export default function ClientInfo() {
                 sx={{ cursor: "pointer" }}
               />
             </Box>
+          </>
+        ) : (
+          <Box sx={{ mt: 3, display: "flex", justifyContent: "center" }}>
+            <ClientUpdate setIsEdit={setIsEdit} refresh={refresh} setRefresh={setRefresh}/>
           </Box>
-        </>
-      ) : (
-        <Box sx={{ mt: 3, display: "flex", justifyContent: "center" }}>
-          <ClientUpdate setIsEdit={setIsEdit} />
-        </Box>
-      )}
+        )}
+      </Box>
     </Box>
   );
 }

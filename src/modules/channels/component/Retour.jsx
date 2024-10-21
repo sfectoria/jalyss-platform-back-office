@@ -62,7 +62,27 @@ export default function Retour() {
   };
 
   const columns = [
-    { field: "returnDate", headerName: "Date", width: 200 },
+    {
+      field: "returnDate",
+      headerName: "Date",
+      width: 150,
+      valueGetter: (value) => {
+        if (value.slice(0, 10) === new Date().toISOString().slice(0, 10))
+          return "Today";
+        else return new Date(value).toString().slice(0, 16);
+      },
+    },
+    {
+      field: "time",
+      headerName: "Time",
+      width: 100,
+      valueGetter: (value, row) => {
+        return row.returnDate.slice(
+          row.returnDate.indexOf("T") + 1,
+          row.returnDate.indexOf("T") + 6
+        );
+      },
+    },
     {
       field: "customerName",
       headerName: "Customer",
@@ -141,7 +161,7 @@ export default function Retour() {
         items={items}
         currency={0}
         subTotal={0}
-        taxAmount={0}
+        // taxAmount={0}
         discountAmount={0}
         total={0}
       />}

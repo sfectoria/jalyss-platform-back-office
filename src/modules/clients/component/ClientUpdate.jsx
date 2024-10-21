@@ -4,7 +4,7 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { ip } from "../../../constants/ip";
 
-const ClientUpdate = ({ setIsEdit }) => {
+const ClientUpdate = ({ setIsEdit,refresh,setRefresh }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [clientData, setClientData] = useState({
@@ -63,10 +63,9 @@ const ClientUpdate = ({ setIsEdit }) => {
 
       if (response.status === 200) {
         alert("Client updated successfully!");
+        setRefresh(!refresh) 
         setIsEdit(false);
-        setTimeout(() => {
-          navigate("/clients");
-        }, 2000);
+        
       }
     } catch (error) {
       console.error("Error updating client:", error);

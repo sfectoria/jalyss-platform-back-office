@@ -12,6 +12,7 @@ import axios from 'axios';
 import { ip } from '../constants/ip';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
+import jalyssImage from "../assets/jalyss-image-preview.png";
 
 
 const InvoiceModal = ({
@@ -22,13 +23,14 @@ const InvoiceModal = ({
   idChannel,
   info,
   itemsData,
-  taxAmount,
   subTotal,
+  total,
   discountAmount,
   finishSale,
   mode,
   type,
-  invoiceTitle
+  invoiceTitle,
+  invoiceState
 }) => {
   const invoiceCaptureRef = useRef(null);
   const [items,setItems]=useState([])
@@ -36,9 +38,11 @@ const InvoiceModal = ({
   const [billTo,setBillTo]=useState({})
   const [billFrom,setBillFrom]=useState({})
   const [amount,setAmount]=useState(0)
+  const [subTotall,setSubTotal]=useState(0)
+  const [totall,setTotal]=useState(0)
   const [title,setTitle]=useState('')
-  const [successAlert, setSuccessAlert] = useState(false);  // State for success alert
-  const [errorAlert, setErrorAlert] = useState(false);      // State for error alert
+  const [successAlert, setSuccessAlert] = useState(false); 
+  const [errorAlert, setErrorAlert] = useState(false);      
 
 
   useEffect(()=>{
@@ -64,7 +68,8 @@ const InvoiceModal = ({
         email:info.billFromEmail
       })
       setItems(itemsData)
-      setAmount(subTotal)
+      setSubTotal(subTotal)
+      setTotal(total)
       setTitle(invoiceTitle)
       setDate(new Date().toISOString())
       console.log(billTo,billFrom);
@@ -83,6 +88,16 @@ const InvoiceModal = ({
       acc.ids.push(Article.id);
       return acc;
      },{data:[],ids:[]})
+     setBillTo({
+      name:e.client?.fullName,
+      address:e.client?.address,
+      email:e.client?.email,
+     })
+     setBillFrom({
+      name:e.stock?.name,
+      address:e.stock?.location,
+      // email:e.stock.email
+     })
      if(e.transferNote.length){
       setBillTo({
         name:e.transferNote[0].stockTo.name,
@@ -153,7 +168,7 @@ const InvoiceModal = ({
     });
     
     setDate(e.exitDate)
-    setAmount(e.totalAmount)
+    setTotal(e.totalAmount)
     console.log(itemsData.data,'hello');
     
     setItems(itemsData.data.map((e)=>{
@@ -181,7 +196,12 @@ const InvoiceModal = ({
           email:"jalyss@gmail.com",
         })
         setDate(e.receiptDate)
-        setAmount(e.totalAmount)
+        setTotal(e.totalAmount)
+        setBillFrom({
+          name:e.provider?.nameProvider,
+          address:e.provider?.adresse,
+          email:e.provider?.email,
+        })
         if(e.transferNote.length){
           setBillFrom({
             id:e.transferNote[0].stockFrom.id,
@@ -299,12 +319,11 @@ const InvoiceModal = ({
             <div className="w-100">
               <h4 className="fw-bold my-2">{title}</h4>
               <h6 className="fw-bold text-secondary mb-1">
-                Invoice #: {''} </h6>
+                ~ {invoiceState} ~</h6>
             </div>
-            {title!=='Bon de Transfer'&& <div className="text-end ms-4">
-              <h6 className="fw-bold mt-1 mb-2">Amount&nbsp;Due:</h6>
-              <h5 className="fw-bold text-secondary">{amount} {currency}</h5>
-            </div>}
+            <div className="text-end ms-4">
+            <img src={jalyssImage} style={{ width: "150px" }} />
+            </div>
           </div>
           <div className="p-4">
             <Row className="mb-4">
@@ -329,21 +348,21 @@ const InvoiceModal = ({
             <Table className="mb-0">
               <thead>
                 <tr>
-                  <th>QTY</th>
                   <th>Title</th>
                   <th className="text-end">QTY</th>
                  {title!=='Bon de Transfer'&&<> <th className="text-end">PRICE</th>
+                  <th className="text-end">DISCOUNT</th>
                   <th className="text-end">AMOUNT</th></>}
                 </tr>
               </thead>
               <tbody>
                 {items.map((item, i) => (
                   <tr key={i}>
-                    <td style={{ width: '70px' }}>{item.quantity}</td>
                     <td>{item.name} - {item?.author} - {item?.publisher}</td>
                     <td className="text-end" style={{ width: '100px' }}>{item.quantity}</td>
                    {title!=='Bon de Transfer'&&<><td className="text-end" style={{ width: '100px' }}>{item.price} {currency}</td>
-                    <td className="text-end" style={{ width: '100px' }}>{item.price * item.quantity} {currency}</td></>}
+                   <td className="text-end" style={{ width: '100px' }}>{item.discount} %</td>
+                    <td className="text-end" style={{ width: '100px' }}>{(item.price * item.quantity)-(item.price * item.quantity*(item.discount/100))} {currency}</td></>}
                   </tr>
                 ))}
               </tbody>
@@ -358,15 +377,8 @@ const InvoiceModal = ({
                 {title!=='Bon de Transfer'&&<> <tr className="text-end">
                   <td></td>
                   <td className="fw-bold" style={{ width: '100px' }}>SUBTOTAL</td>
-                  <td className="text-end" style={{ width: '100px' }}>{amount} {currency}</td>
+                  <td className="text-end" style={{ width: '100px' }}>{subTotall} {currency}</td>
                 </tr></>}
-                {taxAmount !== '0.00' &&
-                  <tr className="text-end">
-                    <td></td>
-                    <td className="fw-bold" style={{ width: '100px' }}>TAX</td>
-                    <td className="text-end" style={{ width: '100px' }}>{taxAmount} {currency}</td>
-                  </tr>
-                }
                 {discountAmount !== '0.00' &&
                   <tr className="text-end">
                     <td></td>
@@ -377,7 +389,7 @@ const InvoiceModal = ({
                 {title!=='Bon de Transfer'&&<><tr className="text-end">
                   <td></td>
                   <td className="fw-bold" style={{ width: '100px' }}>TOTAL</td>
-                  <td className="text-end" style={{ width: '100px' }}>{amount} {currency}</td>
+                  <td className="text-end" style={{ width: '100px' }}>{totall} {currency}</td>
                 </tr></>}
               </tbody>
             </Table>

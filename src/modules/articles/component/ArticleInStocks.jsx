@@ -125,7 +125,6 @@ function Row(props) {
               size="small"
               onClick={() => {
                 setOpen(true);
-                // fetchHistory();
               }}
             >
               <KeyboardArrowDownIcon />
@@ -136,8 +135,6 @@ function Row(props) {
         <TableCell align="left">{row?.stock?.name}</TableCell>
         <TableCell align="left">{row?.stock?.location}</TableCell>
         <TableCell align="left">{row?.quantity}</TableCell>
-        {/* <TableCell align="left">{row.author}</TableCell>
-        <TableCell align="left">{row.publisher}</TableCell> */}
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -237,15 +234,6 @@ Row.propTypes = {
     publisher: PropTypes.string.isRequired,
   }).isRequired,
 };
-
-// const rows = [
-//   createData('Sfax1', 'Sfax1/Sfax', 24, 'robert ti kyosaki', 'maktabat jarir' ),
-//   createData('Mide', 'mida/ mez tmim /nabeul',120, 'mark manson', 'attanwir'),
-//   createData('Bizerte', 'bizerte/bizerte', 160, 'iheb hamarna','molhimon'),
-//   createData('Gabes', 'Gabes/Gabes', 123, 'walid mohyi e din al asghar', 'dar e salam'),
-//   createData('Hay e nour', 'hay e nour / Gafsa',90, 'abd el karim bakkar','dar e salam'),
-//   createData('Hay l khadhra', 'hay lkhadhra/tunis', 49, 'najib mahfoudh','dar e chourouk'),
-// ];
 
 export default function ArticleInStocks({ data }) {
   console.log(data);

@@ -1,13 +1,15 @@
 // handel info function
 
 export const handelInfo = (
+  state,
   type,
   setInvoiceTitle,
   setReqName,
   setReqLine,
   setReqChannel,
   setReqClient,
-  setReqDate
+  setReqDate,
+  setInvoiceState
 ) => {
   if (type === "BR") {
     setInvoiceTitle("Bon de Reception");
@@ -26,13 +28,21 @@ export const handelInfo = (
     setReqName("salesDeliveryNote");
     setReqLine("salesDeliveryNoteLine");
     setReqDate("deliveryDate");
-  } else if (type === "Bl" || type === "Blf" || type === "f") {
-    if (type === "Bl") setInvoiceTitle("Bon de Livraison");
-    if (type === "Blf") setInvoiceTitle("Bon de Livraison/Facture");
-    if (type === "f") setInvoiceTitle("Facture");
+  } else if (type === "Bl") {
+    setInvoiceTitle("Bon de Livraison");
     setReqName("purchase-delivery-note");
-    setReqDate("deliveryDate");
-  } else if (type === "BLF") {
+  } else if (type === "Blf") {
+    setInvoiceTitle("Bon de Livraison/Facture");
+    setReqName("purchase-delivery-invoices");
+  } else if (type === "f") {
+    setInvoiceTitle("Facture");
+    setReqName("purchase-invoices");
+  }
+  //  else if (type === "ticket") {
+  //   setInvoiceTitle("Ticket");
+  //   setReqName("purchase-delivery-note");
+  // } 
+  else if (type === "BLF") {
     setInvoiceTitle("Bon de Livraison/Facture");
     setReqName("salesDeliveryInvoice");
     setReqLine("salesDeliveryInvoicelines");
@@ -57,5 +67,12 @@ export const handelInfo = (
     setReqLine();
   } else if (type === "Devis") {
     setInvoiceTitle("Devis");
+  }
+
+  if (state==='sale'){
+    setInvoiceState('Vente')
+  }
+  if (state==='purchase'){
+    setInvoiceState('Achat')
   }
 };
