@@ -59,6 +59,7 @@ const InvoiceItem = (props) => {
             handelNSearch={handelNSearch}
             info={info}
             type={type}
+            state={state}
           />
         </tfoot>
       </Table>

@@ -10,6 +10,7 @@ const SearchField = ({
   handelNSearch,
   info,
   type,
+  state
 }) => {
   const [searchText, setSearchText] = useState("");
   const [text, setText] = useState("");
@@ -19,6 +20,8 @@ const SearchField = ({
   const [loading, setLoading] = useState(true);
   const [filteredRows, setFilteredRows] = useState(rows);
   const [hoveredImage, setHoveredImage] = useState(null);
+  console.log(state,'gg');
+  
   useEffect(() => {
     if (
       info.type === "BR" ||
@@ -188,7 +191,7 @@ const SearchField = ({
 
   const handelBarcodeSearch = async (event) => {
     console.log(event?.target?.value, "before condition");
-    if (type === "BR" && !!event?.target?.value) {
+    if ((type === "BR" ||type === "Bl" ||type === "Blf" ||type === "f") && !!event?.target?.value) {
       const response = await axios.get(
         `${ip}/articles/barCode/${event?.target?.value}`
       );
@@ -202,8 +205,6 @@ const SearchField = ({
           author: e?.articleByAuthor[0]?.author?.nameAr,
           publisher: e?.articleByPublishingHouse[0]?.publishingHouse?.nameAr,
         };
-        console.log(response);
-
         handelBarcodeSu(prod);
         event.target.value = "";
       }
@@ -211,12 +212,13 @@ const SearchField = ({
         handelBarcodeEr(response.data);
       }
     } else if (
-      info.type === "BL" ||
-      info.type === "BLF" ||
-      info.type === "F" ||
-      info.type === "Ticket" ||
-      info.type === "Devis" ||
-      info.type === "BC"
+      type === "BL" ||
+      type === "BLF" ||
+      type === "F" ||
+      type === "Ticket" ||
+      type === "Devis" ||
+      type === "BC" ||
+      type === "BT"
     ) {
       if (!!event.target.value) {
         const response = await axios.get(
@@ -321,22 +323,22 @@ const SearchField = ({
                     <div className="ms-2">
                       <Typography variant="body1">{`${option.name}`}</Typography>
                     </div>
-                    {option.price !== 0 && type !== "BR" && (
+                    {option.price !== 0 && type !== "BR" && type!=="BS" && state!=="purchase"  && (
                       <div className="ms-2">
                         <Typography variant="body1">{` | ${option.price} DT `}</Typography>
                       </div>
                     )}
-                    {option.author && type === "BR" && (
+                    {option.author  && state==="purchase" && (
                       <div className="ms-2">
                         <Typography variant="body1">{` | ${option.author}`}</Typography>
                       </div>
                     )}
-                    {option.publisher && type === "BR" && (
+                    {option.publisher && state==="purchase" && (
                       <div className="ms-2">
                         <Typography variant="body1">{` | ${option.publisher}`}</Typography>
                       </div>
                     )}
-                    {type !== "BR" && (
+                    {type !== "BR" && state!=="purchase" && (
                       <div className="ms-2">
                         <Typography variant="body1">{` | ${option.quantity}`}</Typography>
                       </div>

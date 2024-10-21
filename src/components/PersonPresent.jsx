@@ -110,14 +110,14 @@ function PersonPresent({
         if (reff === "resv") {
           const response = await axios.get(`${ip}/clients/${person}`);
           console.log(person, response.data, "hello");
-          const { id, name, location } = response.data;
+          const { id, fullName, address,email } = response.data;
           setId(id);
-          setName(name);
-          setPName(name);
-          setEmail("jalyss@gmail.com");
-          setPEmail("jalyss@gmail.com");
-          setAddress(location);
-          setPAddress(location);
+          setName(fullName);
+          setPName(fullName);
+          setEmail(email);
+          setPEmail(email);
+          setAddress(address);
+          setPAddress(address);
         }
         if (reff === "sndr") {
           const response = await axios.get(`${ip}/selling/${person}`);

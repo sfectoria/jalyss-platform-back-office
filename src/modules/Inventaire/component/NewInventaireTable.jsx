@@ -58,12 +58,10 @@ export default function NewInventaireTable() {
     console.log(ids);
     const responseInventory = await axios.get(`${ip}/inventory/${param.idInv}`,{params:{articlesIds:ids}})
     const result = response.data.data.stockArticle.map((el) => {
-      const invLine = responseInventory?.data?.inventoryLine?.find(q => q.articleId === el.article.id)
-      console.log(invLine);
-      
+      const invLine = responseInventory?.data?.data?.inventoryLine?.find(q => q.articleId === el.article.id)
       return {
         ...el.article,
-        quantity: invLine?.quantity||null,
+        quantity: invLine?.quantity||0,
         reelQuantity:el.quantity,
         idLine:invLine?.id||null
       };

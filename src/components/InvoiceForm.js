@@ -45,7 +45,7 @@ const InvoiceForm = () => {
   const [total, setTotal] = useState("0.00");
   const [payedAmount, setPayedAmount] = useState(0);
   const [subTotal, setSubTotal] = useState(0.0);
-  const [discountRate, setDiscountRate] = useState("");
+  const [discountRate, setDiscountRate] = useState(0);
   const [discountAmount, setDiscountAmount] = useState("0.00");
   const [items, setItems] = useState([]);
   const [showSuAlert, setShowSuAlert] = useState(false);
@@ -60,13 +60,10 @@ const InvoiceForm = () => {
   const [suOp, setSuOp] = useState(null);
   const [info, setInfo] = useState({});
   const param = useParams();
-  
-  const { state, type, receiver, sender,mode } = param;
+
+  const { state, type, receiver, sender, mode } = param;
   console.log(items, param);
   useEffect(() => {
-    if(mode.includes('cnf')){
-      handelCommendToSale()
-    }
     handelInfo(
       state,
       type,
@@ -81,6 +78,11 @@ const InvoiceForm = () => {
     handleCalculateTotal();
     setCurrentDate(new Date().toLocaleDateString());
   }, [items]);
+  useEffect(() => {
+    if (mode.includes("cnf")) {
+      handelCommendToSale();
+    }
+  }, []);
   const targetRef = useRef(null);
 
   const handleRowDel = (itemToDelete) => {
@@ -88,20 +90,39 @@ const InvoiceForm = () => {
     setItems(updatedItems);
     handleCalculateTotal();
   };
- const handelCommendToSale = async() =>{
-  const response = await axios.get(`${ip}/purchaseOrder/${2}`)
-  console.log(response.data);
-  let articles = response.data.purchaseOrderLine.map(e=>{
-    let {title,articleByPublishingHouse,articleByAuthor,...rest}= e.article
-    let name= title
-    // let author = articleByAuthor[0]?author?.nameAr || null
-    // let publisher= articleByPublishingHouse[0]?publishingHouse?.nameAr || null
-    return {name}
-  })
-  
- }
- console.log(items);
- 
+  const handelCommendToSale = async () => {
+    let idPurchaseOrder = mode.slice(mode.indexOf("f") + 1);
+    const response = await axios.get(`${ip}/purchaseOrder/${idPurchaseOrder}`);
+    console.log(response.data);
+    let articles = response.data.purchaseOrderLine.map((e) => {
+      let {
+        title,
+        articleByPublishingHouse,
+        articleByAuthor,
+        stockArticle,
+        ...rest
+      } = e.article;
+      let { price, discount, quantity } = e;
+      let name = title;
+      let author = articleByAuthor[0]?.author?.nameAr || null;
+      let publisher =
+        articleByPublishingHouse[0]?.publishingHouse?.nameAr || null;
+      let stockQuantity = stockArticle[0]?.quantity || 0;
+      return {
+        name,
+        publisher,
+        author,
+        stockQuantity,
+        price: price || 0,
+        discount:discount,
+        quantity,
+        ...rest,
+      };
+    });
+    setItems(articles);
+  };
+  console.log(items);
+
   const finishSale = async () => {
     try {
       let saleStatus = false;
@@ -137,6 +158,16 @@ const InvoiceForm = () => {
           paymentStatus: paymentStatus,
           [reqLine]: itemsWithIdArticle,
         };
+        if (mode.includes("cnf")) {
+          let idPurchaseOrder = mode.slice(mode.indexOf("f") + 1);
+          obj["idPurchaseOrder"] = parseInt(idPurchaseOrder)
+          const confirm = await axios.patch(
+            `http://localhost:3000/purchaseOrder/${idPurchaseOrder}`,
+            {
+              status: "Confirmed",
+            }
+          );
+        }
         console.log(obj);
 
         const response = await axios.post(`${ip}/${reqName}/create`, obj);
@@ -227,9 +258,9 @@ const InvoiceForm = () => {
         }
       } else if (type === "BC") {
         const itemsWithIdArticle = items.map((e) => {
-          let { id, quantity, ...rest } = e;
+          let { id, quantity, price, discount, ...rest } = e;
           const idArticle = id;
-          return { idArticle, quantity };
+          return { idArticle, quantity, price, discount };
         });
         console.log(itemsWithIdArticle);
 
@@ -242,7 +273,7 @@ const InvoiceForm = () => {
           purchaseOrderLine: itemsWithIdArticle,
         };
         const response = await axios.post(`${ip}/purchaseOrder/create`, obj);
-
+        
         if (response && response.status === 201) {
           setTimeout(() => navigate(-1), 2500);
           setItems([]);
@@ -256,7 +287,6 @@ const InvoiceForm = () => {
           discount = parseFloat(discount);
           return { idArticle, quantity, price, discount };
         });
-        console.log(itemsWithIdArticle);
 
         const obj = {
           idClient: billToId,
@@ -283,7 +313,6 @@ const InvoiceForm = () => {
           quantity = parseInt(quantity);
           return { idArticle, quantity, price, discount };
         });
-        console.log(itemsWithIdArticle);
 
         const obj = {
           typeReceipt: "achat",
@@ -340,7 +369,6 @@ const InvoiceForm = () => {
           quantity = parseInt(quantity);
           return { idArticle, quantity };
         });
-        console.log(itemsWithIdArticle);
 
         const obj = {
           returnDate: new Date(),
@@ -369,9 +397,13 @@ const InvoiceForm = () => {
     const duplicate = items.find((e) => {
       return e.id === obj.id;
     });
+    console.log(duplicate, "hi");
+
     if (duplicate) {
       let verify = 0;
       const doubleQ = items.map((e) => {
+        console.log(e);
+
         if (
           e.id === obj.id &&
           e.quantity < e.stockQuantity &&
@@ -410,7 +442,7 @@ const InvoiceForm = () => {
       const newItem = {
         id: obj.id,
         name: obj.name,
-        price: obj.price,
+        price: obj.price || 0,
         barcode: "",
         quantity: 1,
         publisher: obj.publisher,
@@ -479,9 +511,7 @@ const InvoiceForm = () => {
     ).toFixed(2);
     setDiscountAmount(discountAmt);
 
-    const totalAmt = parseFloat(
-      subTotal - discountAmt
-    ).toFixed(2);
+    const totalAmt = parseFloat(subTotal - discountAmt).toFixed(2);
     setTotal(totalAmt);
   };
 
@@ -596,8 +626,10 @@ const InvoiceForm = () => {
                   </div>
                 </div>
                 <div className="d-flex flex-row align-items-center">
-                  <p className="h5 fw-bold " style={{ color: 'purple' }}>{invoiceState}</p>
-                  </div>
+                  <p className="h5 fw-bold " style={{ color: "purple" }}>
+                    {invoiceState}
+                  </p>
+                </div>
                 <div className="d-flex flex-row align-items-center">
                   <span className="fw-bold d-block me-2">
                     Current&nbsp;Date:&nbsp;
@@ -611,20 +643,20 @@ const InvoiceForm = () => {
             </div>
             <hr className="my-4" />
             <Row className="mb-5">
-            {(type !== "Ticket"&& type!=='ticket') && (
-              <Col>
-                <Form.Label className="fw-bold">Bill to:</Form.Label>
-                {param.receiver !== "0" ? (
-                  <PersonPresent
-                    person={receiver}
-                    type={type}
-                    reff={"resv"}
-                    setId={setBillToId}
-                    setName={setBillTo}
-                    setEmail={setBillToEmail}
-                    setPhone={setBillToPhone}
-                    setAddress={setBillToAddress}
-                  />
+              {type !== "Ticket" && type !== "ticket" && (
+                <Col>
+                  <Form.Label className="fw-bold">Bill to:</Form.Label>
+                  {param.receiver !== "0" ? (
+                    <PersonPresent
+                      person={receiver}
+                      type={type}
+                      reff={"resv"}
+                      setId={setBillToId}
+                      setName={setBillTo}
+                      setEmail={setBillToEmail}
+                      setPhone={setBillToPhone}
+                      setAddress={setBillToAddress}
+                    />
                   ) : (
                     <div>
                       <PersonSearch
@@ -636,38 +668,19 @@ const InvoiceForm = () => {
                         setEmail={setBillToEmail}
                         setAddress={setBillToAddress}
                       />
-                    <div className="mt-1 ms-2">
-                      <span>{billToEmail}</span>
+                      <div className="mt-1 ms-2">
+                        <span>{billToEmail}</span>
+                      </div>
+                      <div className="mt-4 ms-2">
+                        <span>{billToPhone}</span>
+                      </div>
+                      <div className="mt-4 ms-2">
+                        <span>{billToAddress}</span>
+                      </div>
                     </div>
-                    <div className="mt-4 ms-2">
-                      <span>{billToPhone}</span>
-                    </div>
-                    <div className="mt-4 ms-2">
-                      <span>{billToAddress}</span>
-                    </div>
-                    {/* <Form.Control
-                      placeholder={"Email address"}
-                      value={billToEmail}
-                      type="email"
-                      name="billToEmail"
-                      className="my-2"
-                      onChange={editField}
-                      autoComplete="email"
-                      required
-                    />
-                    <Form.Control
-                      placeholder={"Billing address"}
-                      value={billToAddress}
-                      type="text"
-                      name="billToAddress"
-                      className="my-2"
-                      autoComplete="address"
-                      onChange={editField}
-                      required
-                    /> */}
-                  </div>
-                )}
-              </Col>)}
+                  )}
+                </Col>
+              )}
               <Col>
                 <Form.Label className="fw-bold">Bill from:</Form.Label>
                 {param.sender !== "0" ? (

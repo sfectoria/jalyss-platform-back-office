@@ -16,10 +16,9 @@ const PandMField = ({
   };
 
   const handleIncrement = () => {
-    console.log(quantity, type);
     if (
       stockQuantity > quantity ||
-      type === "BR " ||
+      type === "BR" ||
       type === "Bl" ||
       type === "Blf" ||
       type === "f" ||

@@ -78,34 +78,12 @@ export const sidebarData = [
   {
     title: "Achat",
     icon: <ShoppingCartIcon />,
-    children: [
-      {
-        title: "Achat List",
-        icon: <ListIcon />,
-        link: "/achat",
-      },
-      {
-        title: "Add Achat",
-        icon: <PlaylistAddIcon />,
-        link: "/achat/add-sale",
-      },
-    ],
+    link: "/achat",
   },
   {
     title: "Vente",
     icon: <MonetizationOnIcon />,
-    children: [
-      {
-        title: "Vente List",
-        icon: <ListIcon />,
-        link: "/vente",
-      },
-      {
-        title: "Add Vente",
-        icon: <PlaylistAddIcon />,
-        link: "/vente/add-vente",
-      },
-    ],
+    link: "/vente",
   },
   {
     title: "Stock",
