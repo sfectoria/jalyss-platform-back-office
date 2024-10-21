@@ -17,6 +17,7 @@ import Item from "../../../style/ItemStyle";
 import { ip } from "../../../constants/ip";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Autocomplete from '@mui/material/Autocomplete';
 
 const AddStock = () => {
   const defaultTheme = createTheme({
@@ -49,27 +50,21 @@ const AddStock = () => {
     setOpen(true);
   };
   const navigate = useNavigate();
+  const [managers, setManagers]= useState([]);
 
-  // // isVerified
-  // const isVerified = (form) => {
-  //   if (stockNames.includes(form.stockName)) {
-  //     setErrors((prev) => ({
-  //       ...prev,
-  //       stockName: "Stock's name already exists",
-  //     }));
-  //     return false;
-  //   }
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const response = await axios.get('http://localhost:3000/employees/all');
+        setManagers(response.data);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des managers :', error);
+      }
+    }
 
-  //   if (addresses.includes(form.address)) {
-  //     setErrors((prev) => ({
-  //       ...prev,
-  //       address: "Address already exists",
-  //     }));
-  //     return false;
-  //   }
-  //   return true;
-  // };
-
+    fetchCategories();
+  }, []);
+console.log("man",managers)
   // handleStockNameChange
   const [stockName, setStockName] = React.useState("");
   const handleStockNameChange = (event) => {
@@ -84,9 +79,9 @@ const AddStock = () => {
 
   // handleManagerNameChange
   const [managerName, setManagerName] = React.useState("");
-  const handleManagerNameChange = (event) => {
-    setManagerName(event.target.value);
-  };
+  // const handleManagerNameChange = (event) => {
+  //   setManagerName(event.target.value);
+  // };
 
   // handlemanagerPhoneNumberChange
   const [managerPhoneNumber, setManagerPhoneNumber] = React.useState("");
@@ -96,21 +91,24 @@ const AddStock = () => {
 
   // errors
   const [errors, setErrors] = React.useState({});
+  const [selectedManager, setSelectedManager] = useState(null);
 
   const handleSubmit = (e) => {
+    console.log("hhhhhh")
     e.preventDefault();
     const newErrors = {};
 
     if (!stockName) newErrors.stockName = "Stock's Name is required";
     if (!address) newErrors.address = "Address is required";
-    if (!managerName) newErrors.managerName = "Manager's name is required";
-    if (!managerPhoneNumber)
-      newErrors.managerPhoneNumber = "Manager's phone number is required";
+    if (!selectedManager) newErrors.selectedManager = "Manager's name is required";
+    // if (!managerPhoneNumber)
+    //   newErrors.managerPhoneNumber = "Manager's phone number is required";
 
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
       handelAddStock();
+      console.log("aaaaaaa")
       setIsCancelled(false);
       setOpen(true);
     }
@@ -120,6 +118,7 @@ const AddStock = () => {
       name: stockName,
       location: address,
       capacity: 200,
+      idEmployee: selectedManager ? selectedManager.id :null,
     };
     const newStock = await axios.post(`${ip}/stocks/createStock`, obj);
     console.log("ggg", newStock.data);
@@ -177,22 +176,27 @@ const AddStock = () => {
                 </Item>
               </Grid>
               <Grid item xs={12}>
-                <Item elevation={0}>
-                  <TextField
-                    required
-                    margin="normal"
-                    fullWidth
-                    id="email"
-                    label="Manager Name"
-                    name="managerName"
-                    onChange={handleManagerNameChange}
-                    value={managerName}
-                    error={!!errors.managerName}
-                    helperText={errors.managerName}
-                  />
-                </Item>
+              <Item elevation={0}>
+                <Autocomplete
+                  options={managers}
+                  getOptionLabel={(option) => `${option.firstName} ${option.lastName} / ${option.phoneNumber}`} 
+                  value={selectedManager}
+                  onChange={(event, newValue) => setSelectedManager(newValue)}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Select Manager"
+                      required
+                      margin="normal"
+                      fullWidth
+                      error={!!errors.selectedManager}
+                      helperText={errors.selectedManager}
+                    />
+                  )}
+                />
+              </Item>
               </Grid>
-              <Grid item xs={12}>
+              {/* <Grid item xs={12}>
                 <Item elevation={0}>
                   <TextField
                     required
@@ -208,7 +212,7 @@ const AddStock = () => {
                     helperText={errors.managerPhoneNumber}
                   />
                 </Item>
-              </Grid>
+              </Grid> */}
               <Grid item xs={12}>
                 <Item
                   elevation={0}

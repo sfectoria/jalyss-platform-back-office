@@ -60,13 +60,31 @@ export default function Commande() {
   };
 
   const columns = [
-    { field: "date", headerName: "Date", width: 200  ,valueGetter:(value)=>{
-      return new Date(value).toString().slice(0,new Date(value).toString().indexOf('GMT')-4)
-    }},
+    {
+      field: "date",
+      headerName: "Date",
+      width: 150,
+      valueGetter: (value) => {
+        if (value.slice(0, 10) === new Date().toISOString().slice(0, 10))
+          return "Today";
+        else return new Date(value).toString().slice(0, 16);
+      },
+    },
+    {
+      field: "time",
+      headerName: "Time",
+      width: 100,
+      valueGetter: (value, row) => {
+        return row.date.slice(
+          row.date.indexOf("T") + 1,
+          row.date.indexOf("T") + 6
+        );
+      },
+    },
     {
       field: "customerName",
       headerName: "Customer",
-      width: 270,
+      width: 250,
       renderCell: (params) => (
        <MouseOverPopover name={params.row?.client} />
       )
@@ -78,7 +96,6 @@ export default function Commande() {
       renderCell: (params) => (
         <ColorToggleButton state={params.row?.status?.toLowerCase()}  idPurchaseOrder={params.row.id} saleChannelId={params.row.salesChannelsId} idClient={params.row.idClient} deliveryDate={params.row.orderDate} purchaseOrderLine={params.row.purchaseOrderLine} />
       )
-      
     },
     {
       field: "details",
@@ -94,63 +111,6 @@ export default function Commande() {
       ],
     },
   ];
-
-  // const rows = [
-  //   {
-  //     id: 1,
-  //     date: "07/23/2024 6:56 PM",
-  //     customerName: null,
-  //     state: "pending",
-  //   },
-  //   {
-  //     id: 2,
-  //     date: "07/23/2024 6:56 PM",
-  //     customerName: "Hamida midawi",
-  //     state: "confirmed",
-  //   },
-  //   {
-  //     id: 3,
-  //     date: "07/23/2024 6:56 PM",
-  //     customerName: null,
-  //     state: "pending",
-  //   },
-  //   {
-  //     id: 4,
-  //     date: "07/23/2024 6:56 PM",
-  //     customerName: null,
-  //     state: "confirmed",
-  //   },
-  //   {
-  //     id: 5,
-  //     date: "07/23/2024 6:56 PM",
-  //     customerName: "Daenerys",
-  //     state: "cancelled",
-  //   },
-  //   {
-  //     id: 6,
-  //     date: "07/23/2024 6:56 PM",
-  //     customerName: "houssem ben ammar",
-  //     state: "pending",
-  //   },
-  //   {
-  //     id: 7,
-  //     date: "07/23/2024 6:56 PM",
-  //     customerName: null,
-  //     state: "confirmed",
-  //   },
-  //   {
-  //     id: 8,
-  //     date: "07/23/2024 6:56 PM",
-  //     customerName: "Stock Nabeul",
-  //     state: "cancelled",
-  //   },
-  //   {
-  //     id: 9,
-  //     date: "07/23/2024 6:56 PM",
-  //     customerName: "Harvey",
-  //     state: "confirmed",
-  //   },
-  // ];
 
   return (
     <div style={{ width: "100%" }}>

@@ -48,6 +48,7 @@ export default function StockHistory() {
     setRows(responseHistory.data.data);
     setCount(responseHistory.data.count);
   };
+  console.log("rows", rows);
 
   function Pagination({ onPageChange, className }) {
     const apiRef = useGridApiContext();
@@ -100,22 +101,36 @@ export default function StockHistory() {
     {
       field: "date",
       headerName: "Date",
-      width: 200,
-      valueGetter: (value) =>
-        value.toString().slice(0, value.toString().indexOf("GMT") - 1),
+      width: 150,
+      valueGetter: (value) => {
+        if (value.slice(0, 10) === new Date().toISOString().slice(0, 10))
+          return "Today";
+        else return new Date(value).toString().slice(0, 16);
+      },
+    },
+    {
+      field: "time",
+      headerName: "Time",
+      width: 100,
+      valueGetter: (value, row) => {
+        return row.date.slice(
+          row.date.indexOf("T") + 1,
+          row.date.indexOf("T") + 6
+        );
+      },
     },
     {
       field: "customerName",
       headerName: "Customer",
       width: 270,
-      renderCell: (params) => <MouseOverPopover name={params.row.client} />,
+      renderCell: (params) => (<MouseOverPopover name={params.row.client?.fullName || "N/A" } />),
     },
     {
       field: "fournisseurName",
       headerName: "Fournisseur",
       width: 250,
       renderCell: (params) => (
-        <MouseOverPopover name={params.row.fournisseurName} />
+        <MouseOverPopover name={params.row.provider?.nameProvider || "N/A"} />
       ),
     },
     {

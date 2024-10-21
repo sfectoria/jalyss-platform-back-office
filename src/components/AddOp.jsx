@@ -7,7 +7,7 @@ import ExitToAppOutlinedIcon from "@mui/icons-material/ExitToAppOutlined";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import { useNavigate } from "react-router-dom";
 
-export default function AddButton({type,info}) {
+export default function AddButton({ type, info }) {
   const [actions, setActions] = useState([]);
 
   useEffect(() => {
@@ -18,8 +18,7 @@ export default function AddButton({type,info}) {
         { icon: <ReceiptIcon />, name: "F" },
         { icon: <ReceiptIcon />, name: "Ticket" },
       ]);
-    } 
-    else if (type === "achat") {
+    } else if (type === "achat") {
       setActions([
         { icon: <ExitToAppOutlinedIcon />, name: "Bl" },
         { icon: <ReceiptIcon />, name: "Blf" },
@@ -30,9 +29,9 @@ export default function AddButton({type,info}) {
       setActions([{ icon: <ExitToAppOutlinedIcon />, name: "BRe" }]);
     } else if (type === "commande") {
       setActions([{ icon: <ExitToAppOutlinedIcon />, name: "BC" }]);
-    } else if(type === 'devis'){
+    } else if (type === "devis") {
       setActions([{ icon: <ExitToAppOutlinedIcon />, name: "Devis" }]);
-    } else if (type === 'histStock') {
+    } else if (type === "histStock") {
       setActions([
         { icon: <ExitToAppOutlinedIcon />, name: "BR" },
         { icon: <ReceiptIcon />, name: "BS" },
@@ -46,15 +45,30 @@ export default function AddButton({type,info}) {
   const handleClose = () => setOpen(false);
   const navigate = useNavigate();
 
-
   const handleAction = (type) => {
-    if (type === "BR" || type==='BRe' || type ==='Bl'|| type ==='Blf' || type ==='f' || type ==='ticket') {
-      navigate(`/invoice/${type}/0/${info.id}`);
-    } else if (type === "BS" || type ==='BL' || type ==='BLF' || type ==='F' || type ==='Ticket' || type ==='BC' || type ==='Devis' || type==='BT' ) {
-      navigate(`/invoice/${type}/${info.id}/0`, {
-      });
+    if (
+      type === "BR" ||
+      type === "Bl" ||
+      type === "Blf" ||
+      type === "f" ||
+      type === "ticket"
+    ) {
+      navigate(`/invoice/purchase/${type}/0/${info.id}/cr`);
+    } else if (
+      type === "BS" ||
+      type === "BL" ||
+      type === "BLF" ||
+      type === "F" ||
+      type === "Ticket" ||
+      type === "BC" ||
+      type === "Devis"
+    ) {
+      navigate(`/invoice/sale/${type}/${info.id}/0/cr`);
+    } else if (type === "BRe") {
+      navigate(`/invoice/return/${type}/0/${info.id}/cr`);
+    } else if (type === "BT") {
+      navigate(`/invoice/transfer/${type}/${info.id}/0/cr`);
     }
-
   };
 
   return (

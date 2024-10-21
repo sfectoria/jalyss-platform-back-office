@@ -17,6 +17,8 @@ import Item from "../../../style/ItemStyle";
 import axios from "axios";
 import { ip } from "../../../constants/ip";
 import { useNavigate } from "react-router-dom";
+import Autocomplete from '@mui/material/Autocomplete';
+
 
 const AddChannel = () => {
   const defaultTheme = createTheme({
@@ -38,36 +40,32 @@ const AddChannel = () => {
   const [managerName, setManagerName] = React.useState("");
   const [managerPhoneNumber, setManagerPhoneNumber] = React.useState("");
   const [errors, setErrors] = React.useState({});
-  const navigate = useNavigate(); 
+  const [selectedStock, setSelectedStock] = useState(null);
 
-
+  const navigate = useNavigate();
+  const [stocks, setStocks]= useState([]);
   const handleClose = () => {
     setOpen(false);
   };
+
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const response = await axios.get('http://localhost:3000/stocks/getAll');
+        setStocks(response.data);
+        console.log("hhhhhhh")
+      } catch (error) {
+        console.error('Erreur lors de la récupération des stock :', error);
+      }
+    }
+
+    fetchCategories();
+  }, []);
 
   const handleCancel = () => {
     setIsCancelled(true);
     setOpen(true);
   };
-
-  // const isVerified = () => {
-  //   if (channelNames.includes(channelName)) {
-  //     setErrors((prev) => ({
-  //       ...prev,
-  //       channelName: "Stock's name already exists",
-  //     }));
-  //     return false;
-  //   }
-
-  //   if (addresses.includes(form.address)) {
-  //     setErrors((prev) => ({
-  //       ...prev,
-  //       address: "Address already exists",
-  //     }));
-  //     return false;
-  //   }
-  //   return true;
-  // };
 
   const handleChannelNameChange = (event) => {
     setChannelName(event.target.value);
@@ -77,7 +75,6 @@ const AddChannel = () => {
     setAddress(event.target.value);
   };
 
-
   const handleManagerNameChange = (event) => {
     setManagerName(event.target.value);
   };
@@ -86,46 +83,46 @@ const AddChannel = () => {
     setManagerPhoneNumber(event.target.value);
   };
 
-
   const handelConfirm = (e) => {
     e.preventDefault();
     const newErrors = {};
-   console.log('slm');
-   
+    console.log("slm");
+
     if (!channelName) newErrors.channelName = "Stock's Name is required";
     if (!address) newErrors.address = "Address is required";
     if (!managerName) newErrors.managerName = "Manager's name is required";
     if (!managerPhoneNumber)
       newErrors.managerPhoneNumber = "Manager's phone number is required";
+    if (!selectedStock) newErrors.selectedStock = "Stock selection is required";
 
     setErrors(newErrors);
-   console.log(newErrors);
-   
+    console.log(newErrors);
+
     if (Object.keys(newErrors).length === 0) {
-      console.log('hey');
-      
-      handelAddChannel()
+      console.log("hey");
+
+      handelAddChannel();
       setIsCancelled(false);
       setOpen(true);
     }
   };
 
-  const handelAddChannel=async()=>{
-    let obj ={
-      name:channelName,
-      type:'local',
-      region:address,
-      idStock:1
-    }
-     const newStock=await axios.post(`${ip}/selling/create`,obj)
-     console.log("res", newStock);
-     if (newStock && newStock.status === 201) {
-      console.log("navigate ")
+  const handelAddChannel = async () => {
+    let obj = {
+      name: channelName,
+      type: "local",
+      region: address,
+      idStock: selectedStock ? selectedStock.id : null,
+    };
+    const newStock = await axios.post(`${ip}/selling/create`, obj);
+    console.log("res", newStock);
+    if (newStock && newStock.status === 201) {
+      console.log("navigate ");
       setTimeout(() => {
-        navigate('/channels'); 
-      }, 800);    }
-     
-  }
+        navigate("/channels");
+      }, 800);
+    }
+  };
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -134,166 +131,185 @@ const AddChannel = () => {
           <Typography variant="h2" color="initial" gutterBottom>
             Channel's informations
           </Typography>
-         
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <Item elevation={0}>
-                  <TextField
-                    required
-                    margin="normal"
-                    fullWidth
-                    id="channelName"
-                    label="Chaannel's Name"
-                    name="channelName"
-                    onChange={handleChannelNameChange}
-                    inputProps={{
-                      maxLength: 20,
-                    }}
-                    value={channelName}
-                    error={!!errors.channelName}
-                    helperText={errors.channelName}
-                  />
-                </Item>
-              </Grid>
-              <Grid item xs={12}>
-                <Item elevation={0}>
-                  <TextField
-                    required
-                    margin="normal"
-                    fullWidth
-                    id="address"
-                    label="Address"
-                    name="address"
-                    onChange={handleAddressChange}
-                    value={address}
-                    error={!!errors.address}
-                    helperText={errors.address}
-                  />
-                </Item>
-              </Grid>
-              <Grid item xs={12}>
-                <Item elevation={0}>
-                  <TextField
-                    required
-                    margin="normal"
-                    fullWidth
-                    id="email"
-                    label="Manager Name"
-                    name="managerName"
-                    onChange={handleManagerNameChange}
-                    value={managerName}
-                    error={!!errors.managerName}
-                    helperText={errors.managerName}
-                  />
-                </Item>
-              </Grid>
-              <Grid item xs={12}>
-                <Item elevation={0}>
-                  <TextField
-                    required
-                    type="number"
-                    margin="normal"
-                    fullWidth
-                    id="managerPhoneNumber"
-                    label="Manager Phone Number"
-                    name="managerPhoneNumber"
-                    onChange={handlemanagerPhoneNumberChange}
-                    value={managerPhoneNumber}
-                    error={!!errors.managerPhoneNumber}
-                    helperText={errors.managerPhoneNumber}
-                  />
-                </Item>
-              </Grid>
+
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <Item elevation={0}>
+                <Autocomplete
+                  options={stocks}
+                  getOptionLabel={(option) => option.name || ""}
+                  value={selectedStock}
+                  onChange={(event, newValue) => setSelectedStock(newValue)}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Select Stock"
+                      required
+                      margin="normal"
+                      fullWidth
+                      error={!!errors.selectedStock}
+                      helperText={errors.selectedStock}
+                    />
+                  )}
+                />
+              </Item>
+              <Item elevation={0}>
+                <TextField
+                  required
+                  margin="normal"
+                  fullWidth
+                  id="channelName"
+                  label="Chaannel's Name"
+                  name="channelName"
+                  onChange={handleChannelNameChange}
+                  inputProps={{
+                    maxLength: 20,
+                  }}
+                  value={channelName}
+                  error={!!errors.channelName}
+                  helperText={errors.channelName}
+                />
+              </Item>
             </Grid>
-            <Grid container spacing={2}>
-              <Grid
-                item
-                xs={12}
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                }}
-              >
-                <Item elevation={0}>
-                  <Box mt mb>
-                    <Typography
-                      variant="h5"
-                      color="initial"
-                      sx={{
-                        display: "flex",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {channelName}
-                    </Typography>
-                    <Typography
-                      variant="h5"
-                      color="initial"
-                      sx={{
-                        display: "flex",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {address}
-                    </Typography>
-                    <Typography
-                      variant="h5"
-                      color="initial"
-                      sx={{
-                        display: "flex",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {managerName}
-                    </Typography>
-                    <Typography
-                      variant="h5"
-                      color="initial"
-                      sx={{
-                        display: "flex",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {managerPhoneNumber}
-                    </Typography>
-                  </Box>
-                  <Box
+            <Grid item xs={12}>
+              <Item elevation={0}>
+                <TextField
+                  required
+                  margin="normal"
+                  fullWidth
+                  id="address"
+                  label="Address"
+                  name="address"
+                  onChange={handleAddressChange}
+                  value={address}
+                  error={!!errors.address}
+                  helperText={errors.address}
+                />
+              </Item>
+            </Grid>
+            <Grid item xs={12}>
+              <Item elevation={0}>
+                <TextField
+                  required
+                  margin="normal"
+                  fullWidth
+                  id="email"
+                  label="Manager Name"
+                  name="managerName"
+                  onChange={handleManagerNameChange}
+                  value={managerName}
+                  error={!!errors.managerName}
+                  helperText={errors.managerName}
+                />
+              </Item>
+            </Grid>
+            <Grid item xs={12}>
+              <Item elevation={0}>
+                <TextField
+                  required
+                  type="number"
+                  margin="normal"
+                  fullWidth
+                  id="managerPhoneNumber"
+                  label="Manager Phone Number"
+                  name="managerPhoneNumber"
+                  onChange={handlemanagerPhoneNumberChange}
+                  value={managerPhoneNumber}
+                  error={!!errors.managerPhoneNumber}
+                  helperText={errors.managerPhoneNumber}
+                />
+              </Item>
+            </Grid>
+          </Grid>
+          <Grid container spacing={2}>
+            <Grid
+              item
+              xs={12}
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              <Item elevation={0}>
+                <Box mt mb>
+                  <Typography
+                    variant="h5"
+                    color="initial"
                     sx={{
                       display: "flex",
-                      justifyContent: "space-between",
-                      gap: "5%",
+                      justifyContent: "center",
                     }}
                   >
-                    <Button
-                      variant="contained"
-                      sx={{
-                        backgroundColor: (theme) => theme.palette.error.light,
-                        "&:hover": {
-                          backgroundColor: (theme) => theme.palette.error.main,
-                        },
-                      }}
-                      onClick={handleCancel}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      onClick={(e)=>handelConfirm(e)}
-                      sx={{
-                        backgroundColor: (theme) => theme.palette.success.light,
-                        "&:hover": {
-                          backgroundColor: (theme) =>
-                            theme.palette.success.main,
-                        },
-                      }}
-                    >
-                      Confirm
-                    </Button>
-                  </Box>
-                </Item>
-              </Grid>
+                    {channelName}
+                  </Typography>
+                  <Typography
+                    variant="h5"
+                    color="initial"
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {address}
+                  </Typography>
+                  <Typography
+                    variant="h5"
+                    color="initial"
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {managerName}
+                  </Typography>
+                  <Typography
+                    variant="h5"
+                    color="initial"
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {managerPhoneNumber}
+                  </Typography>
+                
+                </Box>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    gap: "5%",
+                  }}
+                >
+                  <Button
+                    variant="contained"
+                    sx={{
+                      backgroundColor: (theme) => theme.palette.error.light,
+                      "&:hover": {
+                        backgroundColor: (theme) => theme.palette.error.main,
+                      },
+                    }}
+                    onClick={handleCancel}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    onClick={(e) => handelConfirm(e)}
+                    sx={{
+                      backgroundColor: (theme) => theme.palette.success.light,
+                      "&:hover": {
+                        backgroundColor: (theme) => theme.palette.success.main,
+                      },
+                    }}
+                  >
+                    Confirm
+                  </Button>
+                </Box>
+              </Item>
             </Grid>
+          </Grid>
         </Box>
       </Paper>
       <Dialog

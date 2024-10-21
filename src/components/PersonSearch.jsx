@@ -6,7 +6,7 @@ import axios from "axios";
 import { ip } from "../constants/ip";
 
 const PersonSearch = ({
-  person,
+  state,
   type,
   setName,
   setEmail,
@@ -45,9 +45,15 @@ const PersonSearch = ({
       if (reff === "sndr") {
         console.log('gg',reff,type);
         
-        const response = await axios.get(`${ip}/clients`);
+        const response = await axios.get(`${ip}/provider`);
         console.log(response.data);
-        setRows(response.data);
+        let dataStocks = response.data.map((e) => {
+          let { id, nameProvider, adresse, ...rest } = e;
+          let fullName = nameProvider;
+          let address =  adresse
+          return { id, fullName,address, ...rest };
+        });
+        setRows(dataStocks);
       }
     } else if (type === "BT") {
       const response = await axios.get(`${ip}/stocks/getAll`);

@@ -10,6 +10,7 @@ const SearchField = ({
   handelNSearch,
   info,
   type,
+  state
 }) => {
   const [searchText, setSearchText] = useState("");
   const [text, setText] = useState("");
@@ -19,8 +20,17 @@ const SearchField = ({
   const [loading, setLoading] = useState(true);
   const [filteredRows, setFilteredRows] = useState(rows);
   const [hoveredImage, setHoveredImage] = useState(null);
+  console.log(state,'gg');
+  
   useEffect(() => {
-    if (info.type === "BR" || info.type === "BRe" || info.type === "Bl" || info.type === "Blf" || info.type === "f" || info.type === "ticket") {
+    if (
+      info.type === "BR" ||
+      info.type === "BRe" ||
+      info.type === "Bl" ||
+      info.type === "Blf" ||
+      info.type === "f" ||
+      info.type === "ticket"
+    ) {
       fetchDataStock();
     } else if (info.type === "BT" || info.type === "BS") {
       fetchDataStockBtOrBs();
@@ -34,7 +44,7 @@ const SearchField = ({
     ) {
       fetchDataChannel();
     }
-  }, [refresh,info]);
+  }, [refresh, info]);
   console.log(info, type);
 
   const mergeAndSortByDate = (exitNotes, receiptNotes) => {
@@ -56,57 +66,61 @@ const SearchField = ({
     return combined.sort((a, b) => a.date - b.date);
   };
   const fetchDataChannel = async () => {
-    if (info.sender!==0 && info.sender!=='0') {
-    const findStockResponse = await axios.get(`${ip}/selling/${info.sender}`);
-    console.log("this is me ", findStockResponse.data);
-    if (findStockResponse.data) {
-      let params = {};
-      if (text) params["text"] = text;
-      const response = await axios.get(
-        `${ip}/stocks/${findStockResponse.data.idStock}`,
-        { params }
-      );
-      console.log("hello ", response.data.data.stockArticle);
-      const result = response.data.data.stockArticle.reduce(
-        (acc, item) => {
-          acc.data.push({
-            id: item.articleId,
-            name: item.article?.title,
-            code: item.article?.code,
-            image: item.article?.cover?.path,
-            author: item.article?.articleByAuthor?.length ? item.article?.articleByAuthor[0]?.author?.nameAr:null,
-            publisher: item.article?.articleByPublishingHouse.length?item.article?.articleByPublishingHouse[0]?.publishingHouse?.nameAr:null,
-            quantity: item.quantity,
-            price: 0,
-          });
-          acc.ids.push(item.articleId);
-          return acc;
-        },
-        {
-          data: [],
-          ids: [],
-        }
-      );
-
-      const responsePriceByChannel = await axios.get(
-        `http://localhost:3000/price-By-Channel/getAll`,
-        { params: { salesChannelIds: [info.sender],articleIds: result.ids } }
-      );
-
-      result.data.forEach((article) => {
-        const priceData = responsePriceByChannel.data.find(
-          (priceItem) => priceItem.idArticle === article.id
+    if (info.sender !== 0 && info.sender !== "0") {
+      const findStockResponse = await axios.get(`${ip}/selling/${info.sender}`);
+      console.log("this is me ", findStockResponse.data);
+      if (findStockResponse.data) {
+        let params = {};
+        if (text) params["text"] = text;
+        const response = await axios.get(
+          `${ip}/stocks/${findStockResponse.data.idStock}`,
+          { params }
         );
-        if (priceData) {
-          article.price = priceData.price;
-        }
-      });
-      console.log("result", result);
-      setRows(result.data);
-      console.log(result.data);
-      
+        console.log("hello ", response.data.data.stockArticle);
+        const result = response.data.data.stockArticle.reduce(
+          (acc, item) => {
+            acc.data.push({
+              id: item.articleId,
+              name: item.article?.title,
+              code: item.article?.code,
+              image: item.article?.cover?.path,
+              author: item.article?.articleByAuthor?.length
+                ? item.article?.articleByAuthor[0]?.author?.nameAr
+                : null,
+              publisher: item.article?.articleByPublishingHouse.length
+                ? item.article?.articleByPublishingHouse[0]?.publishingHouse
+                    ?.nameAr
+                : null,
+              quantity: item.quantity,
+              price: 0,
+            });
+            acc.ids.push(item.articleId);
+            return acc;
+          },
+          {
+            data: [],
+            ids: [],
+          }
+        );
+
+        const responsePriceByChannel = await axios.get(
+          `http://localhost:3000/price-By-Channel/getAll`,
+          { params: { salesChannelIds: [info.sender], articleIds: result.ids } }
+        );
+
+        result.data.forEach((article) => {
+          const priceData = responsePriceByChannel.data.find(
+            (priceItem) => priceItem.idArticle === article.id
+          );
+          if (priceData) {
+            article.price = priceData.price;
+          }
+        });
+        console.log("result", result);
+        setRows(result.data);
+        console.log(result.data);
+      }
     }
-  }
   };
   const fetchDataStock = async () => {
     let params = {};
@@ -133,27 +147,26 @@ const SearchField = ({
     }, []);
     setRows(result);
     console.log(result);
-    
   };
   const fetchDataStockBtOrBs = async () => {
-    if (!!info.sender) {  
-    const response = await axios.get(`${ip}/stocks/${info.sender}`);
-    console.log("hhh", response.data.data.stockArticle);
-    const result = response.data.data.stockArticle.reduce((acc, item) => {
-      acc.push({
-        id: item.articleId,
-        name: item?.article?.title,
-        code: item?.article?.code,
-        image: item?.article?.cover?.path,
-        author: item?.article?.articleByAuthor[0]?.author?.nameAr,
-        publisher:
-          item?.article?.articleByPublishingHouse[0]?.publishingHouse?.nameAr,
-        quantity: item?.quantity,
-      });
-      return acc;
-    }, []);
-    setRows(result);
-  }
+    if (!!info.sender) {
+      const response = await axios.get(`${ip}/stocks/${info.sender}`);
+      console.log("hhh", response.data.data.stockArticle);
+      const result = response.data.data.stockArticle.reduce((acc, item) => {
+        acc.push({
+          id: item.articleId,
+          name: item?.article?.title,
+          code: item?.article?.code,
+          image: item?.article?.cover?.path,
+          author: item?.article?.articleByAuthor[0]?.author?.nameAr,
+          publisher:
+            item?.article?.articleByPublishingHouse[0]?.publishingHouse?.nameAr,
+          quantity: item?.quantity,
+        });
+        return acc;
+      }, []);
+      setRows(result);
+    }
   };
   const handleInputChange = (event, value) => {
     console.log(value, "test here");
@@ -178,7 +191,7 @@ const SearchField = ({
 
   const handelBarcodeSearch = async (event) => {
     console.log(event?.target?.value, "before condition");
-    if ((type === "BR") && !!event?.target?.value) {
+    if ((type === "BR" ||type === "Bl" ||type === "Blf" ||type === "f") && !!event?.target?.value) {
       const response = await axios.get(
         `${ip}/articles/barCode/${event?.target?.value}`
       );
@@ -192,8 +205,6 @@ const SearchField = ({
           author: e?.articleByAuthor[0]?.author?.nameAr,
           publisher: e?.articleByPublishingHouse[0]?.publishingHouse?.nameAr,
         };
-        console.log(response);
-
         handelBarcodeSu(prod);
         event.target.value = "";
       }
@@ -201,12 +212,13 @@ const SearchField = ({
         handelBarcodeEr(response.data);
       }
     } else if (
-      info.type === "BL" ||
-      info.type === "BLF" ||
-      info.type === "F" ||
-      info.type === "Ticket" ||
-      info.type === "Devis" ||
-      info.type === "BC"
+      type === "BL" ||
+      type === "BLF" ||
+      type === "F" ||
+      type === "Ticket" ||
+      type === "Devis" ||
+      type === "BC" ||
+      type === "BT"
     ) {
       if (!!event.target.value) {
         const response = await axios.get(
@@ -216,10 +228,15 @@ const SearchField = ({
           let e = response.data;
           const responsePriceByChannel = await axios.get(
             `http://localhost:3000/price-By-Channel/getAll`,
-            { params: {salesChannelIds: [info.sender],articleIds: [e.articleId] } }
+            {
+              params: {
+                salesChannelIds: [info.sender],
+                articleIds: [e.articleId],
+              },
+            }
           );
           console.log(responsePriceByChannel.data);
-          
+
           const prod = {
             id: e?.articleId,
             name: e?.article?.title,
@@ -229,18 +246,20 @@ const SearchField = ({
             publisher:
               e?.article?.articleByPublishingHouse[0]?.publishingHouse?.nameAr,
             quantity: e?.quantity,
-            price:responsePriceByChannel?.data[0]?.price?responsePriceByChannel?.data[0]?.price:0,
+            price: responsePriceByChannel?.data[0]?.price
+              ? responsePriceByChannel?.data[0]?.price
+              : 0,
           };
           console.log(response);
 
           handelBarcodeSu(prod);
           event.target.value = "";
         }
-      
-      if (typeof response.data === "string") {
-        handelBarcodeEr(response.data);
+
+        if (typeof response.data === "string") {
+          handelBarcodeEr(response.data);
+        }
       }
-    }
     }
   };
 
@@ -304,24 +323,26 @@ const SearchField = ({
                     <div className="ms-2">
                       <Typography variant="body1">{`${option.name}`}</Typography>
                     </div>
-                    {(option.price !== 0 &&type!=="BR") && (
+                    {option.price !== 0 && type !== "BR" && type!=="BS" && state!=="purchase"  && (
                       <div className="ms-2">
                         <Typography variant="body1">{` | ${option.price} DT `}</Typography>
                       </div>
                     )}
-                    {(option.author &&type==='BR')&&(
+                    {option.author  && state==="purchase" && (
                       <div className="ms-2">
                         <Typography variant="body1">{` | ${option.author}`}</Typography>
                       </div>
                     )}
-                    {(option.publisher&&type==="BR") && (
+                    {option.publisher && state==="purchase" && (
                       <div className="ms-2">
                         <Typography variant="body1">{` | ${option.publisher}`}</Typography>
                       </div>
                     )}
-                    {type!=='BR'&&<div className="ms-2">
-                      <Typography variant="body1">{` | ${option.quantity}`}</Typography>
-                    </div>}
+                    {type !== "BR" && state!=="purchase" && (
+                      <div className="ms-2">
+                        <Typography variant="body1">{` | ${option.quantity}`}</Typography>
+                      </div>
+                    )}
                   </div>
                 </MenuItem>
               )}

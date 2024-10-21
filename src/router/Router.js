@@ -22,7 +22,7 @@ import NewInventaire from "../modules/Inventaire/views/NewInventaire";
 import ArticleHistory from "../modules/articles/component/ArticleHistory";
 import { getMe } from "../store/slices/authSlice";
 import VentRoutes from "./Modules/VenteRoutes";
-import SalesRoutes from "./Modules/SalesRoutes";
+import AchatRoutes from "./Modules/AchatRoutes";
 
 export default function Router() {
   const user = useSelector((store) => store.auth.me);
@@ -49,9 +49,9 @@ export default function Router() {
             {FornisseursRoutes()}
             {ChannelsRoutes()}
             {VentRoutes()}
-            {SalesRoutes()}
+            {AchatRoutes()}
             <Route
-              path="invoice/:type/:sender/:receiver"
+              path="invoice/:state/:type/:sender/:receiver/:mode"
               key="invoice"
               element={<InvoiceContainer />}
             />
