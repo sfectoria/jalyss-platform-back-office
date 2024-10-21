@@ -15,9 +15,14 @@ import {
   TextField,
   ThemeProvider,
   Typography,
+  MenuItem,
+  Select,
+  InputLabel,
+  FormControl,
 } from "@mui/material";
 import FileUploader from "../../../components/FileUploader";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Item from "../../../style/ItemStyle";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { ip } from "../../../constants/ip";
@@ -35,54 +40,69 @@ export default function AddClient() {
       },
     },
   });
-
-  const [formData, setFormData] = useState({
+const navigate = useNavigate()
+  const [clientData, setClientData] = useState({
     fullName: "",
     phoneNumber: "",
     address: "",
     email: "",
     registrationDate: new Date().toISOString(),
-    idCategoryClient: 1,
+    idCategoryClient: "",
   });
 
   const [errors, setErrors] = useState({});
   const [open, setOpen] = useState(false);
   const [isCancelled, setIsCancelled] = useState(false);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
+  const [categories, setCategories] = useState([]);
 
   const handleFileChange = (e) => {
     const uploadedFile = e.target.files[0];
-    setFormData((prevData) => ({
+    setClientData((prevData) => ({
       ...prevData,
       fileName: uploadedFile?.name,
       mediaId: uploadedFile ? URL.createObjectURL(uploadedFile) : null,
     }));
   };
 
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(`${ip}/categoryClients`);
+        setCategories(response.data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+        alert("There was an error fetching the categories.");
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setClientData({
+      ...clientData,
+      [name]: value,
+    });
+  };
+
   const handleDeleteFile = () => {
-    setFormData((prevData) => ({
+    setClientData((prevData) => ({
       ...prevData,
       fileName: "",
-      fileUrl: null,
+      mediaId: null,
     }));
   };
 
   const validateForm = () => {
     let newErrors = {};
-    if (!formData.fullName) newErrors.fullName = "First Name is required";
-    if (!formData.address) newErrors.address = "Address is required";
-    if (!formData.phoneNumber)
+    if (!clientData.fullName) newErrors.fullName = "First Name is required";
+    if (!clientData.address) newErrors.address = "Address is required";
+    if (!clientData.phoneNumber)
       newErrors.phoneNumber = "Phone Number is required";
-    else if (formData.phoneNumber.length !== 8)
+    else if (clientData.phoneNumber.length !== 8)
       newErrors.phoneNumber = "Phone number must be 8 digits";
-    if (!formData.email) newErrors.email = "Email is required";
+    if (!clientData.email) newErrors.email = "Email is required";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -92,11 +112,14 @@ export default function AddClient() {
     e.preventDefault();
     if (validateForm()) {
       try {
-        const response = await axios.post(ip + "/clients", formData);
+        const response = await axios.post(ip + "/clients", clientData);
         console.log("Submitted:", response.data);
         setIsCancelled(false);
         setOpen(true);
         resetForm();
+        setTimeout(() => {
+          navigate("/clients")
+        }, 2000);
       } catch (error) {
         console.error("Error submitting form:", error);
       }
@@ -104,13 +127,13 @@ export default function AddClient() {
   };
 
   const resetForm = () => {
-    setFormData({
+    setClientData({
       fullName: "",
       phoneNumber: "",
       address: "",
       email: "",
       registrationDate: new Date().toISOString(),
-      idCategoryClient: 1,
+      idCategoryClient: "",
     });
     setErrors({});
   };
@@ -119,10 +142,14 @@ export default function AddClient() {
     setIsCancelled(true);
     setOpen(true);
     resetForm();
+    setTimeout(() => {
+      navigate('/clients')
+    }, 1000);
   };
 
   const handleClose = () => {
     setOpen(false);
+  
   };
 
   return (
@@ -140,11 +167,11 @@ export default function AddClient() {
                     required
                     margin="normal"
                     fullWidth
-                    id="firstName"
+                    id="fullName"
                     label="Full Name"
                     name="fullName"
                     onChange={handleChange}
-                    value={formData.fullName}
+                    value={clientData.fullName}
                     error={!!errors.fullName}
                     helperText={errors.fullName}
                   />
@@ -161,7 +188,7 @@ export default function AddClient() {
                     label="Address"
                     name="address"
                     onChange={handleChange}
-                    value={formData.address}
+                    value={clientData.address}
                     error={!!errors.address}
                     helperText={errors.address}
                   />
@@ -179,12 +206,30 @@ export default function AddClient() {
                     label="Phone Number"
                     name="phoneNumber"
                     onChange={handleChange}
-                    value={formData.phoneNumber}
+                    value={clientData.phoneNumber}
                     error={!!errors.phoneNumber}
                     helperText={errors.phoneNumber}
                   />
                 </Item>
               </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <InputLabel>Category</InputLabel>
+                  <Select
+                    value={clientData.idCategoryClient}
+                    name="idCategoryClient"
+                    onChange={handleChange}
+                  >
+                    {categories.map((category) => (
+                      <MenuItem key={category.id} value={category.id}>
+                        {category.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+
               <Grid item xs={12}>
                 <Item elevation={0}>
                   <TextField
@@ -196,12 +241,13 @@ export default function AddClient() {
                     label="Email"
                     name="email"
                     onChange={handleChange}
-                    value={formData.email}
+                    value={clientData.email}
                     error={!!errors.email}
                     helperText={errors.email}
                   />
                 </Item>
               </Grid>
+
               <Grid item xs={12}>
                 <Item elevation={0}>
                   <Alert severity="info">
@@ -209,6 +255,7 @@ export default function AddClient() {
                   </Alert>
                 </Item>
               </Grid>
+
               <Grid item xs={12}>
                 <Item
                   elevation={0}
@@ -218,23 +265,16 @@ export default function AddClient() {
                     gap: "14px",
                   }}
                 >
-                  <Button
-                    className="confirm-btn"
-                    type="submit"
-                    variant="contained"
-                  >
+                  <Button className="confirm-btn" type="submit" variant="contained">
                     Confirm
                   </Button>
-                  <Button
-                    className="cancel-btn"
-                    onClick={handleCancel}
-                    variant="contained"
-                  >
+                  <Button className="cancel-btn" onClick={handleCancel} variant="contained">
                     Cancel
                   </Button>
                 </Item>
               </Grid>
             </Grid>
+
             <Grid container spacing={2}>
               <Grid
                 item
@@ -266,16 +306,14 @@ export default function AddClient() {
                       }
                     >
                       <Avatar
-                        // src={file}
                         sx={{
-                          width: "300px  ",
+                          width: "300px",
                           height: "300px",
                           bgcolor: "#48184C",
                         }}
                       >
                         <FileUploader
-                          // onSelectFile={handleFileChange}
-                          // setFile={setFile}
+                          onSelectFile={handleFileChange}
                           icon={"upload"}
                         />
                       </Avatar>
@@ -287,6 +325,7 @@ export default function AddClient() {
           </form>
         </Box>
       </Paper>
+
       <Dialog
         open={open}
         onClose={handleClose}
@@ -297,84 +336,21 @@ export default function AddClient() {
             borderColor: isCancelled ? "error.main" : "success.main",
             borderWidth: 3,
             borderStyle: "solid",
-            bgcolor: isCancelled ? "error.light" : "success.light",
+            bgcolor: isCancelled ? "error.main" : "success.main",
           },
         }}
       >
-        <DialogTitle
-          id="alert-dialog-title"
-          color={"white"}
-          sx={{ fontWeight: "bold" }}
-        >
-          {isCancelled ? "Changes cancelled!" : "Submitted successfully!"}
+        <DialogTitle id="alert-dialog-title">
+          {isCancelled ? "Form Cancelled" : "Form Submitted"}
         </DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description" color={"white"}>
+          <DialogContentText id="alert-dialog-description">
             {isCancelled
-              ? "The changes you have made are not saved"
-              : "The changes you have made are saved"}
+              ? "The form was cancelled and no data was submitted."
+              : "The form was successfully submitted."}
           </DialogContentText>
         </DialogContent>
       </Dialog>
     </ThemeProvider>
   );
-}
-
-{
-  /* <Grid item xs={12}>
-                <Item elevation={0}>
-                <TextField
-                    required
-                    margin="normal"
-                    fullWidth
-                    id="companyName"
-                    label="Company's Name"
-                    name="companyName"
-                    onChange={handleChange}
-                    value={formData.companyName}
-                    error={!!errors.companyName}
-                    helperText={errors.companyName}
-                  />
-                </Item>
-              </Grid> */
-}
-
-{
-  /* <Typography
-                      variant="h5"
-                      color="initial"
-                      textAlign={"center"}
-                    >
-                      {firstName}
-                    </Typography>
-                    <Typography
-                      variant="h5"
-                      color="initial"
-                      sx={{
-                        display: "flex",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {lastName}
-                    </Typography>
-                    <Typography
-                      variant="h5"
-                      color="initial"
-                      sx={{
-                        display: "flex",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {phoneNumbers}
-                    </Typography>
-                    <Typography
-                      variant="h5"
-                      color="initial"
-                      sx={{
-                        display: "flex",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {emails}
-                    </Typography> */
 }
