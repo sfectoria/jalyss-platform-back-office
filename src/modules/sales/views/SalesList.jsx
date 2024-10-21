@@ -133,7 +133,7 @@ function SalesList() {
     },
     {
       field: "customerName",
-      headerName: "Client Name",
+      headerName: "Provider Name",
       width: 270,
       // renderCell: (params) => {
       //   let client = {};
