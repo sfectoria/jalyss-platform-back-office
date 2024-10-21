@@ -41,6 +41,22 @@ const AddChannel = () => {
   const [managerPhoneNumber, setManagerPhoneNumber] = React.useState("");
   const [errors, setErrors] = React.useState({});
   const [selectedStock, setSelectedStock] = useState(null);
+  // const [selectedManager, setSelectedManager] = useState(null);
+  // const [managers, setManagers]= useState([]);
+
+  // useEffect(() => {
+  //   async function fetchCategories() {
+  //     try {
+  //       const response = await axios.get('http://localhost:3000/employees/all');
+  //       setManagers(response.data);
+  //     } catch (error) {
+  //       console.error('Erreur lors de la récupération des managers :', error);
+  //     }
+  //   }
+
+  //   fetchCategories();
+  // }, []);
+
 
   const navigate = useNavigate();
   const [stocks, setStocks]= useState([]);
@@ -188,22 +204,27 @@ const AddChannel = () => {
               </Item>
             </Grid>
             <Grid item xs={12}>
-              <Item elevation={0}>
-                <TextField
-                  required
-                  margin="normal"
-                  fullWidth
-                  id="email"
-                  label="Manager Name"
-                  name="managerName"
-                  onChange={handleManagerNameChange}
-                  value={managerName}
-                  error={!!errors.managerName}
-                  helperText={errors.managerName}
+            {/* <Item elevation={0}>
+                <Autocomplete
+                  options={managers}
+                  getOptionLabel={(option) => `${option.firstName} ${option.lastName} / ${option.phoneNumber}`} 
+                  value={selectedManager}
+                  onChange={(event, newValue) => setSelectedManager(newValue)}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Select Manager"
+                      required
+                      margin="normal"
+                      fullWidth
+                      error={!!errors.selectedManager}
+                      helperText={errors.selectedManager}
+                    />
+                  )}
                 />
-              </Item>
+              </Item> */}
             </Grid>
-            <Grid item xs={12}>
+            {/* <Grid item xs={12}>
               <Item elevation={0}>
                 <TextField
                   required
@@ -219,7 +240,7 @@ const AddChannel = () => {
                   helperText={errors.managerPhoneNumber}
                 />
               </Item>
-            </Grid>
+            </Grid> */}
           </Grid>
           <Grid container spacing={2}>
             <Grid
