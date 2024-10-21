@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Box, Typography, TextField, Autocomplete, Stack, Alert, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { ip } from "../../../constants/ip";
 
-const UpdateArticle = ({ data1, setIsEditMode,isEditMode}) => {
+const UpdateArticle = ({ data1, setIsEditMode, isEditMode }) => {
   const id = data1.id;
   const [nameText, setNameText] = useState("");
   const [barcode, setBarcode] = useState("");
@@ -12,17 +12,42 @@ const UpdateArticle = ({ data1, setIsEditMode,isEditMode}) => {
   const [publisherText, setPublisherText] = useState("");
   const [description, setDescription] = useState("");
   const [selectedCategories, setSelectedCategories] = useState([]);
-  const [articlesNames, setArticlesNames] = useState([]);
   const [articlesAuthors, setArticlesAuthors] = useState([]);
   const [successAlert, setSuccessAlert] = useState(false);
   const [errorAlert, setErrorAlert] = useState(false);
-  const [refresh, setRefresh] = useState(false);
+  const [avatar, setAvatar] = useState(null); 
   const navigate = useNavigate();
+
+  const fetchAuthors = async () => {
+    try {
+      const response = await axios.get(`${ip}/author`);
+      setArticlesAuthors(response.data);
+    } catch (error) {
+      console.error("Error fetching authors data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAuthors();
+  }, []);
+
+
+  useEffect(() => {
+    if (data1) {
+      setNameText(data1.title || "");
+      setBarcode(data1.code || "");
+      setAuthorText(data1.articleByAuthor?.[0]?.author.nameAr || "");
+      setPublisherText(data1.articleByPublishingHouse?.[0]?.nameAr || "");
+      setDescription(data1.longDescriptionEn || "");
+      setSelectedCategories(data1.articleByCategory || []);
+      setAvatar(null); 
+    }
+  }, [data1]);
 
   const handleUpdate = async () => {
     try {
       const updatedArticle = {
-        title: nameText,
+        title: nameText, 
         code: barcode,
         longDescriptionEn: description,
         articleByAuthor: [{ nameAr: authorText }],
@@ -30,15 +55,24 @@ const UpdateArticle = ({ data1, setIsEditMode,isEditMode}) => {
         articleByCategory: selectedCategories.map((cat) => ({ name: cat.name })),
       };
 
-      const response = await axios.patch(`${ip}/articles/${id}`, updatedArticle);
-      console.log("Article updated:", response.data);
+      const formData = new FormData();
+      formData.append('article', JSON.stringify(updatedArticle));
+      if (avatar) {
+        formData.append('avatar', avatar);
+      }
+
+      const response = await axios.patch(`${ip}/articles/${id}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
 
       if (response.status === 200) {
         setSuccessAlert(true);
         setErrorAlert(false);
         setTimeout(() => {
-            navigate('/articles');
-          }, 2000);
+          navigate('/articles');
+        }, 2000);
       } else {
         setErrorAlert(true);
         setSuccessAlert(false);
@@ -50,6 +84,14 @@ const UpdateArticle = ({ data1, setIsEditMode,isEditMode}) => {
     }
   };
 
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setAvatar(file); 
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -57,22 +99,54 @@ const UpdateArticle = ({ data1, setIsEditMode,isEditMode}) => {
         height: "auto",
         padding: "20px",
         margin: "0 auto",
-        backgroundColor: "#f5f5f5",
+        backgroundColor: "white",
         borderRadius: "8px",
         boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
       }}
     >
-      <Typography variant="h4" align="center" sx={{ marginBottom: 2 }}>
+      <Typography variant="h4" align="center" sx={{ marginBottom: 2, color: "#48184c" }}>
         Update Article
       </Typography>
+
+      {/* Avatar Upload Section */}
+      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 4 }}>
+        <input
+          accept="image/*"
+          type="file"
+          onChange={handleFileChange}
+          style={{ display: "none" }}
+          id="avatar-upload"
+        />
+        <label htmlFor="avatar-upload">
+          <Button 
+            variant="contained" 
+            component="span" 
+            sx={{ 
+              marginBottom: 2, 
+              backgroundColor: "#48184c", 
+              color: "white", 
+              "&:hover": { backgroundColor: "#361038" } 
+            }}
+          >
+            Upload Avatar
+          </Button>
+        </label>
+        {avatar && (
+          <img
+            src={URL.createObjectURL(avatar)} 
+            alt="Avatar Preview"
+            style={{ width: 100, height: 100, borderRadius: "50%", objectFit: "cover" }}
+          />
+        )}
+      </Box>
+
       <Box sx={{ display: "flex", gap: 2, marginBottom: 4 }}>
-        <Autocomplete
-          freeSolo
-          sx={{ width: "55%" }}
-          options={articlesNames.map((option) => option)}
-          onInputChange={(e, value) => setNameText(value)}
+        <TextField
+          required
+          label="Title"
+          sx={{ width: "47%" }}
           value={nameText}
-          renderInput={(params) => <TextField {...params} label="Title" required />}
+          onChange={(e) => setNameText(e.target.value)}
         />
         <TextField
           required
@@ -82,11 +156,12 @@ const UpdateArticle = ({ data1, setIsEditMode,isEditMode}) => {
           onChange={(e) => setBarcode(e.target.value)}
         />
       </Box>
+
       <Box sx={{ display: "flex", gap: 2, marginBottom: 4 }}>
         <Autocomplete
           freeSolo
           sx={{ width: "47%" }}
-          options={articlesAuthors.map((option) => option)}
+          options={articlesAuthors.map((option) => option.nameAr)}  
           onInputChange={(e, value) => setAuthorText(value)}
           value={authorText}
           renderInput={(params) => <TextField {...params} label="Author" required />}
@@ -103,7 +178,7 @@ const UpdateArticle = ({ data1, setIsEditMode,isEditMode}) => {
       <TextField
         label="Description"
         rows={4}
-        sx={{ width: "100%",}}
+        sx={{ width: "100%" }}
         value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
@@ -124,15 +199,23 @@ const UpdateArticle = ({ data1, setIsEditMode,isEditMode}) => {
       <Box sx={{ display: "flex", justifyContent: "space-between", marginTop: 4 }}>
         <Button
           variant="contained"
-          sx={{ backgroundColor: "#48184c", color: "white", "&:hover": { backgroundColor: "#361038" } }}
+          sx={{ 
+            backgroundColor: "#48184c", 
+            color: "white", 
+            "&:hover": { backgroundColor: "#361038" } 
+          }}
           onClick={handleUpdate}
         >
           Update Article
         </Button>
         <Button
           variant="outlined"
-          sx={{ borderColor: "#48184c", color: "#48184c", "&:hover": { backgroundColor: "#f5f5f5" } }}
-          onClick={()=>setIsEditMode(!isEditMode)}
+          sx={{ 
+            borderColor: "#48184c", 
+            color: "#48184c", 
+            "&:hover": { backgroundColor: "#f5f5f5" } 
+          }}
+          onClick={() => setIsEditMode(!isEditMode)}
         >
           Cancel
         </Button>

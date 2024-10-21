@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 const ArticleInfo = forwardRef(({ onSubmit }, ref) => {
   const [articlesNames, setArticlesNames] = useState([]);
   const [articlesAuthors, setArticlesAuthors] = useState([]);
+  // const [articlesAuthors, setArticlesAuthors] = useState([]);
   const [articlesPublishers, setArticlesPublishers] = useState([]);
   const [nameText, setNameText] = useState("");
   const [authorText, setAuthorText] = useState("");
@@ -54,16 +55,29 @@ const ArticleInfo = forwardRef(({ onSubmit }, ref) => {
     if (nameText) params["text"] = nameText;
     const response = await axios.get(`${ip}/articles/getAll`, { params });
     setArticlesNames(response.data.data.map((e) => e.title));
-    setArticlesAuthors(
-      response.data.data.reduce((acc, e) => {
-        if (e.articleByAuthor.length) {
-          acc.push(e.articleByAuthor[0]?.author.nameAr);
-        }
-        return acc;
-      }, [])
-    );
+    // setArticlesAuthors(
+    //   response.data.data.reduce((acc, e) => {
+    //     if (e.articleByAuthor.length) {
+    //       acc.push(e.articleByAuthor[0]?.author.nameAr);
+    //     }
+    //     return acc;
+    //   }, [])
+    // );
   };
 
+
+  const fetchAuthors = async () => {
+    try {
+      const response = await axios.get(`${ip}/author`);
+      setArticlesAuthors(response.data);
+    } catch (error) {
+      console.error("Error fetching authors data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAuthors();
+  }, []);
   // const retrieveFileFromLocalStorage = () => {
   //   const storedFile = localStorage.getItem('uploadedFile'); // Assurez-vous d'utiliser la clé correcte
   //   if (storedFile) {
@@ -152,7 +166,7 @@ const ArticleInfo = forwardRef(({ onSubmit }, ref) => {
           id="free-solo-demo"
           freeSolo
           sx={{ width: "55%" }}
-          options={articlesNames ? articlesNames.map((option) => option) : []}
+          options={articlesNames.map((option) => option)}
           onInputChange={(e, value) => {
             setNameText(value);
             setRefresh(!refresh);
@@ -171,15 +185,13 @@ const ArticleInfo = forwardRef(({ onSubmit }, ref) => {
         />
       </Box>
       <Box sx={{ display: "flex", gap: 2, mb: 4 }}>
-        <Autocomplete
-          id="free-solo-demo"
+      <Autocomplete
           freeSolo
           sx={{ width: "47%" }}
-          options={articlesAuthors.map((option) => option)}
+          options={articlesAuthors.map((option) => option.nameAr)}  
           onInputChange={(e, value) => setAuthorText(value)}
-          renderInput={(params) => (
-            <TextField {...params} label="Author" required />
-          )}
+          value={authorText}
+          renderInput={(params) => <TextField {...params} label="Author" required />}
         />
         <TextField
           required
