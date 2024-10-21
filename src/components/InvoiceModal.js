@@ -24,6 +24,7 @@ const InvoiceModal = ({
   info,
   itemsData,
   subTotal,
+  total,
   discountAmount,
   finishSale,
   mode,
@@ -37,6 +38,8 @@ const InvoiceModal = ({
   const [billTo,setBillTo]=useState({})
   const [billFrom,setBillFrom]=useState({})
   const [amount,setAmount]=useState(0)
+  const [subTotall,setSubTotal]=useState(0)
+  const [totall,setTotal]=useState(0)
   const [title,setTitle]=useState('')
   const [successAlert, setSuccessAlert] = useState(false); 
   const [errorAlert, setErrorAlert] = useState(false);      
@@ -65,7 +68,8 @@ const InvoiceModal = ({
         email:info.billFromEmail
       })
       setItems(itemsData)
-      setAmount(subTotal)
+      setSubTotal(subTotal)
+      setTotal(total)
       setTitle(invoiceTitle)
       setDate(new Date().toISOString())
       console.log(billTo,billFrom);
@@ -164,7 +168,7 @@ const InvoiceModal = ({
     });
     
     setDate(e.exitDate)
-    setAmount(e.totalAmount)
+    setTotal(e.totalAmount)
     console.log(itemsData.data,'hello');
     
     setItems(itemsData.data.map((e)=>{
@@ -192,7 +196,7 @@ const InvoiceModal = ({
           email:"jalyss@gmail.com",
         })
         setDate(e.receiptDate)
-        setAmount(e.totalAmount)
+        setTotal(e.totalAmount)
         setBillFrom({
           name:e.provider?.nameProvider,
           address:e.provider?.adresse,
@@ -344,21 +348,21 @@ const InvoiceModal = ({
             <Table className="mb-0">
               <thead>
                 <tr>
-                  <th>QTY</th>
                   <th>Title</th>
                   <th className="text-end">QTY</th>
                  {title!=='Bon de Transfer'&&<> <th className="text-end">PRICE</th>
+                  <th className="text-end">DISCOUNT</th>
                   <th className="text-end">AMOUNT</th></>}
                 </tr>
               </thead>
               <tbody>
                 {items.map((item, i) => (
                   <tr key={i}>
-                    <td style={{ width: '70px' }}>{item.quantity}</td>
                     <td>{item.name} - {item?.author} - {item?.publisher}</td>
                     <td className="text-end" style={{ width: '100px' }}>{item.quantity}</td>
                    {title!=='Bon de Transfer'&&<><td className="text-end" style={{ width: '100px' }}>{item.price} {currency}</td>
-                    <td className="text-end" style={{ width: '100px' }}>{item.price * item.quantity} {currency}</td></>}
+                   <td className="text-end" style={{ width: '100px' }}>{item.discount} %</td>
+                    <td className="text-end" style={{ width: '100px' }}>{(item.price * item.quantity)-(item.price * item.quantity*(item.discount/100))} {currency}</td></>}
                   </tr>
                 ))}
               </tbody>
@@ -373,7 +377,7 @@ const InvoiceModal = ({
                 {title!=='Bon de Transfer'&&<> <tr className="text-end">
                   <td></td>
                   <td className="fw-bold" style={{ width: '100px' }}>SUBTOTAL</td>
-                  <td className="text-end" style={{ width: '100px' }}>{amount} {currency}</td>
+                  <td className="text-end" style={{ width: '100px' }}>{subTotall} {currency}</td>
                 </tr></>}
                 {discountAmount !== '0.00' &&
                   <tr className="text-end">
@@ -385,7 +389,7 @@ const InvoiceModal = ({
                 {title!=='Bon de Transfer'&&<><tr className="text-end">
                   <td></td>
                   <td className="fw-bold" style={{ width: '100px' }}>TOTAL</td>
-                  <td className="text-end" style={{ width: '100px' }}>{amount} {currency}</td>
+                  <td className="text-end" style={{ width: '100px' }}>{totall} {currency}</td>
                 </tr></>}
               </tbody>
             </Table>
