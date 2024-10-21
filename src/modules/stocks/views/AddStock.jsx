@@ -39,12 +39,10 @@ const AddStock = () => {
 
   const addresses = ["marsa", "sfax", "bou ficha", "mahdia"];
 
-  //handleClose
   const handleClose = () => {
     setOpen(false);
   };
 
-  //handleCancel
   const handleCancel = () => {
     setIsCancelled(true);
     setOpen(true);

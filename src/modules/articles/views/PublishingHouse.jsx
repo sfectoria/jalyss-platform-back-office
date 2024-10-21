@@ -64,7 +64,7 @@ export default function PublishingHousesList() {
   const navigate = useNavigate();
  const handleDetails = (id) => {
   console.log("Navigating to details for ID:", id);
-  navigate(`/publishingHouses/${id}`);
+  navigate(`${id}`);
 };
 
   useEffect(() => {

@@ -13,6 +13,7 @@ export default function Commande() {
   const [isOpen, setIsOpen] = useState(false);
   const [rows,setRows]=useState([])
   const [count,setCount]=useState(0)
+  const [modalId, setModalId] = useState(0);
   const param = useParams()
 
   useEffect(()=>{
@@ -24,31 +25,6 @@ export default function Commande() {
     console.log("res",response.data.data);
     setRows(response.data.data);
   }
-
-  
-  const items = [
-    {
-      id: (+new Date() + Math.floor(Math.random() * 999999)).toString(36),
-      name: "hhhh",
-      description: "a  book",
-      price: "1.00",
-      quantity: 7,
-    },
-    {
-      id: (+new Date() + Math.floor(Math.random() * 999999)).toString(36),
-      name: "halima",
-      description: "a  book",
-      price: "1.00",
-      quantity: 1,
-    },
-    {
-      id: (+new Date() + Math.floor(Math.random() * 999999)).toString(36),
-      name: "nooo",
-      description: "a  book",
-      price: "4.00",
-      quantity: 5,
-    },
-  ];
 
   const openModal = (event) => {
     event.preventDefault();
@@ -105,7 +81,10 @@ export default function Commande() {
       getActions: ({ id }) => [
         <GridActionsCellItem
           icon={<VisibilityIcon />}
-          onClick={openModal}
+          onClick={(e) => {
+              openModal(e);
+              setModalId(id);
+            }}
           label=""
         />,
       ],
@@ -146,30 +125,17 @@ export default function Commande() {
         }}
       />
       {isOpen&&<InvoiceModal
-        showModal={isOpen}
-        closeModal={closeModal}
-        info={{
-          // currentDate,
-          // dateOfIssue,
-          invoiceNumber: 1,
-          billTo: "hamadi",
-          billToEmail: "hamadi@gmail.com",
-          billToAddress: "win",
-          // billFrom,
-          // billFromEmail,
-          // billFromAddress,
-          // notes,
-          // total,
-          // subTotal,
-          // taxAmount,
-          // discountAmount
-        }}
-        items={items}
-        currency={0}
-        subTotal={0}
-        // taxAmount={0}
-        discountAmount={0}
-        total={0}
+       showModal={isOpen}
+       closeModal={closeModal}
+       modalId={modalId}
+       idChannel={param.id}
+       currency={"DT"}
+       subTotal={0}
+       // taxAmount={0}
+       discountAmount={0}
+       total={0}
+       mode="viewer"
+       type="command"
       />}
     </div>
   );
