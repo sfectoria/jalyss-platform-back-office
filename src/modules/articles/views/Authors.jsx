@@ -13,7 +13,7 @@ import Stack from '@mui/material/Stack';
 import { deepOrange } from '@mui/material/colors';
 import { ip } from '../../../constants/ip';
 import axios from 'axios';
-import ClearIcon from '@mui/icons-material/Clear';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
 
 export default function AuthorsList() {
@@ -50,7 +50,7 @@ export default function AuthorsList() {
 
 
   const columns = [
-    { field: 'id', headerName: 'ID', width: 70 },
+    // { field: 'id', headerName: 'ID', width: 70 },
     {
       field:'image',
       headerName:'',
@@ -95,7 +95,7 @@ export default function AuthorsList() {
           onClick={() => handleDetails(id)} 
           />,
           <GridActionsCellItem
-            icon={<ClearIcon />}
+            icon={<DeleteOutlineIcon />}
             label="Delete"
             onClick={() => handleDelete(id)}
             color="inherit"

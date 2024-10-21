@@ -213,7 +213,7 @@ const navigate = useNavigate()
                 </Item>
               </Grid>
 
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={14} sm={15}>
                 <FormControl fullWidth>
                   <InputLabel>Category</InputLabel>
                   <Select
