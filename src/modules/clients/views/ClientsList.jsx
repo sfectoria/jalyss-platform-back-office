@@ -1,27 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
-import { DataGrid,GridToolbar,GridActionsCellItem  } from '@mui/x-data-grid';
+import { DataGrid, GridToolbar, GridActionsCellItem } from '@mui/x-data-grid';
 import { useDemoData } from '@mui/x-data-grid-generator';
 import Typography from '@mui/material/Typography';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import ModeEditOutlineIcon from '@mui/icons-material/ModeEditOutline';
 import { useNavigate } from 'react-router-dom';
-import CustomNoResultsOverlay from '../../../style/NoResultStyle'
+import CustomNoResultsOverlay from '../../../style/NoResultStyle';
 import Item from '../../../style/ItemStyle';
 import Avatar from '@mui/material/Avatar';
 import Stack from '@mui/material/Stack';
 import { deepOrange } from '@mui/material/colors';
 import { ip } from '../../../constants/ip';
 import axios from 'axios';
-import ClearIcon from '@mui/icons-material/Clear';
-
-
-
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import { Button } from '@mui/material';
 
 export default function ClientsList() {
-  const [clients, setClients] = useState([]); 
+  const [clients, setClients] = useState([]);
   const [categories, setCategories] = useState([]);
-
+  const [confirmDelete, setConfirmDelete] = useState(false); // state for showing confirmation
+  const [clientToDelete, setClientToDelete] = useState(null); // store the client to delete
 
   useEffect(() => {
     // Fetch clients
@@ -34,6 +33,7 @@ export default function ClientsList() {
       }
     };
 
+    // Fetch categories
     const fetchCategories = async () => {
       try {
         const response = await axios.get(`${ip}/categoryClients`);
@@ -52,48 +52,54 @@ export default function ClientsList() {
     rowLength: 500,
     maxColumns: 6,
   });
-  const navigate = useNavigate()
-  const handelDetails = (ids)=>{
-    navigate(`/clients/${ids}`)
-  }
 
-  const handelDelete = async (id) => {
+  const navigate = useNavigate();
+
+  const handelDetails = (ids) => {
+    navigate(`/clients/${ids}`);
+  };
+
+  const handleDeleteClick = (id) => {
+    setClientToDelete(id);
+    setConfirmDelete(true); // show the confirmation modal
+  };
+
+  const handelDelete = async () => {
     try {
-      await axios.delete(`${ip}/clients/${id}`); 
-      setClients(clients.filter(client => client.id !== id)); 
+      await axios.delete(`${ip}/clients/${clientToDelete}`);
+      setClients(clients.filter((client) => client.id !== clientToDelete));
+      setConfirmDelete(false); // hide confirmation modal after deleting
     } catch (error) {
-      console.log("Error deleting client:", error);
+      console.log('Error deleting client:', error);
     }
   };
+
   const categoryMap = categories.reduce((acc, category) => {
     acc[category.id] = category.name;
     return acc;
   }, {});
 
   const columns = [
-    { field: 'id', headerName: 'ID', width: 70 },
     {
-      field:'image',
-      headerName:'',
-      width:90,
-      getActions:({})=>[
+      field: 'image',
+      headerName: '',
+      width: 90,
+      renderCell: () => (
         <Stack direction="row" spacing={2}>
-        <Avatar sx={{ bgcolor: deepOrange[500], width: 50, height: 50,fontSize:50}}>A</Avatar>
-      </Stack>
-      ]
+        </Stack>
+      ),
     },
     {
       field: 'fullName',
       headerName: 'Client Name',
       width: 200,
-      // getActions:({})=>{}
     },
     {
       field: 'categoryClient',
       headerName: 'Category',
       width: 200,
       renderCell: (params) => {
-        const categoryName = categoryMap[params.row.idCategoryClient] ;
+        const categoryName = categoryMap[params.row.idCategoryClient];
         return <Typography>{categoryName}</Typography>;
       },
     },
@@ -117,72 +123,104 @@ export default function ClientsList() {
       headerName: 'Actions',
       width: 100,
       type: 'actions',
-      getActions: ({ id }) => {
-        return [
-          <GridActionsCellItem
+      getActions: ({ id }) => [
+        <GridActionsCellItem
           icon={<VisibilityIcon />}
           label="Details"
-          onClick={() => handelDetails(id)} 
-          />,
-          <GridActionsCellItem
-            icon={<ClearIcon />}
-            label="Delete"
-            onClick={() => handelDelete(id)}
-            color="inherit"
-          />,
-        ];
-      },
-    }
-  ]
-
+          onClick={() => handelDetails(id)}
+        />,
+        <GridActionsCellItem
+          icon={<DeleteOutlineIcon />}
+          label="Delete"
+          onClick={() => handleDeleteClick(id)} // initiate delete confirmation
+          color="inherit"
+        />,
+      ],
+    },
+  ];
 
   return (
+    <Box
+      sx={{
+        bgcolor: 'background.default',
+        mx: 3,
+        mt: 3,
+      }}
+    >
+      <Item sx={{ pt: 7, pb: 1, px: 7, borderRadius: 10 }} elevation={5}>
+        <Typography variant="h5" mb={3} gutterBottom sx={{ fontWeight: 'bold' }}>
+          Clients
+        </Typography>
+        <div style={{ width: '100%' }}>
+          <DataGrid
+            pageSizeOptions={[7, 10, 20]}
+            sx={{
+              boxShadow: 0,
+              border: 0,
+              borderColor: 'primary.light',
+              '& .MuiDataGrid-cell:hover': {
+                color: 'primary.main',
+              },
+            }}
+            rows={clients}
+            columns={columns}
+            slots={{
+              noResultsOverlay: CustomNoResultsOverlay,
+              toolbar: GridToolbar,
+            }}
+            initialState={{
+              pagination: { paginationModel: { pageSize: 7 } },
+              filter: {
+                filterModel: {
+                  items: [],
+                  quickFilterValues: [''],
+                },
+              },
+            }}
+            slotProps={{
+              toolbar: {
+                showQuickFilter: true,
+              },
+            }}
+          />
+        </div>
+      </Item>
+      {confirmDelete && (
         <Box
           sx={{
-            bgcolor: 'background.default',
-            mx:3,
-            mt:3,
-            height: '100vh',
+            backgroundColor: 'white',
+            padding: '20px',
+            borderRadius: '8px',
+            boxShadow: '0 0 10px rgba(0,0,0,0.1)',
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 1000,
           }}
-        >   
-            <Item sx={{pt:7,pb:1,px:7,borderRadius:10}} elevation={5}>
-            <Typography variant="h5" mb={3} gutterBottom sx={{ fontWeight: 'bold' }}>
-         Clients
-        </Typography>
-    <div style={{width:'100%', height : 500}}>
-      <DataGrid
-      pageSizeOptions={[7, 10,20]}
-       sx={{
-        boxShadow: 0,
-        border: 0,
-        borderColor: 'primary.light',
-        '& .MuiDataGrid-cell:hover': {
-          color: 'primary.main',
-        }}}
-        rows={clients}
-        columns={columns}
-       slots={{
-        noResultsOverlay: CustomNoResultsOverlay,
-        toolbar: GridToolbar,
-      }} 
-      initialState={{
-        pagination: { paginationModel: { pageSize: 7 } },
-        filter: {
-          filterModel: {
-            items: [],
-            quickFilterValues: [''],
-          },
-        },
-      }}
-      slotProps={{
-        toolbar: {
-          showQuickFilter: true,
-        },
-      }}
-      />
-    </div>
-  
-         </Item>          
-         </Box>
+        >
+          <Typography sx={{ fontSize: 20, mb: 2 }}>
+            Do you want to delete this, sir?
+          </Typography>
+          <span style={{ color: 'red' }}>This action is irreversible!</span>
+
+          <Box sx={{ mt: 2, display: 'flex', gap: 2 }}>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={handelDelete}
+            >
+              Yes, Delete
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={() => setConfirmDelete(false)} 
+            >
+              Cancel
+            </Button>
+          </Box>
+        </Box>
+      )}
+    </Box>
   );
 }
