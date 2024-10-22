@@ -8,6 +8,7 @@ import axios from "axios";
 export default function Retour() {
   const [isOpen, setIsOpen] = useState(false);
   const [rows, setRows] = useState([]); 
+  const [modalId, setModalId] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -99,7 +100,10 @@ export default function Retour() {
       getActions: ({ id }) => [
         <GridActionsCellItem
           icon={<VisibilityIcon />}
-          onClick={openModal}
+          onClick={(e) => {
+            openModal(e);
+            setModalId(id);
+          }}
           label=""
         />,
       ],
@@ -142,29 +146,16 @@ export default function Retour() {
       {isOpen&&<InvoiceModal
         showModal={isOpen}
         closeModal={closeModal}
-        info={{
-          // currentDate,
-          // dateOfIssue,
-          invoiceNumber: 1,
-          billTo: "hamadi",
-          billToEmail: "hamadi@gmail.com",
-          billToAddress: "win",
-          // billFrom,
-          // billFromEmail,
-          // billFromAddress,
-          // notes,
-          // total,
-          // subTotal,
-          // taxAmount,
-          // discountAmount
-        }}
-        items={items}
-        currency={0}
+        modalId={modalId}
+        currency={"DT"}
         subTotal={0}
         // taxAmount={0}
         discountAmount={0}
         total={0}
+        mode="viewer"
+        type="return"
       />}
     </div>
+  
   );
 }

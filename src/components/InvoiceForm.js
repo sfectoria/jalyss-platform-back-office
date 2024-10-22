@@ -194,11 +194,12 @@ const InvoiceForm = () => {
           return { idArticle, quantity, price, discount };
         });
         console.log(itemsWithIdArticle);
-        console.log(billFromId);
+        console.log(billFromId,billToId);
 
         const obj = {
           deliveryDate: new Date(),
           idStock: billToId,
+          idProvider:billFromId,
           idReceiptNote: 0,
           totalAmount: parseFloat(total),
           payedAmount: payedAmount
@@ -231,6 +232,7 @@ const InvoiceForm = () => {
         const obj = {
           numExitNote: 0,
           stockId: billFromId,
+          idClient:billToId,
           exitDate: new Date(),
           totalAmount: parseFloat(total),
           payedAmount: payedAmount

@@ -133,7 +133,7 @@ function SalesList() {
     },
     {
       field: "customerName",
-      headerName: "Client Name",
+      headerName: "Provider Name",
       width: 270,
       // renderCell: (params) => {
       //   let client = {};
@@ -234,6 +234,7 @@ function SalesList() {
       bgcolor: "background.default",
       mx: 3,
       mt: 3,
+      height: '100vh',
     }}
   >
     <Item sx={{ pt: 7, pb: 1, px: 7, borderRadius: 10 }} elevation={5}>
@@ -245,7 +246,7 @@ function SalesList() {
         >
           Achat List
         </Typography>
-        <div style={{ width: "100%", color: "red" }}>
+        <div style={{ width: "100%", color: "red", height : 500 }}>
           <DataGrid
             rowHeight={70}
             pageSizeOptions={[7, 10, 20]}
