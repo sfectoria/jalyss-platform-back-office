@@ -60,7 +60,6 @@ export default function AuthorDetails() {
                         .join("")
                     : "?"}
                 </Avatar>
-                {/* Names placed under the avatar */}
                 <Typography sx={{ fontSize: 30, fontWeight: "bold" }}>
                   {theAuthor.nameEn}
                 </Typography>
