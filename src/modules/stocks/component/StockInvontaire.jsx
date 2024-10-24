@@ -23,7 +23,6 @@ export default function StockInvontaire() {
   const [pageSize, setPageSize] = useState(10);
   const [count, setCount] = useState(0);
   const [refresh, setRefresh] = useState(false);
-  
 
   const param = useParams();
   useEffect(() => {
@@ -32,7 +31,7 @@ export default function StockInvontaire() {
 
   const fetchData = async () => {
     const response = await axios.get(`${ip}/inventory/all`, {
-      params: { take:pageSize,skip:page*pageSize,stocksIds: [param.id] },
+      params: { take: pageSize, skip: page * pageSize, stocksIds: [param.id] },
     });
     console.log(response.data);
     setData(response.data.data);
@@ -47,7 +46,6 @@ export default function StockInvontaire() {
   const handelNavigationModify = (ids) => {
     navigate(`/stock/${param.id}/inv/${ids}`);
   };
-
 
   function Pagination({ onPageChange, className }) {
     const apiRef = useGridApiContext();
@@ -94,7 +92,8 @@ export default function StockInvontaire() {
       headerName: "Date",
       width: 110,
       valueGetter: (value) => {
-        return value?.slice(0, 10);
+        const date = new Date(value);
+        return date.toLocaleDateString('fr-TN');
       },
     },
     {
@@ -102,18 +101,23 @@ export default function StockInvontaire() {
       headerName: "Time",
       width: 60,
       valueGetter: (value, row) => {
-        return row?.date?.slice(11, 16);
+        const date = new Date(row?.date);
+        return date.toLocaleTimeString('fr-TN', { hour: '2-digit', minute: '2-digit'}); 
       },
     },
     {
       field: "creatorName",
       headerName: "Creator",
       width: 180,
-      valueGetter: (value, row) => { 
+      valueGetter: (value, row) => {
         return (
-          (row?.createur?.Employee.firstName ? row?.createur?.Employee.firstName : "") +
+          (row?.createur?.Employee.firstName
+            ? row?.createur?.Employee.firstName
+            : "") +
           " " +
-          (row?.createur?.Employee.lastName ? row?.createur?.Employee.lastName : "")
+          (row?.createur?.Employee.lastName
+            ? row?.createur?.Employee.lastName
+            : "")
         );
       },
     },
@@ -131,14 +135,19 @@ export default function StockInvontaire() {
       headerName: "Percentage",
       width: 100,
       valueGetter: (value, row) => {
-        
-        const totalQuantity = row.inventoryLine.reduce((total, line) => total + line.quantity, 0);
-        const totalReelQuantity = row.inventoryLine.reduce((total, line) => total + line.reelQuantity, 0);
-        
+        const totalQuantity = row.inventoryLine.reduce(
+          (total, line) => total + line.quantity,
+          0
+        );
+        const totalReelQuantity = row.inventoryLine.reduce(
+          (total, line) => total + line.reelQuantity,
+          0
+        );
         if (totalQuantity === 0) return "0%";
-        
-        const percentage = Math.floor((totalQuantity/totalReelQuantity ) * 100);
-        return `${percentage}%`; 
+        const percentage = Math.floor(
+          (totalQuantity / totalReelQuantity) * 100
+        );
+        return `${percentage}%`;
       },
     },
     {
