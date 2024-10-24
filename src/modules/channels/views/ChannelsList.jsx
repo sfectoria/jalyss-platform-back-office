@@ -1,4 +1,4 @@
-import React ,{useState,useEffect}from "react";
+import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import { DataGrid, GridToolbar, GridActionsCellItem } from "@mui/x-data-grid";
 import Typography from "@mui/material/Typography";
@@ -19,9 +19,8 @@ const getPageSizeFromUrl = () => {
   return +params.get("take") || 10;
 };
 
-
 const ChannelsList = () => {
-  const [rows,setRows]=useState([])
+  const [rows, setRows] = useState([]);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -30,7 +29,7 @@ const ChannelsList = () => {
   const handleDetails = (id) => {
     navigate(`/channels/channel-details/${id}`);
   };
- 
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -38,18 +37,17 @@ const ChannelsList = () => {
   const fetchData = async () => {
     try {
       const response = await axios.get(ip + "/selling/getAll");
-      console.log(response.data)
+      console.log(response.data);
       if (response.data && response.data.length === 0) {
         setRows([]);
       } else {
         setRows(response.data);
       }
-      
+
       // console.log("from channels",response.data);
-      
     } catch (err) {
       setError(err);
-      setRows([])
+      setRows([]);
     } finally {
       setLoading(false);
     }
@@ -58,8 +56,22 @@ const ChannelsList = () => {
   const columns = [
     { field: "name", headerName: "Channel name", width: 200 },
     { field: "region", headerName: "Address", width: 270 },
-    { field: "managerName", headerName: "Manager name", width: 250 },
-    { field: "managerNumber", headerName: "Manager Tel number", width: 250 },
+    {
+      field: "managerName",
+      headerName: "Manager name",
+      width: 250,
+      valueGetter: (value, row) =>
+        row?.Employee
+          ? `${row.Employee.firstName} ${row.Employee.lastName}`
+          : "No manager",
+    },
+    {
+      field: "managerNumber",
+      headerName: "Manager Tel number",
+      width: 250,
+      valueGetter: (value, row) =>
+        row?.Employee?.phoneNumber || "No number",
+    },
     {
       field: "details",
       headerName: "Details",
@@ -75,14 +87,13 @@ const ChannelsList = () => {
     },
   ];
 
-
   return (
     <Box
       sx={{
         bgcolor: "background.default",
         mx: 3,
         mt: 3,
-        height: '100vh',
+        height: "100vh",
       }}
     >
       <Item sx={{ py: 5, px: 7, borderRadius: 10 }} elevation={5}>
@@ -94,7 +105,7 @@ const ChannelsList = () => {
         >
           Channels
         </Typography>
-        <div style={{ width: "100%", height: 500  }}>
+        <div style={{ width: "100%", height: 500 }}>
           <DataGrid
             pageSizeOptions={[7, 10, 20]}
             sx={{
@@ -107,7 +118,7 @@ const ChannelsList = () => {
             }}
             rows={rows}
             columns={columns}
-            loading ={loading}
+            loading={loading}
             slots={{
               noResultsOverlay: CustomNoResultsOverlay,
               toolbar: GridToolbar,
@@ -134,4 +145,3 @@ const ChannelsList = () => {
 };
 
 export default ChannelsList;
-

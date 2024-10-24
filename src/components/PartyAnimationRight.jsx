@@ -1,5 +1,5 @@
 import React from 'react';
-import Lottie from 'react-lottie';
+import Lottie from "react-lottie"
 import animationData from '../assets/party.json';
 
 export default function PartyAnimationRight(){

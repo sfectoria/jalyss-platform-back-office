@@ -11,7 +11,7 @@ import EmailIcon from "@mui/icons-material/Email";
 import LocationCityIcon from "@mui/icons-material/LocationCity";
 import axios from "axios";
 import ModeEditOutlineIcon from "@mui/icons-material/ModeEditOutline";
-import { Navigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { ip } from "../../../constants/ip";
 import ClientUpdate from "./ClientUpdate";
 
@@ -41,41 +41,40 @@ export default function ClientInfo() {
 
   return (
     <Box sx={{ mx: 3, my: 6, display: "flex", position: "relative" }}>
-      <Box>
-        <Stack direction="row" spacing={2}>
-          <Avatar
-            sx={{ bgcolor: "#e6c440", width: 140, height: 140, fontSize: 50 }}
-          >
-            {one.fullName
-              ? one.fullName
-                  .split(" ")
-                  .map((namePart) => namePart[0])
-                  .join("")
-              : "?"}
-          </Avatar>
-        </Stack>
-        <Typography sx={{ pt: 4, fontSize: 30, fontWeight: "bold" }}>
-          {one.fullName}
-        </Typography>
-      </Box>
+      {!isEdit ? (
+        <>
+          <Box>
+            <Stack direction="row" spacing={2}>
+              <Avatar sx={{ bgcolor: "#e6c440", width: 140, height: 140, fontSize: 50 }}>
+                {one.fullName
+                  ? one.fullName
+                      .split(" ")
+                      .map((namePart) => namePart[0])
+                      .join("")
+                  : "?"}
+              </Avatar>
+            </Stack>
+            <Typography sx={{ pt: 4, fontSize: 30, fontWeight: "bold" }}>
+              {one.fullName}
+            </Typography>
+          </Box>
 
-      <Box>
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <EmailIcon />
-          <Typography sx={{ p: 1, fontSize: 19 }}>{one.email}</Typography>
-        </Box>
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <LocalPhoneIcon />
-          <Typography sx={{ p: 1, fontSize: 19 }}>{one.phoneNumber}</Typography>
-        </Box>
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <LocationCityIcon />
-          <Typography sx={{ p: 1, fontSize: 19 }}>{one.address}</Typography>
-        </Box>
-      </Box>
-      <Box sx={{ mx: 4, position: "relative" }}>
-        {!isEdit ? (
-          <>
+          <Box>
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <EmailIcon />
+              <Typography sx={{ p: 1, fontSize: 19 }}>{one.email}</Typography>
+            </Box>
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <LocalPhoneIcon />
+              <Typography sx={{ p: 1, fontSize: 19 }}>{one.phoneNumber}</Typography>
+            </Box>
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <LocationCityIcon />
+              <Typography sx={{ p: 1, fontSize: 19 }}>{one.address}</Typography>
+            </Box>
+          </Box>
+
+          <Box sx={{ mx: 4, position: "relative" }}>
             <Box
               sx={{
                 mb: 1,
@@ -128,20 +127,13 @@ export default function ClientInfo() {
                 sx={{ cursor: "pointer" }}
               />
             </Box>
-          </>
-        ) : (
-          <Box sx={{ mt: 3, display: "flex", justifyContent: "center" }}>
-            <ClientUpdate setIsEdit={setIsEdit} refresh={refresh} setRefresh={setRefresh}/>
           </Box>
-        )}
-      </Box>
+        </>
+      ) : (
+        <Box sx={{ mt: 3, display: "flex", justifyContent: "center", width: "100%" }}>
+          <ClientUpdate setIsEdit={setIsEdit} refresh={refresh} setRefresh={setRefresh} />
+        </Box>
+      )}
     </Box>
   );
-}
-
-{
-  /*
-    <EmailIcon/>
-    <Typography sx={{ p: 1, fontSize:15}}>ousseemachetrif@gmail.com</Typography>
-</Box> */
 }
