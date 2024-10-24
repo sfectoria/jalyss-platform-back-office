@@ -12,10 +12,18 @@ import AddIcon from "@mui/icons-material/Add";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { ip } from "../../../constants/ip";
+import { useDispatch, useSelector } from "react-redux";
+import { getMe } from "../../../store/slices/authSlice";
 
 function AddInventaire() {
   const [open, setOpen] = useState(false);
+  const dispatch = useDispatch();
+  const user = useSelector((store) => store.auth.me);
+console.log(user,"userrrrrrrr");
 
+  useEffect(() => {
+    dispatch(getMe());
+  }, [dispatch]);
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -31,6 +39,7 @@ function AddInventaire() {
       status: "draft",
       date: new Date(),
       stockId: +param.id,
+      createurId:user.id,
       inventoryLine: [],
     };
     const createInv = await axios.post(`${ip}/inventory/create`, obj);

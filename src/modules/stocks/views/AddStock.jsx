@@ -35,9 +35,7 @@ const AddStock = () => {
   const [open, setOpen] = React.useState(false);
   const [isCancelled, setIsCancelled] = React.useState(false);
 
-  const stockNames = ["tunis", "sfax", "sousse", "mahdia"];
-
-  const addresses = ["marsa", "sfax", "bou ficha", "mahdia"];
+  
 
   const handleClose = () => {
     setOpen(false);
