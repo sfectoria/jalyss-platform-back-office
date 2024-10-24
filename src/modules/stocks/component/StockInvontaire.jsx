@@ -23,6 +23,7 @@ export default function StockInvontaire() {
   const [pageSize, setPageSize] = useState(10);
   const [count, setCount] = useState(0);
   const [refresh, setRefresh] = useState(false);
+  
 
   const param = useParams();
   useEffect(() => {
@@ -105,27 +106,41 @@ export default function StockInvontaire() {
       },
     },
     {
-      field: "customerName",
-      headerName: "Customer",
+      field: "creatorName",
+      headerName: "Creator",
       width: 180,
-      valueGetter: (value, row) => {
+      valueGetter: (value, row) => { 
         return (
-          (row?.createur?.firstName ? row?.createur?.firstName : "") +
+          (row?.createur?.Employee.firstName ? row?.createur?.Employee.firstName : "") +
           " " +
-          (row?.createur?.lastName ? row?.createur?.lastName : "")
+          (row?.createur?.Employee.lastName ? row?.createur?.Employee.lastName : "")
         );
       },
     },
     {
-      field: "customerPhone",
-      headerName: "Phone Number",
+      field: "creatorPhone",
+      headerName: "Creator number",
       width: 170,
       valueGetter: (value, row) => {
-        return row?.createur?.phoneNumber;
+        return row?.createur?.Employee.phoneNumber;
       },
     },
     { field: "status", headerName: "Status", width: 100 },
-    { field: "percentage", headerName: "Percentage", width: 100 },
+    {
+      field: "percentage",
+      headerName: "Percentage",
+      width: 100,
+      valueGetter: (value, row) => {
+        
+        const totalQuantity = row.inventoryLine.reduce((total, line) => total + line.quantity, 0);
+        const totalReelQuantity = row.inventoryLine.reduce((total, line) => total + line.reelQuantity, 0);
+        
+        if (totalQuantity === 0) return "0%";
+        
+        const percentage = Math.floor((totalQuantity/totalReelQuantity ) * 100);
+        return `${percentage}%`; 
+      },
+    },
     {
       field: "details",
       headerName: "Details",
