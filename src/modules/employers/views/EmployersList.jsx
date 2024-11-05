@@ -12,6 +12,7 @@ import { GridPagination } from "@mui/x-data-grid";
 import { styled } from "@mui/material/styles";
 import axios from 'axios';
 import { ip } from '../../../constants/ip';
+import CustomNoRowsOverlay from '../../../style/NoRowsStyle';
 
 function BasicPagination() {
   return (
@@ -130,6 +131,7 @@ useEffect(()=>{
             rows={employer}
             columns={columns}
             slots={{
+              noRowsOverlay: CustomNoRowsOverlay,
               noResultsOverlay: CustomNoResultsOverlay,
               toolbar: GridToolbar,
             }}

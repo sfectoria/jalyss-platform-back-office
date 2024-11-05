@@ -8,6 +8,7 @@ import CustomNoResultsOverlay from "../../../style/NoResultStyle";
 import Item from "../../../style/ItemStyle";
 import axios from "axios";
 import { ip } from "../../../constants/ip";
+import CustomNoRowsOverlay from "../../../style/NoRowsStyle";
 
 export default function StockList() {
   const [rows, setRows] = useState([]);
@@ -91,6 +92,7 @@ console.log(rows)
             rows={rows}
             columns={columns}
             slots={{
+              noRowsOverlay: CustomNoRowsOverlay,
               noResultsOverlay: CustomNoResultsOverlay,
               toolbar: GridToolbar,
             }}

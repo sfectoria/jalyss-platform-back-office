@@ -14,10 +14,12 @@ import Typography from "@mui/material/Typography";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { useLocation, useNavigate } from "react-router-dom";
 import CustomNoResultsOverlay from "../../../style/NoResultStyle";
+
 import Item from "../../../style/ItemStyle";
 import ImagePopUp from "../../../components/ImagePopUp";
 import axios from "axios";
 import { ip } from "../../../constants/ip";
+import CustomNoRowsOverlay from "../../../style/NoRowsStyle";
 
 const getPageFromUrl = () => {
   const params = new URLSearchParams(window.location.search);
@@ -201,6 +203,7 @@ export default function ArticlesList() {
             paginationMode="server"
             rowCount={count}
             slots={{
+              noRowsOverlay: CustomNoRowsOverlay,
               noResultsOverlay: CustomNoResultsOverlay,
               toolbar: GridToolbar,
               pagination: CustomPagination,
