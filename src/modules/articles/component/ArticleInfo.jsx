@@ -46,7 +46,7 @@ const ArticleInfo = forwardRef(({ onSubmit }, ref) => {
       } else {
         setFile(null);
       }
-    }, 1000); // Check every second
+    }, 1000); 
 
     return () => clearInterval(checkLocalStorage); // Clean up the interval on unmount
   }, []);

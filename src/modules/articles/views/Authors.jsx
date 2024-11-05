@@ -1,25 +1,24 @@
-import React, { useEffect, useState } from "react";
-import Box from "@mui/material/Box";
-import { DataGrid, GridToolbar, GridActionsCellItem } from "@mui/x-data-grid";
-import { useDemoData } from "@mui/x-data-grid-generator";
-import Typography from "@mui/material/Typography";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import ModeEditOutlineIcon from "@mui/icons-material/ModeEditOutline";
-import { useNavigate } from "react-router-dom";
-import CustomNoResultsOverlay from "../../../style/NoResultStyle";
-import Item from "../../../style/ItemStyle";
-import Avatar from "@mui/material/Avatar";
-import Stack from "@mui/material/Stack";
-import { deepOrange } from "@mui/material/colors";
-import { ip } from "../../../constants/ip";
-import axios from "axios";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import { Button } from "@mui/material";
+import React, { useEffect, useState } from 'react';
+import Box from '@mui/material/Box';
+import { DataGrid, GridToolbar, GridActionsCellItem } from '@mui/x-data-grid';
+import Typography from '@mui/material/Typography';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import Stack from '@mui/material/Stack';
+import Avatar from '@mui/material/Avatar';
+import { deepOrange } from '@mui/material/colors';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import Button from '@mui/material/Button';
+import { useNavigate } from 'react-router-dom';
+import CustomNoResultsOverlay from '../../../style/NoResultStyle';
+import Item from '../../../style/ItemStyle';
+import { ip } from '../../../constants/ip';
+import axios from 'axios';
 
 export default function AuthorsList() {
   const [authors, setAuthors] = useState([]);
+  const [confirmDelete, setConfirmDelete] = useState(false); 
+  const [authorToDelete, setAuthorToDelete] = useState(null); 
   const navigate = useNavigate();
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -39,35 +38,31 @@ export default function AuthorsList() {
     navigate(`${id}`);
   };
 
-  const handleDelete = async (id) => {
+  const handleDeleteClick = (id) => {
+    setAuthorToDelete(id);
+    setConfirmDelete(true); 
+  };
+
+  const handleDelete = async () => {
     try {
-      await axios.delete(`${ip}/author/${id}`);
-      setAuthors(authors.filter((author) => author.id !== id));
+      await axios.delete(`${ip}/author/${authorToDelete}`);
+      setAuthors(authors.filter((author) => author.id !== authorToDelete));
+      setConfirmDelete(false); 
+      setAuthorToDelete(null); 
     } catch (error) {
       console.log("Error deleting author:", error);
     }
   };
 
   const columns = [
-    // { field: 'id', headerName: 'ID', width: 70 },
     {
-      field: "image",
-      headerName: "",
+      field: 'image',
+      headerName: '',
       width: 90,
-      getActions: ({}) => [
+      renderCell: () => (
         <Stack direction="row" spacing={2}>
-          <Avatar
-            sx={{
-              bgcolor: deepOrange[500],
-              width: 50,
-              height: 50,
-              fontSize: 50,
-            }}
-          >
-            A
-          </Avatar>
-        </Stack>,
-      ],
+        </Stack>
+      )
     },
     {
       field: "nameAr",
@@ -89,28 +84,27 @@ export default function AuthorsList() {
       headerName: "Author Bio En",
       width: 150,
     },
-
     {
       field: "actions",
       headerName: "Actions",
       width: 100,
-      type: "actions",
-      getActions: ({ id }) => {
-        return [
+      type: 'actions',
+      renderCell: ({ id }) => (
+        <>
           <GridActionsCellItem
             icon={<VisibilityIcon />}
             label="Details"
-            onClick={() => handleDetails(id)}
-          />,
+            onClick={() => handleDetails(id)} 
+          />
           <GridActionsCellItem
             icon={<DeleteOutlineIcon />}
             label="Delete"
-            onClick={() => handleDelete(id)}
-            color="inherit"
-          />,
-        ];
-      },
-    },
+            onClick={() => handleDeleteClick(id)}
+            style={{ color: "red" }}
+          />
+        </>
+      )
+    }
   ];
 
   return (
@@ -172,6 +166,43 @@ export default function AuthorsList() {
           />
         </div>
       </Item>
+
+      {confirmDelete && (
+        <Box
+          sx={{
+            backgroundColor: 'white',
+            padding: '20px',
+            borderRadius: '8px',
+            boxShadow: '0 0 10px rgba(0,0,0,0.1)',
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 1000,
+          }}
+        >
+          <Typography sx={{ fontSize: 20, mb: 2 }}>
+            Do you want to delete this author?
+          </Typography>
+          <span style={{ color: 'red' }}>This action is irreversible!</span>
+
+          <Box sx={{ mt: 2, display: 'flex', gap: 2 }}>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={handleDelete}
+            >
+              Yes, Delete
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={() => setConfirmDelete(false)} 
+            >
+              Cancel
+            </Button>
+          </Box>
+        </Box>
+      )}
     </Box>
   );
 }
