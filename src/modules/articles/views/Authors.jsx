@@ -14,6 +14,7 @@ import { deepOrange } from '@mui/material/colors';
 import { ip } from '../../../constants/ip';
 import axios from 'axios';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import CustomNoRowsOverlay from '../../../style/NoRowsStyle';
 
 
 export default function AuthorsList() {
@@ -111,7 +112,7 @@ export default function AuthorsList() {
         <Typography variant="h5" mb={3} gutterBottom sx={{ fontWeight: 'bold' }}>
           Authors
         </Typography>
-        <div style={{ width: '100%' }}>
+        <div style={{ width: '100%' , height : 500}}>
           <DataGrid
             pageSizeOptions={[7, 10, 20]}
             sx={{
@@ -125,6 +126,7 @@ export default function AuthorsList() {
             rows={authors}
             columns={columns}
             slots={{
+              noRowsOverlay: CustomNoRowsOverlay,
               noResultsOverlay: CustomNoResultsOverlay,
               toolbar: GridToolbar,
             }}

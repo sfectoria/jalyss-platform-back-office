@@ -15,6 +15,7 @@ import { ip } from '../../../constants/ip';
 import axios from 'axios';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { Button } from '@mui/material';
+import CustomNoRowsOverlay from '../../../style/NoRowsStyle';
 
 export default function ClientsList() {
   const [clients, setClients] = useState([]);
@@ -151,7 +152,7 @@ export default function ClientsList() {
         <Typography variant="h5" mb={3} gutterBottom sx={{ fontWeight: 'bold' }}>
           Clients
         </Typography>
-        <div style={{ width: '100%' }}>
+        <div style={{ width: '100%' , height : 500}}>
           <DataGrid
             pageSizeOptions={[7, 10, 20]}
             sx={{
@@ -165,6 +166,7 @@ export default function ClientsList() {
             rows={clients}
             columns={columns}
             slots={{
+              noRowsOverlay: CustomNoRowsOverlay,
               noResultsOverlay: CustomNoResultsOverlay,
               toolbar: GridToolbar,
             }}

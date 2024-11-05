@@ -15,6 +15,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import DraftsIcon from "@mui/icons-material/Drafts";
 import axios from "axios";
 import { ip } from "../../../constants/ip";
+import CustomNoRowsOverlay from "../../../style/NoRowsStyle";
 
 export default function StockInvontaire() {
   const [isOpen, setIsOpen] = useState(false);
@@ -182,7 +183,7 @@ export default function StockInvontaire() {
   ];
 
   return (
-    <div style={{ width: "100%" }}>
+    <div style={{ width: "100%"  , height : 500 }}>
       <DataGrid
         pageSizeOptions={[7, 10, 20]}
         sx={{
@@ -203,6 +204,7 @@ export default function StockInvontaire() {
         paginationMode="server"
         rowCount={count}
         slots={{
+          noRowsOverlay: CustomNoRowsOverlay,
           noResultsOverlay: CustomNoResultsOverlay,
           toolbar: GridToolbar,
           pagination: CustomPagination,
