@@ -4,18 +4,14 @@ import CameraAltRoundedIcon from "@mui/icons-material/CameraAltRounded";
 
 import Tooltip from "@mui/material/Tooltip";
 function FileUploader(props) {
-  const { onSelectFile , setFile, icon} = props;
+  const { onSelectFile , icon} = props;
   const hiddenFileInput = useRef(null);
 
   const handleClick = (event) => {
     hiddenFileInput.current.click();
   };
 
-  const handleChange = (event) => {
-    setFile(event.target.files[0]);
-    onSelectFile(event);
-  };
-
+ 
   
 
   return (
@@ -51,7 +47,7 @@ function FileUploader(props) {
           id="actual-btn"
           accept={"image/*"}
           ref={hiddenFileInput}
-          onChange={handleChange}
+          onChange={onSelectFile}
           hidden
           data-testid="file-upload-input"
         />

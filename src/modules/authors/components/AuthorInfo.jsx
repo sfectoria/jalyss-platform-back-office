@@ -3,7 +3,7 @@ import { Box, Button } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
+import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import ModeEditOutlineIcon from "@mui/icons-material/ModeEditOutline";
 import axios from "axios";
 import { useParams } from "react-router-dom";
@@ -48,18 +48,41 @@ export default function AuthorDetails() {
       >
         {!isEdit ? (
           <>
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 4 }}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                mb: 4,
+              }}
+            >
               <Stack direction="column" spacing={2} alignItems="center">
-                <Avatar
-                  sx={{ bgcolor: "#e6c440", width: 140, height: 140, fontSize: 50 }}
-                >
-                  {theAuthor.nameEn
-                    ? theAuthor.nameEn
-                        .split(" ")
-                        .map((namePart) => namePart[0])
-                        .join("")
-                    : "?"}
-                </Avatar>
+                {theAuthor?.Media?.path ? (
+                  <Avatar
+                    alt="author avatar"
+                    sx={{
+                      width: { xs: 40, sm: 60, md: 80, lg: 250 },
+                      height: { xs: 40, sm: 60, md: 80, lg: 250 },
+                    }}
+                    src={theAuthor?.Media?.path}
+                  />
+                ) : (
+                  <Avatar
+                    sx={{
+                      bgcolor: "#e6c440",
+                      width: 140,
+                      height: 140,
+                      fontSize: 50,
+                    }}
+                  >
+                    {theAuthor.nameEn
+                      ? theAuthor.nameEn
+                          .split(" ")
+                          .map((namePart) => namePart[0])
+                          .join("")
+                      : "?"}
+                  </Avatar>
+                )}
                 <Typography sx={{ fontSize: 30, fontWeight: "bold" }}>
                   {theAuthor.nameEn}
                 </Typography>
@@ -75,7 +98,9 @@ export default function AuthorDetails() {
               </Box>
             </Box>
 
-            <Box sx={{ display: "flex", gap: 6, justifyContent: "space-between" }}>
+            <Box
+              sx={{ display: "flex", gap: 6, justifyContent: "space-between" }}
+            >
               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 <LibraryBooksIcon sx={{ mt: 0.5 }} />
                 <Typography sx={{ fontSize: 19, fontWeight: "bold" }}>
