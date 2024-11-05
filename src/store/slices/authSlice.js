@@ -13,8 +13,8 @@ export const login = createAsyncThunk('auth/login', async (args, { dispatch,reje
     dispatch(getMe());
     return response.data;
   } catch (error) {
-  
-
+    console.log(error,"errrrrr");
+    
     return rejectWithValue(error.response.data.message)
   }
 });

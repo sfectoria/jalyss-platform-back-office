@@ -41,6 +41,10 @@ const AddChannel = () => {
   const [managerPhoneNumber, setManagerPhoneNumber] = React.useState("");
   const [errors, setErrors] = React.useState({});
   const [selectedStock, setSelectedStock] = useState(null);
+  const [managers, setManagers]= useState([]);
+  const [selectedManager, setSelectedManager] = useState(null);
+
+
 
   const navigate = useNavigate();
   const [stocks, setStocks]= useState([]);
@@ -53,13 +57,22 @@ const AddChannel = () => {
       try {
         const response = await axios.get('http://localhost:3000/stocks/getAll');
         setStocks(response.data);
-        console.log("hhhhhhh")
+       
       } catch (error) {
         console.error('Erreur lors de la récupération des stock :', error);
       }
     }
+    async function fetchEmployees() {
+      try {
+        const response = await axios.get('http://localhost:3000/employees/all');
+        setManagers(response.data);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des managers :', error);
+      }
+    }
 
     fetchCategories();
+    fetchEmployees() 
   }, []);
 
   const handleCancel = () => {
@@ -75,13 +88,9 @@ const AddChannel = () => {
     setAddress(event.target.value);
   };
 
-  const handleManagerNameChange = (event) => {
-    setManagerName(event.target.value);
-  };
+ console.log(selectedManager,"managerName");
+ 
 
-  const handlemanagerPhoneNumberChange = (event) => {
-    setManagerPhoneNumber(event.target.value);
-  };
 
   const handelConfirm = (e) => {
     e.preventDefault();
@@ -90,9 +99,8 @@ const AddChannel = () => {
 
     if (!channelName) newErrors.channelName = "Stock's Name is required";
     if (!address) newErrors.address = "Address is required";
-    if (!managerName) newErrors.managerName = "Manager's name is required";
-    if (!managerPhoneNumber)
-      newErrors.managerPhoneNumber = "Manager's phone number is required";
+    if (!selectedManager) newErrors.managerName = "Manager's name is required";
+   
     if (!selectedStock) newErrors.selectedStock = "Stock selection is required";
 
     setErrors(newErrors);
@@ -113,6 +121,8 @@ const AddChannel = () => {
       type: "local",
       region: address,
       idStock: selectedStock ? selectedStock.id : null,
+      employeeId: selectedManager ? selectedManager.id :null,
+
     };
     const newStock = await axios.post(`${ip}/selling/create`, obj);
     console.log("res", newStock);
@@ -189,7 +199,7 @@ const AddChannel = () => {
             </Grid>
             <Grid item xs={12}>
               <Item elevation={0}>
-                <TextField
+                {/* <TextField
                   required
                   margin="normal"
                   fullWidth
@@ -200,26 +210,27 @@ const AddChannel = () => {
                   value={managerName}
                   error={!!errors.managerName}
                   helperText={errors.managerName}
+                /> */}
+                   <Autocomplete
+                  options={managers}
+                  getOptionLabel={(option) => `${option.firstName} ${option.lastName} / ${option.phoneNumber}`} 
+                  value={selectedManager}
+                  onChange={(event, newValue) => setSelectedManager(newValue)}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Select Manager"
+                      required
+                      margin="normal"
+                      fullWidth
+                      error={!!errors.selectedManager}
+                      helperText={errors.selectedManager}
+                    />
+                  )}
                 />
               </Item>
             </Grid>
-            <Grid item xs={12}>
-              <Item elevation={0}>
-                <TextField
-                  required
-                  type="number"
-                  margin="normal"
-                  fullWidth
-                  id="managerPhoneNumber"
-                  label="Manager Phone Number"
-                  name="managerPhoneNumber"
-                  onChange={handlemanagerPhoneNumberChange}
-                  value={managerPhoneNumber}
-                  error={!!errors.managerPhoneNumber}
-                  helperText={errors.managerPhoneNumber}
-                />
-              </Item>
-            </Grid>
+           
           </Grid>
           <Grid container spacing={2}>
             <Grid

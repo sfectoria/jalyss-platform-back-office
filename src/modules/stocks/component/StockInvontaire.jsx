@@ -31,7 +31,7 @@ export default function StockInvontaire() {
 
   const fetchData = async () => {
     const response = await axios.get(`${ip}/inventory/all`, {
-      params: { take:pageSize,skip:page*pageSize,stocksIds: [param.id] },
+      params: { take: pageSize, skip: page * pageSize, stocksIds: [param.id] },
     });
     console.log(response.data);
     setData(response.data.data);
@@ -46,7 +46,6 @@ export default function StockInvontaire() {
   const handelNavigationModify = (ids) => {
     navigate(`/stock/${param.id}/inv/${ids}`);
   };
-
 
   function Pagination({ onPageChange, className }) {
     const apiRef = useGridApiContext();
@@ -93,7 +92,8 @@ export default function StockInvontaire() {
       headerName: "Date",
       width: 110,
       valueGetter: (value) => {
-        return value?.slice(0, 10);
+        const date = new Date(value);
+        return date.toLocaleDateString('fr-TN');
       },
     },
     {
@@ -101,31 +101,55 @@ export default function StockInvontaire() {
       headerName: "Time",
       width: 60,
       valueGetter: (value, row) => {
-        return row?.date?.slice(11, 16);
+        const date = new Date(row?.date);
+        return date.toLocaleTimeString('fr-TN', { hour: '2-digit', minute: '2-digit'}); 
       },
     },
     {
-      field: "customerName",
-      headerName: "Customer",
+      field: "creatorName",
+      headerName: "Creator",
       width: 180,
       valueGetter: (value, row) => {
         return (
-          (row?.createur?.firstName ? row?.createur?.firstName : "") +
+          (row?.createur?.Employee.firstName
+            ? row?.createur?.Employee.firstName
+            : "") +
           " " +
-          (row?.createur?.lastName ? row?.createur?.lastName : "")
+          (row?.createur?.Employee.lastName
+            ? row?.createur?.Employee.lastName
+            : "")
         );
       },
     },
     {
-      field: "customerPhone",
-      headerName: "Phone Number",
+      field: "creatorPhone",
+      headerName: "Creator number",
       width: 170,
       valueGetter: (value, row) => {
-        return row?.createur?.phoneNumber;
+        return row?.createur?.Employee.phoneNumber;
       },
     },
     { field: "status", headerName: "Status", width: 100 },
-    { field: "percentage", headerName: "Percentage", width: 100 },
+    {
+      field: "percentage",
+      headerName: "Percentage",
+      width: 100,
+      valueGetter: (value, row) => {
+        const totalQuantity = row.inventoryLine.reduce(
+          (total, line) => total + line.quantity,
+          0
+        );
+        const totalReelQuantity = row.inventoryLine.reduce(
+          (total, line) => total + line.reelQuantity,
+          0
+        );
+        if (totalQuantity === 0) return "0%";
+        const percentage = Math.floor(
+          (totalQuantity / totalReelQuantity) * 100
+        );
+        return `${percentage}%`;
+      },
+    },
     {
       field: "details",
       headerName: "Details",
