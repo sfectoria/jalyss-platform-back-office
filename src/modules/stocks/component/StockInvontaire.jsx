@@ -99,7 +99,7 @@ export default function StockInvontaire() {
     {
       field: "time",
       headerName: "Time",
-      width: 60,
+      width: 100,
       valueGetter: (value, row) => {
         const date = new Date(row?.date);
         return date.toLocaleTimeString('fr-TN', { hour: '2-digit', minute: '2-digit'}); 

@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, Avatar, Button, Tab, Tabs } from "@mui/material";
+
+
+import Stack from "@mui/material/Stack";
+
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
+import ModeEditOutlineIcon from "@mui/icons-material/ModeEditOutline";
+import { Box, Typography, Avatar, Button, Tab, Tabs } from "@mui/material";
+
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { ip } from "../../../constants/ip";
@@ -48,22 +54,33 @@ export default function AuthorDetails() {
               height: "100%",
             }}
           >
-            <Avatar
-              sx={{
-                bgcolor: "#e6c440",
-                width: 140,
-                height: 140,
-                fontSize: 50,
-                mx: "auto",
-              }}
-            >
-              {theAuthor.nameEn
-                ? theAuthor.nameEn
-                    .split(" ")
-                    .map((namePart) => namePart[0])
-                    .join("")
-                : "?"}
-            </Avatar>
+          {theAuthor?.Media?.path ? (
+                  <Avatar
+                    alt="author avatar"
+                    sx={{
+                      width: { xs: 40, sm: 60, md: 80, lg: 250 },
+                      height: { xs: 40, sm: 60, md: 80, lg: 250 },
+                    }}
+                    src={theAuthor?.Media?.path}
+                  />
+                ) : (
+                  <Avatar
+                    sx={{
+                      bgcolor: "#e6c440",
+                      width: 140,
+                      height: 140,
+                      fontSize: 50,
+                    }}
+                  >
+                    {theAuthor.nameEn
+                      ? theAuthor.nameEn
+                          .split(" ")
+                          .map((namePart) => namePart[0])
+                          .join("")
+                      : "?"}
+                  </Avatar>
+                )}
+
             <Typography sx={{ fontSize: 20, fontWeight: "bold", mt: 2 }}>
               {theAuthor.nameEn}
             </Typography>

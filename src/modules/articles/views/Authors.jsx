@@ -18,22 +18,21 @@ export default function AuthorsList() {
   const [authors, setAuthors] = useState([]);
   const [confirmDelete, setConfirmDelete] = useState(false); 
   const [authorToDelete, setAuthorToDelete] = useState(null); 
-
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(`${ip}/author`);
         setAuthors(response.data);
-        console.log('from authors', response.data);
+        console.log("from authors", response.data);
       } catch (error) {
-        console.log('Error fetching data:', error);
+        console.log("Error fetching data:", error);
       }
     };
 
     fetchData();
   }, []);
 
-  const navigate = useNavigate();
 
   const handleDetails = (id) => {
     navigate(`${id}`);
@@ -51,7 +50,7 @@ export default function AuthorsList() {
       setConfirmDelete(false); 
       setAuthorToDelete(null); 
     } catch (error) {
-      console.log('Error deleting author:', error);
+      console.log("Error deleting author:", error);
     }
   };
 
@@ -66,28 +65,28 @@ export default function AuthorsList() {
       )
     },
     {
-      field: 'nameAr',
-      headerName: 'Author Name Ar',
+      field: "nameAr",
+      headerName: "Author Name Ar",
       width: 200,
     },
     {
-      field: 'nameEn',
-      headerName: 'Author Name Eng',
+      field: "nameEn",
+      headerName: "Author Name Eng",
       width: 200,
     },
     {
-      field: 'biographyAr',
-      headerName: 'Author Bio Ar',
+      field: "biographyAr",
+      headerName: "Author Bio Ar",
       width: 220,
     },
     {
-      field: 'biographyEn',
-      headerName: 'Author Bio En',
+      field: "biographyEn",
+      headerName: "Author Bio En",
       width: 150,
     },
     {
-      field: 'actions',
-      headerName: 'Actions',
+      field: "actions",
+      headerName: "Actions",
       width: 100,
       type: 'actions',
       renderCell: ({ id }) => (
@@ -109,20 +108,39 @@ export default function AuthorsList() {
   ];
 
   return (
-    <Box sx={{ bgcolor: 'background.default', mx: 3, mt: 3 }}>
+    <Box sx={{ bgcolor: "background.default", mx: 3, mt: 3 }}>
       <Item sx={{ pt: 7, pb: 1, px: 7, borderRadius: 10 }} elevation={5}>
-        <Typography variant="h5" mb={3} gutterBottom sx={{ fontWeight: 'bold' }}>
+        <div className="d-flex justify-content-between">
+        <Typography
+          variant="h5"
+          mb={3}
+          gutterBottom
+          sx={{ fontWeight: "bold" }}
+        >
           Authors
         </Typography>
-        <div style={{ width: '100%' }}>
+        <Button 
+      variant="contained" 
+      sx={{ 
+        mb: 2, 
+        bgcolor: "#6f42c1", 
+        "&:hover": { bgcolor: "#5b37a4" }  
+      }} 
+      onClick={() =>navigate("/articles/add-author")}
+    >
+      Add Author
+        </Button>
+        </div>
+      
+        <div style={{ width: "100%" }}>
           <DataGrid
             pageSizeOptions={[7, 10, 20]}
             sx={{
               boxShadow: 0,
               border: 0,
-              borderColor: 'primary.light',
-              '& .MuiDataGrid-cell:hover': {
-                color: 'primary.main',
+              borderColor: "primary.light",
+              "& .MuiDataGrid-cell:hover": {
+                color: "primary.main",
               },
             }}
             rows={authors}
@@ -136,7 +154,7 @@ export default function AuthorsList() {
               filter: {
                 filterModel: {
                   items: [],
-                  quickFilterValues: [''],
+                  quickFilterValues: [""],
                 },
               },
             }}
