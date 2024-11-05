@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button } from "@mui/material";
-import Avatar from "@mui/material/Avatar";
-import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
-import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
-import ModeEditOutlineIcon from "@mui/icons-material/ModeEditOutline";
+import { Box, Typography, Avatar, Button, Tab, Tabs } from "@mui/material";
+import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { ip } from "../../../constants/ip";
@@ -14,6 +10,7 @@ export default function AuthorDetails() {
   const { id } = useParams();
   const [theAuthor, setTheAuthor] = useState({});
   const [isEdit, setIsEdit] = useState(false);
+  const [tabIndex, setTabIndex] = useState(0);
 
   const getOneAuthor = async () => {
     try {
@@ -29,88 +26,131 @@ export default function AuthorDetails() {
     getOneAuthor();
   }, [id]);
 
-  const handleEditClick = () => {
-    setIsEdit(!isEdit);
+  const handleTabChange = (event, newValue) => {
+    setTabIndex(newValue);
   };
 
   return (
     <Box sx={{ mx: 3, my: 6, display: "flex", justifyContent: "center" }}>
-      <Box
-        sx={{
-          p: 3,
-          borderRadius: 2,
-          boxShadow: 3,
-          bgcolor: "white",
-          maxWidth: 1400,
-          width: "100%",
-          position: "relative",
-        }}
-      >
-        {!isEdit ? (
-          <>
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 4 }}>
-              <Stack direction="column" spacing={2} alignItems="center">
-                <Avatar
-                  sx={{ bgcolor: "#e6c440", width: 140, height: 140, fontSize: 50 }}
-                >
-                  {theAuthor.nameEn
-                    ? theAuthor.nameEn
-                        .split(" ")
-                        .map((namePart) => namePart[0])
-                        .join("")
-                    : "?"}
-                </Avatar>
-                <Typography sx={{ fontSize: 30, fontWeight: "bold" }}>
-                  {theAuthor.nameEn}
-                </Typography>
-                <Typography sx={{ fontSize: 30, fontWeight: "bold" }}>
-                  {theAuthor.nameAr}
-                </Typography>
-              </Stack>
-              <Box>
-                <ModeEditOutlineIcon
-                  onClick={handleEditClick}
-                  sx={{ cursor: "pointer", fontSize: 30 }}
-                />
-              </Box>
-            </Box>
+      {!isEdit ? (
+        <>
 
-            <Box sx={{ display: "flex", gap: 6, justifyContent: "space-between" }}>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <LibraryBooksIcon sx={{ mt: 0.5 }} />
-                <Typography sx={{ fontSize: 19, fontWeight: "bold" }}>
-                  Biography:
+          <Box
+            sx={{
+              flex: 1,
+              p: 3,
+              border: "2px solid #e0e0e0",
+              borderRadius: 2,
+              textAlign: "center",
+              maxWidth: "600px",
+              width: "100%",
+              maxHeight: "400px",
+              height: "100%",
+            }}
+          >
+            <Avatar
+              sx={{
+                bgcolor: "#e6c440",
+                width: 140,
+                height: 140,
+                fontSize: 50,
+                mx: "auto",
+              }}
+            >
+              {theAuthor.nameEn
+                ? theAuthor.nameEn
+                    .split(" ")
+                    .map((namePart) => namePart[0])
+                    .join("")
+                : "?"}
+            </Avatar>
+            <Typography sx={{ fontSize: 20, fontWeight: "bold", mt: 2 }}>
+              {theAuthor.nameEn}
+            </Typography>
+            <Typography sx={{ fontSize: 26, fontWeight: "bold", mt: 1 }}>
+              {theAuthor.nameAr}
+            </Typography>
+          </Box>
+
+          <Box sx={{ width: "30px" }} />
+          <Box
+            sx={{
+              flex: 1,
+              p: 3,
+              border: "2px solid #e0e0e0",
+              borderRadius: 2,
+              maxWidth: "800px",
+              height: "21.3cm",
+              width: "100%",
+            }}
+          >
+
+            <Tabs
+              value={tabIndex}
+              onChange={handleTabChange}
+              indicatorColor="primary"
+              textColor="primary"
+              variant="fullWidth"
+              sx={{ marginBottom: "20px" }}
+            >
+              <Tab label="Overview" />
+              <Tab label="Edit Profile" />
+            </Tabs>
+
+            {tabIndex === 0 && (
+              <>
+                <Typography
+                  sx={{
+                    fontSize: 22,
+                    fontWeight: "bold",
+                    mb: 2,
+                    paddingTop: "3cm",
+                  }}
+                >
+                  <span>About:</span>
                 </Typography>
-                <Typography sx={{ fontSize: 19, ml: 1 }}>
+                <Typography sx={{ fontSize: 21, mb: 4 }}>
+                  {theAuthor.nameEn} is a well-known author with contributions
+                  to both English and Arabic literature. With a passion for
+                  storytelling, {theAuthor.nameEn} has inspired readers through
+                  captivating biographies and thoughtful narratives in multiple
+                  languages.
+                </Typography>
+                <Box
+                  sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}
+                >
+                  <LibraryBooksIcon />
+                  <Typography sx={{ fontSize: 19, fontWeight: "bold" }}>
+                    Biography (English):
+                  </Typography>
+                </Box>
+                <Typography sx={{ fontSize: 19, mb: 4 }}>
                   {theAuthor.biographyEn}
                 </Typography>
-              </Box>
-
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 1,
-                  flexDirection: "column",
-                  textAlign: "right",
-                }}
-              >
-                <LibraryBooksIcon sx={{ mt: -6 }} />
-                <Typography sx={{ fontSize: 19, fontWeight: "bold" }}>
-                  السيرة الذاتية:
-                </Typography>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <LibraryBooksIcon />
+                  <Typography sx={{ fontSize: 19, fontWeight: "bold" }}>
+                    السيرة الذاتية (Arabic):
+                  </Typography>
+                </Box>
                 <Typography sx={{ fontSize: 19 }}>
                   {theAuthor.biographyAr}
                 </Typography>
+              </>
+            )}
+
+            {tabIndex === 1 && (
+              <Box sx={{ mt: 3, display: "flex", justifyContent: "center" }}>
+                <UpdateAuthor setIsEdit={setIsEdit} />
               </Box>
-            </Box>
-          </>
-        ) : (
-          <Box sx={{ mt: 3, display: "flex", justifyContent: "center" }}>
-            <UpdateAuthor setIsEdit={setIsEdit} />
+            )}
           </Box>
-        )}
-      </Box>
+        </>
+      ) : (
+        <Box sx={{ mt: 3, display: "flex", justifyContent: "center" }}>
+          <UpdateAuthor setIsEdit={setIsEdit} />
+        </Box>
+      )}
     </Box>
   );
 }
