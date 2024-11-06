@@ -50,7 +50,7 @@ export default function AddAuthors() {
   const [errors, setErrors] = useState({});
   const [open, setOpen] = useState(false);
   const [isCancelled, setIsCancelled] = useState(false);
-  const [uploadedImage, setUploadedImage] = useState("null");
+  const [uploadedImage, setUploadedImage] = useState(null);
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -93,7 +93,9 @@ export default function AddAuthors() {
       nameEn: "",
       biographyAr: "",
       biographyEn: "",
+      mediaId: "",
     });
+    setUploadedImage(null);
     setErrors({});
   };
 
@@ -102,7 +104,7 @@ export default function AddAuthors() {
     setOpen(true);
     resetForm();
     setTimeout(() => {
-      navigate("/author");
+      navigate("/articles/authors");
     }, 100);
   };
 
@@ -118,6 +120,7 @@ export default function AddAuthors() {
         "http://localhost:5000/api/upload/image",
         formData
       );
+      setUploadedImage(URL.createObjectURL(file)); 
       setFormData(prevFormData => ({
         ...prevFormData,
         mediaId: response.data.id
@@ -242,13 +245,7 @@ export default function AddAuthors() {
                 }}
               >
                 <Item elevation={0}>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
+                   <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                     <Badge
                       overlap="circular"
                       anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
@@ -256,26 +253,17 @@ export default function AddAuthors() {
                         <IconButton
                           id="delete-btn"
                           sx={{ height: "60px", width: "60px" }}
-                          // onClick={onDeleteFileHandler}
+                          onClick={() => setUploadedImage(null)}
                         >
                           <DeleteIcon sx={{ color: "white" }} />
                         </IconButton>
                       }
                     >
                       <Avatar
-                        // src={file}
-                        sx={{
-                          width: "300px  ",
-                          height: "300px",
-                          bgcolor: "#48184C",
-                        }}
+                        src={uploadedImage}
+                        sx={{ width: "300px", height: "300px", bgcolor: "#48184C" }}
                       >
-                        <FileUploader
-                          // onSelectFile={onSelectFileHandler}
-                          setFormData={setFormData}
-                          onSelectFile={handleFileUpload}
-                          icon={"upload"}
-                        />
+                        <FileUploader setFormData={setFormData} onSelectFile={handleFileUpload} icon={"upload"} />
                       </Avatar>
                     </Badge>
                   </Box>
