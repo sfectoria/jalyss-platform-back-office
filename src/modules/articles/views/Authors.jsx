@@ -14,6 +14,8 @@ import CustomNoResultsOverlay from "../../../style/NoResultStyle";
 import Item from "../../../style/ItemStyle";
 import { ip } from "../../../constants/ip";
 import axios from "axios";
+import CustomNoRowsOverlay from "../../../style/NoRowsStyle";
+
 
 export default function AuthorsList() {
   const [authors, setAuthors] = useState([]);
@@ -138,7 +140,7 @@ export default function AuthorsList() {
           </Box>
         </div>
 
-        <div style={{ width: "100%" }}>
+        <div style={{ width: "100%",height :500 }}>
           <DataGrid
             pageSizeOptions={[7, 10, 20]}
             sx={{
@@ -152,6 +154,7 @@ export default function AuthorsList() {
             rows={authors}
             columns={columns}
             slots={{
+              noRowsOverlay: CustomNoRowsOverlay,
               noResultsOverlay: CustomNoResultsOverlay,
               toolbar: GridToolbar,
             }}

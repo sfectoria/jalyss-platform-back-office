@@ -10,6 +10,7 @@ import Item from '../../../style/ItemStyle';
 import Avatar from '@mui/material/Avatar';
 import Stack from '@mui/material/Stack';
 import { deepOrange } from '@mui/material/colors';
+import CustomNoRowsOverlay from '../../../style/NoRowsStyle';
 
 export default function FournisseursList() {
   const { data } = useDemoData({
@@ -96,7 +97,7 @@ export default function FournisseursList() {
             <Typography variant="h5" mb={3} gutterBottom sx={{ fontWeight: 'bold' }}>
             Fournisseurs
         </Typography>
-    <div style={{width:'100%'}}>
+    <div style={{width:'100%', height : 500}}>
       <DataGrid
       pageSizeOptions={[7, 10,20]}
        sx={{
@@ -109,6 +110,7 @@ export default function FournisseursList() {
         rows={rows}
         columns={columns}
        slots={{
+        noRowsOverlay: CustomNoRowsOverlay,
         noResultsOverlay: CustomNoResultsOverlay,
         toolbar: GridToolbar,
       }} 

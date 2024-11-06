@@ -6,6 +6,7 @@ import AddBoxIcon from '@mui/icons-material/AddBox';
 import { useNavigate } from 'react-router-dom';
 import CustomNoResultsOverlay from '../style/NoResultStyle';
 import ImagePopUp from './ImagePopUp';
+import CustomNoRowsOverlay from '../style/NoRowsStyle';
 
 export default function SearchTableRes({handelRef,rows,handelAddItem}) {
   const navigate = useNavigate();
@@ -34,7 +35,7 @@ export default function SearchTableRes({handelRef,rows,handelAddItem}) {
 ];
 
   return (
-    <div style={{ width: '100%', color:'red' }}>
+    <div style={{ width: '100%', color:'red' , height : 500}}>
                
                   <DataGrid
                   rowHeight={70}
@@ -50,6 +51,7 @@ export default function SearchTableRes({handelRef,rows,handelAddItem}) {
                     rows={rows}
                     columns={columns}
                     slots={{
+                      noRowsOverlay: CustomNoRowsOverlay,
                       noResultsOverlay: CustomNoResultsOverlay,
                     }}
                     initialState={{

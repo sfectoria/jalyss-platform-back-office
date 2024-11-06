@@ -18,6 +18,7 @@ import Item from "../../../style/ItemStyle";
 import ImagePopUp from "../../../components/ImagePopUp";
 import axios from "axios";
 import { ip } from "../../../constants/ip";
+import CustomNoRowsOverlay from "../../../style/NoRowsStyle";
 
 
 export default function InventaireDetails() {
@@ -134,7 +135,7 @@ export default function InventaireDetails() {
         >
           Inventaire {info.name}
         </Typography>
-        <div style={{ width: "100%", color: "red" }}>
+        <div style={{ width: "100%", color: "red"  , height : 500 }}>
           <DataGrid
             rowHeight={70}
             pageSizeOptions={[7, 10, 20]}
@@ -156,6 +157,7 @@ export default function InventaireDetails() {
             paginationMode="server"
             rowCount={count}
             slots={{
+              noRowsOverlay: CustomNoRowsOverlay,
               noResultsOverlay: CustomNoResultsOverlay,
               toolbar: GridToolbar,
               pagination: CustomPagination,
