@@ -16,6 +16,7 @@ import { ip } from "../../../constants/ip";
 import axios from "axios";
 import CustomNoRowsOverlay from "../../../style/NoRowsStyle";
 
+
 export default function AuthorsList() {
   const [authors, setAuthors] = useState([]);
   const [confirmDelete, setConfirmDelete] = useState(false);
