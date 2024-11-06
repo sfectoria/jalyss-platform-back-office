@@ -20,11 +20,10 @@ import CustomNoRowsOverlay from '../../../style/NoRowsStyle';
 export default function ClientsList() {
   const [clients, setClients] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [confirmDelete, setConfirmDelete] = useState(false); // state for showing confirmation
-  const [clientToDelete, setClientToDelete] = useState(null); // store the client to delete
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [clientToDelete, setClientToDelete] = useState(null); 
 
   useEffect(() => {
-    // Fetch clients
     const fetchClients = async () => {
       try {
         const response = await axios.get(`${ip}/clients`);
@@ -34,7 +33,6 @@ export default function ClientsList() {
       }
     };
 
-    // Fetch categories
     const fetchCategories = async () => {
       try {
         const response = await axios.get(`${ip}/categoryClients`);
@@ -62,14 +60,14 @@ export default function ClientsList() {
 
   const handleDeleteClick = (id) => {
     setClientToDelete(id);
-    setConfirmDelete(true); // show the confirmation modal
+    setConfirmDelete(true); 
   };
 
   const handelDelete = async () => {
     try {
       await axios.delete(`${ip}/clients/${clientToDelete}`);
       setClients(clients.filter((client) => client.id !== clientToDelete));
-      setConfirmDelete(false); // hide confirmation modal after deleting
+      setConfirmDelete(false); 
     } catch (error) {
       console.log('Error deleting client:', error);
     }
@@ -133,8 +131,8 @@ export default function ClientsList() {
         <GridActionsCellItem
           icon={<DeleteOutlineIcon />}
           label="Delete"
-          onClick={() => handleDeleteClick(id)} // initiate delete confirmation
-          color="inherit"
+          onClick={() => handleDeleteClick(id)} 
+          style={{color:"red"}}
         />,
       ],
     },
