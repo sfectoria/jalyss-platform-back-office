@@ -3,7 +3,6 @@ import Box from "@mui/material/Box";
 import { DataGrid, GridToolbar, GridActionsCellItem } from "@mui/x-data-grid";
 import Typography from "@mui/material/Typography";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import Stack from "@mui/material/Stack";
 import Avatar from "@mui/material/Avatar";
 import { deepOrange } from "@mui/material/colors";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
@@ -12,6 +11,7 @@ import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
 import CustomNoResultsOverlay from "../../../style/NoResultStyle";
 import Item from "../../../style/ItemStyle";
+import Modal from "react-bootstrap/Modal";
 import { ip } from "../../../constants/ip";
 import axios from "axios";
 import CustomNoRowsOverlay from "../../../style/NoRowsStyle";
@@ -175,61 +175,46 @@ export default function AuthorsList() {
           />
         </div>
       </Item>
-
-      {confirmDelete && (
-        <Box
-          sx={{
-            backgroundColor: ["#dc2626"],
-            padding: "20px",
-            borderRadius: "8px",
-            boxShadow: "0 0 10px rgba(0,0,0,0.1)",
-            position: "fixed",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            zIndex: 1000,
-          }}
-        >
-          <Typography sx={{ fontSize: 20, mb: 2 }} style={{color:"white"}}>
-            Do you want to delete this author?
-          </Typography>
-          <span style={{ color: "white" }}>This action is irreversible!</span>
-
-          <Box sx={{ mt: 2, display: "flex", gap: 2 }}>
-            <Button
-              variant="contained"
-              color="error"
-              onClick={handleDelete}
-              sx={{
-                backgroundColor: "white",
-                color: "red",
-                "&:hover": {
-                  backgroundColor: "red",
-                  color: "white",
-                },
-              }}
-            >
-              Yes, Delete
-            </Button>
-
-            <Button
-              variant="contained"
-              color="error"
-              onClick={() => setConfirmDelete(false)}
-              sx={{
-                backgroundColor: "white",
-                color: "red",
-                "&:hover": {
-                  backgroundColor: "red",
-                  color: "white",
-                },
-              }}
-            >
-              Cancel
-            </Button>
-          </Box>
-        </Box>
-      )}
+      <Modal
+        show={confirmDelete}
+        onHide={() => setConfirmDelete(false)}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title style={{ color: "red" }}>Confirm Delete</Modal.Title>
+        </Modal.Header>
+        <Modal.Body style={{ color: "red" }}>
+          Are you sure you want to delete this author?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={() => setConfirmDelete(false)}
+            sx={{
+              "&:hover": {
+                backgroundColor: ["#22c55e"],
+                borderColor: "red",
+                color: "white",
+              },
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="danger"
+            onClick={handleDelete}
+            sx={{
+              "&:hover": {
+                backgroundColor: "red",
+                borderColor: "red",
+                color: "white",
+              },
+            }}
+          >
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Box>
   );
 }
