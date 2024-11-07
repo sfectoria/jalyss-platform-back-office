@@ -5,6 +5,7 @@ import DoneIcon from "@mui/icons-material/Done";
 import ClearIcon from "@mui/icons-material/Clear";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import CustomNoRowsOverlay from "../../../style/NoRowsStyle";
 
 export default function ArticleHistory() {
   const [history, setHistory] = useState([]);
@@ -116,7 +117,7 @@ export default function ArticleHistory() {
       <Typography variant="h5" mb={3} gutterBottom sx={{ fontWeight: "bold" }}>
         Historique des Articles
       </Typography>
-      <div style={{ width: "100%" }}>
+      <div style={{ width: "100%" , height : 500}}>
         <DataGrid
           pageSizeOptions={[7, 10, 20]}
           sx={{
@@ -130,6 +131,7 @@ export default function ArticleHistory() {
           rows={rows}
           columns={columns}
           slots={{
+            noRowsOverlay: CustomNoRowsOverlay,
             noResultsOverlay: () => <div>No data available</div>, // Overlay personnalisé quand il n'y a pas de données
             toolbar: GridToolbar,
           }}

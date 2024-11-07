@@ -8,6 +8,7 @@ import CustomNoResultsOverlay from "../../../style/NoResultStyle";
 import Item from "../../../style/ItemStyle";
 import { ip } from "../../../constants/ip";
 import axios from "axios";
+import CustomNoRowsOverlay from "../../../style/NoRowsStyle";
 
 const getPageFromUrl = () => {
   const params = new URLSearchParams(window.location.search);
@@ -120,6 +121,7 @@ const ChannelsList = () => {
             columns={columns}
             loading={loading}
             slots={{
+              noRowsOverlay: CustomNoRowsOverlay,
               noResultsOverlay: CustomNoResultsOverlay,
               toolbar: GridToolbar,
             }}
