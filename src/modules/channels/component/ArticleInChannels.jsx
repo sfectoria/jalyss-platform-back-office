@@ -56,7 +56,7 @@ export default function ArticleInChannels({ channelInfo }) {
   }
 
   const fetchData = async () => {
-    let params ={take:pageSize,skip:page*pageSize }
+    let params ={take:pageSize,skip:page*pageSize,notNullQuan:1 }
     const response = await axios.get(`${ip}/stocks/${channelInfo.idStock}`,{params});
     if (response.data.data) {
       const result = response.data.data.stockArticle.reduce(

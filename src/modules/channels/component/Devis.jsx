@@ -23,6 +23,7 @@ import CustomNoRowsOverlay from "../../../style/NoRowsStyle";
 export default function Devis() {
   const [isOpen, setIsOpen] = useState(false);
   const [rows, setRows] = useState([]);
+  const [modalId, setModalId] = useState([]);
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [count, setCount] = useState(0);
@@ -120,10 +121,15 @@ export default function Devis() {
 
   const columns = [
     { field: "date", headerName: "Date", width: 200 ,valueGetter:(value)=>{
-       return value?.slice(0,10)
+      const date = new Date(value);
+      if (date.toISOString().slice(0, 10) === new Date().toISOString().slice(0, 10))
+        return "Today";
+      else  
+      return date.toLocaleDateString('fr-TN');
     }},
     { field: "time", headerName: "Time", width: 200 ,valueGetter:(value,row)=>{
-       return row?.date?.slice(11,16)
+      const date = new Date(row?.date);
+      return date.toLocaleTimeString('fr-TN', { hour: '2-digit', minute: '2-digit'}); 
     }},
     {
       field: "customerName",
@@ -141,7 +147,10 @@ export default function Devis() {
       getActions: ({ id }) => [
         <GridActionsCellItem
           icon={<VisibilityIcon />}
-          onClick={openModal}
+          onClick={(e) => {
+            openModal(e);
+            setModalId(id);
+          }}
           label=""
         />,
       ],
@@ -262,30 +271,17 @@ export default function Devis() {
       />
       {isOpen && (
         <InvoiceModal
-          showModal={isOpen}
-          closeModal={closeModal}
-          info={{
-            // currentDate,
-            // dateOfIssue,
-            invoiceNumber: 1,
-            billTo: "hamadi",
-            billToEmail: "hamadi@gmail.com",
-            billToAddress: "win",
-            // billFrom,
-            // billFromEmail,
-            // billFromAddress,
-            // notes,
-            // total,
-            // subTotal,
-            // taxAmount,
-            // discountAmount
-          }}
-          items={items}
-          currency={0}
-          subTotal={0}
-          // taxAmount={0}
-          discountAmount={0}
-          total={0}
+        showModal={isOpen}
+        closeModal={closeModal}
+        modalId={modalId}
+        idChannel={param.id}
+        currency={"DT"}
+        subTotal={0}
+        // taxAmount={0}
+        discountAmount={0}
+        total={0}
+        mode="viewer"
+        type="devis"
         />
       )}
     </div>

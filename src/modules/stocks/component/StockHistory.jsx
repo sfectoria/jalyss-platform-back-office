@@ -49,7 +49,7 @@ export default function StockHistory() {
     setRows(responseHistory.data.data);
     setCount(responseHistory.data.count);
   };
-  console.log("rows", rows);
+  console.log("rows",rows);
 
   function Pagination({ onPageChange, className }) {
     const apiRef = useGridApiContext();
@@ -104,9 +104,11 @@ export default function StockHistory() {
       headerName: "Date",
       width: 150,
       valueGetter: (value) => {
-        if (value.slice(0, 10) === new Date().toISOString().slice(0, 10))
+        const date = new Date(value);
+        if (date.toISOString().slice(0, 10) === new Date().toISOString().slice(0, 10))
           return "Today";
-        else return new Date(value).toString().slice(0, 16);
+        else  
+        return date.toLocaleDateString('fr-TN');
       },
     },
     {
@@ -114,24 +116,22 @@ export default function StockHistory() {
       headerName: "Time",
       width: 100,
       valueGetter: (value, row) => {
-        return row.date.slice(
-          row.date.indexOf("T") + 1,
-          row.date.indexOf("T") + 6
-        );
+        const date = new Date(row?.date);
+        return date.toLocaleTimeString('fr-TN', { hour: '2-digit', minute: '2-digit'}); 
       },
     },
     {
-      field: "customerName",
-      headerName: "Customer",
+      field: "clientName",
+      headerName: "Client",
       width: 270,
-      renderCell: (params) => (<MouseOverPopover name={params.row.client?.fullName || "N/A" } />),
+      renderCell: (params) => (<MouseOverPopover name={params.row.client?.fullName} />),
     },
     {
       field: "fournisseurName",
       headerName: "Fournisseur",
       width: 250,
       renderCell: (params) => (
-        <MouseOverPopover name={params.row.provider?.nameProvider || "N/A"} />
+        <MouseOverPopover name={params.row.provider?.nameProvider} />
       ),
     },
     {

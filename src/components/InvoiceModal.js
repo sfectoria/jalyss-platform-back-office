@@ -57,9 +57,10 @@ const InvoiceModal = ({
         fetchModalDataReceipt();
       } else if (type === "return") {
         fetchModalDataReturn();
-      }
-       else if (type === "command") {
+      } else if (type === "command") {
         fetchModalDataCommand();
+      } else if (type === "devis") {
+        fetchModalDataDevis();
       }
     } else if (mode === "creation") {
       setBillTo({
@@ -247,13 +248,14 @@ const InvoiceModal = ({
     const response = await axios.get(`${ip}/return-note/${modalId}`);
     let e = response.data;
     console.log(e);
-    setTitle('Bon de Retour')
-    setStatus('Vente')
+    setTitle("Bon de Retour");
+    setStatus("Vente");
     setDate(e.returnDate);
-    setBillFrom({ name: e?.client?.fullName,
-      email : e?.client?.email,
-      address : e?.client?.address,
-     });
+    setBillFrom({
+      name: e?.client?.fullName,
+      email: e?.client?.email,
+      address: e?.client?.address,
+    });
     setItems(
       response.data.returnNoteLine.map((el) => {
         console.log(el);
@@ -274,18 +276,20 @@ const InvoiceModal = ({
     const response = await axios.get(`${ip}/purchaseOrder/${modalId}`);
     let e = response.data;
     console.log(e);
-    setTitle('Bon de Commande')
-    setStatus('Vente')
+    setTitle("Bon de Commande");
+    setStatus("Vente");
     setDate(e.date);
-    setBillFrom({ name: e?.client?.fullName,
-      email : e?.client?.email,
-      address : e?.client?.address,
-     });
-    setBillTo({ name: e?. salesChannels?.name,
-      email : "jalyss@gmail.com",
-      address : e?. salesChannels?.region,
-     });
-     setTotal(e.totalAmount||0)
+    setBillFrom({
+      name: e?.client?.fullName,
+      email: e?.client?.email,
+      address: e?.client?.address,
+    });
+    setBillTo({
+      name: e?.salesChannels?.name,
+      email: "jalyss@gmail.com",
+      address: e?.salesChannels?.region,
+    });
+    setTotal(e.totalAmount || 0);
     setItems(
       response.data.purchaseOrderLine.map((el) => {
         console.log(el);
@@ -300,6 +304,40 @@ const InvoiceModal = ({
         return el;
       })
     );
+  };
+
+  const fetchModalDataDevis = async () => {
+    const response = await axios.get(`${ip}/estimate/${modalId}`);
+    let e = response.data;
+    console.log(e);
+    setTitle("Devis");
+    setStatus("Vente");
+    setDate(e.date);
+    setBillTo({
+      name: e?.client?.fullName,
+      email: e?.client?.email,
+      address: e?.client?.address,
+    });
+    setBillFrom({
+      name: e?.salesChannel?.name,
+      email: "jalyss@gmail.com",
+      address: e?.salesChannel?.region,
+    });
+    setItems(
+      response.data.estimateLine.map((el) => {
+        console.log(el);
+        el.author = el?.Article?.articleByAuthor.length
+          ? el?.Article?.articleByAuthor[0]?.author?.nameAr
+          : null;
+        el.publisher = el?.Article?.articleByPublishingHouse.length
+          ? el?.Article?.articleByPublishingHouse[0]?.publishingHouse?.nameAr
+          : null;
+        el.image = el?.Article?.cover?.path;
+        el.name = el?.Article?.title;
+        return el;
+      })
+    );
+    setTotal(e.totalAmount)
   };
 
   const handleFinishSale = async () => {
@@ -401,11 +439,10 @@ const InvoiceModal = ({
                 <div>{billFrom?.email || ""}</div>
               </Col>
               <Col md={4}>
-                <div className="fw-bold mt-2">Date Of Issue:</div>
+                <div className="fw-bold mt-2">Date :</div>
                 <div>{date.slice(0, 10) || ""}</div>
                 <div>
-                  {date.slice(date.indexOf("T") + 1, date.indexOf("T") + 6) ||
-                    ""}
+                  {new Date(date).toLocaleTimeString('fr-TN', { hour: '2-digit', minute: '2-digit'})}
                 </div>
               </Col>
             </Row>

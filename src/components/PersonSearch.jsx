@@ -74,8 +74,8 @@ const PersonSearch = ({
       type === "F" ||
       type === "Ticket" ||
       type === "Devis" ||
-      type === "BC" ||
-      type === "BRe"
+      type === "BC"
+      
     ) {
       if (reff === "resv") {
         const response = await axios.get(`${ip}/clients`);
@@ -83,6 +83,24 @@ const PersonSearch = ({
         setRows(response.data);
       }
       if (reff === "sndr") {
+        const response = await axios.get(`${ip}/selling/getAll`);
+        let dataStocks = response.data.map((e) => {
+          let { id, name, location, ...rest } = e;
+          let fullName = name;
+          let address = location;
+          let email = "jalyss@gmail.com";
+          return { id, fullName, address, email, ...rest };
+        });
+        setRows(dataStocks);
+      }
+    }
+    else if (type === "BRe"){
+      if (reff === "sndr") {
+        const response = await axios.get(`${ip}/clients`);
+        console.log(response.data);
+        setRows(response.data);
+      }
+      if (reff === "resv") {
         const response = await axios.get(`${ip}/selling/getAll`);
         let dataStocks = response.data.map((e) => {
           let { id, name, location, ...rest } = e;
