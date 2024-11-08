@@ -15,6 +15,7 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import CustomNoResultsOverlay from "../../../style/NoResultStyle";
 import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
+import CustomNoRowsOverlay from "../../../style/NoRowsStyle";
 
 export default function StockArticles() {
   const [data, setData] = useState([]);
@@ -124,7 +125,7 @@ export default function StockArticles() {
     },
   ];
   return (
-    <div style={{ width: "100%", color: "red" }}>
+    <div style={{ width: "100%", color: "red"  , height : 500 }}>
       <DataGrid
         rowHeight={70}
         pageSizeOptions={[7, 10, 20]}
@@ -146,6 +147,7 @@ export default function StockArticles() {
         paginationMode="server"
         rowCount={count}
         slots={{
+          noRowsOverlay: CustomNoRowsOverlay,
           noResultsOverlay: CustomNoResultsOverlay,
           toolbar: GridToolbar,
           pagination: CustomPagination,

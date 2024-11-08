@@ -17,6 +17,7 @@ import CustomNoResultsOverlay from "../../../style/NoResultStyle";
 import ImagePopUp from "../../../components/ImagePopUp";
 import axios from "axios";
 import { ip } from "../../../constants/ip";
+import CustomNoRowsOverlay from "../../../style/NoRowsStyle";
 
 export default function ArticleInChannels({ channelInfo }) {
   const [rows, setRows] = useState([]);
@@ -223,7 +224,7 @@ export default function ArticleInChannels({ channelInfo }) {
   ];
 
   return (
-    <div style={{ width: "100%", color: "red" }}>
+    <div style={{ width: "100%", color: "red" , height : 500}}>
       <DataGrid
         rowHeight={70}
         pageSizeOptions={[7, 10, 20]}
@@ -245,6 +246,7 @@ export default function ArticleInChannels({ channelInfo }) {
         paginationMode="server"
         rowCount={count}
         slots={{
+          noRowsOverlay: CustomNoRowsOverlay,
           noResultsOverlay: CustomNoResultsOverlay,
           toolbar: GridToolbar,
           pagination: CustomPagination,

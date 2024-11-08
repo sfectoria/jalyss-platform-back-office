@@ -21,6 +21,7 @@ import SaveDialog from '../component/SaveDialog';
 import { ip } from '../../../constants/ip';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import CustomNoRowsOverlay from '../../../style/NoRowsStyle';
 
 
 export default function NewInventaireTable() {
@@ -252,7 +253,7 @@ export default function NewInventaireTable() {
       }}
     >
      { showAlert&&<AlertAdding showAlert={showAlert} handelShow={handelShow} msg={msg} status={'error'}/>}
-      <Box >
+      <Box  style = {{height : 500}}  >
         <DataGrid
         rowHeight={80}
           pageSizeOptions={[7, 10, 20]}
@@ -275,6 +276,7 @@ export default function NewInventaireTable() {
           onRowEditStop={handleRowEditStop}
           processRowUpdate={processRowUpdate}
           slots={{
+            noRowsOverlay: CustomNoRowsOverlay,
             noResultsOverlay: CustomNoResultsOverlay,
             toolbar: QuickSearchToolbar,
             pagination: CustomPagination,

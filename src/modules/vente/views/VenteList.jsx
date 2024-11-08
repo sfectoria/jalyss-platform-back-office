@@ -21,6 +21,7 @@ import { useParams } from "react-router-dom";
 import Item from "../../../style/ItemStyle";
 import { Box, Typography } from "@mui/material";
 import AddButton from "../../../components/AddOp";
+import CustomNoRowsOverlay from "../../../style/NoRowsStyle";
 
 function VentList() {
   const [isOpen, setIsOpen] = useState(false);
@@ -277,6 +278,7 @@ function VentList() {
             paginationMode="server"
             rowCount={count}
             slots={{
+              noRowsOverlay: CustomNoRowsOverlay,
               noResultsOverlay: CustomNoResultsOverlay,
               toolbar: GridToolbar,
               pagination: CustomPagination,

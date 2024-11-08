@@ -5,6 +5,7 @@ import CustomNoResultsOverlay from '../../../style/NoResultStyle';
 import DoneIcon from '@mui/icons-material/Done';
 import ClearIcon from '@mui/icons-material/Clear';
 import InvoiceModal from '../../../components/InvoiceModal';
+import CustomNoRowsOverlay from '../../../style/NoRowsStyle';
 
 export default function ClientHistory() {
   const [isOpen, setIsOpen] = useState(false);
@@ -79,7 +80,7 @@ export default function ClientHistory() {
   ];
 
   return (
-              <div style={{ width: '100%',marginTop:70 }}>
+              <div style={{ width: '100%',marginTop:70 , height : 500}}>
                   <DataGrid
                     pageSizeOptions={[7, 10, 20]}
                     sx={{
@@ -93,6 +94,7 @@ export default function ClientHistory() {
                     rows={rows}
                     columns={columns}
                     slots={{
+                      noRowsOverlay: CustomNoRowsOverlay,
                       noResultsOverlay: CustomNoResultsOverlay,
                       toolbar: GridToolbar,
                     }}

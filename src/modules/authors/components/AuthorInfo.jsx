@@ -1,12 +1,6 @@
 import React, { useEffect, useState } from "react";
-
-
-import Stack from "@mui/material/Stack";
-
+import { Box, Typography, Avatar, Tab, Tabs } from "@mui/material";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
-import ModeEditOutlineIcon from "@mui/icons-material/ModeEditOutline";
-import { Box, Typography, Avatar, Button, Tab, Tabs } from "@mui/material";
-
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { ip } from "../../../constants/ip";
@@ -40,21 +34,28 @@ export default function AuthorDetails() {
     <Box sx={{ mx: 3, my: 6, display: "flex", justifyContent: "center" }}>
       {!isEdit ? (
         <>
-
-          <Box
-            sx={{
-              flex: 1,
-              p: 3,
-              border: "2px solid #e0e0e0",
-              borderRadius: 2,
-              textAlign: "center",
-              maxWidth: "600px",
-              width: "100%",
-              maxHeight: "400px",
-              height: "100%",
-            }}
-          >
-          {theAuthor?.Media?.path ? (
+          {tabIndex === 0 && (
+            <Box
+              sx={{
+                flex: 1,
+                p: 3,
+                border: "2px solid #e0e0e0",
+                borderRadius: 2,
+                textAlign: "center",
+                maxWidth: "600px",
+                width: "100%",
+                maxHeight: "400px",
+                height: "100%",
+              }}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                {theAuthor?.Media?.path ? (
                   <Avatar
                     alt="author avatar"
                     sx={{
@@ -80,15 +81,16 @@ export default function AuthorDetails() {
                       : "?"}
                   </Avatar>
                 )}
+              </Box>
 
-            <Typography sx={{ fontSize: 20, fontWeight: "bold", mt: 2 }}>
-              {theAuthor.nameEn}
-            </Typography>
-            <Typography sx={{ fontSize: 26, fontWeight: "bold", mt: 1 }}>
-              {theAuthor.nameAr}
-            </Typography>
-          </Box>
-
+              <Typography sx={{ fontSize: 20, fontWeight: "bold", mt: 2 }}>
+                {theAuthor.nameEn}
+              </Typography>
+              <Typography sx={{ fontSize: 26, fontWeight: "bold", mt: 1 }}>
+                {theAuthor.nameAr}
+              </Typography>
+            </Box>
+          )}
           <Box sx={{ width: "30px" }} />
           <Box
             sx={{
@@ -101,7 +103,6 @@ export default function AuthorDetails() {
               width: "100%",
             }}
           >
-
             <Tabs
               value={tabIndex}
               onChange={handleTabChange}
@@ -113,7 +114,6 @@ export default function AuthorDetails() {
               <Tab label="Overview" />
               <Tab label="Edit Profile" />
             </Tabs>
-
             {tabIndex === 0 && (
               <>
                 <Typography
@@ -127,15 +127,13 @@ export default function AuthorDetails() {
                   <span>About:</span>
                 </Typography>
                 <Typography sx={{ fontSize: 21, mb: 4 }}>
-                  {theAuthor.nameEn} is a well-known author with contributions
-                  to both English and Arabic literature. With a passion for
+                  {theAuthor.nameEn} is a well-known author with contributions to
+                  both English and Arabic literature. With a passion for
                   storytelling, {theAuthor.nameEn} has inspired readers through
                   captivating biographies and thoughtful narratives in multiple
                   languages.
                 </Typography>
-                <Box
-                  sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}
-                >
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
                   <LibraryBooksIcon />
                   <Typography sx={{ fontSize: 19, fontWeight: "bold" }}>
                     Biography (English):

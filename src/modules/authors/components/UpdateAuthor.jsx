@@ -15,17 +15,16 @@ import {
   ThemeProvider,
   Typography,
 } from "@mui/material";
-import DeleteIcon from '@mui/icons-material/Delete';
-import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close';
+import DeleteIcon from "@mui/icons-material/Delete";
+import CheckIcon from "@mui/icons-material/Check";
+import CloseIcon from "@mui/icons-material/Close";
 import React, { useEffect, useState } from "react";
 import Item from "../../../style/ItemStyle";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { ip } from "../../../constants/ip";
 
-
-export default function UpdateAuthor({ setIsEdit }) {
+export default function UpdateAuthor({ setIsEdit, setIsEditMode }) {
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -46,8 +45,10 @@ export default function UpdateAuthor({ setIsEdit }) {
     nameEn: "",
     biographyAr: "",
     biographyEn: "",
+    mediaId: null,
   });
 
+  const [uploadedImage, setUploadedImage] = useState(null);
   const [errors, setErrors] = useState({});
   const [open, setOpen] = useState(false);
   const [isCancelled, setIsCancelled] = useState(false);
@@ -62,7 +63,11 @@ export default function UpdateAuthor({ setIsEdit }) {
           nameEn: authorData.nameEn || "",
           biographyAr: authorData.biographyAr || "",
           biographyEn: authorData.biographyEn || "",
+          mediaId: null,
         });
+        if (authorData.mediaId) {
+          setUploadedImage(`${ip}/media/${authorData.mediaId}`);
+        }
       } catch (error) {
         console.error("Error fetching author data:", error);
       }
@@ -77,10 +82,10 @@ export default function UpdateAuthor({ setIsEdit }) {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.nameAr) newErrors.nameAr = "nameAr is required";
-    if (!formData.nameEn) newErrors.nameEn = "nameEn is required";
-    if (!formData.biographyAr) newErrors.biographyAr = "biographyAr is required";
-    if (!formData.biographyEn) newErrors.biographyEn = "biographyEn is required";
+    if (!formData.nameAr) newErrors.nameAr = "Name in Arabic is required";
+    if (!formData.nameEn) newErrors.nameEn = "Name in English is required";
+    if (!formData.biographyAr) newErrors.biographyAr = "Biography in Arabic is required";
+    if (!formData.biographyEn) newErrors.biographyEn = "Biography in English is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -89,8 +94,11 @@ export default function UpdateAuthor({ setIsEdit }) {
     e.preventDefault();
     if (validateForm()) {
       try {
-        const response = await axios.patch(`${ip}/author/${id}`, formData);
-        console.log("Response:", response.data);
+        const updatedData = { ...formData };
+        if (!uploadedImage) {
+          updatedData.mediaId = null;
+        }
+        const response = await axios.patch(`${ip}/author/${id}`, updatedData);
         setIsCancelled(false);
         setOpen(true);
         setTimeout(() => {
@@ -110,7 +118,9 @@ export default function UpdateAuthor({ setIsEdit }) {
       nameEn: "",
       biographyAr: "",
       biographyEn: "",
+      mediaId: null,
     });
+    setUploadedImage(null);
     setErrors({});
   };
 
@@ -119,10 +129,40 @@ export default function UpdateAuthor({ setIsEdit }) {
     setOpen(true);
     resetForm();
     setIsEdit(false);
+    navigate("/articles/authors");
   };
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const handleFileUpload = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append("image", file);
+      try {
+        const response = await axios.post(
+          "http://localhost:5000/api/upload/image",
+          formData
+        );
+        setUploadedImage(URL.createObjectURL(file));
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          mediaId: response.data.id,
+        }));
+      } catch (error) {
+        console.error("Error uploading file:", error);
+      }
+    }
+  };
+
+  const handleDeleteImage = () => {
+    setUploadedImage(null);
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      mediaId: null,
+    }));
   };
 
   return (
@@ -131,142 +171,176 @@ export default function UpdateAuthor({ setIsEdit }) {
         elevation={3}
         sx={{
           backgroundColor: "transparent",
-          border: "1px solid transparent",
+          border: "1px solid #ddd",
           borderRadius: 2,
-          padding: 5,
-          width: "1200px", 
+          padding: { xs: 3, sm: 5 },
+          maxWidth: "800px",
+          margin: "0 auto",
         }}
       >
-        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", bgcolor: "transparent", borderRadius: 2 }}>
-          <Typography variant="h2" color="#48184C" gutterBottom>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            bgcolor: "transparent",
+            borderRadius: 2,
+          }}
+        >
+          <Typography variant="h4" color="#48184C" gutterBottom>
             Author Information
           </Typography>
 
-          <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", marginBottom: 3 }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              marginBottom: 3,
+              position: "relative",
+            }}
+          >
             <Badge
               overlap="circular"
               anchorOrigin={{
                 vertical: "bottom",
-                horizontal: "right", 
+                horizontal: "right",
               }}
               badgeContent={
-                <IconButton id="delete-btn" sx={{ height: "60px", width: "60px", bgcolor: "#48184C" }}>
-                  <DeleteIcon sx={{ color: "white" }} />
+                <IconButton
+                  sx={{
+                    bgcolor: "#48184C",
+                    color: "white",
+                    width: "30px",
+                    height: "30px",
+                    "&:hover": { bgcolor: "#3a143e" },
+                  }}
+                  onClick={handleDeleteImage}
+                >
+                  <DeleteIcon fontSize="small" />
                 </IconButton>
               }
             >
-              <Avatar
-                sx={{
-                  width: "100px", 
-                  height: "100px",
-                  bgcolor: "#48184C",
-                }}
-              />
+              <label htmlFor="file-upload" style={{ cursor: "pointer" }}>
+                <Avatar
+                  src={uploadedImage || null}
+                  sx={{
+                    width: 80,
+                    height: 80,
+                    bgcolor: "#48184C",
+                  }}
+                />
+              </label>
             </Badge>
           </Box>
 
-          <form onSubmit={handleSubmit} className="emp-form" style={{ backgroundColor: "transparent", width: "100%" }}>
+          <input
+            accept="image/*"
+            style={{ display: "none" }}
+            id="file-upload"
+            type="file"
+            onChange={handleFileUpload}
+          />
+
+          <form onSubmit={handleSubmit} style={{ width: "100%" }}>
             <Grid container spacing={2}>
-              {['nameAr', 'nameEn', 'biographyAr', 'biographyEn'].map((field, index) => (
-                <Grid item xs={12} key={index} sx={{ display: "flex", alignItems: "center" }}>
-                  <Typography
-                    variant="body1"
-                    sx={{
-                      flex: "0 0 150px",
-                      color: "#48184C",
-                      marginRight: 2,
-                    }}
-                  >
-                    {field.charAt(0).toUpperCase() + field.slice(1)}:
-                  </Typography>
-                  <Item elevation={0} sx={{ flexGrow: 1 }}>
+              {["nameAr", "nameEn", "biographyAr", "biographyEn"].map(
+                (field, index) => (
+                  <Grid item xs={12} key={index}>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: "#48184C",
+                        fontWeight: "bold",
+                        marginBottom: 0.5,
+                      }}
+                    >
+                      {field.charAt(0).toUpperCase() + field.slice(1)}:
+                    </Typography>
                     <TextField
-                      required
-                      margin="normal"
                       fullWidth
                       id={field}
                       name={field}
-                      inputProps={{
-                        maxLength: 20,
-                      }}
+                      inputProps={{ maxLength: 50 }}
                       value={formData[field]}
                       onChange={handleInputChange}
                       error={!!errors[field]}
                       helperText={errors[field]}
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          borderRadius: 2,
+                          bgcolor: "white",
+                        },
+                      }}
                     />
-                  </Item>
-                </Grid>
-              ))}
+                  </Grid>
+                )
+              )}
               <Grid item xs={12}>
-                <Item
-                  elevation={0}
+                <Box
                   sx={{
                     display: "flex",
-                    justifyContent: "start",
-                    gap: "14px",
+                    justifyContent: "flex-end",
+                    gap: 2,
+                    marginTop: 2,
                   }}
                 >
-                     <IconButton
-      onClick={handleSubmit}
-      type="submit"
-      sx={{
-        bgcolor: "#48184C",
-        color: "white",
-        "&:hover": {
-          bgcolor: "#48184C", 
-        },
-      }}
-    >
-
+                  <IconButton
+                    onClick={handleSubmit}
+                    type="submit"
+                    sx={{
+                      bgcolor: "#48184C",
+                      color: "white",
+                      "&:hover": { bgcolor: "#3a143e" },
+                    }}
+                  >
                     <CheckIcon />
                   </IconButton>
                   <IconButton
-      onClick={handleCancel}
-      sx={{
-        bgcolor: "error.main",
-        color: "white",
-        "&:hover": {
-          bgcolor: "error.main", 
-        },
-      }}
-    >
+                    onClick={handleCancel}
+                    sx={{
+                      bgcolor: "error.main",
+                      color: "white",
+                      "&:hover": { bgcolor: "error.dark" },
+                    }}
+                  >
                     <CloseIcon />
                   </IconButton>
-                </Item>
+                </Box>
               </Grid>
             </Grid>
           </form>
         </Box>
 
         <Dialog
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-          sx={{
-            "& .MuiPaper-root": {
-              borderColor: isCancelled ? "error.main" : "success.main",
-              borderWidth: 3,
-              borderStyle: "solid",
-              bgcolor: isCancelled ? "error.light" : "success.light",
-            },
-          }}
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        sx={{
+          "& .MuiPaper-root": {
+            borderColor: isCancelled ? "error.main" : "success.main",
+            borderWidth: 3,
+            borderStyle: "solid",
+            bgcolor: isCancelled ? "error.light" : "success.light",
+          },
+        }}
+      >
+        <DialogTitle
+          id="alert-dialog-title"
+          color={"white"}
+          sx={{ fontWeight: "bold" }}
         >
-          <DialogTitle
-            id="alert-dialog-title"
-            color={"white"}
-            sx={{ fontWeight: "bold" }}
-          >
-            {isCancelled ? "Changes cancelled!" : "Submitted successfully!"}
-          </DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description" color={"white"}>
-              {isCancelled
-                ? "The changes you have made are not saved"
-                : "The changes you have made are saved"}
-            </DialogContentText>
-          </DialogContent>
-        </Dialog>
+          {isCancelled ? "Changes cancelled!" : "Updated successfully!"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description" color={"white"}>
+            {isCancelled
+              ? "The changes you have made are not saved"
+              : "The changes you have made are saved "}
+          </DialogContentText>
+        </DialogContent>
+      </Dialog>
       </Paper>
     </ThemeProvider>
   );

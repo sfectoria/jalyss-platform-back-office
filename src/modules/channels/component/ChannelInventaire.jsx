@@ -4,6 +4,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import CustomNoResultsOverlay from "../../../style/NoResultStyle";
 import InvoiceModal from "../../../components/InvoiceModal";
 import { useNavigate } from "react-router-dom";
+import CustomNoRowsOverlay from "../../../style/NoRowsStyle";
 export default function ChannelInventaire() {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
@@ -172,7 +173,7 @@ export default function ChannelInventaire() {
   ];
 
   return (
-    <div style={{ width: "100%" }}>
+    <div style={{ width: "100%" , height : 500}}>
       <DataGrid
         pageSizeOptions={[7, 10, 20]}
         sx={{
@@ -186,6 +187,7 @@ export default function ChannelInventaire() {
         rows={rows}
         columns={columns}
         slots={{
+          noRowsOverlay: CustomNoRowsOverlay,
           noResultsOverlay: CustomNoResultsOverlay,
           toolbar: GridToolbar,
         }}

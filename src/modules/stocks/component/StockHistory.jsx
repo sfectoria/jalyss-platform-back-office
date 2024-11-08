@@ -18,6 +18,7 @@ import MouseOverPopover from "./cosOrForPopUp";
 import { ip } from "../../../constants/ip";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import CustomNoRowsOverlay from "../../../style/NoRowsStyle";
 
 export default function StockHistory() {
   const [rows, setRows] = useState([]);
@@ -188,7 +189,7 @@ export default function StockHistory() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      <div style={{ flexGrow: 1 }}>
+      <div style={{ flexGrow: 1 , height : 500  }}>
         <DataGrid
           pageSizeOptions={[7, 10, 20]}
           sx={{
@@ -209,6 +210,7 @@ export default function StockHistory() {
           paginationMode="server"
           rowCount={count}
           slots={{
+            noRowsOverlay: CustomNoRowsOverlay,
             noResultsOverlay: CustomNoResultsOverlay,
             toolbar: GridToolbar,
             pagination: CustomPagination,
