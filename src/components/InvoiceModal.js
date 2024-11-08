@@ -439,11 +439,10 @@ const InvoiceModal = ({
                 <div>{billFrom?.email || ""}</div>
               </Col>
               <Col md={4}>
-                <div className="fw-bold mt-2">Date Of Issue:</div>
+                <div className="fw-bold mt-2">Date :</div>
                 <div>{date.slice(0, 10) || ""}</div>
                 <div>
-                  {date.slice(date.indexOf("T") + 1, date.indexOf("T") + 6) ||
-                    ""}
+                  {new Date(date).toLocaleTimeString('fr-TN', { hour: '2-digit', minute: '2-digit'})}
                 </div>
               </Col>
             </Row>

@@ -15,7 +15,7 @@ const ArticleInfo = forwardRef(({ onSubmit }, ref) => {
   const [articlesNames, setArticlesNames] = useState([]);
   const [articlesAuthors, setArticlesAuthors] = useState([]);
   // const [articlesAuthors, setArticlesAuthors] = useState([]);
-  const [articlesPublishers, setArticlesPublishers] = useState([]);
+  const [articlesPubHouses, setArticlesPubHouses] = useState([]);
   const [nameText, setNameText] = useState("");
   const [authorText, setAuthorText] = useState("");
   const [publisherText, setPublisherText] = useState("");
@@ -74,9 +74,18 @@ const ArticleInfo = forwardRef(({ onSubmit }, ref) => {
       console.error("Error fetching authors data:", error);
     }
   };
+  const fetchPublishingHouses = async () => {
+    try {
+      const response = await axios.get(`${ip}/publishingHouses/all`);
+      setArticlesPubHouses(response.data);
+    } catch (error) {
+      console.error("Error fetching authors data:", error);
+    }
+  };
 
   useEffect(() => {
     fetchAuthors();
+    fetchPublishingHouses()
   }, []);
   // const retrieveFileFromLocalStorage = () => {
   //   const storedFile = localStorage.getItem('uploadedFile'); // Assurez-vous d'utiliser la clé correcte
@@ -193,14 +202,15 @@ const ArticleInfo = forwardRef(({ onSubmit }, ref) => {
           value={authorText}
           renderInput={(params) => <TextField {...params} label="Author" required />}
         />
-        <TextField
-          required
-          id="outlined-required"
-          label="Publisher"
-          sx={{ width: "40%" }}
+      <Autocomplete
+          freeSolo
+          sx={{ width: "47%" }}
+          options={articlesPubHouses.map((option) => option.nameAr)}  
+          onInputChange={(e, value) => setPublisherText(value)}
           value={publisherText}
-          onChange={(e) => setPublisherText(e.target.value)}
+          renderInput={(params) => <TextField {...params} label="Publishing Houses" required />}
         />
+   
       </Box>
 
       <TextField

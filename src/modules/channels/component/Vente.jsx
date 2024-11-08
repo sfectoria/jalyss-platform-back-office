@@ -130,7 +130,7 @@ export default function Vente() {
       headerName: "Time",
       width: 100,
       valueGetter: (value, row) => {
-        const date = new Date(row?.date);
+        const date = new Date(row?.exitDate);
         return date.toLocaleTimeString('fr-TN', { hour: '2-digit', minute: '2-digit'}); 
       },
     },

@@ -48,7 +48,7 @@ export default function StockHistory() {
     setRows(responseHistory.data.data);
     setCount(responseHistory.data.count);
   };
-  console.log("rows", rows);
+  console.log("rows",rows);
 
   function Pagination({ onPageChange, className }) {
     const apiRef = useGridApiContext();
@@ -120,17 +120,17 @@ export default function StockHistory() {
       },
     },
     {
-      field: "customerName",
-      headerName: "Customer",
+      field: "clientName",
+      headerName: "Client",
       width: 270,
-      renderCell: (params) => (<MouseOverPopover name={params.row.client?.fullName || "N/A" } />),
+      renderCell: (params) => (<MouseOverPopover name={params.row.client?.fullName} />),
     },
     {
       field: "fournisseurName",
       headerName: "Fournisseur",
       width: 250,
       renderCell: (params) => (
-        <MouseOverPopover name={params.row.provider?.nameProvider || "N/A"} />
+        <MouseOverPopover name={params.row.provider?.nameProvider} />
       ),
     },
     {

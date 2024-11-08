@@ -143,7 +143,7 @@ const InvoiceForm = () => {
 
         const obj = {
           exitNoteId: 0,
-          [reqClient]: billToId,
+          [reqClient]: billToId?billToId:null,
           [reqChannel]: billFromId,
           [reqDate]: new Date(),
           totalAmount: parseFloat(total),
@@ -333,6 +333,7 @@ const InvoiceForm = () => {
           lines: itemsWithIdArticle,
           numReceiptNote: 0,
         };
+        billFromId&&(obj['idProvider']=billFromId)
         const response = await axios.post(`${ip}/receiptNote/create_rn`, obj);
         if (response && response.status === 201) {
           setTimeout(() => navigate(-1), 2500);
@@ -379,6 +380,8 @@ const InvoiceForm = () => {
           idStock: billToId,
           receiptNoteId: 0,
         };
+        console.log(obj);
+        
         const response = await axios.post(`${ip}/return-note/createRN`, obj);
 
         if (response && response.status === 201) {
