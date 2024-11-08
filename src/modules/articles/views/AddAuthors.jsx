@@ -44,7 +44,7 @@ export default function AddAuthors() {
     nameEn: "",
     biographyAr: "",
     biographyEn: "",
-    mediaId:""
+    mediaId:null
   });
 
   const [errors, setErrors] = useState({});
@@ -93,7 +93,7 @@ export default function AddAuthors() {
       nameEn: "",
       biographyAr: "",
       biographyEn: "",
-      mediaId: "",
+      mediaId:null,
     });
     setUploadedImage(null);
     setErrors({});
