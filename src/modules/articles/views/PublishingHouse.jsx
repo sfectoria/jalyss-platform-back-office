@@ -211,6 +211,14 @@ export default function PublishingHousesList() {
         }}
       >
         <Item sx={{ pt: 7, pb: 1, px: 7, borderRadius: 10 }} elevation={5}>
+        <Box
+  sx={{
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between", 
+    mb: 3,
+  }}
+>
           <Typography
             variant="h5"
             mb={3}
@@ -229,7 +237,8 @@ export default function PublishingHousesList() {
             }}
             onClick={() => navigate("/articles/add-publishingHouses")}
           >
-            <MdOutlinePersonAdd size={40} />
+            <MdOutlinePersonAdd size={53} />
+            </Box>
           </Box>
           <div style={{ width: "100%", color: "red", height: 500 }}>
             <DataGrid
