@@ -115,7 +115,7 @@ const ArticleInfo = forwardRef(({ onSubmit }, ref) => {
         code: barcode,
         longDescriptionEn: description,
         articleByAuthor: [{ nameAr: authorText }],
-        articleByPublishingHouse: [{ nameAr: publisherText }],
+        articleByPublishingHouse: [{ nameEn: publisherText }],
         articleByCategory: selectedCategories.map((cat) => ({ name: cat.name })),
       };
   
