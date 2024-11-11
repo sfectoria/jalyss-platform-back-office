@@ -212,21 +212,12 @@ export default function PublishingHouseDetails() {
             sx={{
               display: "flex",
               flexDirection: "column",
-              alignItems: "center",
               gap: 2,
             }}
           >
             <Badge
               overlap="circular"
               anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-              badgeContent={
-                <IconButton
-                  sx={{ bgcolor: "#48184C", color: "white" }}
-                  onClick={handleEdit}
-                >
-                  <EditIcon />
-                </IconButton>
-              }
             >
               <Avatar
                 src={uploadedImage || logoPath}
@@ -267,7 +258,10 @@ export default function PublishingHouseDetails() {
                   badgeContent={
                     <IconButton
                       component="label"
-                      sx={{ bgcolor: "#48184C", color: "white" }}
+                      sx={{ bgcolor: "#48184C", color: "white" ,
+                        "&:hover": {
+                          bgcolor: "#6A1B9A"},
+                      }}
                     >
                       <input
                         hidden
