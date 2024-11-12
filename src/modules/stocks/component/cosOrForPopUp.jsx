@@ -64,7 +64,6 @@ export default function MouseOverPopoverFour({ name }) {
                   fontSize: 50,
                 }}
               >
-                {name?.nameProvider && name.nameProvider.slice(0, 1).toUpperCase()+name.nameProvider.slice(name.nameProvider.indexOf(' ')+1,name.nameProvider.indexOf(' ') +2).toUpperCase()}
               </Avatar>
             </Stack>
             <Typography sx={{ pt: 4, fontSize: 30, fontWeight: "bold" }}>
@@ -88,7 +87,7 @@ export default function MouseOverPopoverFour({ name }) {
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <LocationCityIcon />  
               <Typography sx={{ p: 1, fontSize: 15 }}>
-                {name?.address}
+                {name?.adresse}
               </Typography>
             </Box>
           </Box>
