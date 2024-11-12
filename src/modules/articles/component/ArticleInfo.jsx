@@ -10,6 +10,8 @@ import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
 import logo from '../../../assets/JALYSS.png';
 import { useNavigate } from "react-router-dom";
+import ArticlePublisher from "./ArticlePublishingHouses";
+import ArticleAuthor from "./ArticleAuthor";
 
 const ArticleInfo = forwardRef(({ onSubmit }, ref) => {
   const [articlesNames, setArticlesNames] = useState([]);
@@ -17,8 +19,8 @@ const ArticleInfo = forwardRef(({ onSubmit }, ref) => {
   // const [articlesAuthors, setArticlesAuthors] = useState([]);
   const [articlesPubHouses, setArticlesPubHouses] = useState([]);
   const [nameText, setNameText] = useState("");
-  const [authorText, setAuthorText] = useState("");
-  const [publisherText, setPublisherText] = useState("");
+  const [authorText, setAuthorText] = useState([]);
+  const [publisherText, setPublisherText] = useState([]);
   const [description, setDescription] = useState("");
   const [barcode, setBarcode] = useState("");
   const [refresh, setRefresh] = useState(false);
@@ -35,7 +37,7 @@ const ArticleInfo = forwardRef(({ onSubmit }, ref) => {
     const checkLocalStorage = setInterval(() => {
       const storedFile = localStorage.getItem('uploadedFile');
       if (storedFile) {
-        const byteCharacters = atob(storedFile.split(',')[1]); // Decode Base64 string
+        const byteCharacters = atob(storedFile.split(',')[1]); 
         const byteNumbers = new Uint8Array(byteCharacters.length);
         for (let i = 0; i < byteCharacters.length; i++) {
           byteNumbers[i] = byteCharacters.charCodeAt(i);
@@ -106,7 +108,8 @@ const ArticleInfo = forwardRef(({ onSubmit }, ref) => {
   // };
 
   const navigate = useNavigate();
-
+  console.log("fff",setPublisherText);
+  
   const handleSubmit = async () => {
     try {
       // Create  article without image first
@@ -114,8 +117,8 @@ const ArticleInfo = forwardRef(({ onSubmit }, ref) => {
         title: nameText,
         code: barcode,
         longDescriptionEn: description,
-        articleByAuthor: [{ nameAr: authorText }],
-        articleByPublishingHouse: [{ nameAr: publisherText }],
+        articleByAuthor: authorText.map((cat) => ({ nameAr: cat.nameAr })),
+        articleByPublishingHouse:publisherText.map((cat) => ({ nameAr: cat.nameAr })),
         articleByCategory: selectedCategories.map((cat) => ({ name: cat.name })),
       };
   
@@ -162,11 +165,7 @@ const ArticleInfo = forwardRef(({ onSubmit }, ref) => {
 
   return (
     <Box sx={{ width: "100%" }}>
-     {/* <Avatar
-          alt="Logo" 
-          src={logo} 
-          sx={{ width: 200, height: 150, marginRight: 100}} // Taille du logo et espacement
-        /> */}
+
       <Box sx={{ display: "flex", justifyContent: "center", mb: 6 }}>
         <Typography variant="h1" sx={{ mr: 2 }}>New Article</Typography>
       </Box>
@@ -194,25 +193,25 @@ const ArticleInfo = forwardRef(({ onSubmit }, ref) => {
         />
       </Box>
       <Box sx={{ display: "flex", gap: 2, mb: 4 }}>
-      <Autocomplete
+      {/* <Autocomplete
           freeSolo
           sx={{ width: "47%" }}
           options={articlesAuthors.map((option) => option.nameAr)}  
           onInputChange={(e, value) => setAuthorText(value)}
           value={authorText}
           renderInput={(params) => <TextField {...params} label="Author" required />}
-        />
-      <Autocomplete
+        /> */}
+      {/* <Autocomplete
           freeSolo
           sx={{ width: "47%" }}
           options={articlesPubHouses.map((option) => option.nameAr)}  
           onInputChange={(e, value) => setPublisherText(value)}
           value={publisherText}
           renderInput={(params) => <TextField {...params} label="Publishing Houses" required />}
-        />
-   
+        /> */}
+        <ArticleAuthor onCategoryChange={setAuthorText}/>
+        <ArticlePublisher  onCategoryChange={setPublisherText}/>
       </Box>
-
       <TextField
         id="outlined-multiline-static"
         label="Description"
