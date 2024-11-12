@@ -19,7 +19,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import React, { useEffect, useState } from "react";
-import Item from "../../../style/ItemStyle";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { ip } from "../../../constants/ip";
@@ -58,15 +57,17 @@ export default function UpdateAuthor({ setIsEdit, setIsEditMode }) {
       try {
         const response = await axios.get(`${ip}/author/${id}`);
         const authorData = response.data;
+
         setFormData({
           nameAr: authorData.nameAr || "",
           nameEn: authorData.nameEn || "",
           biographyAr: authorData.biographyAr || "",
           biographyEn: authorData.biographyEn || "",
-          mediaId: null,
+          mediaId: authorData.mediaId || null,
         });
-        if (authorData.mediaId) {
-          setUploadedImage(`${ip}/media/${authorData.mediaId}`);
+
+        if (authorData.Media?.path) {
+          setUploadedImage(authorData.Media.path);
         }
       } catch (error) {
         console.error("Error fetching author data:", error);
@@ -84,8 +85,10 @@ export default function UpdateAuthor({ setIsEdit, setIsEditMode }) {
     const newErrors = {};
     if (!formData.nameAr) newErrors.nameAr = "Name in Arabic is required";
     if (!formData.nameEn) newErrors.nameEn = "Name in English is required";
-    if (!formData.biographyAr) newErrors.biographyAr = "Biography in Arabic is required";
-    if (!formData.biographyEn) newErrors.biographyEn = "Biography in English is required";
+    if (!formData.biographyAr)
+      newErrors.biographyAr = "Biography in Arabic is required";
+    if (!formData.biographyEn)
+      newErrors.biographyEn = "Biography in English is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -98,7 +101,7 @@ export default function UpdateAuthor({ setIsEdit, setIsEditMode }) {
         if (!uploadedImage) {
           updatedData.mediaId = null;
         }
-        const response = await axios.patch(`${ip}/author/${id}`, updatedData);
+        await axios.patch(`${ip}/author/${id}`, updatedData);
         setIsCancelled(false);
         setOpen(true);
         setTimeout(() => {
@@ -146,7 +149,7 @@ export default function UpdateAuthor({ setIsEdit, setIsEditMode }) {
           "http://localhost:5000/api/upload/image",
           formData
         );
-        setUploadedImage(URL.createObjectURL(file));
+        setUploadedImage(URL.createObjectURL(file)); // Update state with the selected file URL
         setFormData((prevFormData) => ({
           ...prevFormData,
           mediaId: response.data.id,
@@ -190,7 +193,6 @@ export default function UpdateAuthor({ setIsEdit, setIsEditMode }) {
           <Typography variant="h4" color="#48184C" gutterBottom>
             Author Information
           </Typography>
-
           <Box
             sx={{
               display: "flex",
@@ -223,7 +225,7 @@ export default function UpdateAuthor({ setIsEdit, setIsEditMode }) {
             >
               <label htmlFor="file-upload" style={{ cursor: "pointer" }}>
                 <Avatar
-                  src={uploadedImage || null}
+                  src={uploadedImage} // Show existing image
                   sx={{
                     width: 80,
                     height: 80,
