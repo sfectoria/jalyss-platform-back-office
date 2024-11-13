@@ -51,7 +51,7 @@ export default function StockArticles() {
   }
 
   const fetchData = async () => {
-    let params = { take: pageSize, skip: page * pageSize };
+    let params = { take: pageSize, skip: page * pageSize ,notNullQuan :1};
     const response = await axios.get(`${ip}/stocks/${param.id}`, { params });
     console.log(response.data.data.stockArticle, response.data.count);
     setData(response.data.data.stockArticle);

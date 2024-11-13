@@ -116,9 +116,11 @@ function SalesList() {
       headerName: "Date",
       width: 150,
       valueGetter: (value) => {
-        if (value.slice(0, 10) === new Date().toISOString().slice(0, 10))
+        const date = new Date(value);
+        if (date.toISOString().slice(0, 10) === new Date().toISOString().slice(0, 10))
           return "Today";
-        else return new Date(value).toString().slice(0, 16);
+        else  
+        return date.toLocaleDateString('fr-TN');
       },
     },
     {
@@ -126,10 +128,8 @@ function SalesList() {
       headerName: "Time",
       width: 100,
       valueGetter: (value, row) => {
-        return row.receiptDate.slice(
-          row.receiptDate.indexOf("T") + 1,
-          row.receiptDate.indexOf("T") + 6
-        );
+        const date = new Date(row?.receiptDate);
+        return date.toLocaleTimeString('fr-TN', { hour: '2-digit', minute: '2-digit'}); 
       },
     },
     {

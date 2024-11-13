@@ -70,7 +70,7 @@ const SearchField = ({
       const findStockResponse = await axios.get(`${ip}/selling/${info.sender}`);
       console.log("this is me ", findStockResponse.data);
       if (findStockResponse.data) {
-        let params = {};
+        let params = {notNullQuan:1};
         if (text) params["text"] = text;
         const response = await axios.get(
           `${ip}/stocks/${findStockResponse.data.idStock}`,
@@ -150,7 +150,7 @@ const SearchField = ({
   };
   const fetchDataStockBtOrBs = async () => {
     if (!!info.sender) {
-      const response = await axios.get(`${ip}/stocks/${info.sender}`);
+      const response = await axios.get(`${ip}/stocks/${info.sender}`,{params:{notNullQuan:1}});
       console.log("hhh", response.data.data.stockArticle);
       const result = response.data.data.stockArticle.reduce((acc, item) => {
         acc.push({
@@ -323,17 +323,17 @@ const SearchField = ({
                     <div className="ms-2">
                       <Typography variant="body1">{`${option.name}`}</Typography>
                     </div>
-                    {option.price !== 0 && type !== "BR" && type!=="BS" && state!=="purchase"  && (
+                    {option.price !== 0 && type !== "BR" && type!=="BS" && type!=="BT" && state!=="purchase"  && (
                       <div className="ms-2">
                         <Typography variant="body1">{` | ${option.price} DT `}</Typography>
                       </div>
                     )}
-                    {option.author  && state==="purchase" && (
+                    {option.author  && (state==="purchase"||type==="BT") && (
                       <div className="ms-2">
                         <Typography variant="body1">{` | ${option.author}`}</Typography>
                       </div>
                     )}
-                    {option.publisher && state==="purchase" && (
+                    {option.publisher && (state==="purchase"||type==="BT") && (
                       <div className="ms-2">
                         <Typography variant="body1">{` | ${option.publisher}`}</Typography>
                       </div>

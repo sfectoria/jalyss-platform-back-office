@@ -78,7 +78,6 @@ const [fournisseurToDelete, setFournissurToDelete] = useState(null);
       field: 'nameProvider',
       headerName: 'fournisseur Name',
       width: 200,
-      // getActions:({})=>{}
     },
     {
       field: 'registrationNumber',

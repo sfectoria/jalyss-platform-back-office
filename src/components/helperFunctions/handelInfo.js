@@ -47,7 +47,7 @@ export const handelInfo = (
     setReqName("salesDeliveryInvoice");
     setReqLine("salesDeliveryInvoicelines");
     setReqChannel("salesChannelsId");
-    setReqClient("clientId");
+    setReqClient("idClient");
     setReqDate("deliveryDate");
   } else if (type === "F") {
     setInvoiceTitle("Facture");

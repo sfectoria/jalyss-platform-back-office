@@ -354,7 +354,7 @@ export default function ChannelDetails() {
               {channel.name} informations
             </Typography>
             <Typography variant="body1" color={"initial"} gutterBottom>
-              {channel.name} is located in stock (foulen fouleni) managed by
+              {channel.name} is located in stock ({stock?.name}) managed by
               (foulen fouleni)
             </Typography>
             <Button
