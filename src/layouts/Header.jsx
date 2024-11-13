@@ -307,7 +307,7 @@ console.log(user,"user")
           </Search> */}
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
-            <IconButton
+            {/* <IconButton
               size="large"
               aria-label="show 4 new mails"
               color="inherit"
@@ -326,7 +326,7 @@ console.log(user,"user")
               <Badge badgeContent={notificationCount} color="error">
                 <NotificationsIcon />
               </Badge>
-            </IconButton>
+            </IconButton> */}
             <IconButton
               size="large"
               edge="end"
@@ -357,8 +357,8 @@ console.log(user,"user")
       </AppBar>
       {/* {renderMobileMenu} */}
       {renderProfileMenu}
-      {renderMessagesMenu}
-      {renderNotificationsMenu}
+      {/* {renderMessagesMenu}
+      {renderNotificationsMenu} */}
     </Box>
   );
 }

@@ -8,8 +8,6 @@ import { Box } from "@mui/material";
 import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
 import EmailIcon from "@mui/icons-material/Email";
 import LocationCityIcon from "@mui/icons-material/LocationCity";
-import axios from "axios";
-import { ip } from "../../../constants/ip";
 
 export default function MouseOverPopover({ name }) {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -64,7 +62,7 @@ export default function MouseOverPopover({ name }) {
                   fontSize: 50,
                 }}
               >
-                {name?.fullName && name.fullName.slice(0, 1).toUpperCase()+name.fullName.slice(name.fullName.indexOf(' ')+1,name.fullName.indexOf(' ') +2).toUpperCase()}
+              
               </Avatar>
             </Stack>
             <Typography sx={{ pt: 4, fontSize: 30, fontWeight: "bold" }}>

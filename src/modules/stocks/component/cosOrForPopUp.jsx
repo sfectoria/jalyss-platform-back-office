@@ -1,4 +1,4 @@
-import React from "react";
+import React , {useEffect, useState} from "react";
 import Popover from "@mui/material/Popover";
 import Typography from "@mui/material/Typography";
 import Avatar from "@mui/material/Avatar";
@@ -8,13 +8,16 @@ import { Box } from "@mui/material";
 import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
 import EmailIcon from "@mui/icons-material/Email";
 import LocationCityIcon from "@mui/icons-material/LocationCity";
+import axios from "axios";
+import { ip } from "../../../constants/ip";
 
-export default function MouseOverPopover({ name }) {
-  const [anchorEl, setAnchorEl] = React.useState(null);
-
+export default function MouseOverPopoverFour({ name }) {
+  const [anchorEl, setAnchorEl] = useState(null);
   const handlePopoverOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
+  // console.log(name);
+  
 
   const handlePopoverClose = () => {
     setAnchorEl(null);
@@ -23,14 +26,14 @@ export default function MouseOverPopover({ name }) {
   const open = Boolean(anchorEl);
 
   return (
-    <div style={{ display: "flex", alignItems: "center", height: "100%" }}>
+    <div>
       <Typography
         aria-owns={open ? "mouse-over-popover" : undefined}
         aria-haspopup="true"
         onMouseEnter={handlePopoverOpen}
         onMouseLeave={handlePopoverClose}
       >
-        {name}
+        {name?.nameProvider}
       </Typography>
       <Popover
         id="mouse-over-popover"
@@ -61,11 +64,10 @@ export default function MouseOverPopover({ name }) {
                   fontSize: 50,
                 }}
               >
-                {name && name.slice(0, 1)}
               </Avatar>
             </Stack>
             <Typography sx={{ pt: 4, fontSize: 30, fontWeight: "bold" }}>
-              {name}
+              {name?.nameProvider}
             </Typography>
           </Box>
           <Box>
@@ -73,19 +75,19 @@ export default function MouseOverPopover({ name }) {
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <EmailIcon />
               <Typography sx={{ p: 1, fontSize: 15 }}>
-                ousseemachetrif@gmail.com
+                {name?.email}
               </Typography>
             </Box>
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <LocalPhoneIcon />
               <Typography sx={{ p: 1, fontSize: 15 }}>
-                +216 98 567 565
+                {name?.phoneNumber}
               </Typography>
             </Box>
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <LocationCityIcon />
+              <LocationCityIcon />  
               <Typography sx={{ p: 1, fontSize: 15 }}>
-                rue 420 rtiba takelsa nabeul
+                {name?.adresse}
               </Typography>
             </Box>
           </Box>
