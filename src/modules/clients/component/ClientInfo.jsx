@@ -45,8 +45,16 @@ export default function ClientInfo() {
         <>
           <Box>
             <Stack direction="row" spacing={2}>
-              <Avatar sx={{ bgcolor: "#e6c440", width: 140, height: 140, fontSize: 50 }}>
-                {one.fullName
+              <Avatar
+                sx={{
+                  bgcolor: "#e6c440",
+                  width: 140,
+                  height: 140,
+                  fontSize: 50,
+                }}
+                src={one.media ? one.media.path : null}
+              >
+                {!one.media && one.fullName
                   ? one.fullName
                       .split(" ")
                       .map((namePart) => namePart[0])
@@ -66,7 +74,9 @@ export default function ClientInfo() {
             </Box>
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <LocalPhoneIcon />
-              <Typography sx={{ p: 1, fontSize: 19 }}>{one.phoneNumber}</Typography>
+              <Typography sx={{ p: 1, fontSize: 19 }}>
+                {one.phoneNumber}
+              </Typography>
             </Box>
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <LocationCityIcon />
@@ -130,8 +140,19 @@ export default function ClientInfo() {
           </Box>
         </>
       ) : (
-        <Box sx={{ mt: 3, display: "flex", justifyContent: "center", width: "100%" }}>
-          <ClientUpdate setIsEdit={setIsEdit} refresh={refresh} setRefresh={setRefresh} />
+        <Box
+          sx={{
+            mt: 3,
+            display: "flex",
+            justifyContent: "center",
+            width: "100%",
+          }}
+        >
+          <ClientUpdate
+            setIsEdit={setIsEdit}
+            refresh={refresh}
+            setRefresh={setRefresh}
+          />
         </Box>
       )}
     </Box>

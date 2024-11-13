@@ -14,6 +14,8 @@ export default function ArticleCategory({ onCategoryChange }) {
       try {
         const response = await axios.get('http://localhost:3000/catgoryArticle/all');
         setBookCategories(response.data);
+        console.log("from cat",response.data);
+        
       } catch (error) {
         console.error('Erreur lors de la récupération des catégories :', error);
       }
