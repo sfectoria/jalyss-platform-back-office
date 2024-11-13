@@ -323,17 +323,17 @@ const SearchField = ({
                     <div className="ms-2">
                       <Typography variant="body1">{`${option.name}`}</Typography>
                     </div>
-                    {option.price !== 0 && type !== "BR" && type!=="BS" && state!=="purchase"  && (
+                    {option.price !== 0 && type !== "BR" && type!=="BS" && type!=="BT" && state!=="purchase"  && (
                       <div className="ms-2">
                         <Typography variant="body1">{` | ${option.price} DT `}</Typography>
                       </div>
                     )}
-                    {option.author  && state==="purchase" && (
+                    {option.author  && (state==="purchase"||type==="BT") && (
                       <div className="ms-2">
                         <Typography variant="body1">{` | ${option.author}`}</Typography>
                       </div>
                     )}
-                    {option.publisher && state==="purchase" && (
+                    {option.publisher && (state==="purchase"||type==="BT") && (
                       <div className="ms-2">
                         <Typography variant="body1">{` | ${option.publisher}`}</Typography>
                       </div>

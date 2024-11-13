@@ -103,12 +103,12 @@ export default function ArticleDescription({ data }) {
                     data?.articleByPublishingHouse[0]?.publishingHouse?.nameAr
                   : ""}
               </Typography>
-              <img
+              {/* <img
                 width={250}
                 src={"https://jalyss.com/img/m/7.jpg"}
                 alt={"fff"}
                 loading="lazy"
-              />
+              /> */}
             </Box>
           </Box>
           <img

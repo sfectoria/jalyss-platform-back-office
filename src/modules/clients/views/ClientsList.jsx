@@ -28,6 +28,8 @@ export default function ClientsList() {
       try {
         const response = await axios.get(`${ip}/clients`);
         setClients(response.data);
+        console.log("here clients",response.data);
+        
       } catch (error) {
         console.error('Error fetching clients:', error);
       }
@@ -80,12 +82,16 @@ export default function ClientsList() {
 
   const columns = [
     {
-      field: 'image',
-      headerName: '',
+      field: "avatar",
+      headerName: "Avatar",
       width: 90,
-      renderCell: () => (
-        <Stack direction="row" spacing={2}>
-        </Stack>
+      renderCell: (params) => (
+        <Avatar
+          src={params.row.media?.path || ""}
+          sx={{ bgcolor: deepOrange[500], width: 35, height: 35 }}
+        >
+          {params.row.fullName?.charAt(0)}
+        </Avatar>
       ),
     },
     {
