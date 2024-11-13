@@ -137,7 +137,11 @@ export default function ArticlesList() {
       width: 250,
 
       valueGetter: (value, row) => {
-        return row?.articleByAuthor[0]?.author?.nameAr;
+        //return row?.articleByAuthor[0]?.author?.nameAr;
+        const nameAr = row?.articleByAuthor[0]?.author?.nameAr;
+        const nameEn = row?.articleByAuthor[0]?.author?.nameEn;
+        return nameAr !== '' ? nameAr : nameEn;
+
       },
     },
     {
@@ -145,7 +149,10 @@ export default function ArticlesList() {
       headerName: "Publisher",
       width: 250,
       valueGetter: (value, row) => {
-        return row?.articleByPublishingHouse[0]?.publishingHouse?.nameAr;
+        // return row?.articleByPublishingHouse[0]?.publishingHouse?.nameAr;
+        const nameAr = row?.articleByPublishingHouse[0]?.publishingHouse?.nameAr;
+        const nameEn = row?.articleByPublishingHouse[0]?.publishingHouse?.nameEn;
+        return nameAr !== '' ? nameAr : nameEn;
       },
     },
     {
