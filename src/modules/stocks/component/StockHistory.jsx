@@ -21,6 +21,7 @@ import { useParams } from "react-router-dom";
 import CustomNoRowsOverlay from "../../../style/NoRowsStyle";
 
 export default function StockHistory() {
+  const [movementType, setMovementType] = useState('');
   const [rows, setRows] = useState([]);
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
@@ -40,11 +41,12 @@ export default function StockHistory() {
       take: pageSize,
       skip: page * pageSize,
       stocksIds: [param.id],
+      
     };
     const responseHistory = await axios.get(`${ip}/movements/getAll`, {
       params,
     });
-    console.log(responseHistory.data);
+    console.log("fromstockHistory",responseHistory.data);
 
     setRows(responseHistory.data.data);
     setCount(responseHistory.data.count);
@@ -124,13 +126,21 @@ export default function StockHistory() {
       field: "clientName",
       headerName: "Client",
       width: 270,
-      renderCell: (params) => (<MouseOverPopover name={params.row.client?.fullName} />),
+      renderCell: (params) => 
+        params.row.type === "receipt" ? (
+          <MouseOverPopover name={params.row.stock?.name }/>
+        ) : (
+          <MouseOverPopover name={params.row.client?.fullName} />
+        )
     },
     {
       field: "fournisseurName",
       headerName: "Fournisseur",
       width: 250,
-      renderCell: (params) => (
+      renderCell: (params) => 
+        params.row.type === "exit" ?  (
+          <MouseOverPopover name={params.row.stock?.name } />
+        ) : (
         <MouseOverPopover name={params.row.provider?.nameProvider} />
       ),
     },
