@@ -99,7 +99,7 @@ export default function ArticleHistory() {
           <DoneIcon color="success" />
         ) : (
           <ClearIcon color="error" />
-        ), // Rendu des icônes en fonction de la valeur booléenne
+        ),
     },
     { field: "quantity", headerName: "Quantity", width: 150 },
     { field: "price", headerName: "Price", width: 150 },
