@@ -14,7 +14,8 @@ import CustomNoResultsOverlay from "../../../style/NoResultStyle";
 import DoneIcon from "@mui/icons-material/Done";
 import ClearIcon from "@mui/icons-material/Clear";
 import InvoiceModal from "../../../components/InvoiceModal";
-import MouseOverPopover from "./cosOrForPopUp";
+import MouseOverPopover from "../../channels/component/cosOrForPopUp";
+import MouseOverPopoverFou from "./cosOrForPopUp"
 import { ip } from "../../../constants/ip";
 import axios from "axios";
 import { useParams } from "react-router-dom";
@@ -124,14 +125,14 @@ export default function StockHistory() {
       field: "clientName",
       headerName: "Client",
       width: 270,
-      renderCell: (params) => (<MouseOverPopover name={params.row.client?.fullName} />),
+      renderCell: (params) => (<MouseOverPopover name={params.row.client} />),
     },
     {
       field: "fournisseurName",
       headerName: "Fournisseur",
       width: 250,
       renderCell: (params) => (
-        <MouseOverPopover name={params.row.provider?.nameProvider} />
+        <MouseOverPopoverFou name={params.row?.provider} />
       ),
     },
     {

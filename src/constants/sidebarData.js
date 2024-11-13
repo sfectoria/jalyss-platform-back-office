@@ -159,8 +159,8 @@ export const sidebarData = [
       },
     ],
   },
-  {
-    title: "Help",
-    icon: <QuestionMarkIcon />,
-  },
+  // {
+  //   title: "Help",
+  //   icon: <QuestionMarkIcon />,
+  // },
 ];
