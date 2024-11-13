@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Box, Typography, Avatar, Tab, Tabs } from "@mui/material";
-import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { ip } from "../../../constants/ip";
 import UpdateAuthor from "./UpdateAuthor";
+import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 
 export default function AuthorDetails() {
   const { id } = useParams();
@@ -16,7 +17,7 @@ export default function AuthorDetails() {
     try {
       const response = await axios.get(`${ip}/author/${id}`);
       setTheAuthor(response.data);
-      console.log("from one", response.data);
+      console.log("Author data:", response.data);
     } catch (error) {
       console.error("Error fetching author data:", error);
     }
@@ -30,42 +31,72 @@ export default function AuthorDetails() {
     setTabIndex(newValue);
   };
 
-  return (
-<Box sx={{ mx: 3, my: 6, display: "flex", justifyContent: "center" }}>
-  {!isEdit ? (
-    <Box
-      sx={{
-        flex: 1,
-        p: 3,
-        border: "2px solid #e0e0e0",
-        borderRadius: 2,
-        maxWidth: "800px",
-        height: "21.3cm",
-        width: "100%",
-      }}
-    >
-      <Tabs
-        value={tabIndex}
-        onChange={handleTabChange}
-        indicatorColor="primary"
-        textColor="primary"
-        variant="fullWidth"
-        sx={{ marginBottom: "20px" }}
-      >
-        <Tab label="Overview" />
-        <Tab label="Edit Profile" />
-      </Tabs>
+  const columns = [
+    {
+      field: "cover",
+      headerName: "Cover Pic",
+      width: 90,
+      renderCell: (params) => (
+        <Avatar
+          src={params.row.cover?.path || ""}
+          sx={{ bgcolor: "#e6c440", width: 35, height: 35 }}
+        >
+          {params.row.cover?.alt?.charAt(0) || "?"}
+        </Avatar>
+      ),
+    },
+    { field: "title", headerName: "Article Title", width: 200 },
+    { field: "shortDescriptionEn", headerName: "Short Description (EN)", width: 220 },
+    { field: "shortDescriptionAr", headerName: "Short Description (AR)", width: 220 },
+  ];
 
-      {tabIndex === 0 && (
-        <>
-          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", mb: 4 }}>
+  const rowsWithId = theAuthor.ArticleByAuthor?.map((article) => ({
+    id: article.articleId, 
+    cover: article.article?.cover,
+    title: article.article?.title,
+    shortDescriptionEn: article.article?.shortDescriptionEn,
+    shortDescriptionAr: article.article?.shortDescriptionAr,
+  })) || [];
+
+  return (
+    <Box sx={{ mx: 3, my: 6, display: "flex", justifyContent: "center" }}>
+      <Box
+        sx={{
+          flex: 1,
+          p: 3,
+          border: "2px solid #e0e0e0",
+          borderRadius: 2,
+          maxWidth: "800px",
+          height: "25cm",
+          width: "100%",
+        }}
+      >
+        <Tabs
+          value={tabIndex}
+          onChange={handleTabChange}
+          indicatorColor="primary"
+          textColor="primary"
+          variant="fullWidth"
+          sx={{ marginBottom: "20px" }}
+        >
+          <Tab label="Overview" />
+          <Tab label="Edit Profile" />
+        </Tabs>
+
+        {tabIndex === 0 && (
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              mb: 4,
+              mt: "1cm",
+            }}
+          >
             {theAuthor?.Media?.path ? (
               <Avatar
                 alt="author avatar"
-                sx={{
-                  width: { xs: 40, sm: 60, md: 80, lg: 200 },
-                  height: { xs: 40, sm: 60, md: 80, lg: 180 },
-                }}
+                sx={{ width: 200, height: 180 }}
                 src={theAuthor?.Media?.path}
               />
             ) : (
@@ -78,10 +109,7 @@ export default function AuthorDetails() {
                 }}
               >
                 {theAuthor.nameEn
-                  ? theAuthor.nameEn
-                      .split(" ")
-                      .map((namePart) => namePart[0])
-                      .join("")
+                  ? theAuthor.nameEn.split(" ").map((namePart) => namePart[0]).join("")
                   : "?"}
               </Avatar>
             )}
@@ -91,55 +119,63 @@ export default function AuthorDetails() {
             <Typography sx={{ fontSize: 26, fontWeight: "bold", mt: 1 }}>
               {theAuthor.nameAr}
             </Typography>
-          </Box>
-          <Typography
-            sx={{
-              fontSize: 22,
-              fontWeight: "bold",
-              mb: 2,
-              paddingTop: "0cm",
-            }}
-          >
-            <span>About:</span>
-          </Typography>
-          <Typography sx={{ fontSize: 21, mb: 4 }}>
-            {theAuthor.nameEn} is a well-known author with contributions to both English and Arabic
-            literature. With a passion for storytelling, {theAuthor.nameEn} has inspired readers
-            through captivating biographies and thoughtful narratives in multiple languages.
-          </Typography>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
-            <LibraryBooksIcon />
-            <Typography sx={{ fontSize: 19, fontWeight: "bold" }}>
-              Biography (English):
-            </Typography>
-          </Box>
-          <Typography sx={{ fontSize: 19, mb: 4 }}>
-            {theAuthor.biographyEn}
-          </Typography>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <LibraryBooksIcon />
-            <Typography sx={{ fontSize: 19, fontWeight: "bold" }}>
-              السيرة الذاتية (Arabic):
-            </Typography>
-          </Box>
-          <Typography sx={{ fontSize: 19 }}>
-            {theAuthor.biographyAr}
-          </Typography>
-        </>
-      )}
+            <Box sx={{ display: "flex", marginTop:"1cm", justifyContent: "space-between", mb: 2 }}>
+              <Box sx={{ width: "48%" }}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <LibraryBooksIcon />
+                  <Typography sx={{ fontSize: 19, fontWeight: "bold" }}>
+                    Biography (English):
+                  </Typography>
+                </Box>
+                <Typography sx={{ fontSize: 19, mb: 4 }}>
+                  {theAuthor.biographyEn}
+                </Typography>
+              </Box>
 
-      {tabIndex === 1 && (
-        <Box sx={{ mt: 3, display: "flex", justifyContent: "center" }}>
-          <UpdateAuthor setIsEdit={setIsEdit} />
-        </Box>
-      )}
-    </Box>
-  ) : (
-    <Box sx={{ mt: 3, display: "flex", justifyContent: "center" }}>
-      <UpdateAuthor setIsEdit={setIsEdit} />
-    </Box>
-  )}
-</Box>
+              <Box sx={{ width: "48%", textAlign: "right", direction: "rtl" }}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <LibraryBooksIcon />
+                  <Typography sx={{ fontSize: 19, fontWeight: "bold" }}>
+                    السيرة الذاتية (Arabic):
+                  </Typography>
+                </Box>
+                <Typography sx={{ fontSize: 19 }}>
+                  {theAuthor.biographyAr}
+                </Typography>
+              </Box>
+            </Box>
 
+            <Box sx={{ width: "100%", height: 500 }}>
+              <DataGrid
+                rows={rowsWithId}
+                columns={columns}
+                pageSizeOptions={[7, 10, 20]}
+                initialState={{
+                  pagination: { paginationModel: { pageSize: 7 } },
+                  filter: { filterModel: { items: [] } },
+                }}
+                sx={{
+                  boxShadow: 0,
+                  border: 0,
+                  "& .MuiDataGrid-cell:hover": { color: "primary.main" },
+                }}
+                slots={{
+                  toolbar: GridToolbar,
+                }}
+                slotProps={{
+                  toolbar: { showQuickFilter: true },
+                }}
+              />
+            </Box>
+          </Box>
+        )}
+
+        {tabIndex === 1 && (
+          <Box sx={{ mt: 3, display: "flex", justifyContent: "center" }}>
+            <UpdateAuthor setIsEdit={setIsEdit} />
+          </Box>
+        )}
+      </Box>
+    </Box>
   );
 }

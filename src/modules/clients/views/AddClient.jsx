@@ -40,7 +40,8 @@ export default function AddClient() {
       },
     },
   });
-const navigate = useNavigate()
+
+  const navigate = useNavigate();
   const [clientData, setClientData] = useState({
     fullName: "",
     phoneNumber: "",
@@ -48,20 +49,32 @@ const navigate = useNavigate()
     email: "",
     registrationDate: new Date().toISOString(),
     idCategoryClient: "",
+    mediaId: null, 
   });
 
   const [errors, setErrors] = useState({});
   const [open, setOpen] = useState(false);
   const [isCancelled, setIsCancelled] = useState(false);
   const [categories, setCategories] = useState([]);
+  const [uploadedImage, setUploadedImage] = useState(null);
 
-  const handleFileChange = (e) => {
-    const uploadedFile = e.target.files[0];
-    setClientData((prevData) => ({
-      ...prevData,
-      fileName: uploadedFile?.name,
-      mediaId: uploadedFile ? URL.createObjectURL(uploadedFile) : null,
-    }));
+  const handleFileChange = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append("image", file);
+
+      try {
+        const response = await axios.post("http://localhost:5000/api/upload/image", formData);
+        setUploadedImage(URL.createObjectURL(file));
+        setClientData((prevData) => ({
+          ...prevData,
+          mediaId: response.data.id, 
+        }));
+      } catch (error) {
+        console.error("Error uploading image:", error);
+      }
+    }
   };
 
   useEffect(() => {
@@ -89,17 +102,16 @@ const navigate = useNavigate()
   const handleDeleteFile = () => {
     setClientData((prevData) => ({
       ...prevData,
-      fileName: "",
-      mediaId: null,
+      mediaId: null, 
     }));
+    setUploadedImage(null);
   };
 
   const validateForm = () => {
     let newErrors = {};
-    if (!clientData.fullName) newErrors.fullName = "First Name is required";
+    if (!clientData.fullName) newErrors.fullName = "Full Name is required";
     if (!clientData.address) newErrors.address = "Address is required";
-    if (!clientData.phoneNumber)
-      newErrors.phoneNumber = "Phone Number is required";
+    if (!clientData.phoneNumber) newErrors.phoneNumber = "Phone Number is required";
     else if (clientData.phoneNumber.length !== 8)
       newErrors.phoneNumber = "Phone number must be 8 digits";
     if (!clientData.email) newErrors.email = "Email is required";
@@ -112,13 +124,13 @@ const navigate = useNavigate()
     e.preventDefault();
     if (validateForm()) {
       try {
-        const response = await axios.post(ip + "/clients", clientData);
+        const response = await axios.post(`${ip}/clients`, clientData);
         console.log("Submitted:", response.data);
         setIsCancelled(false);
         setOpen(true);
         resetForm();
         setTimeout(() => {
-          navigate("/clients")
+          navigate("/clients");
         }, 2000);
       } catch (error) {
         console.error("Error submitting form:", error);
@@ -134,8 +146,10 @@ const navigate = useNavigate()
       email: "",
       registrationDate: new Date().toISOString(),
       idCategoryClient: "",
+      mediaId: null, 
     });
     setErrors({});
+    setUploadedImage(null);
   };
 
   const handleCancel = () => {
@@ -143,13 +157,12 @@ const navigate = useNavigate()
     setOpen(true);
     resetForm();
     setTimeout(() => {
-      navigate('/clients')
+      navigate("/clients");
     }, 1000);
   };
 
   const handleClose = () => {
     setOpen(false);
-  
   };
 
   return (
@@ -157,7 +170,7 @@ const navigate = useNavigate()
       <Paper elevation={3} sx={{ m: "5%" }}>
         <Box sx={{ padding: 5 }}>
           <Typography variant="h2" gutterBottom>
-            Client's informations
+            Client's Information
           </Typography>
           <form onSubmit={handleSubmit} className="emp-form">
             <Grid container spacing={2}>
@@ -213,7 +226,7 @@ const navigate = useNavigate()
                 </Item>
               </Grid>
 
-              <Grid item xs={14} sm={15}>
+              <Grid item xs={12}>
                 <FormControl fullWidth>
                   <InputLabel>Category</InputLabel>
                   <Select
@@ -250,9 +263,7 @@ const navigate = useNavigate()
 
               <Grid item xs={12}>
                 <Item elevation={0}>
-                  <Alert severity="info">
-                    Choosing a profile picture is optional.
-                  </Alert>
+                  <Alert severity="info">Choosing a profile picture is optional.</Alert>
                 </Item>
               </Grid>
 
@@ -311,11 +322,11 @@ const navigate = useNavigate()
                           height: "300px",
                           bgcolor: "#48184C",
                         }}
+                        src={uploadedImage}
                       >
-                        <FileUploader
-                          onSelectFile={handleFileChange}
-                          icon={"upload"}
-                        />
+                        {!uploadedImage && (
+                          <FileUploader onSelectFile={handleFileChange} />
+                        )}
                       </Avatar>
                     </Badge>
                   </Box>
@@ -326,28 +337,11 @@ const navigate = useNavigate()
         </Box>
       </Paper>
 
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-        sx={{
-          "& .MuiPaper-root": {
-            borderColor: isCancelled ? "error.main" : "success.main",
-            borderWidth: 3,
-            borderStyle: "solid",
-            bgcolor: isCancelled ? "error.main" : "success.main",
-          },
-        }}
-      >
-        <DialogTitle id="alert-dialog-title">
-          {isCancelled ? "Form Cancelled" : "Form Submitted"}
-        </DialogTitle>
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Client Information</DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            {isCancelled
-              ? "The form was cancelled and no data was submitted."
-              : "The form was successfully submitted."}
+          <DialogContentText>
+            {isCancelled ? "You have cancelled the form." : "Client added successfully!"}
           </DialogContentText>
         </DialogContent>
       </Dialog>
