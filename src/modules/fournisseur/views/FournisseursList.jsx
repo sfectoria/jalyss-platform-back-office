@@ -38,7 +38,6 @@ export default function FournisseursList() {
       field: 'fullName',
       headerName: 'fournisseur Name',
       width: 200,
-      // getActions:({})=>{}
     },
     {
       field: 'companyName',
