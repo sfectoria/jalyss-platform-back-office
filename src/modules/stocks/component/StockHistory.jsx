@@ -21,7 +21,6 @@ import { useParams } from "react-router-dom";
 import CustomNoRowsOverlay from "../../../style/NoRowsStyle";
 
 export default function StockHistory() {
-  const [movementType, setMovementType] = useState('');
   const [rows, setRows] = useState([]);
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
