@@ -14,6 +14,8 @@ import CustomNoResultsOverlay from "../../../style/NoResultStyle";
 import DoneIcon from "@mui/icons-material/Done";
 import ClearIcon from "@mui/icons-material/Clear";
 import InvoiceModal from "../../../components/InvoiceModal";
+import CheckIcon from "@mui/icons-material/Check";
+import { MenuItem, Select, IconButton } from "@mui/material";
 import MouseOverPopover from "./cosOrForPopUp";
 import axios from "axios";
 import { ip } from "../../../constants/ip";
@@ -27,6 +29,8 @@ export default function Vente() {
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [count, setCount] = useState(0);
+  const [editingRowId, setEditingRowId] = useState(null); // Track editing row
+  const [editedStatus, setEditedStatus] = useState(""); 
   const [refresh, setRefresh] = useState(false);
 
   const param = useParams();
@@ -87,6 +91,51 @@ export default function Vente() {
 
       setRows(result);
       setCount(response.data.count);
+    }
+  };
+
+  const handleSaveStatus = async (rowId) => {
+    const row = rows.find((row) => row.id === rowId);
+    const updatedRow = { ...row, paymentStatus: editedStatus };
+   console.log(rowId,editedStatus);
+   
+    try {
+      await axios.patch(`${ip}/exitNote/${rowId}`, {
+        paymentStatus: editedStatus
+      });
+      let sale = rows.find((el)=>el.id===rowId)
+      console.log(sale,rows);
+      console.log('all');
+      if(sale.type.includes('BL')){
+        let salesId=sale.salesDeliveryNote[0].id
+      await axios.patch(`${ip}/salesDeliveryNote/${salesId}`, {
+        paymentStatus: editedStatus
+      });
+     }
+      else if(sale.type.includes('BLF')){
+        let salesId=sale.salesDeliveryInvoice[0].id
+      await axios.patch(`${ip}/salesDeliveryInvoice/${salesId}`, {
+        paymentStatus: editedStatus
+      });
+     }
+      else if(sale.type.includes('F')){
+        let salesId=sale.salesInvoice[0].id
+      await axios.patch(`${ip}/sales-invoices/${salesId}`, {
+        paymentStatus: editedStatus
+      });
+     }
+      else if(sale.type.includes('Ticket')){
+        let salesId=sale.salesReceipt[0].id
+      await axios.patch(`${ip}/sales-receipt/${salesId}`, {
+        paymentStatus: editedStatus
+      });
+     }
+      setRows((prevRows) =>
+        prevRows.map((row) => (row.id === rowId ? updatedRow : row))
+      );
+      setEditingRowId(null); 
+    } catch (error) {
+      console.error("Error updating status:", error);
     }
   };
 
@@ -201,15 +250,52 @@ export default function Vente() {
     {
       field: "payed",
       headerName: "Payed/Not",
-      width: 90,
+      width: 200,
       renderCell: (params) => {
-      let status =params?.row?.paymentStatus
-      console.log(status);
-      
-        if(status==='Payed') return <div style={{ color: "green" }}>{params.row.paymentStatus}</div>
-        else if (status ==='NotPayed') return <div style={{ color: "red" }}>{'Not Payed'}</div>
-        else if (status ==='PartiallyPayed') return <div style={{ color: "orange" }}>{'Part Payed'}</div>
-      }
+        if (params.row.id === editingRowId) {
+          return (
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <Select
+                value={editedStatus}
+                onChange={(e) => setEditedStatus(e.target.value)}
+                size="small"
+              >
+                <MenuItem value="Payed">Payed</MenuItem>
+                <MenuItem value="NotPayed">Not Payed</MenuItem>
+                <MenuItem value="PartiallyPayed">Partially Payed</MenuItem>
+              </Select>
+              <IconButton
+                onClick={() => handleSaveStatus(params.row.id)}
+                color="primary"
+              >
+                <CheckIcon />
+              </IconButton>
+            </div>
+          );
+        }
+        let status = params.row.paymentStatus;
+        const color =
+          status === "Payed"
+            ? "green"
+            : status === "NotPayed"
+            ? "red"
+            : "orange";
+        return (
+          <div
+            style={{ color, cursor: "pointer" }}
+            onClick={() => {
+              setEditingRowId(params.row.id);
+              setEditedStatus(params.row.paymentStatus);
+            }}
+          >
+            {status === "Payed"
+              ? "Payed"
+              : status === "NotPayed"
+              ? "Not Payed"
+              : "Partially Payed"}
+          </div>
+        );
+      },
     },
     { field: "totalAmount", headerName: "Total Amount", width: 100 },
     {
