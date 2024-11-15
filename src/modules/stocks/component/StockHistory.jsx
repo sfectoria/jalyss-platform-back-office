@@ -41,11 +41,12 @@ export default function StockHistory() {
       take: pageSize,
       skip: page * pageSize,
       stocksIds: [param.id],
+      
     };
     const responseHistory = await axios.get(`${ip}/movements/getAll`, {
       params,
     });
-    console.log(responseHistory.data);
+    console.log("fromstockHistory",responseHistory.data);
 
     setRows(responseHistory.data.data);
     setCount(responseHistory.data.count);
@@ -125,15 +126,25 @@ export default function StockHistory() {
       field: "clientName",
       headerName: "Client",
       width: 270,
-      renderCell: (params) => (<MouseOverPopover name={params.row.client} />),
+      renderCell: (params) => 
+        params.row.type === "receipt" ? (
+          <MouseOverPopover name={params.row.stock?.name }/>
+        ) : (
+          <MouseOverPopover name={params.row.client?.fullName} />
+        )
+
     },
     {
       field: "fournisseurName",
       headerName: "Fournisseur",
       width: 250,
-      renderCell: (params) => (
-        <MouseOverPopoverFou name={params.row?.provider} />
-      ),
+      renderCell: (params) => 
+        params.row.type === "exit" ?  (
+          <MouseOverPopover name={params.row.stock?.name } />
+        ) : (
+        <MouseOverPopover name={params.row.provider?.nameProvider} />
+        )
+    
     },
     {
       field: "br",
