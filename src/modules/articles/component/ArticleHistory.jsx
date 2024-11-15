@@ -28,7 +28,7 @@ export default function ArticleHistory() {
         "http://localhost:3000/movements/getAll2",
         { params }
       );
-      setHistory(response.data);
+      setHistory(response.data.data);
     } catch (error) {
       console.error("Erreur lors de la récupération des données:", error);
     }
@@ -47,9 +47,9 @@ export default function ArticleHistory() {
     return {
       id: i,
       date: historyRow.exitDate || historyRow.receiptDate,
-      customer: historyRow.client?.fullName || historyRow.stock?.name ||historyRow.transferNote?.map(note => note.stockTo?.name) || "N/A",
-      fournisseur: historyRow.provider?.nameProvider || historyRow.transferNote?.map(note => note.stockFrom?.name) || "N/A",
-      type: historyRow.typeReceipt,
+      customer: historyRow.client?.fullName || "N/A",
+      fournisseur: historyRow.provider?.nameProvider  || "N/A",
+      type: historyRow.type,
       transfer: historyRow.transferNote, // Stocker la valeur booléenne
       quantity: firstLine ? firstLine.quantity : "N/A",
       price: firstLine
