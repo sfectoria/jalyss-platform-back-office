@@ -1,87 +1,129 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
+import Button from "@mui/material/Button";
 import { DataGrid,GridToolbar,GridActionsCellItem  } from '@mui/x-data-grid';
-import { useDemoData } from '@mui/x-data-grid-generator';
 import Typography from '@mui/material/Typography';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useNavigate } from 'react-router-dom';
 import CustomNoResultsOverlay from '../../../style/NoResultStyle'
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import Item from '../../../style/ItemStyle';
 import Avatar from '@mui/material/Avatar';
-import Stack from '@mui/material/Stack';
 import { deepOrange } from '@mui/material/colors';
 import CustomNoRowsOverlay from '../../../style/NoRowsStyle';
+import axios from 'axios';
+import { ip } from "../../../constants/ip";
 
 export default function FournisseursList() {
-  const { data } = useDemoData({
-    dataSet: 'Commodity',
-    rowLength: 500,
-    maxColumns: 6,
-  });
+ 
+
+const [fournisseur,setFournisseur] = useState([]) 
+const [confirmDelete, setConfirmDelete] = useState(false);
+const [fournisseurToDelete, setFournissurToDelete] = useState(null);
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`${ip}/provider`);
+        setFournisseur(response.data);
+        console.log("fournisseur fetched:", response.data);
+      } catch (error) {
+        console.log("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, []);
+
+
+
+
   const handelDetails = (ids)=>{
-    navigate(`/clients/${ids}`)
+    navigate(`${ids}`)
   }
+
+
+  const handleDeleteClick = (id) => {
+    setFournissurToDelete(id);
+    setConfirmDelete(true);
+  };
+
+
+  const handleDelete = async () => {
+    try {
+      await axios.delete(`${ip}/provider/${fournisseurToDelete}`);
+      setFournisseur(fournisseur.filter((four) => four.id !== fournisseurToDelete));
+      setConfirmDelete(false);
+      setFournissurToDelete(null);
+    } catch (error) {
+      console.log("Error deleting fournisseur:", error);
+    }
+  };
+
   const columns = [
-    { field: 'id', headerName: 'ID', width: 70 },
     {
-      field:'image',
-      headerName:'',
-      width:90,
-      getActions:({})=>[
-        <Stack direction="row" spacing={2}>
-        <Avatar sx={{ bgcolor: deepOrange[500], width: 50, height: 50,fontSize:50}}>A</Avatar>
-      </Stack>
-      ]
+      field: "avatar",
+      headerName: "Avatar",
+      width: 90,
+      renderCell: (params) => (
+        <Avatar
+          src={params.row.Media?.path || ""}
+          sx={{ bgcolor: deepOrange[500], width: 35, height: 35 }}
+        >
+          {params.row.nameProvider?.charAt(0)}
+        </Avatar>
+      ),
     },
     {
-      field: 'fullName',
+      field: 'nameProvider',
       headerName: 'fournisseur Name',
       width: 200,
     },
     {
-      field: 'companyName',
-      headerName: 'Company Name',
+      field: 'registrationNumber',
+      headerName: 'Registration Number',
       width: 200,
     },
     {
-      field: 'fournisseurEmail',
+      field: 'email',
       headerName: 'fournisseur Email',
       width: 220,
     },
     {
-      field: 'fournisseurNumber',
+      field:'phoneNumber',
       headerName: 'Phone Number',
       width: 150,
     },
     {
-      field: 'address',
+      field: 'adresse',
       headerName: 'Address',
       width: 190,
     },
     {
-      field: 'details',
-      headerName: 'More Details',
-      width: 110,
-      type: 'actions',
-      getActions: ({id}) => [
-        <GridActionsCellItem icon={<VisibilityIcon/>} onClick={()=>{handelDetails(id)}} label="Print" />,
-      ]
-    }
+      field: "actions",
+      headerName: "Actions",
+      width: 100,
+      type: "actions",
+      renderCell: (params) => (
+        <>
+          <GridActionsCellItem
+            icon={<VisibilityIcon />}
+            label="Details"
+            onClick={() => handelDetails(params.id)}
+          />
+          <GridActionsCellItem
+            icon={<DeleteOutlineIcon />}
+            label="Delete"
+            onClick={() => handleDeleteClick(params.id)}
+            style={{ color: "red" }}
+          />
+        </>
+      ),
+    },
     
   ];
   
-  const rows = [
-    { id: 1, fullName: 'Sfax1', companyName: 'Sfax1/Sfax', fournisseurEmail: "Salim sfexi" , details:"fff"},
-    { id: 2, fullName: 'Stock l mida', companyName: 'Mida/menzel tmim/Nabeul', fournisseurEmail: "Hamida midawi" },
-    { id: 3, fullName: 'Stock sahlin', companyName: 'Sahlin/Sousse', fournisseurEmail: "Wael ben sahloul" },
-    { id: 4, fullName: 'Stock alia', companyName: 'Alia/bizerte', fournisseurEmail: "Mouhamed Amin ben yahya" },
-    { id: 5, fullName: 'Targaryen', companyName: 'Daenerys', fournisseurEmail: "houssem ben ammar" },
-    { id: 6, fullName: 'Melisandre', companyName: null, fournisseurEmail: 150 },
-    { id: 7, fullName: 'Clifford', companyName: 'Ferrara', fournisseurEmail: 44 },
-    { id: 8, fullName: 'Frances', companyName: 'Rossini', fournisseurEmail: 36 },
-    { id: 9, fullName: 'Roxie', companyName: 'Harvey', fournisseurEmail: 65 },
-  ];
+
 
 
   return (
@@ -106,7 +148,7 @@ export default function FournisseursList() {
         '& .MuiDataGrid-cell:hover': {
           color: 'primary.main',
         }}}
-        rows={rows}
+        rows={fournisseur}
         columns={columns}
        slots={{
         noRowsOverlay: CustomNoRowsOverlay,
@@ -114,7 +156,6 @@ export default function FournisseursList() {
         toolbar: GridToolbar,
       }} 
       initialState={{
-        ...data.initialState,
         pagination: { paginationModel: { pageSize: 7 } },
         filter: {
           filterModel: {
@@ -130,7 +171,77 @@ export default function FournisseursList() {
       }}
       />
     </div>
-         </Item>          
-         </Box>
+         </Item>  
+         {confirmDelete && (
+    <>
+      <Box
+        sx={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          backgroundColor: "rgba(0, 0, 0, 0.5)",
+          zIndex: 999,
+        }}
+        onClick={() => setConfirmDelete(false)}
+      />
+
+      <Box
+        sx={{
+          backgroundColor: "#dc2626",
+          padding: "20px",
+          borderRadius: "8px",
+          boxShadow: "0 0 10px rgba(0,0,0,0.1)",
+          position: "fixed",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          zIndex: 1000,
+        }}
+      >
+        <Typography sx={{ fontSize: 20, mb: 2, color: "white" }}>
+          Are you sure you want to delete this author?
+        </Typography>
+        <span style={{ color: "white" }}>This action is irreversible!</span>
+
+        <Box sx={{ mt: 2, display: "flex", gap: 2 }}>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={handleDelete}
+            sx={{
+              backgroundColor: "white",
+              color: "red",
+              "&:hover": {
+                backgroundColor: "red",
+                color: "white",
+              },
+            }}
+          >
+            Yes, Delete
+          </Button>
+
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => setConfirmDelete(false)}
+            sx={{
+              backgroundColor: "white",
+              color: "red",
+              "&:hover": {
+                backgroundColor: "red",
+                color: "white",
+              },
+            }}
+          >
+            Cancel
+          </Button>
+        </Box>
+      </Box>
+    </>
+  )}
+</Box>
+        
   );
 }
