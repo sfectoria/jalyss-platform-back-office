@@ -47,8 +47,8 @@ export default function ArticleHistory() {
     return {
       id: i,
       date: historyRow.exitDate || historyRow.receiptDate,
-      customer: historyRow.client?.fullName || historyRow.stock?.name || "N/A",
-      fournisseur: historyRow.provider?.nameProvider  || "N/A",
+      customer: historyRow.client?.fullName || historyRow.stock?.name ||historyRow.transferNote?.map(note => note.stockTo?.name) || "N/A",
+      fournisseur: historyRow.provider?.nameProvider || historyRow.transferNote?.map(note => note.stockFrom?.name) || "N/A",
       type: historyRow.typeReceipt,
       transfer: historyRow.transferNote, // Stocker la valeur booléenne
       quantity: firstLine ? firstLine.quantity : "N/A",
