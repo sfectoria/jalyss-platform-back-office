@@ -29,7 +29,7 @@ export default function Vente() {
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [count, setCount] = useState(0);
-  const [editingRowId, setEditingRowId] = useState(null); // Track editing row
+  const [editingRowId, setEditingRowId] = useState(null); 
   const [editedStatus, setEditedStatus] = useState(""); 
   const [refresh, setRefresh] = useState(false);
 
@@ -38,7 +38,6 @@ export default function Vente() {
   function Pagination({ onPageChange, className }) {
     const apiRef = useGridApiContext();
     const pageCount = useGridSelector(apiRef, gridPageCountSelector);
-    console.log(page);
 
     return (
       <MuiPagination
@@ -97,15 +96,12 @@ export default function Vente() {
   const handleSaveStatus = async (rowId) => {
     const row = rows.find((row) => row.id === rowId);
     const updatedRow = { ...row, paymentStatus: editedStatus };
-   console.log(rowId,editedStatus);
-   
+
     try {
       await axios.patch(`${ip}/exitNote/${rowId}`, {
         paymentStatus: editedStatus
       });
       let sale = rows.find((el)=>el.id===rowId)
-      console.log(sale,rows);
-      console.log('all');
       if(sale.type.includes('BL')){
         let salesId=sale.salesDeliveryNote[0].id
       await axios.patch(`${ip}/salesDeliveryNote/${salesId}`, {
