@@ -24,10 +24,13 @@ export default function InputFileUpload({handleFileChange}) {
         alignItems: 'center', 
         border: '2px dashed', 
         cursor: 'pointer',
-        position: 'relative',
-        width:120,
-        height:120
-      }} 
+        width:100,
+        height:100,
+        position: 'absolute',  
+        right: 1, 
+        top: '60%', 
+        transform: 'translateX(-150%)', 
+          }} 
       component="label"
     >
       <AddIcon sx={{ fontSize: 45 }} />
