@@ -149,7 +149,7 @@ export default function UpdateAuthor({ setIsEdit, setIsEditMode }) {
           "http://localhost:5000/api/upload/image",
           formData
         );
-        setUploadedImage(URL.createObjectURL(file)); // Update state with the selected file URL
+        setUploadedImage(URL.createObjectURL(file)); 
         setFormData((prevFormData) => ({
           ...prevFormData,
           mediaId: response.data.id,
@@ -176,7 +176,7 @@ export default function UpdateAuthor({ setIsEdit, setIsEditMode }) {
           backgroundColor: "transparent",
           border: "1px solid #ddd",
           borderRadius: 2,
-          padding: { xs: 3, sm: 5 },
+          padding: { xs: 3, sm: 4 },
           maxWidth: "800px",
           margin: "0 auto",
         }}
@@ -190,15 +190,14 @@ export default function UpdateAuthor({ setIsEdit, setIsEditMode }) {
             borderRadius: 2,
           }}
         >
-          <Typography variant="h4" color="#48184C" gutterBottom>
-            Author Information
+          <Typography variant="h6" color="#48184C" gutterBottom>
+           Update Author Info
           </Typography>
           <Box
             sx={{
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              marginBottom: 3,
               position: "relative",
             }}
           >
@@ -225,12 +224,8 @@ export default function UpdateAuthor({ setIsEdit, setIsEditMode }) {
             >
               <label htmlFor="file-upload" style={{ cursor: "pointer" }}>
                 <Avatar
-                  src={uploadedImage} // Show existing image
-                  sx={{
-                    width: 80,
-                    height: 80,
-                    bgcolor: "#48184C",
-                  }}
+                  src={uploadedImage} 
+                  sx={{ width: "150px", height: "150px", bgcolor: "#48184C" }}
                 />
               </label>
             </Badge>

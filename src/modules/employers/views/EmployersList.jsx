@@ -5,13 +5,17 @@ import { useDemoData } from '@mui/x-data-grid-generator';
 import Typography from '@mui/material/Typography';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useNavigate } from 'react-router-dom';
+import Avatar from '@mui/material/Avatar';
 import CustomNoResultsOverlay from '../../../style/NoResultStyle'
+import { deepOrange } from '@mui/material/colors';
 import Item from '../../../style/ItemStyle';
 import { Pagination, Stack } from '@mui/material';
 import { GridPagination } from "@mui/x-data-grid";
 import { styled } from "@mui/material/styles";
+import { Button } from '@mui/material';
 import axios from 'axios';
 import { ip } from '../../../constants/ip';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import CustomNoRowsOverlay from '../../../style/NoRowsStyle';
 
 function BasicPagination() {
@@ -25,6 +29,8 @@ function BasicPagination() {
 export default function EmployeesList() {
 
 const [employer,setEmployer]=useState([])
+const [employerToDelete, setEmployeToDelete] = useState(null); 
+const [confirmDelete, setConfirmDelete] = useState(false);
 
 useEffect(()=>{
   const fetchEmplyer = async()=>{
@@ -40,18 +46,48 @@ useEffect(()=>{
   fetchEmplyer()
 },[])
 
+const handleDeleteClick = (id) => {
+  setEmployeToDelete(id);
+  setConfirmDelete(true); 
+};
 
-
+const handelDelete = async () => {
+  try {
+    await axios.delete(`${ip}/employees/${employerToDelete}`);
+    setEmployer(employer.filter((employee) => employee.id !== employerToDelete));
+    setConfirmDelete(false); 
+  } catch (error) {
+    console.log('Error deleting employer:', error);
+  }
+};
   const { data } = useDemoData({
     dataSet: 'Commodity',
     rowLength: 500,
     maxColumns: 6,
   });
+
+
   const navigate = useNavigate()
-  const handelDetails = (ids)=>{
-    navigate('/stock/location',{state:{id:ids}})
-  }
+  const handelDetails = (ids) => {
+    navigate(`${ids}`);
+  };
+  // const handelDetails = (ids)=>{
+  //   navigate('/stock/location',{state:{id:ids}})
+  // }
   const columns = [
+    {
+      field: "avatar",
+      headerName: "Avatar",
+      width: 90,
+      renderCell: (params) => (
+        <Avatar
+          src={params.row.media?.path || ""}
+          sx={{ bgcolor: deepOrange[500], width: 35, height: 35 }}
+        >
+          {params.row.firstName?.charAt(0)}
+        </Avatar>
+      ),
+    },
     {
       field: `firstName`,
       headerName: 'Employer Name',
@@ -83,28 +119,27 @@ useEffect(()=>{
       width: 200,
     },
     {
-      field: 'details',
-      headerName: 'More Details',
-      width: 110,
+      field: 'actions',
+      headerName: 'Actions',
+      width: 100,
       type: 'actions',
-      getActions: ({id}) => [
-        <GridActionsCellItem icon={<VisibilityIcon/>} onClick={()=>{handelDetails(id)}} label="Print" />,
-      ]
-    }
+      getActions: ({ id }) => [
+        <GridActionsCellItem
+          icon={<VisibilityIcon />}
+          label="Details"
+          onClick={() => handelDetails(id)}
+        />,
+        <GridActionsCellItem
+          icon={<DeleteOutlineIcon />}
+          label="Delete"
+          onClick={() => handleDeleteClick(id)} 
+          style={{color:"red"}}
+        />,
+      ],
+    },
     
   ];
   
-  // const rows = [
-  //   { id: 1, post: 'Manager', postLocation: 'Sfax1/Sfax', fullName: "Salim sfexi" ,empEmail:"slouma@gmail.com", details:"fff"},
-  //   { id: 2, post: 'Vendure', postLocation: 'Boutique Nabeul',empEmail:"hamidamidawi@gmail.com", fullName: "Hamida midawi" },
-  //   { id: 3, post: 'Manager', postLocation: 'Stock Sahlin',empEmail:"waelbensahloul@gmail.com", fullName: "Wael ben sahloul" },
-  //   { id: 4, post: '', postLocation: 'Stock alia', fullName: "Mouhamed Amin ben yahya" },
-  //   { id: 5, post: 'Targaryen', postLocation: 'Daenerys', fullName: "houssem ben ammar" },
-  //   { id: 6, post: 'Melisandre', postLocation: null, fullName: 150 },
-  //   { id: 7, post: 'Clifford', postLocation: 'Ferrara', fullName: 44 },
-  //   { id: 8, post: 'Frances', postLocation: 'Rossini', fullName: 36 },
-  //   { id: 9, post: 'Roxie', postLocation: 'Harvey', fullName: 65 },
-  // ];
   return (
     <Box
       sx={{
@@ -136,7 +171,6 @@ useEffect(()=>{
               toolbar: GridToolbar,
             }}
             initialState={{
-              ...data.initialState,
               pagination: { paginationModel: { pageSize: 7 } },
               filter: {
                 filterModel: {
@@ -154,6 +188,42 @@ useEffect(()=>{
         </div>
         <BasicPagination />
       </Item>
+      {confirmDelete && (
+        <Box
+          sx={{
+            backgroundColor: 'white',
+            padding: '20px',
+            borderRadius: '8px',
+            boxShadow: '0 0 10px rgba(0,0,0,0.1)',
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 1000,
+          }}
+        >
+          <Typography sx={{ fontSize: 20, mb: 2 }}>
+            Do you want to delete this, sir?
+          </Typography>
+          <span style={{ color: 'red' }}>This action is irreversible!</span>
+
+          <Box sx={{ mt: 2, display: 'flex', gap: 2 }}>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={handelDelete}
+            >
+              Yes, Delete
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={() => setConfirmDelete(false)} 
+            >
+              Cancel
+            </Button>
+          </Box>
+        </Box>
+      )}
     </Box>
   );
 }

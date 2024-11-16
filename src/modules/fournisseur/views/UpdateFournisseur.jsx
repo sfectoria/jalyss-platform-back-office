@@ -1,32 +1,14 @@
-import {
-  Alert,
-  Avatar,
-  Badge,
-  Box,
-  Button,
-  createTheme,
-  Dialog,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Grid,
-  IconButton,
-  Paper,
-  TextField,
-  ThemeProvider,
-  Typography,
-} from "@mui/material";
+import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import { Box, TextField, IconButton, Grid, Paper, Typography, Avatar, Badge, Dialog, DialogTitle, DialogContent, DialogContentText, ThemeProvider, createTheme } from '@mui/material';
+import { ip } from '../../../constants/ip';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { useNavigate } from 'react-router-dom';
 import FileUploader from "../../../components/FileUploader";
-import React, { useState } from "react";
-import Item from "../../../style/ItemStyle";
-import CheckIcon from "@mui/icons-material/Check";
-import DeleteIcon from "@mui/icons-material/Delete";
-import CloseIcon from "@mui/icons-material/Close";
-import axios from "axios";
-import { ip } from "../../../constants/ip";
-import { useNavigate } from "react-router-dom";
 
-export default function AddFournisseur() {
+export default function UpdateFournisseur({ oneFournisseur }) {
   const defaultTheme = createTheme({
     components: {
       MuiTypography: {
@@ -38,36 +20,60 @@ export default function AddFournisseur() {
       },
     },
   });
-
-  const navigate = useNavigate();
+  
   const [formData, setFormData] = useState({
     nameProvider: "",
     email: "",
     registrationNumber: "",
     adresse: "",
     phoneNumber: "",
-    mediaId: "",
+    mediaId: oneFournisseur?.mediaId || null,
   });
+
   const [errors, setErrors] = useState({});
   const [isCancelled, setIsCancelled] = useState(false);
   const [open, setOpen] = useState(false);
-  const [uploadedImage, setUploadedImage] = useState("");
+  const [uploadedImage, setUploadedImage] = useState(""); 
+  const navigate = useNavigate();
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  useEffect(() => {
+    if (oneFournisseur) {
+      setFormData({
+        nameProvider: oneFournisseur.nameProvider || "",
+        email: oneFournisseur.email || "",
+        registrationNumber: oneFournisseur.registrationNumber || "",
+        adresse: oneFournisseur.adresse || "",
+        phoneNumber: oneFournisseur.phoneNumber || "",
+        mediaId: oneFournisseur.Media?.path || "", 
+      });
+      setUploadedImage(oneFournisseur.Media?.path || ""); 
+    }
+  }, [oneFournisseur]);
+
+  const handleFileUpload = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append('image', file);
+      try {
+        const response = await axios.post("http://localhost:5000/api/upload/image", formData);
+        setUploadedImage(URL.createObjectURL(file)); 
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          mediaId: response.data.id,
+        }));
+      } catch (error) {
+        console.error("Error uploading image:", error);
+      }
+    }
   };
 
-  const isVerified = () => {
-    const { phoneNumber } = formData;
-    if (phoneNumber.length !== 8) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        phoneNumber: "Phone number must be 8 digits",
-      }));
-      return false;
-    }
-    return true;
+  const removeImage = () => {
+    setUploadedImage(null);
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      mediaId: null,
+    }));
   };
 
   const validateForm = () => {
@@ -79,14 +85,22 @@ export default function AddFournisseur() {
     if (!formData.email) newErrors.email = "Email is required";
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0 && isVerified();
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
       try {
-        const response = await axios.post(`${ip}/provider`, formData);
+        const response = await axios.patch(`${ip}/provider/${oneFournisseur.id}`, formData);
         console.log("Response:", response.data);
         setIsCancelled(false);
         setOpen(true);
@@ -120,73 +134,53 @@ export default function AddFournisseur() {
       mediaId: "",
     });
     setErrors({});
-    setUploadedImage(""); 
   };
 
   const handleClose = () => {
     setOpen(false);
   };
 
-  const handleFileUpload = async (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const formData = new FormData();
-      formData.append('image', file);
-      try {
-        const response = await axios.post(
-          "http://localhost:5000/api/upload/image",
-          formData
-        );
-        setUploadedImage(URL.createObjectURL(file));
-        setFormData((prevFormData) => ({
-          ...prevFormData,
-          mediaId: response.data.id,
-        }));
-      } catch (error) {
-        console.error("Error uploading image:", error);
-      }
-    }
-  };
-
   return (
     <ThemeProvider theme={defaultTheme}>
-      <Paper elevation={3} sx={{ m: "5%" }}>
+      <Paper elevation={3} sx={{ m: "5%", width: "80%" }}>
         <Box sx={{ padding: 5 }}>
-          <Typography variant="h4" gutterBottom>
-            Add New Fournisseur
+          <Typography variant="h4" gutterBottom sx={{color:"#48184C"}}>
+            Update Fournisseur Info
           </Typography>
           <form onSubmit={handleSubmit}>
             <Grid container spacing={2} alignItems="flex-start">
               <Grid item xs={12} sm={4}>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    padding: 3,
-                  }}
-                >
+                <Box sx={{ display: "flex", justifyContent: "center", padding: 3 }}>
                   <Badge
                     overlap="circular"
                     anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
                     badgeContent={
                       <IconButton
-                        id="delete-btn"
-                        sx={{ height: "60px", width: "60px" }}
-                        onClick={() => setUploadedImage("")} 
+                        sx={{
+                          bgcolor: "red",
+                          color: "white",
+                          width: "60px",
+                          height: "60px",
+                          "&:hover": { bgcolor: "red" },
+                        }}
+                        onClick={removeImage}
                       >
-                        <DeleteIcon sx={{ color: "white" }} />
+                        <DeleteIcon sx={{height:"30px",width:"30px"}}/>
                       </IconButton>
                     }
                   >
-                     <Avatar
-                        src={uploadedImage}
-                        sx={{ width: "200px", height: "200px", bgcolor: "#48184C" }}
-                      >
-                        <FileUploader setFormData={setFormData} onSelectFile={handleFileUpload} icon={"upload"} />
-                      </Avatar>
+                    <label htmlFor="file-upload" style={{ cursor: "pointer" }}>
+                    <Avatar
+                      src={uploadedImage}
+                      sx={{ width: "200px", height: "200px", bgcolor: "#48184C" }}
+                    >
+                      <FileUploader setFormData={setFormData} onSelectFile={handleFileUpload} icon={"upload"} />
+                    </Avatar>
+                    </label>
                   </Badge>
                 </Box>
               </Grid>
+
               <Grid item xs={12} sm={8}>
                 <Box sx={{ padding: 3 }}>
                   <Grid container spacing={2}>
@@ -240,7 +234,7 @@ export default function AddFournisseur() {
                         helperText={errors.adresse}
                       />
                     </Grid>
-                    <Grid item marginLeft={28} xs={12} sm={6}>
+                    <Grid item xs={12} sm={6}>
                       <TextField
                         required
                         fullWidth
@@ -267,31 +261,23 @@ export default function AddFournisseur() {
           </form>
         </Box>
       </Paper>
-
+      
       <Dialog
         open={open}
         onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
         sx={{
-          "& .MuiPaper-root": {
-            borderColor: isCancelled ? "error.main" : "success.main",
-            borderWidth: 3,
-            borderStyle: "solid",
-            bgcolor: isCancelled ? "error.light" : "success.light",
+          "& .MuiDialog-paper": {
+            backgroundColor: isCancelled ? "#f44336" : "#4caf50",
+            color: "white",
           },
         }}
       >
-        <DialogTitle
-          id="alert-dialog-title"
-          color={"white"}
-          sx={{ fontWeight: "bold" }}
-        >
-          {isCancelled ? "Changes cancelled!" : "Submitted successfully!"}
-        </DialogTitle>
+        <DialogTitle>{isCancelled ? "Operation Canceled" : "Update Successful"}</DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            {isCancelled ? "You have cancelled the action." : "You have added a new Fournisseur successfully."}
+          <DialogContentText>
+            {isCancelled
+              ? "You have canceled the update operation."
+              : "The client information has been successfully updated."}
           </DialogContentText>
         </DialogContent>
       </Dialog>
