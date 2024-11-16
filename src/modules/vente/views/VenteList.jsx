@@ -112,39 +112,33 @@ function VentList() {
   const handleSaveStatus = async (rowId) => {
     const row = rows.find((row) => row.id === rowId);
     const updatedRow = { ...row, paymentStatus: editedStatus };
-
+    let obj =  {
+      paymentStatus: editedStatus,
+      modified:true
+    }
     try {
-      await axios.patch(`${ip}/exitNote/${rowId}`, {
-        paymentStatus: editedStatus
-      });
+      await axios.patch(`${ip}/exitNote/${rowId}`,obj);
       let sale = rows.find((el)=>el.id===rowId)
       if(sale.type.includes('BL')){
         let salesId=sale.salesDeliveryNote[0].id
-      await axios.patch(`${ip}/salesDeliveryNote/${salesId}`, {
-        paymentStatus: editedStatus
-      });
+      await axios.patch(`${ip}/salesDeliveryNote/${salesId}`,obj);
      }
       else if(sale.type.includes('BLF')){
         let salesId=sale.salesDeliveryInvoice[0].id
-      await axios.patch(`${ip}/salesDeliveryInvoice/${salesId}`, {
-        paymentStatus: editedStatus
-      });
+      await axios.patch(`${ip}/salesDeliveryInvoice/${salesId}`,obj);
      }
       else if(sale.type.includes('F')){
         let salesId=sale.salesInvoice[0].id
-      await axios.patch(`${ip}/sales-invoices/${salesId}`, {
-        paymentStatus: editedStatus
-      });
+      await axios.patch(`${ip}/sales-invoices/${salesId}`,obj);
      }
       else if(sale.type.includes('Ticket')){
         let salesId=sale.salesReceipt[0].id
-      await axios.patch(`${ip}/sales-receipt/${salesId}`, {
-        paymentStatus: editedStatus
-      });
+      await axios.patch(`${ip}/sales-receipt/${salesId}`,obj);
      }
       setRows((prevRows) =>
         prevRows.map((row) => (row.id === rowId ? updatedRow : row))
       );
+      setRefresh(!refresh)
       setEditingRowId(null); 
     } catch (error) {
       console.error("Error updating status:", error);
@@ -249,7 +243,8 @@ function VentList() {
           <ClearIcon color="error" />
         ),
     },
-    { field: "payed",
+    {
+      field: "payed",
       headerName: "Payed/Not",
       width: 200,
       renderCell: (params) => {
@@ -275,6 +270,7 @@ function VentList() {
           );
         }
         let status = params.row.paymentStatus;
+        let modified = params.row.modified
         const color =
           status === "Payed"
             ? "green"
@@ -282,18 +278,22 @@ function VentList() {
             ? "red"
             : "orange";
         return (
-          <div
-            style={{ color, cursor: "pointer" }}
-            onClick={() => {
-              setEditingRowId(params.row.id);
-              setEditedStatus(params.row.paymentStatus);
-            }}
+          <div style={{display:"flex" ,gap:3, cursor: "pointer"}}
+          onClick={() => {
+            setEditingRowId(params.row.id);
+            setEditedStatus(params.row.paymentStatus);
+          }}
           >
+          <div style={{color}}>
             {status === "Payed"
               ? "Payed"
               : status === "NotPayed"
               ? "Not Payed"
               : "Partially Payed"}
+          </div>
+          <div style={{color:"gray"}}>
+            {modified&&"(modified)"}
+          </div>
           </div>
         );
       },

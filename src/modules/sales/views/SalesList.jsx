@@ -94,39 +94,29 @@ function SalesList() {
   const handleSaveStatus = async (rowId) => {
     const row = rows.find((row) => row.id === rowId);
     const updatedRow = { ...row, paymentStatus: editedStatus };
-
+    let obj ={
+      paymentStatus: editedStatus,
+      modified:true
+    }
     try {
-      await axios.patch(`${ip}/receiptNote/${rowId}`, {
-        paymentStatus: editedStatus
-      });
+      await axios.patch(`${ip}/receiptNote/${rowId}`,obj);
       let purchase = rows.find((el)=>el.id===rowId)
       if(purchase.type.includes('BL')){
         let salesId=purchase.purchaseDeliveryNote[0].id
-      await axios.patch(`${ip}/purchase-delivery-note/${salesId}`, {
-        paymentStatus: editedStatus
-      });
+      await axios.patch(`${ip}/purchase-delivery-note/${salesId}`,obj);
      }
       else if(purchase.type.includes('BLF')){
         let salesId=purchase.purchaseDeliveryInvoice[0].id
-      await axios.patch(`${ip}/purchase-delivery-invoices/${salesId}`, {
-        paymentStatus: editedStatus
-      });
+      await axios.patch(`${ip}/purchase-delivery-invoices/${salesId}`,obj);
      }
       else if(purchase.type.includes('F')){
         let salesId=purchase.purchaseInvoice[0].id
-      await axios.patch(`${ip}/purchase-invoices/${salesId}`, {
-        paymentStatus: editedStatus
-      });
+      await axios.patch(`${ip}/purchase-invoices/${salesId}`,obj);
      }
-    //   else if(sale.type.includes('Ticket')){
-    //     let salesId=sale.salesReceipt[0].id
-    //   await axios.patch(`${ip}/sales-receipt/${salesId}`, {
-    //     paymentStatus: editedStatus
-    //   });
-    //  }
       setRows((prevRows) =>
         prevRows.map((row) => (row.id === rowId ? updatedRow : row))
       );
+      setRefresh(!refresh);
       setEditingRowId(null); 
     } catch (error) {
       console.error("Error updating status:", error);
@@ -268,6 +258,7 @@ function SalesList() {
           );
         }
         let status = params.row.paymentStatus;
+        let modified = params.row.modified
         const color =
           status === "Payed"
             ? "green"
@@ -275,18 +266,22 @@ function SalesList() {
             ? "red"
             : "orange";
         return (
-          <div
-            style={{ color, cursor: "pointer" }}
-            onClick={() => {
-              setEditingRowId(params.row.id);
-              setEditedStatus(params.row.paymentStatus);
-            }}
+          <div style={{display:"flex" ,gap:3, cursor: "pointer"}}
+          onClick={() => {
+            setEditingRowId(params.row.id);
+            setEditedStatus(params.row.paymentStatus);
+          }}
           >
+          <div style={{color}}>
             {status === "Payed"
               ? "Payed"
               : status === "NotPayed"
               ? "Not Payed"
               : "Partially Payed"}
+          </div>
+          <div style={{color:"gray"}}>
+            {modified&&"(modified)"}
+          </div>
           </div>
         );
       },
