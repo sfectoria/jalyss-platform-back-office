@@ -9,6 +9,8 @@ import {
   useGridApiContext,
   useGridSelector,
 } from "@mui/x-data-grid";
+import Button from "@mui/material/Button";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import MuiPagination from "@mui/material/Pagination";
 import Typography from "@mui/material/Typography";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -22,6 +24,7 @@ import { ip } from "../../../constants/ip";
 import CustomNoRowsOverlay from "../../../style/NoRowsStyle";
 
 const getPageFromUrl = () => {
+
   const params = new URLSearchParams(window.location.search);
   return +params.get("page") || 0;
 };
@@ -41,6 +44,11 @@ export default function ArticlesList() {
   const [pageSize, setPageSize] = useState(getPageSizeFromUrl());
   const [text, setText] = useState(null);
  
+  const [articles, setArticles] = useState([]);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [articlesToDelete, setarticlesToDelete] = useState(null);
+
+
   function Pagination({ onPageChange, className }) {
     const apiRef = useGridApiContext();
     const pageCount = useGridSelector(apiRef, gridPageCountSelector);
@@ -88,6 +96,8 @@ export default function ArticlesList() {
         }, 0);
         return ele;
       });
+      setArticles(response.data);
+      console.log("Articles fetched:", response.data);
       setRows(response.data.data);
       setCount(response.data.count);
     } catch (err) {
@@ -119,6 +129,24 @@ export default function ArticlesList() {
       navigate(newUrl);
     }
   };
+
+
+  const handleDeleteClick = (id) => {
+    setarticlesToDelete(id);
+    setConfirmDelete(true);    
+  };
+
+  const handleDelete = async () => {
+    try {
+      await axios.delete(`${ip}/articles/${articlesToDelete}`);
+      setRows(articles.filter((article) => article.id !== articlesToDelete));
+      setConfirmDelete(false);
+      setarticlesToDelete(null);
+    } catch (error) {
+      console.log("Error deleting article:", error);
+    }
+  };
+  
   const columns = [
     {
       field: "image",
@@ -133,40 +161,52 @@ export default function ArticlesList() {
     { field: "quantity", headerName: "Quantity", width: 90 },
     {
       field: "author",
-      headerName: "Author",
+      headerName: "Author(s)",
       width: 250,
-
-      valueGetter: (value, row) => {
-        //return row?.articleByAuthor[0]?.author?.nameAr;
-        const nameAr = row?.articleByAuthor[0]?.author?.nameAr;
-        const nameEn = row?.articleByAuthor[0]?.author?.nameEn;
-        return nameAr !== '' ? nameAr : nameEn;
-
+      valueGetter: (value,row) => {
+        return row?.articleByAuthor
+          ?.map((e) => e.author.nameAr)
+          .join(", ") || "";
       },
     },
+    
+   
     {
       field: "nameAr",
-      headerName: "Publisher",
+      headerName: "Publisher(s)",
       width: 250,
-      valueGetter: (value, row) => {
-        // return row?.articleByPublishingHouse[0]?.publishingHouse?.nameAr;
-        const nameAr = row?.articleByPublishingHouse[0]?.publishingHouse?.nameAr;
-        const nameEn = row?.articleByPublishingHouse[0]?.publishingHouse?.nameEn;
-        return nameAr !== '' ? nameAr : nameEn;
+      valueGetter: (value,row) => {
+        return row?.articleByPublishingHouse
+          ?.map((e) => e.publishingHouse.nameAr)
+          .join(", ") || "";
       },
     },
+ 
     {
-      field: "details",
-      headerName: "Details",
-      width: 110,
+      field: "actions",
+      headerName: "Actions",
+      width: 100,
       type: "actions",
-      getActions: ({ id }) => [
-        <GridActionsCellItem
-          icon={<VisibilityIcon />}
-          onClick={() => handleDetails(id)}
-          label=""
-        />,
-      ],
+      renderCell: (params) => (
+        <>
+          <GridActionsCellItem
+            icon={<VisibilityIcon />}
+            label="Details"
+            onClick={() => handleDetails(params.id)}
+          />
+      <GridActionsCellItem
+  icon={<DeleteOutlineIcon />}
+  label="Delete"
+  onClick={() => {
+    const { id } = params; // Extract id from params
+    handleDeleteClick(id);
+    console.log("Article ID passed for deletion:", id);
+  }}
+  style={{ color: "red" }}
+/>
+
+        </>
+      ),
     },
   ];
 
@@ -232,6 +272,86 @@ export default function ArticlesList() {
           />
         </div>
       </Item>
+      {confirmDelete && (
+    <>
+      <Box
+        sx={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          backgroundColor: "rgba(0, 0, 0, 0.5)",
+          zIndex: 999,
+        }}
+        onClick={() => setConfirmDelete(false)}
+      />
+
+      <Box
+        sx={{
+          backgroundColor: "#dc2626",
+          padding: "20px",
+          borderRadius: "8px",
+          boxShadow: "0 0 10px rgba(0,0,0,0.1)",
+          position: "fixed",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          zIndex: 1000,
+        }}
+      >
+        <Typography sx={{ fontSize: 20, mb: 2, color: "white" }}>
+          Are you sure you want to delete this article?
+        </Typography>
+        <span style={{ color: "white" }}>This action is irreversible!</span>
+
+        <Box sx={{ mt: 2, display: "flex", gap: 2 }}>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={handleDelete}
+            sx={{
+              backgroundColor: "white",
+              color: "red",
+              "&:hover": {
+                backgroundColor: "red",
+                color: "white",
+              },
+            }}
+          >
+            Yes, Delete
+          </Button>
+
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => setConfirmDelete(false)}
+            sx={{
+              backgroundColor: "white",
+              color: "red",
+              "&:hover": {
+                backgroundColor: "red",
+                color: "white",
+              },
+            }}
+          >
+            Cancel
+          </Button>
+        </Box>
+      </Box>
+    </>
+  )}
     </Box>
   );
 }
+
+
+ //return row?.articleByAuthor[0]?.author?.nameAr;
+    // const nameEn = row?.articleByAuthor[0]?.author?.nameEn;
+    // return nameAr !== '' ? nameAr : nameEn;
+
+
+       // return row?.articleByPublishingHouse[0]?.publishingHouse?.nameAr;
+    // const nameAr = row?.articleByPublishingHouse[0]?.publishingHouse?.nameAr;
+    // const nameEn = row?.articleByPublishingHouse[0]?.publishingHouse?.nameEn;
+    // return nameAr !== '' ? nameAr : nameEn;

@@ -1,227 +1,383 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Box, Typography, TextField, Autocomplete, Stack, Alert, Button } from "@mui/material";
+import {
+  Box,
+  TextField,
+  IconButton,
+  Grid,
+  Paper,
+  Typography,
+  Avatar,
+  Badge,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  ThemeProvider,
+  createTheme,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { ip } from "../../../constants/ip";
+import FileUploader from "../../../components/FileUploader";
+import DeleteIcon from "@mui/icons-material/Delete";
+import CheckIcon from "@mui/icons-material/Check";
+import CloseIcon from "@mui/icons-material/Close";
 
 const UpdateArticle = ({ data1, setIsEditMode, isEditMode }) => {
+
+  
   const id = data1.id;
-  const [nameText, setNameText] = useState("");
-  const [barcode, setBarcode] = useState("");
-  const [authorText, setAuthorText] = useState("");
-  const [publisherText, setPublisherText] = useState("");
-  const [description, setDescription] = useState("");
-  const [selectedCategories, setSelectedCategories] = useState([]);
-  const [articlesAuthors, setArticlesAuthors] = useState([]);
-  const [successAlert, setSuccessAlert] = useState(false);
-  const [errorAlert, setErrorAlert] = useState(false);
-  const [avatar, setAvatar] = useState(null); 
+  const [errors, setErrors] = useState({});
+  const [isCancelled, setIsCancelled] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [uploadedImage, setUploadedImage] = useState("");
+
+  const defaultTheme = createTheme({
+    components: {
+      MuiTypography: {
+        styleOverrides: {
+          root: {
+            wordBreak: "break-word",
+          },
+        },
+      },
+    },
+  });
+
+  const [formData, setFormData] = useState({
+    title: "",
+    code: "",
+    longDescriptionEn: "",
+    articleByAuthor: "",
+    articleByPublishingHouse: "",
+    coverId: "",
+  });
+
   const navigate = useNavigate();
 
-  const fetchAuthors = async () => {
-    try {
-      const response = await axios.get(`${ip}/author`);
-      setArticlesAuthors(response.data);
-    } catch (error) {
-      console.error("Error fetching authors data:", error);
+  const handleFileUpload = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append("image", file);
+      try {
+        const response = await axios.post(
+          "http://localhost:5000/api/upload/image",
+          formData
+        );
+        setUploadedImage(response.data.path); 
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          coverId: response.data.id, 
+        }));
+      } catch (error) {
+        console.error("Error uploading image:", error);
+      }
     }
   };
 
-  useEffect(() => {
-    fetchAuthors();
-  }, []);
+  const removeImage = () => {
+    setUploadedImage(null);
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      coverId: null,
+    }));
+  };
 
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.title) newErrors.title = "Title is required";
+    if (!formData.articleByAuthor)
+      newErrors.articleByAuthor = "Author is required";
+    if (!formData.articleByPublishingHouse)
+      newErrors.articleByPublishingHouse = "Publishing house is required";
+    if (!formData.code) newErrors.code = "Code is required";
+    if (!formData.longDescriptionEn)
+      newErrors.longDescriptionEn = "Description is required";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value || "", 
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (validateForm()) {
+      try {
+        const updatedData = {
+          ...formData,
+          articleByAuthor: formData.articleByAuthor, 
+          articleByPublishingHouse: formData.articleByPublishingHouse,
+        };
+
+        console.log("Updated Data:", updatedData); 
+        const response = await axios.patch(`${ip}/articles/${id}`, updatedData);
+        console.log("Response:", response.data);
+
+        setIsCancelled(false);
+        setOpen(true);
+        setTimeout(() => {
+          navigate("/articles");
+        }, 2500);
+        resetForm();
+      } catch (error) {
+        console.error("Error submitting form:", error);
+      }
+    }
+  };
+  const handleCancel = () => {
+    setIsCancelled(true);
+    setOpen(true);
+    setTimeout(() => {
+      navigate("/articles");
+    }, 2500);
+    resetForm();
+  };
+
+  const resetForm = () => {
+    setFormData({
+      title: "",
+      code: "",
+      articleByAuthor: "",
+      articleByPublishingHouse: "",
+      longDescriptionEn: "",
+      cover: null,
+    });
+    setErrors({});
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   useEffect(() => {
     if (data1) {
-      setNameText(data1.title || "");
-      setBarcode(data1.code || "");
-      setAuthorText(data1.articleByAuthor?.[0]?.author.nameAr || "");
-      setPublisherText(data1.articleByPublishingHouse?.[0]?.nameAr || "");
-      setDescription(data1.longDescriptionEn || "");
-      setSelectedCategories(data1.articleByCategory || []);
-      setAvatar(null); 
+      setFormData({
+        title: data1.title || "",
+        code: data1.code || "",
+        articleByAuthor:  data1.articleByAuthor.map((e) => e.author.nameAr).join(', '),
+        articleByPublishingHouse: data1.articleByPublishingHouse.map((e)=>e.publishingHouse.nameAr).join(', '),
+        longDescriptionEn: data1.longDescriptionEn,
+        coverId: data1.cover?.path || "",
+      });
+      setUploadedImage(data1.cover?.path || "");
     }
   }, [data1]);
-
-  const handleUpdate = async () => {
-    try {
-      const updatedArticle = {
-        title: nameText, 
-        code: barcode,
-        longDescriptionEn: description,
-        articleByAuthor: [{ nameAr: authorText }],
-        articleByPublishingHouse: [{ nameAr: publisherText }],
-        articleByCategory: selectedCategories.map((cat) => ({ name: cat.name })),
-      };
-
-      const formData = new FormData();
-      formData.append('article', JSON.stringify(updatedArticle));
-      if (avatar) {
-        formData.append('avatar', avatar);
-      }
-
-      const response = await axios.patch(`${ip}/articles/${id}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-
-      if (response.status === 200) {
-        setSuccessAlert(true);
-        setErrorAlert(false);
-        setTimeout(() => {
-          navigate('/articles');
-        }, 2000);
-      } else {
-        setErrorAlert(true);
-        setSuccessAlert(false);
-      }
-    } catch (error) {
-      setErrorAlert(true);
-      setSuccessAlert(false);
-      console.error("Error updating article:", error);
-    }
-  };
-
-
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setAvatar(file); 
-    }
-  };
+  
+  
+  
 
   return (
-    <Box
-      sx={{
-        width: "60%",
-        height: "auto",
-        padding: "20px",
-        margin: "0 auto",
-        backgroundColor: "white",
-        borderRadius: "8px",
-        boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
-      }}
-    >
-      <Typography variant="h4" align="center" sx={{ marginBottom: 2, color: "#48184c" }}>
-        Update Article
-      </Typography>
+    <ThemeProvider theme={defaultTheme}>
+      <Paper elevation={3} sx={{ m: "5%", width: "80%" }}>
+        <Box sx={{ padding: 5 }}>
+          <Typography variant="h4" gutterBottom sx={{ color: "#48184C" }}>
+            Update Article Info
+          </Typography>
+          <form onSubmit={handleSubmit}>
+            <Grid container spacing={2} alignItems="flex-start">
+              <Grid item xs={12} sm={4}>
+                <Box
+                  sx={{ display: "flex", justifyContent: "center", padding: 3 }}
+                >
+                  <Badge
+                    overlap="circular"
+                    anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+                    badgeContent={
+                      <IconButton
+                        sx={{
+                          bgcolor: "red",
+                          color: "white",
+                          width: "60px",
+                          height: "60px",
+                          "&:hover": { bgcolor: "red" },
+                        }}
+                        onClick={removeImage}
+                      >
+                        <DeleteIcon sx={{ height: "30px", width: "30px" }} />
+                      </IconButton>
+                    }
+                  >
+                    <label htmlFor="file-upload" style={{ cursor: "pointer" }}>
+                      <Avatar
+                        src={uploadedImage}
+                        sx={{
+                          width: "200px",
+                          height: "200px",
+                          bgcolor: "#48184C",
+                        }}
+                      >
+                        <FileUploader
+                          setFormData={setFormData}
+                          onSelectFile={handleFileUpload}
+                          icon={"upload"}
+                        />
+                      </Avatar>
+                    </label>
+                  </Badge>
+                </Box>
+              </Grid>
 
-      {/* Avatar Upload Section */}
-      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 4 }}>
-        <input
-          accept="image/*"
-          type="file"
-          onChange={handleFileChange}
-          style={{ display: "none" }}
-          id="avatar-upload"
-        />
-        <label htmlFor="avatar-upload">
-          <Button 
-            variant="contained" 
-            component="span" 
-            sx={{ 
-              marginBottom: 2, 
-              backgroundColor: "#48184c", 
-              color: "white", 
-              "&:hover": { backgroundColor: "#361038" } 
-            }}
-          >
-            Upload Avatar
-          </Button>
-        </label>
-        {avatar && (
-          <img
-            src={URL.createObjectURL(avatar)} 
-            alt="Avatar Preview"
-            style={{ width: 100, height: 100, borderRadius: "50%", objectFit: "cover" }}
-          />
-        )}
-      </Box>
-
-      <Box sx={{ display: "flex", gap: 2, marginBottom: 4 }}>
-        <TextField
-          required
-          label="Title"
-          sx={{ width: "47%" }}
-          value={nameText}
-          onChange={(e) => setNameText(e.target.value)}
-        />
-        <TextField
-          required
-          label="BarCode"
-          sx={{ width: "40%" }}
-          value={barcode}
-          onChange={(e) => setBarcode(e.target.value)}
-        />
-      </Box>
-
-      <Box sx={{ display: "flex", gap: 2, marginBottom: 4 }}>
-        <Autocomplete
-          freeSolo
-          sx={{ width: "47%" }}
-          options={articlesAuthors.map((option) => option.nameAr)}  
-          onInputChange={(e, value) => setAuthorText(value)}
-          value={authorText}
-          renderInput={(params) => <TextField {...params} label="Author" required />}
-        />
-        <TextField
-          required
-          label="Publisher"
-          sx={{ width: "40%" }}
-          value={publisherText}
-          onChange={(e) => setPublisherText(e.target.value)}
-        />
-      </Box>
-
-      <TextField
-        label="Description"
-        rows={4}
-        sx={{ width: "100%" }}
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
-
-      <Stack sx={{ width: "100%" }} spacing={2}>
-        {successAlert && (
-          <Alert severity="success" onClose={() => setSuccessAlert(false)}>
-            Article updated successfully!
-          </Alert>
-        )}
-        {errorAlert && (
-          <Alert severity="error" onClose={() => setErrorAlert(false)}>
-            Error updating article. Please try again.
-          </Alert>
-        )}
-      </Stack>
-
-      <Box sx={{ display: "flex", justifyContent: "space-between", marginTop: 4 }}>
-        <Button
-          variant="contained"
-          sx={{ 
-            backgroundColor: "#48184c", 
-            color: "white", 
-            "&:hover": { backgroundColor: "#361038" } 
-          }}
-          onClick={handleUpdate}
-        >
-          Update Article
-        </Button>
-        <Button
-          variant="outlined"
-          sx={{ 
-            borderColor: "#48184c", 
-            color: "#48184c", 
-            "&:hover": { backgroundColor: "#f5f5f5" } 
-          }}
-          onClick={() => setIsEditMode(!isEditMode)}
-        >
-          Cancel
-        </Button>
-      </Box>
-    </Box>
+              <Grid item xs={12} sm={8}>
+                <Box sx={{ padding: 3 }}>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        required
+                        fullWidth
+                        label="Title"
+                        name="title"
+                        onChange={handleInputChange}
+                        value={formData.title}
+                        error={!!errors.title}
+                        helperText={errors.title}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        required
+                        fullWidth
+                        label="Author"
+                        name="articleByAuthor"
+                        onChange={handleInputChange}
+                        value={formData.articleByAuthor}
+                        error={!!errors.articleByAuthor}
+                        helperText={errors.articleByAuthor}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        required
+                        fullWidth
+                        label="Publishing House"
+                        name="articleByPublishingHouse"
+                        onChange={handleInputChange}
+                        value={formData.articleByPublishingHouse}
+                        error={!!errors.articleByPublishingHouse}
+                        helperText={errors.articleByPublishingHouse}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        required
+                        fullWidth
+                        label="Code"
+                        name="code"
+                        onChange={handleInputChange}
+                        value={formData.code}
+                        error={!!errors.code}
+                        helperText={errors.code}
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <TextField
+                        required
+                        fullWidth
+                        multiline
+                        rows={4}
+                        label="Long Description"
+                        name="longDescriptionEn"
+                        onChange={handleInputChange}
+                        value={formData.longDescriptionEn}
+                        error={!!errors.longDescriptionEn}
+                        helperText={errors.longDescriptionEn}
+                      />
+                    </Grid>
+                  </Grid>
+                </Box>
+              </Grid>
+            </Grid>
+            <Box mt={4} display="flex" justifyContent="flex-end" gap={2}>
+              <IconButton type="submit" sx={{ bgcolor: "#48184C", color: "white" }}>
+                <CheckIcon />
+              </IconButton>
+              <IconButton onClick={handleCancel} sx={{ bgcolor: "gray", color: "white" }}>
+                <CloseIcon />
+              </IconButton>
+            </Box>
+          </form>
+        </Box>
+      </Paper>
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>{isCancelled ? "Cancelled" : "Article Updated"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            {isCancelled
+              ? "The update process has been cancelled."
+              : "The article has been successfully updated."}
+          </DialogContentText>
+        </DialogContent>
+      </Dialog>
+    </ThemeProvider>
   );
 };
 
 export default UpdateArticle;
+
+
+
+
+  // const handleFileUpload = async (event) => {
+  //   const file = event.target.files[0];
+  //   if (file) {
+  //     const formData = new FormData();
+  //     formData.append("image", file);
+  //     try {
+  //       const response = await axios.post("http://localhost:5000/api/upload/image", formData);
+  //       setUploadedImage(response.data.path);
+  //       setFile(file);
+  //     } catch (error) {
+  //       console.error("Error uploading image:", error);
+  //       setErrorAlert(true);
+  //     }
+  //   }
+  // };
+
+  // const handleUpdate = async () => {
+  //   try {
+  //     const updatedArticle = {
+  //       title,
+  //       code: barcode,
+  //       longDescriptionEn: description,
+  //       articleByAuthor: authorText ? [{ nameAr: authorText }] : [],
+  //       articleByPublishingHouse: publisherText ? [{ nameAr: publisherText }] : [],
+  //       articleByCategory: selectedCategories,
+  //     };
+
+  //     const formData = new FormData();
+  //     formData.append("article", JSON.stringify(updatedArticle));
+  //     if (file) {
+  //       formData.append("avatar", file);
+  //     }
+
+  //     const response = await axios.patch(`${ip}/articles/${id}`, formData, {
+  //       headers: { "Content-Type": "multipart/form-data" },
+  //     });
+
+  //     if (response.status === 200) {
+  //       setSuccessAlert(true);
+  //       setErrorAlert(false);
+  //       setTimeout(() => navigate("/articles"), 2500);
+  //     } else {
+  //       setErrorAlert(true);
+  //       setSuccessAlert(false);
+  //     }
+  //   } catch (error) {
+  //     setErrorAlert(true);
+  //     setSuccessAlert(false);
+  //     console.error("Error updating article:", error);
+  //   }
+  // };
+
+  // const removeImage = () => {
+  //   setUploadedImage("");
+  //   setFile(null);
+  // };

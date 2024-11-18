@@ -201,7 +201,7 @@ const ArticleInfo = forwardRef(({ onSubmit }, ref) => {
           value={authorText}
           renderInput={(params) => <TextField {...params} label="Author" required />}
         /> */}
-      {/* <Autocomplete
+      {/* <Autocomplete 
           freeSolo
           sx={{ width: "47%" }}
           options={articlesPubHouses.map((option) => option.nameAr)}  
