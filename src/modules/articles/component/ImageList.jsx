@@ -47,13 +47,14 @@ export default function Imagelist() {
 
   return (
     <Box>
-      <Box sx={{ position: 'relative', display: 'inline-block' }}>
+      <Box sx={{ position: 'relative', display: 'inline-block' ,alignItems: 'flex-start', mt: 20 }} >
       <img
           src={displayedImage} // Display the selected/uploaded image
           alt="Displayed"
           loading="lazy"
-          width={500}
-          height={500}
+          //width={500}
+          //height={400}
+          style={{ width: '420px', height: '550px', objectFit: 'cover', borderRadius: '4px' }}
         />
            {itemData && (
           <IconButton 
@@ -88,7 +89,7 @@ export default function Imagelist() {
           </ImageListItem>
         )} */}
         {!itemData && (
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt:4 }}>
           <ImageUpload handleFileChange={handleFileChange} />
           </Box>
         )}

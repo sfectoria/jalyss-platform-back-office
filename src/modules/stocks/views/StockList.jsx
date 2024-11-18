@@ -3,17 +3,24 @@ import Box from "@mui/material/Box";
 import { DataGrid, GridToolbar, GridActionsCellItem } from "@mui/x-data-grid";
 import Typography from "@mui/material/Typography";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import ArchiveSharpIcon from "@mui/icons-material/ArchiveSharp";
 import { useNavigate } from "react-router-dom";
 import CustomNoResultsOverlay from "../../../style/NoResultStyle";
 import Item from "../../../style/ItemStyle";
 import axios from "axios";
 import { ip } from "../../../constants/ip";
 import CustomNoRowsOverlay from "../../../style/NoRowsStyle";
+import ArchiveStockPopUp from "../component/ArchiveStockPopUp";
+import ArchiveStockSnackBar from "../component/ArchiveStockSnackBar";
 
 export default function StockList() {
   const [rows, setRows] = useState([]);
+  const [popUp, setPopUp] = useState(false);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [stockId, setStockId] = useState(0);
+  const [openSnack, setOpenSnack] = useState(false);
+  const [refresh, setRefresh] = useState(true);
 
   const navigate = useNavigate();
 
@@ -22,14 +29,18 @@ export default function StockList() {
   };
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [refresh]);
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(ip + "/stocks/getAll");
+      const response = await axios.get(ip + "/stocks/getAll", {
+        params: { archived: true },
+      });
       const modifiedData = response.data.map((stock) => ({
         ...stock,
-        managerName: stock.employee ? `${stock.employee.firstName} ${stock.employee.lastName}` : "N/A",
+        managerName: stock.employee
+          ? `${stock.employee.firstName} ${stock.employee.lastName}`
+          : "N/A",
         managerNumber: stock.employee ? stock.employee.phoneNumber : "N/A",
       }));
       setRows(modifiedData);
@@ -39,7 +50,10 @@ export default function StockList() {
       setLoading(false);
     }
   };
-console.log(rows)
+  const handelArchiveStock = (id) => {
+    setStockId(id);
+    setPopUp(true);
+  };
   const columns = [
     { field: "name", headerName: "Stock name", width: 200 },
     { field: "location", headerName: "Address", width: 270 },
@@ -50,13 +64,21 @@ console.log(rows)
       headerName: "Details",
       width: 110,
       type: "actions",
-      getActions: ({ id }) => [
-        <GridActionsCellItem
-          icon={<VisibilityIcon />}
-          onClick={() => handleDetails(id)}
-          label=""
-        />,
-      ],
+      renderCell: (params) => (
+        <>
+          <GridActionsCellItem
+            icon={<VisibilityIcon />}
+            label="Details"
+            onClick={() => handleDetails(params.id)}
+          />
+          <GridActionsCellItem
+            icon={<ArchiveSharpIcon />}
+            label="Delete"
+            onClick={() => handelArchiveStock(params.id)}
+            style={{ color: "red" }}
+          />
+        </>
+      ),
     },
   ];
 
@@ -66,7 +88,7 @@ console.log(rows)
         bgcolor: "background.default",
         mx: 3,
         mt: 3,
-        height: '100vh',
+        height: "100vh",
       }}
     >
       <Item sx={{ py: 5, px: 7, borderRadius: 10 }} elevation={5}>
@@ -78,7 +100,17 @@ console.log(rows)
         >
           Stock
         </Typography>
-        <div style={{ width: "100%" , height : 500 }}>
+        <div style={{ width: "100%", height: 500 }}>
+          {popUp && (
+            <ArchiveStockPopUp
+              refresh={refresh}
+              setRefresh={setRefresh}
+              setOpenSnack={setOpenSnack}
+              stockId={stockId}
+              status={popUp}
+              setStatus={setPopUp}
+            />
+          )}
           <DataGrid
             pageSizeOptions={[7, 10, 20]}
             sx={{
@@ -111,6 +143,12 @@ console.log(rows)
               },
             }}
           />
+          {openSnack && (
+            <ArchiveStockSnackBar
+              openSnack={openSnack}
+              setOpenSnack={setOpenSnack}
+            />
+          )}
         </div>
       </Item>
     </Box>
