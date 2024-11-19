@@ -45,7 +45,7 @@ const ImageList = ({ onCoverIdChange }) => {
         alt="Uploaded cover"
         style={{
           width: "420px",
-          height: "420px",
+          height: "580px",
           objectFit: "cover",
           borderRadius: "4px",
         }}
