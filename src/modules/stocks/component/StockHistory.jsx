@@ -124,7 +124,7 @@ export default function StockHistory() {
     {
       field: "clientName",
       headerName: "Client",
-      width: 270,
+      width: 200,
       renderCell: (params) => (<MouseOverPopover name={params.row.client} />),
     },
     {
