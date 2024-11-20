@@ -61,6 +61,8 @@ export default function ArticleHistory() {
         firstLine && firstLine.price !== null && firstLine.quantity
           ? (firstLine.price * firstLine.quantity).toFixed(2)
           : "N/A",
+          discount: firstLine?.discount ? `${firstLine.discount} %` : "0%",
+          totalAmount : historyRow.totalAmount || "N/A"
     };
   });
 
@@ -88,7 +90,7 @@ export default function ArticleHistory() {
     },
     { field: "customer", headerName: "Customer", width: 150 },
     { field: "fournisseur", headerName: "Fournisseur", width: 150 },
-    { field: "type", headerName: "Type", width: 150 },
+    { field: "type", headerName: "Type", width: 120 },
     {
       field: "transfer",
       headerName: "Transfer",
@@ -101,9 +103,11 @@ export default function ArticleHistory() {
           <ClearIcon color="error" />
         ),
     },
-    { field: "quantity", headerName: "Quantity", width: 150 },
-    { field: "price", headerName: "Price", width: 150 },
-    { field: "totalPrice", headerName: "Total Price ($)", width: 150 },
+    { field: "quantity", headerName: "Quantity", width: 120 },
+    { field: "price", headerName: "Price", width: 110 },
+    { field: "totalPrice", headerName: "Total Price (Dt)", width: 120 },
+    { field: "discount", headerName: "Discount", width: 120},
+    { field: "totalAmount", headerName: "TotalAmount (Dt)", width: 130 },
   ];
 
   return (
