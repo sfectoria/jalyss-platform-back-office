@@ -124,16 +124,15 @@ export default function StockHistory() {
     {
       field: "clientName",
       headerName: "Client",
-      width: 270,
-      renderCell: (params) => (<MouseOverPopover name={params.row.client} />),
+      width: 230,
+      renderCell: (params) =>params.row.client ? (<MouseOverPopover name={params.row.client} />): 'X',
     },
     {
       field: "fournisseurName",
       headerName: "Fournisseur",
-      width: 250,
-      renderCell: (params) => (
-        <MouseOverPopoverFou name={params.row?.provider} />
-      ),
+      width: 230,
+      renderCell: (params) => params.row?.provider ? (
+        <MouseOverPopoverFou name={params.row?.provider} />): 'X',
     },
     {
       field: "br",
