@@ -8,7 +8,6 @@ import {
   GridPagination,
   useGridApiContext,
   useGridSelector,
-  GridActionsCellItem, 
 } from "@mui/x-data-grid";
 import MuiPagination from "@mui/material/Pagination";
 import Typography from "@mui/material/Typography";
@@ -100,7 +99,7 @@ export default function ArticlesList() {
     params.set("page", page);
     params.set("take", pageSize);
     params.set("skip", page * pageSize);
-    const newUrl = `${location.pathname}?${params.toString()}`;
+    const newUrl = ${location.pathname}?${params.toString()};
     navigate(newUrl);
   };
 
@@ -114,7 +113,7 @@ export default function ArticlesList() {
       params.set("page", 0);
       params.set("take", newPageInfo.pageSize);
       params.set("skip", 0);
-      const newUrl = `${location.pathname}?${params.toString()}`;
+      const newUrl = ${location.pathname}?${params.toString()};
       navigate(newUrl);
     }
   };
@@ -169,6 +168,22 @@ export default function ArticlesList() {
             icon={<VisibilityIcon />}
             label="Details"
             onClick={() => handleDetails(params.id)}
+          />
+        </>
+      ),
+    },
+    {
+      field: "actions",
+      headerName: "Actions",
+      width: 110,
+      type: "actions",
+      renderCell: (params) => (
+        <>
+          <GridActionsCellItem
+            icon={<UnarchiveSharpIcon />}
+            label="Archive"
+            onClick={() => handleArchiveArticle(params.id)}
+            style={{ color: "red" }}
           />
         </>
       ),
@@ -288,4 +303,3 @@ export default function ArticlesList() {
     </Box>
   );
 }
-
