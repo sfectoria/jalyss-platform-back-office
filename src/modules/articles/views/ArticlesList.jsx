@@ -4,6 +4,7 @@ import Box from "@mui/material/Box";
 import {
   DataGrid,
   GridToolbar,
+  GridActionsCellItem,
   gridPageCountSelector,
   GridPagination,
   useGridApiContext,
@@ -51,12 +52,28 @@ export default function ArticlesList() {
   const [openSnack, setOpenSnack] = useState(false);
   const [message, setMessage] = useState("");
 
-  // function Pagination({ onPageChange, className }) {
-  //   const apiRef = useGridApiContext();
-  //   const pageCount = useGridSelector(apiRef, gridPageCountSelector);
-  // }
-  const navigate = useNavigate();
+  function Pagination({ onPageChange, className }) {
+    const apiRef = useGridApiContext();
+    const pageCount = useGridSelector(apiRef, gridPageCountSelector);
 
+    return (
+      <MuiPagination
+        color="secondary"
+        className={className}
+        count={pageCount}
+        page={page + 1}
+        onChange={(event, newPage) => {
+          setPage(newPage - 1, page);
+          onPageChange(event, newPage - 1);
+        }}
+      />
+    );
+  }
+
+  function CustomPagination(props) {
+    return <GridPagination ActionsComponent={Pagination} {...props} />;
+  }
+  const navigate = useNavigate();
   const handleDetails = (ids) => {
     navigate(`/articles/${ids}`);
   };
@@ -93,13 +110,12 @@ export default function ArticlesList() {
       setLoading(false);
     }
   };
-
   const updateUrlParams = () => {
     const params = new URLSearchParams(location.search);
     params.set("page", page);
     params.set("take", pageSize);
     params.set("skip", page * pageSize);
-    const newUrl = ${location.pathname}?${params.toString()};
+    const newUrl = `${location.pathname}?${params.toString()}`;
     navigate(newUrl);
   };
 
@@ -113,7 +129,7 @@ export default function ArticlesList() {
       params.set("page", 0);
       params.set("take", newPageInfo.pageSize);
       params.set("skip", 0);
-      const newUrl = ${location.pathname}?${params.toString()};
+      const newUrl = `${location.pathname}?${params.toString()}`;
       navigate(newUrl);
     }
   };
@@ -139,28 +155,33 @@ export default function ArticlesList() {
     { field: "quantity", headerName: "Quantity", width: 90 },
     {
       field: "author",
-      headerName: "Author(s)",
+      headerName: "Author",
       width: 250,
+
       valueGetter: (value, row) => {
-        return row?.articleByAuthor
-          ?.map((e) => e.author.nameAr)
-          .join(", ") || "";
+        //return row?.articleByAuthor[0]?.author?.nameAr;
+        const nameAr = row?.articleByAuthor[0]?.author?.nameAr;
+        const nameEn = row?.articleByAuthor[0]?.author?.nameEn;
+        return nameAr !== "" ? nameAr : nameEn;
       },
     },
     {
       field: "nameAr",
-      headerName: "Publisher(s)",
+      headerName: "Publisher",
       width: 250,
       valueGetter: (value, row) => {
-        return row?.articleByPublishingHouse
-          ?.map((e) => e.publishingHouse.nameAr)
-          .join(", ") || "";
+        // return row?.articleByPublishingHouse[0]?.publishingHouse?.nameAr;
+        const nameAr =
+          row?.articleByPublishingHouse[0]?.publishingHouse?.nameAr;
+        const nameEn =
+          row?.articleByPublishingHouse[0]?.publishingHouse?.nameEn;
+        return nameAr !== "" ? nameAr : nameEn;
       },
     },
     {
-      field: "actions",
-      headerName: "Actions",
-      width: 100,
+      field: "details",
+      headerName: "Details",
+      width: 110,
       type: "actions",
       renderCell: (params) => (
         <>
@@ -189,28 +210,6 @@ export default function ArticlesList() {
       ),
     },
   ];
-
-  function Pagination({ onPageChange, className }) {
-    const apiRef = useGridApiContext();
-    const pageCount = useGridSelector(apiRef, gridPageCountSelector);
-
-    return (
-      <MuiPagination
-        color="secondary"
-        className={className}
-        count={pageCount}
-        page={page + 1}
-        onChange={(event, newPage) => {
-          setPage(newPage - 1);
-          onPageChange(event, newPage - 1);
-        }}
-      />
-    );
-  }
-
-  function CustomPagination(props) {
-    return <GridPagination ActionsComponent={Pagination} {...props} />;
-  }
 
   return (
     <Box
