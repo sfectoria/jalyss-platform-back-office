@@ -13,12 +13,14 @@ import AuthorDetails from "../../modules/authors/components/AuthorInfo";
 import UpdateAuthor from "../../modules/authors/components/UpdateAuthor";
 import AddAuthors from "../../modules/articles/views/AddAuthors";
 import AddPublishingHouse from "../../modules/articles/views/AddPublishingHouse";
+import ArticlesArchived from "../../modules/articles/component/ArticlesArchived.jsx";
 
 
 export default function ArticleRoutes() {
   return [
     <Route path="articles" key="articles-module" element={<ArticleModule />}>
       <Route index key="articles-list" element={<ArticlesList />} />
+      <Route path="articlesarchived" element={<ArticlesArchived/>}/>
       <Route path="new-article" key="new-article" element={<AddArticle />} />
       <Route path=":id" key="article-details" element={<ArticleDetails />} />
       <Route key="index" path=":articleId/stocks/:stocksIds/full-history" element={<ArticleHistory />} />
