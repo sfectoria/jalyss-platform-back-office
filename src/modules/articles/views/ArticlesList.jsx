@@ -3,14 +3,11 @@ import Box from "@mui/material/Box";
 import {
   DataGrid,
   GridToolbar,
-  GridActionsCellItem,
   gridPageCountSelector,
   GridPagination,
   useGridApiContext,
   useGridSelector,
 } from "@mui/x-data-grid";
-import Button from "@mui/material/Button";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import MuiPagination from "@mui/material/Pagination";
 import Typography from "@mui/material/Typography";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -24,7 +21,6 @@ import { ip } from "../../../constants/ip";
 import CustomNoRowsOverlay from "../../../style/NoRowsStyle";
 
 const getPageFromUrl = () => {
-
   const params = new URLSearchParams(window.location.search);
   return +params.get("page") || 0;
 };
@@ -43,40 +39,17 @@ export default function ArticlesList() {
   const [page, setPage] = useState(getPageFromUrl);
   const [pageSize, setPageSize] = useState(getPageSizeFromUrl());
   const [text, setText] = useState(null);
- 
-  const [articles, setArticles] = useState([]);
-  const [confirmDelete, setConfirmDelete] = useState(false);
-  const [articlesToDelete, setarticlesToDelete] = useState(null);
 
-
-  function Pagination({ onPageChange, className }) {
-    const apiRef = useGridApiContext();
-    const pageCount = useGridSelector(apiRef, gridPageCountSelector);
-
-    return (
-      <MuiPagination
-        color="secondary"
-        className={className}
-        count={pageCount}
-        page={page + 1}
-        onChange={(event, newPage) => {
-          setPage(newPage - 1, page);
-          onPageChange(event, newPage - 1);
-        }}
-      />
-    );
-  }
-
-  function CustomPagination(props) {
-    return <GridPagination ActionsComponent={Pagination} {...props} />;
-  }
   const navigate = useNavigate();
+
   const handleDetails = (ids) => {
     navigate(`/articles/${ids}`);
   };
+
   useEffect(() => {
     fetchData();
   }, [location, text]);
+
   useEffect(() => {
     updateUrlParams();
   }, [page]);
@@ -96,8 +69,6 @@ export default function ArticlesList() {
         }, 0);
         return ele;
       });
-      setArticles(response.data);
-      console.log("Articles fetched:", response.data);
       setRows(response.data.data);
       setCount(response.data.count);
     } catch (err) {
@@ -106,6 +77,7 @@ export default function ArticlesList() {
       setLoading(false);
     }
   };
+
   const updateUrlParams = () => {
     const params = new URLSearchParams(location.search);
     params.set("page", page);
@@ -117,7 +89,7 @@ export default function ArticlesList() {
 
   const handlePageChange = (newPageInfo) => {
     if (pageSize === newPageInfo.pageSize) {
-      setPage(newPageInfo.page)
+      setPage(newPageInfo.page);
     }
     if (pageSize !== newPageInfo.pageSize) {
       setPageSize(newPageInfo.pageSize);
@@ -130,23 +102,6 @@ export default function ArticlesList() {
     }
   };
 
-
-  const handleDeleteClick = (id) => {
-    setarticlesToDelete(id);
-    setConfirmDelete(true);    
-  };
-
-  const handleDelete = async () => {
-    try {
-      await axios.delete(`${ip}/articles/${articlesToDelete}`);
-      setRows(articles.filter((article) => article.id !== articlesToDelete));
-      setConfirmDelete(false);
-      setarticlesToDelete(null);
-    } catch (error) {
-      console.log("Error deleting article:", error);
-    }
-  };
-  
   const columns = [
     {
       field: "image",
@@ -163,52 +118,57 @@ export default function ArticlesList() {
       field: "author",
       headerName: "Author(s)",
       width: 250,
-      valueGetter: (value,row) => {
+      valueGetter: (value, row) => {
         return row?.articleByAuthor
           ?.map((e) => e.author.nameAr)
           .join(", ") || "";
       },
     },
-    
-   
     {
       field: "nameAr",
       headerName: "Publisher(s)",
       width: 250,
-      valueGetter: (value,row) => {
+      valueGetter: (value, row) => {
         return row?.articleByPublishingHouse
           ?.map((e) => e.publishingHouse.nameAr)
           .join(", ") || "";
       },
     },
- 
     {
       field: "actions",
       headerName: "Actions",
       width: 100,
       type: "actions",
       renderCell: (params) => (
-        <>
-          <GridActionsCellItem
-            icon={<VisibilityIcon />}
-            label="Details"
-            onClick={() => handleDetails(params.id)}
-          />
-      <GridActionsCellItem
-  icon={<DeleteOutlineIcon />}
-  label="Delete"
-  onClick={() => {
-    const { id } = params; // Extract id from params
-    handleDeleteClick(id);
-    console.log("Article ID passed for deletion:", id);
-  }}
-  style={{ color: "red" }}
-/>
-
-        </>
+        <VisibilityIcon
+          onClick={() => handleDetails(params.id)}
+          style={{ cursor: "pointer" }}
+        />
       ),
     },
   ];
+
+  function Pagination({ onPageChange, className }) {
+    const apiRef = useGridApiContext();
+    const pageCount = useGridSelector(apiRef, gridPageCountSelector);
+
+    return (
+      <MuiPagination
+        color="secondary"
+        className={className}
+        count={pageCount}
+        page={page + 1}
+        onChange={(event, newPage) => {
+          setPage(newPage - 1);
+          onPageChange(event, newPage - 1);
+        }}
+      />
+    );
+  }
+
+  function CustomPagination(props) {
+    return <GridPagination ActionsComponent={Pagination} {...props} />;
+  }
 
   return (
     <Box
@@ -227,7 +187,7 @@ export default function ArticlesList() {
         >
           Articles
         </Typography>
-        <div style={{ width: "100%", color: "red" , height : 500 }}>
+        <div style={{ width: "100%", color: "red", height: 500 }}>
           <DataGrid
             rowHeight={70}
             pageSizeOptions={[7, 10, 20]}
@@ -242,7 +202,9 @@ export default function ArticlesList() {
             onPaginationModelChange={(event) => {
               handlePageChange(event);
             }}
-            onFilterModelChange={(e)=>{setText(e.quickFilterValues.join(' '))}}
+            onFilterModelChange={(e) => {
+              setText(e.quickFilterValues.join(" "));
+            }}
             rows={rows}
             columns={columns}
             pagination
@@ -272,86 +234,6 @@ export default function ArticlesList() {
           />
         </div>
       </Item>
-      {confirmDelete && (
-    <>
-      <Box
-        sx={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          backgroundColor: "rgba(0, 0, 0, 0.5)",
-          zIndex: 999,
-        }}
-        onClick={() => setConfirmDelete(false)}
-      />
-
-      <Box
-        sx={{
-          backgroundColor: "#dc2626",
-          padding: "20px",
-          borderRadius: "8px",
-          boxShadow: "0 0 10px rgba(0,0,0,0.1)",
-          position: "fixed",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          zIndex: 1000,
-        }}
-      >
-        <Typography sx={{ fontSize: 20, mb: 2, color: "white" }}>
-          Are you sure you want to delete this article?
-        </Typography>
-        <span style={{ color: "white" }}>This action is irreversible!</span>
-
-        <Box sx={{ mt: 2, display: "flex", gap: 2 }}>
-          <Button
-            variant="contained"
-            color="error"
-            onClick={handleDelete}
-            sx={{
-              backgroundColor: "white",
-              color: "red",
-              "&:hover": {
-                backgroundColor: "red",
-                color: "white",
-              },
-            }}
-          >
-            Yes, Delete
-          </Button>
-
-          <Button
-            variant="contained"
-            color="error"
-            onClick={() => setConfirmDelete(false)}
-            sx={{
-              backgroundColor: "white",
-              color: "red",
-              "&:hover": {
-                backgroundColor: "red",
-                color: "white",
-              },
-            }}
-          >
-            Cancel
-          </Button>
-        </Box>
-      </Box>
-    </>
-  )}
     </Box>
   );
 }
-
-
- //return row?.articleByAuthor[0]?.author?.nameAr;
-    // const nameEn = row?.articleByAuthor[0]?.author?.nameEn;
-    // return nameAr !== '' ? nameAr : nameEn;
-
-
-       // return row?.articleByPublishingHouse[0]?.publishingHouse?.nameAr;
-    // const nameAr = row?.articleByPublishingHouse[0]?.publishingHouse?.nameAr;
-    // const nameEn = row?.articleByPublishingHouse[0]?.publishingHouse?.nameEn;
-    // return nameAr !== '' ? nameAr : nameEn;
