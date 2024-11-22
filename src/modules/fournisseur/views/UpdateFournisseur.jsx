@@ -1,11 +1,26 @@
-import axios from 'axios';
-import React, { useState, useEffect } from 'react';
-import { Box, TextField, IconButton, Grid, Paper, Typography, Avatar, Badge, Dialog, DialogTitle, DialogContent, DialogContentText, ThemeProvider, createTheme } from '@mui/material';
-import { ip } from '../../../constants/ip';
-import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { useNavigate } from 'react-router-dom';
+import axios from "axios";
+import React, { useState, useEffect } from "react";
+import {
+  Box,
+  TextField,
+  IconButton,
+  Grid,
+  Paper,
+  Typography,
+  Avatar,
+  Badge,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  ThemeProvider,
+  createTheme,
+} from "@mui/material";
+import { ip } from "../../../constants/ip";
+import CheckIcon from "@mui/icons-material/Check";
+import CloseIcon from "@mui/icons-material/Close";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { useNavigate } from "react-router-dom";
 import FileUploader from "../../../components/FileUploader";
 
 export default function UpdateFournisseur({ oneFournisseur }) {
@@ -20,20 +35,20 @@ export default function UpdateFournisseur({ oneFournisseur }) {
       },
     },
   });
-  
+
   const [formData, setFormData] = useState({
     nameProvider: "",
     email: "",
     registrationNumber: "",
     adresse: "",
     phoneNumber: "",
-    mediaId: oneFournisseur?.mediaId || null,
+    mediaId: null,
   });
 
   const [errors, setErrors] = useState({});
   const [isCancelled, setIsCancelled] = useState(false);
   const [open, setOpen] = useState(false);
-  const [uploadedImage, setUploadedImage] = useState(""); 
+  const [uploadedImage, setUploadedImage] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -44,9 +59,9 @@ export default function UpdateFournisseur({ oneFournisseur }) {
         registrationNumber: oneFournisseur.registrationNumber || "",
         adresse: oneFournisseur.adresse || "",
         phoneNumber: oneFournisseur.phoneNumber || "",
-        mediaId: oneFournisseur.Media?.path || "", 
+        mediaId: oneFournisseur.Media?.path || "",
       });
-      setUploadedImage(oneFournisseur.Media?.path || ""); 
+      setUploadedImage(oneFournisseur.Media?.path || "");
     }
   }, [oneFournisseur]);
 
@@ -54,10 +69,13 @@ export default function UpdateFournisseur({ oneFournisseur }) {
     const file = event.target.files[0];
     if (file) {
       const formData = new FormData();
-      formData.append('image', file);
+      formData.append("image", file);
       try {
-        const response = await axios.post("http://localhost:5000/api/upload/image", formData);
-        setUploadedImage(URL.createObjectURL(file)); 
+        const response = await axios.post(
+          "http://localhost:5000/api/upload/image",
+          formData
+        );
+        setUploadedImage(URL.createObjectURL(file));
         setFormData((prevFormData) => ({
           ...prevFormData,
           mediaId: response.data.id,
@@ -78,10 +96,13 @@ export default function UpdateFournisseur({ oneFournisseur }) {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.nameProvider) newErrors.nameProvider = "Company's Name is required";
-    if (!formData.phoneNumber) newErrors.phoneNumber = "Phone Number is required";
+    if (!formData.nameProvider)
+      newErrors.nameProvider = "Company's Name is required";
+    if (!formData.phoneNumber)
+      newErrors.phoneNumber = "Phone Number is required";
     if (!formData.adresse) newErrors.adresse = "Address is required";
-    if (!formData.registrationNumber) newErrors.registrationNumber = "Registration Number is required";
+    if (!formData.registrationNumber)
+      newErrors.registrationNumber = "Registration Number is required";
     if (!formData.email) newErrors.email = "Email is required";
 
     setErrors(newErrors);
@@ -100,7 +121,14 @@ export default function UpdateFournisseur({ oneFournisseur }) {
     e.preventDefault();
     if (validateForm()) {
       try {
-        const response = await axios.patch(`${ip}/provider/${oneFournisseur.id}`, formData);
+        const updatedData = { ...formData };
+        if (uploadedImage === null) {
+          updatedData.mediaId = null;
+        }
+        const response = await axios.patch(
+          `${ip}/provider/${oneFournisseur.id}`,
+          updatedData
+        );
         console.log("Response:", response.data);
         setIsCancelled(false);
         setOpen(true);
@@ -144,13 +172,15 @@ export default function UpdateFournisseur({ oneFournisseur }) {
     <ThemeProvider theme={defaultTheme}>
       <Paper elevation={3} sx={{ m: "5%", width: "80%" }}>
         <Box sx={{ padding: 5 }}>
-          <Typography variant="h4" gutterBottom sx={{color:"#48184C"}}>
+          <Typography variant="h4" gutterBottom sx={{ color: "#48184C" }}>
             Update Fournisseur Info
           </Typography>
           <form onSubmit={handleSubmit}>
             <Grid container spacing={2} alignItems="flex-start">
               <Grid item xs={12} sm={4}>
-                <Box sx={{ display: "flex", justifyContent: "center", padding: 3 }}>
+                <Box
+                  sx={{ display: "flex", justifyContent: "center", padding: 3 }}
+                >
                   <Badge
                     overlap="circular"
                     anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
@@ -165,17 +195,25 @@ export default function UpdateFournisseur({ oneFournisseur }) {
                         }}
                         onClick={removeImage}
                       >
-                        <DeleteIcon sx={{height:"30px",width:"30px"}}/>
+                        <DeleteIcon sx={{ height: "30px", width: "30px" }} />
                       </IconButton>
                     }
                   >
                     <label htmlFor="file-upload" style={{ cursor: "pointer" }}>
-                    <Avatar
-                      src={uploadedImage}
-                      sx={{ width: "200px", height: "200px", bgcolor: "#48184C" }}
-                    >
-                      <FileUploader setFormData={setFormData} onSelectFile={handleFileUpload} icon={"upload"} />
-                    </Avatar>
+                      <Avatar
+                        src={uploadedImage}
+                        sx={{
+                          width: "200px",
+                          height: "200px",
+                          bgcolor: "#48184C",
+                        }}
+                      >
+                        <FileUploader
+                          setFormData={setFormData}
+                          onSelectFile={handleFileUpload}
+                          icon={"upload"}
+                        />
+                      </Avatar>
                     </label>
                   </Badge>
                 </Box>
@@ -261,7 +299,7 @@ export default function UpdateFournisseur({ oneFournisseur }) {
           </form>
         </Box>
       </Paper>
-      
+
       <Dialog
         open={open}
         onClose={handleClose}
@@ -272,9 +310,15 @@ export default function UpdateFournisseur({ oneFournisseur }) {
           },
         }}
       >
-        <DialogTitle>{isCancelled ? "Operation Canceled" : "Update Successful"}</DialogTitle>
+        <DialogTitle>
+          {isCancelled ? "Operation Canceled" : "Update Successful"}
+        </DialogTitle>
         <DialogContent>
-          <DialogContentText>
+          <DialogContentText
+            sx={{
+              color: "white",
+            }}
+          >
             {isCancelled
               ? "You have canceled the update operation."
               : "The client information has been successfully updated."}

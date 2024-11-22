@@ -160,10 +160,10 @@ export default function AddPublishingHouse() {
                   anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
                   badgeContent={
                     <IconButton
-                      sx={{ height: "60px", width: "60px" }}
+                      sx={{ height: "60px", width: "60px",bgcolor:"red" , "&:hover": { bgcolor: "red" }}}
                       onClick={() => setUploadedImage(null)}
                     >
-                      <DeleteIcon sx={{ color: "white" }} />
+                      <DeleteIcon sx={{ color: "white"}} />
                     </IconButton>
                   }
                 >
