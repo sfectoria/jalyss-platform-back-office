@@ -8,6 +8,7 @@ import {
   GridPagination,
   useGridApiContext,
   useGridSelector,
+  GridActionsCellItem, 
 } from "@mui/x-data-grid";
 import MuiPagination from "@mui/material/Pagination";
 import Typography from "@mui/material/Typography";
@@ -51,10 +52,10 @@ export default function ArticlesList() {
   const [openSnack, setOpenSnack] = useState(false);
   const [message, setMessage] = useState("");
 
-  function Pagination({ onPageChange, className }) {
-    const apiRef = useGridApiContext();
-    const pageCount = useGridSelector(apiRef, gridPageCountSelector);
-
+  // function Pagination({ onPageChange, className }) {
+  //   const apiRef = useGridApiContext();
+  //   const pageCount = useGridSelector(apiRef, gridPageCountSelector);
+  // }
   const navigate = useNavigate();
 
   const handleDetails = (ids) => {
@@ -168,22 +169,6 @@ export default function ArticlesList() {
             icon={<VisibilityIcon />}
             label="Details"
             onClick={() => handleDetails(params.id)}
-          />
-        </>
-      ),
-    },
-    {
-      field: "actions",
-      headerName: "Actions",
-      width: 110,
-      type: "actions",
-      renderCell: (params) => (
-        <>
-          <GridActionsCellItem
-            icon={<UnarchiveSharpIcon />}
-            label="Archive"
-            onClick={() => handleArchiveArticle(params.id)}
-            style={{ color: "red" }}
           />
         </>
       ),
@@ -303,3 +288,4 @@ export default function ArticlesList() {
     </Box>
   );
 }
+
