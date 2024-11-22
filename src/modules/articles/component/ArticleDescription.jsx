@@ -12,7 +12,7 @@ export default function ArticleDescription({ data }) {
   };
 
   return (
-    <Box sx={{ display: "flex", gap: 5, justifyContent: "flex-end", alignItems: "flex-start" }}>
+    <Box sx={{ display: "flex", justifyContent: "end", gap: 10 }}>
       {isEditMode ? (
         <UpdateArticle
           setIsEditMode={setIsEditMode}
@@ -21,14 +21,14 @@ export default function ArticleDescription({ data }) {
         />
       ) : (
         <>
-          <Box sx={{ flex: 1, paddingRight: 3 }}>
-            <Box sx={{ display: "flex", justifyContent: "end" }}>
-              <ModeEditOutlineIcon
-                onClick={handleEditClick}
-                sx={{ cursor: "pointer", marginBottom: 2 }}
-              />
-            </Box>
+          <Box>
+            <ModeEditOutlineIcon
+              onClick={handleEditClick}
+              sx={{ cursor: "pointer" }}
+            />
+          </Box>
 
+          <Box>
             <Typography
               align="right"
               color="#1a237e"
@@ -39,7 +39,6 @@ export default function ArticleDescription({ data }) {
             >
               {data.title}
             </Typography>
-
             <Typography
               marginLeft={7}
               align="right"
@@ -52,113 +51,174 @@ export default function ArticleDescription({ data }) {
             <Box
               sx={{
                 display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-end",
                 gap: 2,
+                alignItems: "center",
+                justifyContent: "end",
               }}
             >
+              <Typography sx={{ fontWeight: "bold", textAlign: "center" }}>
+                {data?.articleByAuthor?.length
+                  ? data.articleByAuthor.map((e) => e.author?.nameAr).join(", ")
+                  : "No authors available"}
+              </Typography>
               <Typography
                 color="black"
                 variant="h5"
                 gutterBottom
-                sx={{ fontWeight: "bold", textAlign: "right" }}
+                sx={{ fontWeight: "bold" }}
               >
                 :الكاتب
               </Typography>
-              <Typography gutterBottom sx={{ fontWeight: "bold", textAlign: "right" }}>
-                {data?.articleByAuthor?.length ? (
-                  <ol
-                    style={{
-                      textAlign: "right",
-                      direction: "rtl",
-                      listStylePosition: "inside",
-                    }}
-                  >
-                    {data.articleByAuthor.map((e, i) => (
-                      <li key={i}>{e.author?.nameAr}</li>
-                    ))}
-                  </ol>
-                ) : (
-                  "No authors available"
-                )}
-              </Typography>
             </Box>
             <Box
               sx={{
                 display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-end",
                 gap: 2,
+                alignItems: "center",
+                justifyContent: "end",
               }}
             >
+              <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                {data?.quantity}
+              </Typography>
               <Typography
                 color="black"
                 variant="h5"
                 gutterBottom
-                sx={{ fontWeight: "bold", textAlign: "right" }}
+                sx={{ fontWeight: "bold" }}
               >
                 :الكمية الجملية
               </Typography>
-              <Typography gutterBottom sx={{ fontWeight: "bold", textAlign: "right" }}>
-                {data?.quantity}
+            </Box>
+            <Box
+              sx={{
+                display: "flex",
+                gap: 2,
+                alignItems: "center",
+                justifyContent: "end",
+              }}
+            >
+              <Typography sx={{ fontWeight: "bold", textAlign: "center" }}>
+                {data?.articleByPublishingHouse?.length
+                  ? data.articleByPublishingHouse.map((e, i) => (
+                      <span key={i}>
+                        {e.publishingHouse?.nameAr}
+                        {i < data.articleByPublishingHouse.length - 1 && ", "}
+                      </span>
+                    ))
+                  : "No publishing houses available"}
+              </Typography>
+
+              <Typography
+                color="black"
+                variant="h5"
+                gutterBottom
+                sx={{ fontWeight: "bold" }}
+              >
+                :دار النشر
               </Typography>
             </Box>
             <Box
               sx={{
                 display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-end",
                 gap: 2,
+                alignItems: "center",
+                justifyContent: "end",
               }}
             >
+              <Typography sx={{ fontWeight: "bold", textAlign: "center" }}>
+                {data?.longDescriptionAr}
+              </Typography>
+
               <Typography
                 color="black"
                 variant="h5"
                 gutterBottom
-                sx={{ fontWeight: "bold", textAlign: "right" }}
+                sx={{ fontWeight: "bold" }}
               >
-                :دار النشر
+                : فكرة شاملة
               </Typography>
-              <Typography gutterBottom sx={{ fontWeight: "bold", textAlign: "right" }}>
-                {data?.articleByPublishingHouse?.length ? (
-                 <ol
-                 style={{
-                   textAlign: "right",
-                   direction: "rtl",
-                   listStylePosition: "inside",
-                 }}
-               >
-                 {data.articleByPublishingHouse.map((e, i) => (
-                   <li key={i}>
-                     {e.publishingHouse?.nameAr}
-                     <p>
-                       <img
-                         src={e.publishingHouse?.logo?.path}
-                         style={{ width: "100px", height: "auto", borderRadius: "8px", marginTop: "5px" }} 
-                       />
-                     </p>
-                   </li>
-                 ))}
-               </ol>
-               
-                ) : (
-                  "No publishing houses available"
-                )}
+            </Box>
+            <Box
+              sx={{
+                display: "flex",
+                gap: 2,
+                alignItems: "center",
+                justifyContent: "end",
+              }}
+            >
+              <Typography sx={{ fontWeight: "bold", textAlign: "center" }}>
+                {data.shortDescriptionAr}
+              </Typography>
+
+              <Typography
+                color="black"
+                variant="h5"
+                gutterBottom
+                sx={{ fontWeight: "bold" }}
+              >
+                : تلخيص
               </Typography>
             </Box>
           </Box>
-          <Box>
+          <Box sx={{ textAlign: "center", marginTop: 3 }}>
             <img
-              width={300}
+              width={270}
               src={data?.cover?.path}
               alt={"article img"}
               loading="lazy"
-              style={{
-                borderRadius: "8px",
-                display: "block",
-                paddingTop:"3cm"
-              }}
             />
+            
+            <Box
+              sx={{
+                display: "flex",
+                gap: 2,
+                justifyContent: "center",
+                marginTop: 2,
+              }}
+            >
+              <Typography sx={{ fontWeight: "bold", textAlign: "center",marginTop: "0.4cm", }}>
+                {data.pageNumber}
+              </Typography>
+
+              <Typography
+                color="black"
+                variant="h5"
+                gutterBottom
+                sx={{ fontWeight: "bold" }}
+              >
+                :عدد الصفحات{" "}
+              </Typography>
+            </Box>
+            <Box
+              sx={{
+                display: "flex",
+                gap: 2,
+                justifyContent: "center",
+              }}
+            >
+       <Typography
+  sx={{
+    fontWeight: "bold",
+    textAlign: "left",
+    marginTop: "0.4cm",
+    display: "flex",
+  }}
+>
+  {data.weight}
+  <span style={{ marginLeft: "5px"}}>كغ</span> 
+</Typography>
+
+
+              <Typography
+                color="black"
+                variant="h5"
+                gutterBottom
+                sx={{ fontWeight: "bold" }}
+              >
+                : الوزن{" "}
+              </Typography>
+            </Box>
           </Box>
         </>
       )}
