@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Button } from "@mui/material";
 import Box from "@mui/material/Box";
 import {
   DataGrid,
@@ -15,7 +16,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import { useLocation, useNavigate } from "react-router-dom";
 import CustomNoResultsOverlay from "../../../style/NoResultStyle";
 import ArchiveSharpIcon from "@mui/icons-material/ArchiveSharp";
-import UnarchiveSharpIcon from '@mui/icons-material/UnarchiveSharp';
+import UnarchiveSharpIcon from "@mui/icons-material/UnarchiveSharp";
 import ArchiveArticle from "../component/ArchiveArticlePopUp";
 import UnarchiveArticlePopUp from "../component/UnarchiveArticlePopUp";
 import ArchiveArticleSnackBar from "../component/ArchiveArticleSnackBar";
@@ -42,15 +43,15 @@ export default function ArticlesList() {
   const [loading, setLoading] = useState(true);
   const [articleId, setArticleId] = useState(0);
   const [archivePopUp, setArchivePopUp] = useState(false);
-  const [unarchivePopUp, setUnarchivePopUp] = useState(false);  const location = useLocation();
+  const [unarchivePopUp, setUnarchivePopUp] = useState(false);
+  const location = useLocation();
   const [page, setPage] = useState(getPageFromUrl);
   const [pageSize, setPageSize] = useState(getPageSizeFromUrl());
   const [text, setText] = useState(null);
   const [refresh, setRefresh] = useState(true);
   const [openSnack, setOpenSnack] = useState(false);
-  const [message, setMessage] = useState("")
+  const [message, setMessage] = useState("");
 
- 
   function Pagination({ onPageChange, className }) {
     const apiRef = useGridApiContext();
     const pageCount = useGridSelector(apiRef, gridPageCountSelector);
@@ -76,9 +77,13 @@ export default function ArticlesList() {
   const handleDetails = (ids) => {
     navigate(`/articles/${ids}`);
   };
+
+  const navigateToArchivedArticles = () => {
+    navigate("/articles/articlesarchived");
+  };
   useEffect(() => {
     fetchData();
-  }, [location, text,refresh]);
+  }, [location, text, refresh]);
   useEffect(() => {
     updateUrlParams();
   }, [page]);
@@ -88,9 +93,7 @@ export default function ArticlesList() {
       let queryParams = new URLSearchParams(location.search);
       let params = Object.fromEntries(queryParams.entries());
       if (text) params["text"] = text;
-      const response = await axios.get(ip + "/articles/getAll", {
-         params ,
-      });
+      const response = await axios.get(ip + "/articles/getAll", { params });
       const result = response.data.data.map((ele) => {
         ele.quantity = ele.stockArticle.reduce((acc, ele) => {
           acc += ele.quantity;
@@ -99,7 +102,7 @@ export default function ArticlesList() {
         return ele;
       });
       setRows(response.data.data);
-      console.log("rows",rows)
+      console.log("rows", rows);
       setCount(response.data.count);
     } catch (err) {
       setError(err);
@@ -118,7 +121,7 @@ export default function ArticlesList() {
 
   const handlePageChange = (newPageInfo) => {
     if (pageSize === newPageInfo.pageSize) {
-      setPage(newPageInfo.page)
+      setPage(newPageInfo.page);
     }
     if (pageSize !== newPageInfo.pageSize) {
       setPageSize(newPageInfo.pageSize);
@@ -130,22 +133,14 @@ export default function ArticlesList() {
       navigate(newUrl);
     }
   };
-  
 
   const handleArchiveArticle = (id) => {
     setArticleId(id);
     setArchivePopUp(true);
-    setMessage("Article archived")
-    setRefresh((prev) => !prev)
+    setMessage("Article archived");
+    setRefresh((prev) => !prev);
   };
 
-  const handleUnarchiveArticle = (id) => {
-    setArticleId(id);
-    setUnarchivePopUp(true);
-    setMessage("Article unarchived")
-    setRefresh((prev) => !prev)
-  };
-  
   const columns = [
     {
       field: "image",
@@ -167,8 +162,7 @@ export default function ArticlesList() {
         //return row?.articleByAuthor[0]?.author?.nameAr;
         const nameAr = row?.articleByAuthor[0]?.author?.nameAr;
         const nameEn = row?.articleByAuthor[0]?.author?.nameEn;
-        return nameAr !== '' ? nameAr : nameEn;
-
+        return nameAr !== "" ? nameAr : nameEn;
       },
     },
     {
@@ -177,9 +171,11 @@ export default function ArticlesList() {
       width: 250,
       valueGetter: (value, row) => {
         // return row?.articleByPublishingHouse[0]?.publishingHouse?.nameAr;
-        const nameAr = row?.articleByPublishingHouse[0]?.publishingHouse?.nameAr;
-        const nameEn = row?.articleByPublishingHouse[0]?.publishingHouse?.nameEn;
-        return nameAr !== '' ? nameAr : nameEn;
+        const nameAr =
+          row?.articleByPublishingHouse[0]?.publishingHouse?.nameAr;
+        const nameEn =
+          row?.articleByPublishingHouse[0]?.publishingHouse?.nameEn;
+        return nameAr !== "" ? nameAr : nameEn;
       },
     },
     {
@@ -188,30 +184,27 @@ export default function ArticlesList() {
       width: 110,
       type: "actions",
       renderCell: (params) => (
-        
         <>
           <GridActionsCellItem
             icon={<VisibilityIcon />}
             label="Details"
             onClick={() => handleDetails(params.id)}
           />
-         <GridActionsCellItem
-            icon={
-              params.row.archived ? (
-                <UnarchiveSharpIcon />
-              ) : (
-                <ArchiveSharpIcon />
-              )
-            }
-            label={params.row.archived ? "Unarchive" : "Archive"}
-            onClick={() =>
-              params.row.archived
-                ? handleUnarchiveArticle(params.id)
-                : handleArchiveArticle(params.id)
-            }
-            style={{
-              color: params.row.archived ? "green" : "red",
-            }}
+        </>
+      ),
+    },
+    {
+      field: "actions",
+      headerName: "Actions",
+      width: 110,
+      type: "actions",
+      renderCell: (params) => (
+        <>
+          <GridActionsCellItem
+            icon={<UnarchiveSharpIcon />}
+            label="Archive"
+            onClick={() => handleArchiveArticle(params.id)}
+            style={{ color: "red" }}
           />
         </>
       ),
@@ -231,12 +224,20 @@ export default function ArticlesList() {
           variant="h5"
           mb={3}
           gutterBottom
-          sx={{ fontWeight: "bold" }}
+          sx={{ fontWeight: "bold", display: "flex", alignItems: "center" }}
         >
           Articles
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={navigateToArchivedArticles}
+            sx={{ position: "absolute", right: 90, backgroundColor: "#701583" }}
+          >
+            Archived Articles
+          </Button>
         </Typography>
-        <div style={{ width: "100%", color: "red" , height : 500 }}>
-        {archivePopUp && (
+        <div style={{ width: "100%", color: "red", height: 500 }}>
+          {archivePopUp && (
             <ArchiveArticle
               refresh={refresh}
               setRefresh={setRefresh}
@@ -246,16 +247,7 @@ export default function ArticlesList() {
               setStatus={setArchivePopUp}
             />
           )}
-          {unarchivePopUp && (
-            <UnarchiveArticlePopUp
-              refresh={refresh}
-              setRefresh={setRefresh}
-              setOpenSnack={setOpenSnack}
-              articleId={articleId}
-              status={unarchivePopUp}
-              setStatus={setUnarchivePopUp}
-            />
-          )}
+
           <DataGrid
             rowHeight={70}
             pageSizeOptions={[7, 10, 20]}
@@ -270,7 +262,9 @@ export default function ArticlesList() {
             onPaginationModelChange={(event) => {
               handlePageChange(event);
             }}
-            onFilterModelChange={(e)=>{setText(e.quickFilterValues.join(' '))}}
+            onFilterModelChange={(e) => {
+              setText(e.quickFilterValues.join(" "));
+            }}
             rows={rows}
             columns={columns}
             pagination
@@ -298,11 +292,11 @@ export default function ArticlesList() {
               },
             }}
           />
-<ArchiveArticleSnackBar
-  openSnack={openSnack}
-  setOpenSnack={setOpenSnack}
-  message={message}
-/>
+          <ArchiveArticleSnackBar
+            openSnack={openSnack}
+            setOpenSnack={setOpenSnack}
+            message={message}
+          />
         </div>
       </Item>
     </Box>
