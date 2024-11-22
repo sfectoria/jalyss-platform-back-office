@@ -1,77 +1,152 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Box, Typography, TextField, Autocomplete, Stack, Alert, Button } from "@mui/material";
+import {
+  Box,
+  Typography,
+  TextField,
+  Autocomplete,
+  Stack,
+  Alert,
+  Button,
+  Chip,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { ip } from "../../../constants/ip";
 
 const UpdateArticle = ({ data1, setIsEditMode, isEditMode }) => {
   const id = data1.id;
+  const [publisherText, setPublisherText] = useState([]);
   const [nameText, setNameText] = useState("");
   const [barcode, setBarcode] = useState("");
-  const [authorText, setAuthorText] = useState("");
-  const [publisherText, setPublisherText] = useState("");
-  const [description, setDescription] = useState("");
+  const [shortDescriptionEn, setShortDescriptionEn] = useState("");
+  const [shortDescriptionAr, setShortDescriptionAr] = useState("");
+  const [descriptionEn, setDescriptionEn] = useState("");
+  const [descriptionAr, setDescriptionAr] = useState("");
+  const [weight, setWeight] = useState("");
+  const [pageNumber, setPageNumber] = useState("");
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [articlesAuthors, setArticlesAuthors] = useState([]);
+  const [selectedAuthors, setSelectedAuthors] = useState([]);
+  const [allPublishers, setAllPublishers] = useState([]);
+  const [allCategories, setAllCategories] = useState([]);
   const [successAlert, setSuccessAlert] = useState(false);
   const [errorAlert, setErrorAlert] = useState(false);
-  const [avatar, setAvatar] = useState(null); 
+  const [avatar, setAvatar] = useState(null);
+  const [coverId, setCoverId] = useState(null);
   const navigate = useNavigate();
 
-  const fetchAuthors = async () => {
+  const fetchInitialData = async () => {
     try {
-      const response = await axios.get(`${ip}/author`);
-      setArticlesAuthors(response.data);
+      const [authorsRes, publishersRes, categoriesRes] = await Promise.all([
+        axios.get(`${ip}/author`),
+        axios.get(`${ip}/publishingHouses/all`),
+        axios.get("http://localhost:3000/catgoryArticle/all"),
+      ]);
+      setArticlesAuthors(authorsRes.data);
+      setAllPublishers(publishersRes.data);
+      setAllCategories(categoriesRes.data);
     } catch (error) {
-      console.error("Error fetching authors data:", error);
+      console.error("Error fetching initial data:", error);
     }
   };
 
   useEffect(() => {
-    fetchAuthors();
+    fetchInitialData();
   }, []);
-
 
   useEffect(() => {
     if (data1) {
       setNameText(data1.title || "");
       setBarcode(data1.code || "");
-      setAuthorText(data1.articleByAuthor?.[0]?.author.nameAr || "");
-      setPublisherText(data1.articleByPublishingHouse?.[0]?.nameAr || "");
-      setDescription(data1.longDescriptionEn || "");
-      setSelectedCategories(data1.articleByCategory || []);
-      setAvatar(null); 
+      setShortDescriptionEn(data1.shortDescriptionEn || "");
+      setShortDescriptionAr(data1.shortDescriptionAr || "");
+      setDescriptionEn(data1.longDescriptionEn || "");
+      setDescriptionAr(data1.longDescriptionAr || "");
+      setWeight(data1.weight || "");
+      setPageNumber(data1.pageNumber || "");
+      setSelectedCategories(
+        data1.articleByCategory.map((cat) => cat.categoryArticle.name) || []
+      );
+      setPublisherText(
+        data1.articleByPublishingHouse.map((pub) => pub.publishingHouse.nameAr) || []
+      );
+      setSelectedAuthors(
+        data1.articleByAuthor.map((author) => author.nameAr) || []
+      );
+      setCoverId(data1.coverId || null);
+      setAvatar(null);
     }
   }, [data1]);
+
+  const handleFileUpload = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append("image", file);
+
+      try {
+        const response = await axios.post(
+          `http://localhost:5000/api/upload/image`,
+          formData
+        );
+        setCoverId(response.data.id);
+        setAvatar(file);
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        setErrorAlert(true);
+        setSuccessAlert(false);
+      }
+    }
+  };
 
   const handleUpdate = async () => {
     try {
       const updatedArticle = {
-        title: nameText, 
+        title: nameText,
         code: barcode,
-        longDescriptionEn: description,
-        articleByAuthor: [{ nameAr: authorText }],
-        articleByPublishingHouse: [{ nameAr: publisherText }],
-        articleByCategory: selectedCategories.map((cat) => ({ name: cat.name })),
+        shortDescriptionEn,
+        shortDescriptionAr,
+        longDescriptionEn: descriptionEn,
+        longDescriptionAr: descriptionAr,
+        weight: parseFloat(weight) || null,
+        pageNumber: parseInt(pageNumber, 10) || null,
+        articleByAuthor: selectedAuthors.map((author) => ({
+          nameAr: author,
+        })),
+        articleByPublishingHouse: publisherText.map((name) => ({
+          publishingHouse: name,
+        })),
+        articleByCategory: selectedCategories.map((e) => ({
+          categoryArticle: e,
+        })),
+        coverId: coverId || null,
       };
 
       const formData = new FormData();
-      formData.append('article', JSON.stringify(updatedArticle));
+      formData.append("article", JSON.stringify(updatedArticle));
+
       if (avatar) {
-        formData.append('avatar', avatar);
+        formData.append("avatar", avatar);
+        console.log("Avatar to be uploaded:", avatar); // Log the avatar being uploaded
       }
 
+      // Log the data before sending to the backend
+      console.log("Updated Article Data:", updatedArticle);
+      console.log("Form Data:", formData);
+
       const response = await axios.patch(`${ip}/articles/${id}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
       if (response.status === 200) {
         setSuccessAlert(true);
         setErrorAlert(false);
+
+        // Log the updated data returned from API
+        console.log("Updated Article Response:", response.data);
+
         setTimeout(() => {
-          navigate('/articles');
+          navigate("/articles");
         }, 2000);
       } else {
         setErrorAlert(true);
@@ -84,19 +159,10 @@ const UpdateArticle = ({ data1, setIsEditMode, isEditMode }) => {
     }
   };
 
-
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setAvatar(file); 
-    }
-  };
-
   return (
     <Box
       sx={{
         width: "60%",
-        height: "auto",
         padding: "20px",
         margin: "0 auto",
         backgroundColor: "white",
@@ -107,119 +173,122 @@ const UpdateArticle = ({ data1, setIsEditMode, isEditMode }) => {
       <Typography variant="h4" align="center" sx={{ marginBottom: 2, color: "#48184c" }}>
         Update Article
       </Typography>
-
-      {/* Avatar Upload Section */}
-      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 4 }}>
+      <TextField
+        label="Title"
+        fullWidth
+        value={nameText}
+        onChange={(e) => setNameText(e.target.value)}
+        sx={{ marginBottom: 2 }}
+      />
+      <TextField
+        label="Barcode"
+        fullWidth
+        value={barcode}
+        onChange={(e) => setBarcode(e.target.value)}
+        sx={{ marginBottom: 2 }}
+      />
+      <TextField
+        label="Short Description (English)"
+        fullWidth
+        value={shortDescriptionEn}
+        onChange={(e) => setShortDescriptionEn(e.target.value)}
+        sx={{ marginBottom: 2 }}
+      />
+      <TextField
+        label="Short Description (Arabic)"
+        fullWidth
+        value={shortDescriptionAr}
+        onChange={(e) => setShortDescriptionAr(e.target.value)}
+        sx={{ marginBottom: 2 }}
+      />
+      <TextField
+        label="Description (English)"
+        fullWidth
+        multiline
+        minRows={4}
+        value={descriptionEn}
+        onChange={(e) => setDescriptionEn(e.target.value)}
+        sx={{ marginBottom: 2 }}
+      />
+      <TextField
+        label="Description (Arabic)"
+        fullWidth
+        multiline
+        minRows={4}
+        value={descriptionAr}
+        onChange={(e) => setDescriptionAr(e.target.value)}
+        sx={{ marginBottom: 2 }}
+      />
+      <TextField
+        label="Weight"
+        fullWidth
+        type="number"
+        value={weight}
+        onChange={(e) => setWeight(e.target.value)}
+        sx={{ marginBottom: 2 }}
+      />
+      <TextField
+        label="Page Number"
+        fullWidth
+        type="number"
+        value={pageNumber}
+        onChange={(e) => setPageNumber(e.target.value)}
+        sx={{ marginBottom: 2 }}
+      />
+      <Autocomplete
+        multiple
+        options={articlesAuthors.map((author) => author.nameAr)}
+        value={selectedAuthors}
+        onChange={(event, newValue) => setSelectedAuthors(newValue)}
+        renderTags={(value, getTagProps) =>
+          value.map((option, index) => <Chip label={option} {...getTagProps({ index })} />)
+        }
+        renderInput={(params) => <TextField {...params} label="Authors" />}
+        sx={{ marginBottom: 2 }}
+      />
+      <Autocomplete
+        multiple
+        options={allPublishers.map((pub) => pub.nameAr)}
+        value={publisherText}
+        onChange={(event, newValue) => setPublisherText(newValue)}
+        renderTags={(value, getTagProps) =>
+          value.map((option, index) => <Chip label={option} {...getTagProps({ index })} />)
+        }
+        renderInput={(params) => <TextField {...params} label="Publishing Houses" />}
+        sx={{ marginBottom: 2 }}
+      />
+      <Autocomplete
+        multiple
+        options={allCategories.map((cat) => cat.name)}
+        value={selectedCategories}
+        onChange={(event, newValue) => setSelectedCategories(newValue)}
+        renderTags={(value, getTagProps) =>
+          value.map((option, index) => <Chip label={option} {...getTagProps({ index })} />)
+        }
+        renderInput={(params) => <TextField {...params} label="Categories" />}
+        sx={{ marginBottom: 2 }}
+      />
+      <Box sx={{ marginBottom: 2 }}>
+        <Typography>Cover Image</Typography>
         <input
           accept="image/*"
           type="file"
-          onChange={handleFileChange}
-          style={{ display: "none" }}
-          id="avatar-upload"
-        />
-        <label htmlFor="avatar-upload">
-          <Button 
-            variant="contained" 
-            component="span" 
-            sx={{ 
-              marginBottom: 2, 
-              backgroundColor: "#48184c", 
-              color: "white", 
-              "&:hover": { backgroundColor: "#361038" } 
-            }}
-          >
-            Upload Avatar
-          </Button>
-        </label>
-        {avatar && (
-          <img
-            src={URL.createObjectURL(avatar)} 
-            alt="Avatar Preview"
-            style={{ width: 100, height: 100, borderRadius: "50%", objectFit: "cover" }}
-          />
-        )}
-      </Box>
-
-      <Box sx={{ display: "flex", gap: 2, marginBottom: 4 }}>
-        <TextField
-          required
-          label="Title"
-          sx={{ width: "47%" }}
-          value={nameText}
-          onChange={(e) => setNameText(e.target.value)}
-        />
-        <TextField
-          required
-          label="BarCode"
-          sx={{ width: "40%" }}
-          value={barcode}
-          onChange={(e) => setBarcode(e.target.value)}
+          onChange={handleFileUpload}
         />
       </Box>
-
-      <Box sx={{ display: "flex", gap: 2, marginBottom: 4 }}>
-        <Autocomplete
-          freeSolo
-          sx={{ width: "47%" }}
-          options={articlesAuthors.map((option) => option.nameAr)}  
-          onInputChange={(e, value) => setAuthorText(value)}
-          value={authorText}
-          renderInput={(params) => <TextField {...params} label="Author" required />}
-        />
-        <TextField
-          required
-          label="Publisher"
-          sx={{ width: "40%" }}
-          value={publisherText}
-          onChange={(e) => setPublisherText(e.target.value)}
-        />
-      </Box>
-
-      <TextField
-        label="Description"
-        rows={4}
-        sx={{ width: "100%" }}
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
-
-      <Stack sx={{ width: "100%" }} spacing={2}>
-        {successAlert && (
-          <Alert severity="success" onClose={() => setSuccessAlert(false)}>
-            Article updated successfully!
-          </Alert>
-        )}
-        {errorAlert && (
-          <Alert severity="error" onClose={() => setErrorAlert(false)}>
-            Error updating article. Please try again.
-          </Alert>
-        )}
-      </Stack>
-
-      <Box sx={{ display: "flex", justifyContent: "space-between", marginTop: 4 }}>
+      {successAlert && (
+        <Alert severity="success">Article updated successfully!</Alert>
+      )}
+      {errorAlert && <Alert severity="error">Error updating article!</Alert>}
+      <Stack direction="row" spacing={2} sx={{ justifyContent: "center" }}>
         <Button
           variant="contained"
-          sx={{ 
-            backgroundColor: "#48184c", 
-            color: "white", 
-            "&:hover": { backgroundColor: "#361038" } 
-          }}
+          sx={{ backgroundColor: "#48184c", color: "white" }}
           onClick={handleUpdate}
         >
           Update Article
         </Button>
-        <Button
-          variant="outlined"
-          sx={{ 
-            borderColor: "#48184c", 
-            color: "#48184c", 
-            "&:hover": { backgroundColor: "#f5f5f5" } 
-          }}
-          onClick={() => setIsEditMode(!isEditMode)}
-        >
-          Cancel
-        </Button>
-      </Box>
+      </Stack>
     </Box>
   );
 };
