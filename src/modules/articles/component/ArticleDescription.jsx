@@ -6,13 +6,20 @@ import UpdateArticle from "../views/UpdateArticle";
 
 export default function ArticleDescription({ data }) {
   const [isEditMode, setIsEditMode] = useState(false);
+  const category= (data.articleByCategory?.map((i) => i.categoryArticle.name))
+
+
+
+console.log("here",category )
+;
+
 
   const handleEditClick = () => {
     setIsEditMode(true);
   };
 
   return (
-    <Box sx={{ display: "flex", justifyContent: "end", gap: 10 }}>
+    <Box sx={{ display: "flex", justifyContent: "end", gap: 6 }}>
       {isEditMode ? (
         <UpdateArticle
           setIsEditMode={setIsEditMode}
@@ -38,15 +45,6 @@ export default function ArticleDescription({ data }) {
               sx={{ fontWeight: "bold" }}
             >
               {data.title}
-            </Typography>
-            <Typography
-              marginLeft={7}
-              align="right"
-              mb={3}
-              gutterBottom
-              sx={{ fontWeight: "bold", fontSize: 17 }}
-            >
-              {data.shortDescriptionAr}
             </Typography>
             <Box
               sx={{
@@ -88,6 +86,25 @@ export default function ArticleDescription({ data }) {
                 sx={{ fontWeight: "bold" }}
               >
                 :الكمية الجملية
+              </Typography>
+            </Box>
+            <Box
+             sx={{
+              display: "flex",
+              gap: 2,
+              alignItems: "center",
+              justifyContent: "end",
+            }}>
+            <Typography sx={{ fontWeight: "bold"}}>
+            {category} 
+              </Typography>
+              <Typography
+                color="black"
+                variant="h5"
+                gutterBottom
+                sx={{ fontWeight: "bold" }}
+              >
+                : صنف
               </Typography>
             </Box>
             <Box
@@ -136,7 +153,7 @@ export default function ArticleDescription({ data }) {
                 gutterBottom
                 sx={{ fontWeight: "bold" }}
               >
-                : فكرة شاملة
+                :وصف مفصل
               </Typography>
             </Box>
             <Box
@@ -157,7 +174,7 @@ export default function ArticleDescription({ data }) {
                 gutterBottom
                 sx={{ fontWeight: "bold" }}
               >
-                : تلخيص
+               : وصف 
               </Typography>
             </Box>
           </Box>
@@ -168,7 +185,7 @@ export default function ArticleDescription({ data }) {
               alt={"article img"}
               loading="lazy"
             />
-            
+
             <Box
               sx={{
                 display: "flex",
@@ -177,7 +194,13 @@ export default function ArticleDescription({ data }) {
                 marginTop: 2,
               }}
             >
-              <Typography sx={{ fontWeight: "bold", textAlign: "center",marginTop: "0.4cm", }}>
+              <Typography
+                sx={{
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  marginTop: "0.4cm",
+                }}
+              >
                 {data.pageNumber}
               </Typography>
 
@@ -197,18 +220,17 @@ export default function ArticleDescription({ data }) {
                 justifyContent: "center",
               }}
             >
-       <Typography
-  sx={{
-    fontWeight: "bold",
-    textAlign: "left",
-    marginTop: "0.4cm",
-    display: "flex",
-  }}
->
-  {data.weight}
-  <span style={{ marginLeft: "5px"}}>كغ</span> 
-</Typography>
-
+              <Typography
+                sx={{
+                  fontWeight: "bold",
+                  textAlign: "left",
+                  marginTop: "0.4cm",
+                  display: "flex",
+                }}
+              >
+                {data.weight}
+                <span style={{ marginLeft: "5px" }}>كغ</span>
+              </Typography>
 
               <Typography
                 color="black"

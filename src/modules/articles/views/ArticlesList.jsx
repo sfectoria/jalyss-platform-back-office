@@ -171,7 +171,6 @@ export default function ArticlesList() {
       width: 250,
       valueGetter: (value, row) => {
         const nameList = row?.articleByPublishingHouse?.map((e) => e?.publishingHouse?.nameAr) || [];
-        console.log("the", row?.articleByPublishingHouse?.length > 1);
         if (row?.articleByPublishingHouse?.length > 1) {
           return `...,${nameList[0]}`;
         }
