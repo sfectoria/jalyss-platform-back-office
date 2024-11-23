@@ -179,7 +179,7 @@ export default function ArticlesList() {
     },
     {
       field: "details",
-      headerName: "Details",
+      headerName: "Actions",
       width: 110,
       type: "actions",
       renderCell: (params) => (
@@ -189,16 +189,6 @@ export default function ArticlesList() {
             label="Details"
             onClick={() => handleDetails(params.id)}
           />
-        </>
-      ),
-    },
-    {
-      field: "actions",
-      headerName: "Actions",
-      width: 110,
-      type: "actions",
-      renderCell: (params) => (
-        <>
           <GridActionsCellItem
             icon={<UnarchiveSharpIcon />}
             label="Archive"
@@ -207,7 +197,7 @@ export default function ArticlesList() {
           />
         </>
       ),
-    },
+    }
   ];
 
   return (
