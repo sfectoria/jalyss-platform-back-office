@@ -10,6 +10,7 @@ import {
   useGridApiContext,
   useGridSelector,
 } from "@mui/x-data-grid";
+import Tooltip from '@mui/material/Tooltip';
 import MuiPagination from "@mui/material/Pagination";
 import Typography from "@mui/material/Typography";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -200,12 +201,14 @@ export default function ArticlesList() {
       type: "actions",
       renderCell: (params) => (
         <>
+                <Tooltip title="Archive Article" >
           <GridActionsCellItem
             icon={<UnarchiveSharpIcon />}
             label="Archive"
             onClick={() => handleArchiveArticle(params.id)}
             style={{ color: "red" }}
           />
+          </Tooltip>
         </>
       ),
     },
