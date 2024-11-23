@@ -157,12 +157,12 @@ export default function ArticlesList() {
       field: "author",
       headerName: "Author",
       width: 250,
-
       valueGetter: (value, row) => {
-        //return row?.articleByAuthor[0]?.author?.nameAr;
-        const nameAr = row?.articleByAuthor[0]?.author?.nameAr;
-        const nameEn = row?.articleByAuthor[0]?.author?.nameEn;
-        return nameAr !== "" ? nameAr : nameEn;
+        const nameAuthorList = row?.articleByAuthor?.map((e) => e?.author?.nameAr) || [];
+        if (row?.articleByAuthor?.length > 1) {
+          return `...,${nameAuthorList[0]}`;
+        }
+        return nameAuthorList.join(", ");
       },
     },
     {
@@ -170,12 +170,12 @@ export default function ArticlesList() {
       headerName: "Publisher",
       width: 250,
       valueGetter: (value, row) => {
-        // return row?.articleByPublishingHouse[0]?.publishingHouse?.nameAr;
-        const nameAr =
-          row?.articleByPublishingHouse[0]?.publishingHouse?.nameAr;
-        const nameEn =
-          row?.articleByPublishingHouse[0]?.publishingHouse?.nameEn;
-        return nameAr !== "" ? nameAr : nameEn;
+        const nameList = row?.articleByPublishingHouse?.map((e) => e?.publishingHouse?.nameAr) || [];
+        console.log("the", row?.articleByPublishingHouse?.length > 1);
+        if (row?.articleByPublishingHouse?.length > 1) {
+          return `...,${nameList[0]}`;
+        }
+        return nameList.join(", ");
       },
     },
     {
