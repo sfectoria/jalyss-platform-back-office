@@ -180,33 +180,25 @@ export default function ArticlesList() {
     },
     {
       field: "details",
-      headerName: "Details",
-      width: 110,
-      type: "actions",
-      renderCell: (params) => (
-        <>
-          <GridActionsCellItem
-            icon={<VisibilityIcon />}
-            label="Details"
-            onClick={() => handleDetails(params.id)}
-          />
-        </>
-      ),
-    },
-    {
-      field: "actions",
       headerName: "Actions",
       width: 110,
       type: "actions",
       renderCell: (params) => (
         <>
-                <Tooltip title="Archive Article" >
-          <GridActionsCellItem
-            icon={<UnarchiveSharpIcon />}
-            label="Archive"
-            onClick={() => handleArchiveArticle(params.id)}
-            style={{ color: "red" }}
-          />
+          <Tooltip title="View Details">
+            <GridActionsCellItem
+              icon={<VisibilityIcon />}
+              label="Details"
+              onClick={() => handleDetails(params.id)}
+            />
+          </Tooltip>
+          <Tooltip title="Archive Article">
+            <GridActionsCellItem
+              icon={<UnarchiveSharpIcon />}
+              label="Archive"
+              onClick={() => handleArchiveArticle(params.id)}
+              style={{ color: "red" }}
+            />
           </Tooltip>
         </>
       ),
