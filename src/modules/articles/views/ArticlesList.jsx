@@ -95,6 +95,7 @@ export default function ArticlesList() {
       let params = Object.fromEntries(queryParams.entries());
       if (text) params["text"] = text;
       const response = await axios.get(ip + "/articles/getAll", { params });
+      console.log("here",response.data);
       const result = response.data.data.map((ele) => {
         ele.quantity = ele.stockArticle.reduce((acc, ele) => {
           acc += ele.quantity;

@@ -6,50 +6,56 @@ import Typography from '@mui/material/Typography';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useNavigate } from 'react-router-dom';
 import CustomNoResultsOverlay from '../../../style/NoResultStyle';
-import ArchiveIcon from '@mui/icons-material/Archive';
+import UnarchiveIcon from '@mui/icons-material/Unarchive';
 import Item from '../../../style/ItemStyle';
 import Avatar from '@mui/material/Avatar';
 import { deepOrange } from '@mui/material/colors';
 import CustomNoRowsOverlay from '../../../style/NoRowsStyle';
-import MoveToInboxIcon from '@mui/icons-material/MoveToInbox';
 import axios from 'axios';
+import MoveToInboxIcon from '@mui/icons-material/MoveToInbox';
 import { ip } from "../../../constants/ip";
 
-export default function FournisseursList() {
-  const [fournisseur, setFournisseur] = useState([]);
-  const [confirmDelete, setConfirmDelete] = useState(false);
+export const ArchivedFournisseur = () => {
+  const [archivedFournissuer, setArchivedFournisseur] = useState([]);
+  const [confirmToArchive, setConfirmToArchive] = useState(false);
   const [fournisseurToArchiveId, setFournisseurToArchiveId] = useState(null);
+
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`${ip}/provider`); 
-        const nonArchived = response.data.filter(element => !element.archived); 
-        setFournisseur(nonArchived);
-        console.log("Non-archived Fournisseurs:", nonArchived);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchData();
-  }, []);
-  
-  const handleArchive = async () => {
-    if (!fournisseurToArchiveId) return;
+  const getArchived = async () => {
     try {
-      await axios.patch(`${ip}/provider/${fournisseurToArchiveId}`, { archived: true });
-      setFournisseur((prev) => prev.filter((item) => item.id !== fournisseurToArchiveId));
-      console.log("here",fournisseurToArchiveId);
-      setConfirmDelete(false);
-      console.log("Fournisseur archived successfully");
+      const response = await axios.get(`${ip}/provider`);
+      const Archived = response.data.filter((element) => element.archived);
+      setArchivedFournisseur(Archived);
+      console.log("Archived Fournisseurs fetched successfully:", Archived);
     } catch (error) {
-      console.error("Error archiving fournisseur:", error);
+      console.error("Error fetching archived fournisseurs:", error);
     }
   };
 
+  useEffect(() => {
+    getArchived();
+  }, []);
+
   const handleDetails = (id) => {
     navigate(`${id}`);
+  };
+
+  const handleArchive = async () => {
+    if (!fournisseurToArchiveId) return;
+
+    try {
+      await axios.patch(`${ip}/provider/${fournisseurToArchiveId}`, { archived: false });
+      setArchivedFournisseur((prev) =>
+        prev.filter((fournisseur) => fournisseur.id !== fournisseurToArchiveId)
+      );
+      console.log(`Fournisseur with ID ${fournisseurToArchiveId} archived successfully.`);
+    } catch (error) {
+      console.error("Error archiving fournisseur:", error);
+    } finally {
+      setConfirmToArchive(false);
+      setFournisseurToArchiveId(null);
+    }
   };
 
   const columns = [
@@ -88,25 +94,25 @@ export default function FournisseursList() {
             label="Archive"
             onClick={() => {
               setFournisseurToArchiveId(params.id);
-              setConfirmDelete(true);
+              setConfirmToArchive(true);
             }}
-            style={{ color: "green" }}
+            style={{ color: "red" }}
           />
         </>
       ),
     },
   ];
-
-  const HandleFournissuer =()=>{
-    navigate("fournisseur-archived")
+  const HandleClick =() =>{
+    navigate("/fournisseurs")
   }
+
   return (
     <Box sx={{ bgcolor: 'background.default', mx: 3, mt: 3 }}>
       <Item sx={{ pt: 7, pb: 1, px: 7, borderRadius: 10 }} elevation={5}>
         <Typography variant="h5" mb={1} gutterBottom sx={{ fontWeight: 'bold' }}>
-          Fournisseurs
+          Archived Fournisseurs
         </Typography>
-          < ArchiveIcon sx={{fontSize:"50px",color:"red"}} onClick={HandleFournissuer}/> 
+        <  UnarchiveIcon sx={{fontSize:"50px",color:"green"}}  onClick={HandleClick} />
         <div style={{ width: '100%', height: 500 }}>
           <DataGrid
             pageSizeOptions={[7, 10, 20]}
@@ -116,7 +122,7 @@ export default function FournisseursList() {
               borderColor: 'primary.light',
               '& .MuiDataGrid-cell:hover': { color: 'primary.main' },
             }}
-            rows={fournisseur}
+            rows={archivedFournissuer}
             columns={columns}
             slots={{
               noRowsOverlay: CustomNoRowsOverlay,
@@ -130,7 +136,7 @@ export default function FournisseursList() {
           />
         </div>
       </Item>
-      {confirmDelete && (
+      {confirmToArchive && (
         <Box
           sx={{
             position: "fixed",
@@ -141,11 +147,14 @@ export default function FournisseursList() {
             backgroundColor: "rgba(0, 0, 0, 0.5)",
             zIndex: 999,
           }}
-          onClick={() => setConfirmDelete(false)}
+          onClick={() => {
+            setConfirmToArchive(false);
+            setFournisseurToArchiveId(null);
+          }}
         >
           <Box
             sx={{
-              backgroundColor: "#dc2626",
+              backgroundColor: "#16a34a",
               padding: "20px",
               borderRadius: "8px",
               boxShadow: "0 0 10px rgba(0,0,0,0.1)",
@@ -157,7 +166,7 @@ export default function FournisseursList() {
             }}
           >
             <Typography sx={{ fontSize: 20, mb: 2, color: "white" }}>
-              Are you sure you want to archive this fournisseur?
+              Are you sure you want to unarchive this fournisseur?
             </Typography>
             <span style={{ color: "white" }}>This action is reversible.</span>
             <Box sx={{ mt: 2, display: "flex", gap: 2 }}>
@@ -167,8 +176,8 @@ export default function FournisseursList() {
                 onClick={handleArchive}
                 sx={{
                   backgroundColor: "white",
-                  color: "red",
-                  "&:hover": { backgroundColor: "red", color: "white" },
+                  color: "green",
+                  "&:hover": { backgroundColor: "green", color: "white" },
                 }}
               >
                 Yes, Archive
@@ -176,11 +185,14 @@ export default function FournisseursList() {
               <Button
                 variant="contained"
                 color="error"
-                onClick={() => setConfirmDelete(false)}
+                onClick={() => {
+                  setConfirmToArchive(false);
+                  setFournisseurToArchiveId(null);
+                }}
                 sx={{
                   backgroundColor: "white",
-                  color: "red",
-                  "&:hover": { backgroundColor: "red", color: "white" },
+                  color: "green",
+                  "&:hover": { backgroundColor: "green", color: "white" },
                 }}
               >
                 Cancel
@@ -191,4 +203,4 @@ export default function FournisseursList() {
       )}
     </Box>
   );
-}
+};
