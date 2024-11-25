@@ -154,7 +154,7 @@ export const ArchivedFournisseur = () => {
         >
           <Box
             sx={{
-              backgroundColor: "#16a34a",
+              backgroundColor: "red",
               padding: "20px",
               borderRadius: "8px",
               boxShadow: "0 0 10px rgba(0,0,0,0.1)",
@@ -165,10 +165,11 @@ export const ArchivedFournisseur = () => {
               zIndex: 1000,
             }}
           >
+            <span style={{ color: "white",fontSize: 25 }}>Unarchive Confirmation</span>
             <Typography sx={{ fontSize: 20, mb: 2, color: "white" }}>
-              Are you sure you want to unarchive this fournisseur?
+            Are you sure you want to unarchive this article? This action will move
+            the article to the unarchived section.
             </Typography>
-            <span style={{ color: "white" }}>This action is reversible.</span>
             <Box sx={{ mt: 2, display: "flex", gap: 2 }}>
               <Button
                 variant="contained"
@@ -176,11 +177,11 @@ export const ArchivedFournisseur = () => {
                 onClick={handleArchive}
                 sx={{
                   backgroundColor: "white",
-                  color: "green",
-                  "&:hover": { backgroundColor: "green", color: "white" },
+                  color: "red",
+                  "&:hover": { backgroundColor: "red", color: "white" },
                 }}
               >
-                Yes, Archive
+                Yes, Unarchive
               </Button>
               <Button
                 variant="contained"
@@ -191,8 +192,8 @@ export const ArchivedFournisseur = () => {
                 }}
                 sx={{
                   backgroundColor: "white",
-                  color: "green",
-                  "&:hover": { backgroundColor: "green", color: "white" },
+                  color: "red",
+                  "&:hover": { backgroundColor: "red", color: "white" },
                 }}
               >
                 Cancel

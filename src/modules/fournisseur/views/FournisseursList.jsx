@@ -145,7 +145,7 @@ export default function FournisseursList() {
         >
           <Box
             sx={{
-              backgroundColor: "#dc2626",
+              backgroundColor: "#16a34a",
               padding: "20px",
               borderRadius: "8px",
               boxShadow: "0 0 10px rgba(0,0,0,0.1)",
@@ -156,10 +156,11 @@ export default function FournisseursList() {
               zIndex: 1000,
             }}
           >
+            <span style={{ color: "white",fontSize: 25 }}>Archive Confirmation</span>
             <Typography sx={{ fontSize: 20, mb: 2, color: "white" }}>
-              Are you sure you want to archive this fournisseur?
+            Are you sure you want to archive this article? This action will move
+            the article to the archived section.
             </Typography>
-            <span style={{ color: "white" }}>This action is reversible.</span>
             <Box sx={{ mt: 2, display: "flex", gap: 2 }}>
               <Button
                 variant="contained"
@@ -167,8 +168,8 @@ export default function FournisseursList() {
                 onClick={handleArchive}
                 sx={{
                   backgroundColor: "white",
-                  color: "red",
-                  "&:hover": { backgroundColor: "red", color: "white" },
+                  color: "#16a34a",
+                  "&:hover": { backgroundColor: "#16a34a", color: "white" },
                 }}
               >
                 Yes, Archive
@@ -179,8 +180,8 @@ export default function FournisseursList() {
                 onClick={() => setConfirmDelete(false)}
                 sx={{
                   backgroundColor: "white",
-                  color: "red",
-                  "&:hover": { backgroundColor: "red", color: "white" },
+                  color: "#16a34a",
+                  "&:hover": { backgroundColor: "#16a34a", color: "white" },
                 }}
               >
                 Cancel
