@@ -3,27 +3,26 @@ import Box from "@mui/material/Box";
 import { DataGrid, GridToolbar, GridActionsCellItem } from "@mui/x-data-grid";
 import Typography from "@mui/material/Typography";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import Tooltip from '@mui/material/Tooltip';
+import Tooltip from "@mui/material/Tooltip";
 import ArchiveSharpIcon from "@mui/icons-material/ArchiveSharp";
 import ArchiveAuthorSnackBar from "../../authors/components/ArchiveAuthorSnackBar";
 import Avatar from "@mui/material/Avatar";
 import { grey } from "@mui/material/colors";
-import { MdOutlinePersonAdd } from "react-icons/md";
-import Button from "@mui/material/Button";
+import AddIcon from "@mui/icons-material/Add";
+import ArchiveIcon from "@mui/icons-material/Archive";
 import { useNavigate } from "react-router-dom";
 import CustomNoResultsOverlay from "../../../style/NoResultStyle";
 import Item from "../../../style/ItemStyle";
-import Modal from "react-bootstrap/Modal";
+import Fab from "@mui/material/Fab";
 import { ip } from "../../../constants/ip";
 import axios from "axios";
 import CustomNoRowsOverlay from "../../../style/NoRowsStyle";
 import ArchiveAuthor from "../../authors/components/ArchiveAuthorPopUp";
 
-
 export default function AuthorsList() {
   const [authors, setAuthors] = useState([]);
   const [archivePopUp, setArchivePopUp] = useState(false);
-  const [authorId,setAuthorId] = useState(0)
+  const [authorId, setAuthorId] = useState(0);
   const [refresh, setRefresh] = useState(true);
   const [openSnack, setOpenSnack] = useState(false);
   const [message, setMessage] = useState("");
@@ -35,7 +34,9 @@ export default function AuthorsList() {
       try {
         const response = await axios.get(`${ip}/author`);
         console.log("Authors fetched:", response.data);
-        const filteredAuthors = response.data.filter((author) => !author.archived);
+        const filteredAuthors = response.data.filter(
+          (author) => !author.archived
+        );
         setAuthors(filteredAuthors);
       } catch (error) {
         console.log("Error fetching data:", error);
@@ -58,8 +59,6 @@ export default function AuthorsList() {
     setMessage("Author archived");
     setRefresh((prev) => !prev);
   };
-
- 
 
   const columns = [
     {
@@ -123,103 +122,115 @@ export default function AuthorsList() {
   ];
 
   return (
-<Box sx={{ bgcolor: "background.default", mx: 3, mt: 3 }}>
-  <Item sx={{ pt: 7, pb: 1, px: 7, borderRadius: 10 }} elevation={5}>
-
-      <Typography
-        variant="h5"
-        mb={3}
-        gutterBottom
-        sx={{
-          fontWeight: "bold",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between", 
-        }}
-      >
-        Authors
-        <Button
-            variant="contained"
-            color="primary"
-            onClick={navigateToArchivedAuthors}
+    <>
+      <Box sx={{ bgcolor: "background.default", mx: 3, mt: 3 }}>
+        <Item sx={{ pt: 7, pb: 1, px: 7, borderRadius: 10 }} elevation={5}>
+          <Typography
+            variant="h5"
+            mb={3}
+            gutterBottom
             sx={{
-              backgroundColor: "#701583",
-              flexShrink: 0, 
-              ml: "auto",
-              marginBottom: { xs: 2, sm: 0 }, 
+              fontWeight: "bold",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
             }}
           >
-            Archived Authors
-          </Button>
-     
+            Authors
+            <Tooltip title="Archived Authors">
+              <ArchiveIcon
+                variant="contained"
+                color="primary"
+                onClick={navigateToArchivedAuthors}
+                sx={{
+                  flexShrink: 0,
+                  ml: "auto",
+                  marginBottom: { xs: 2, sm: 0 },
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: 1,
+                  cursor: "pointer",
+                  fontSize: "55px",
+                  color: "#701583",
+                }}
+              >
+                Archived Authors
+              </ArchiveIcon>
+            </Tooltip>
+          </Typography>
+
+          <div style={{ width: "100%", height: 500 }}>
+            {archivePopUp && (
+              <ArchiveAuthor
+                refresh={refresh}
+                setRefresh={setRefresh}
+                setOpenSnack={setOpenSnack}
+                authorId={authorId}
+                status={archivePopUp}
+                setStatus={setArchivePopUp}
+              />
+            )}
+            <DataGrid
+              pageSizeOptions={[7, 10, 20]}
+              sx={{
+                boxShadow: 0,
+                border: 0,
+                borderColor: "primary.light",
+                "& .MuiDataGrid-cell:hover": {
+                  color: "primary.main",
+                },
+              }}
+              rows={authors}
+              columns={columns}
+              slots={{
+                noRowsOverlay: CustomNoRowsOverlay,
+                noResultsOverlay: CustomNoResultsOverlay,
+                toolbar: GridToolbar,
+              }}
+              initialState={{
+                pagination: { paginationModel: { pageSize: 7 } },
+                filter: {
+                  filterModel: {
+                    items: [],
+                    quickFilterValues: [""],
+                  },
+                },
+              }}
+              slotProps={{
+                toolbar: {
+                  showQuickFilter: true,
+                },
+              }}
+            />
+            <ArchiveAuthorSnackBar
+              openSnack={openSnack}
+              setOpenSnack={setOpenSnack}
+              message={message}
+            />
+          </div>
+        </Item>
+      </Box>
+
       <Box
         sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: 1,
-          borderRadius: "40%",
-          cursor: "pointer",
+          height: 70,
+          position: "fixed",
+          bottom: 60,
+          right: 110,
         }}
         onClick={() => navigate("/articles/add-author")}
       >
-        <MdOutlinePersonAdd size={54} />
+        <Fab
+          color="secondary"
+          aria-label="edit"
+          onClick={() => navigate("/articles/add-author")}
+        >
+          <Tooltip title="Add new Author">
+            <AddIcon />
+          </Tooltip>
+        </Fab>
       </Box>
-      </Typography>
-
-    <div style={{ width: "100%", height: 500 }}>
-    {archivePopUp && (
-            <ArchiveAuthor
-              refresh={refresh}
-              setRefresh={setRefresh}
-              setOpenSnack={setOpenSnack}
-              authorId={authorId}
-              status={archivePopUp}
-              setStatus={setArchivePopUp}
-            />
-          )}
-      <DataGrid
-        pageSizeOptions={[7, 10, 20]}
-        sx={{
-          boxShadow: 0,
-          border: 0,
-          borderColor: "primary.light",
-          "& .MuiDataGrid-cell:hover": {
-            color: "primary.main",
-          },
-        }}
-        rows={authors}
-        columns={columns}
-        slots={{
-          noRowsOverlay: CustomNoRowsOverlay,
-          noResultsOverlay: CustomNoResultsOverlay,
-          toolbar: GridToolbar,
-        }}
-        initialState={{
-          pagination: { paginationModel: { pageSize: 7 } },
-          filter: {
-            filterModel: {
-              items: [],
-              quickFilterValues: [""],
-            },
-          },
-        }}
-        slotProps={{
-          toolbar: {
-            showQuickFilter: true,
-          },
-        }}
-      />
-       <ArchiveAuthorSnackBar
-            openSnack={openSnack}
-            setOpenSnack={setOpenSnack}
-            message={message}
-          />
-    </div>
-  </Item>
-
-
-</Box>
-
+    </>
   );
 }
