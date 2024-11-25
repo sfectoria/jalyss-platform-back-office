@@ -17,9 +17,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import { useLocation, useNavigate } from "react-router-dom";
 import CustomNoResultsOverlay from "../../../style/NoResultStyle";
 import ArchiveSharpIcon from "@mui/icons-material/ArchiveSharp";
-import UnarchiveSharpIcon from "@mui/icons-material/UnarchiveSharp";
 import ArchiveArticle from "../component/ArchiveArticlePopUp";
-import UnarchiveArticlePopUp from "../component/UnarchiveArticlePopUp";
 import ArchiveArticleSnackBar from "../component/ArchiveArticleSnackBar";
 import Item from "../../../style/ItemStyle";
 import ImagePopUp from "../../../components/ImagePopUp";
@@ -44,7 +42,6 @@ export default function ArticlesList() {
   const [loading, setLoading] = useState(true);
   const [articleId, setArticleId] = useState(0);
   const [archivePopUp, setArchivePopUp] = useState(false);
-  const [unarchivePopUp, setUnarchivePopUp] = useState(false);
   const location = useLocation();
   const [page, setPage] = useState(getPageFromUrl);
   const [pageSize, setPageSize] = useState(getPageSizeFromUrl());
@@ -95,6 +92,7 @@ export default function ArticlesList() {
       let params = Object.fromEntries(queryParams.entries());
       if (text) params["text"] = text;
       const response = await axios.get(ip + "/articles/getAll", { params });
+      console.log("here",response.data);
       const result = response.data.data.map((ele) => {
         ele.quantity = ele.stockArticle.reduce((acc, ele) => {
           acc += ele.quantity;
@@ -194,7 +192,7 @@ export default function ArticlesList() {
           </Tooltip>
           <Tooltip title="Archive Article">
             <GridActionsCellItem
-              icon={<UnarchiveSharpIcon />}
+              icon={<ArchiveSharpIcon />}
               label="Archive"
               onClick={() => handleArchiveArticle(params.id)}
               style={{ color: "red" }}

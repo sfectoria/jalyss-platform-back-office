@@ -8,95 +8,92 @@ import { useParams } from "react-router-dom";
 import CustomNoRowsOverlay from "../../../style/NoRowsStyle";
 
 export default function ArticleHistory() {
-  const [history, setHistory] = useState([]);
+  const [rows, setRows] = useState([]);
   const [articleName, setArticleName] = useState("");
 
-  const { stocksIds, articleId } = useParams();
+
 
   const fetchHistory = async () => {
     try {
-      const params = {};
-
-      if (stocksIds) {
-        params.stocksIds = stocksIds.split(",").map((id) => id.trim()); // Transformation en array
-      }
-      if (articleId) {
-        params.articleId = articleId;
-      }
-      console.log(params, "params");
-
       const response = await axios.get(
-        "http://localhost:3000/movements/getAll2",
-        { params }
+        `http://localhost:3000/articles/${stocksIds}/${articleId}`
       );
-      setHistory(response.data.data);
-      // Extract article name from history
-      const article = response.data.data.find((item) =>
-        item.type === "receipt"
-          ? item.receiptNoteLine.some(
-              (line) => line.Article?.id === Number(articleId)
-            )
-          : item.exitNoteLine.some(
-              (line) => line.articleId === Number(articleId)
-            )
-      );
-      
-
-      if (article) {
-        const articleData =
-          article.type === "receipt"
-            ? article.receiptNoteLine.find(
-                (line) => line.Article?.id === Number(articleId)
-              )
-            : article.exitNoteLine.find(
-                (line) => line.articleId === Number(articleId)
-              );
-        setArticleName(articleData?.Article?.title || "Unknown Article");
-      }
+      setHistory(response.data);
+      console.log(response.data, ".data");
     } catch (error) {
-      console.error("Erreur lors de la récupération des données:", error);
+      console.log("Error fetching history:", error.message);
     }
   };
-
   useEffect(() => {
-    fetchHistory();
+    if (history) {
+      setRows(formatHistoryRows());
+    }
   }, [stocksIds, articleId]);
 
-  const rows = history.map((historyRow, i) => {
-    
-    const noteLines =
-      historyRow.type === "exit"
-        ? historyRow.exitNoteLine
-        : historyRow.receiptNoteLine;
+  const formatHistoryRows = () => {
+    const rows = [];
   
-    const filteredLines = noteLines?.filter(
-      (line) =>
-        (line.articleId === Number(articleId)) || 
-        (line.Article?.id === Number(articleId))  
-    );
-    const firstLine = filteredLines && filteredLines.length > 0 ? filteredLines[0] : null;
-    const quantity = firstLine?.quantity || "N/A";
-    const price = firstLine?.price !== null ? firstLine?.price : "N/A";
-    const totalPrice =
-      firstLine && firstLine.price !== null && firstLine.quantity
-        ? (firstLine.price * firstLine.quantity).toFixed(2)
-        : "N/A";
-  
-    return {
-      id: i,
-      date: historyRow.exitDate || historyRow.receiptDate,
-      customer: historyRow.client?.fullName || "X",
-      fournisseur: historyRow.provider?.nameProvider || "X",
-      type: historyRow.type,
-      transfer: historyRow.transferNote,
-      quantity: quantity, 
-      price: price, 
-      totalPrice: totalPrice, 
-      discount: firstLine?.discount ? `${firstLine.discount} %` : "0%",
-      totalAmount: historyRow.totalAmount || "N/A",
+    const addRows = (noteLines, type) => {
+      noteLines.forEach((line) => {
+        rows.push({
+          id: line.id,
+          date: line.createdAt,
+          type,
+          quantity: line.quantity || "N/A",
+          price: line.price !== null ? line.price : "N/A",
+          totalPrice:
+            line.price !== null && line.quantity
+              ? (line.price * line.quantity).toFixed(2)
+              : "N/A",
+          discount: line.discount ? `${line.discount} %` : "0%",
+          customer: type === "exit" ? history.client?.fullName || "N/A" : "N/A",
+          fournisseur:
+            type === "receipt" ? history.provider?.nameProvider || "N/A" : "N/A",
+          transfer: type === "transfer" ? true : false,
+        });
+      });
     };
-  });
   
+    addRows(history.exitNoteLine || [], "exit");
+    addRows(history.receiptNoteLine || [], "receipt");
+    addRows(history.transferNoteLine || [], "transfer");
+    addRows(history.ReturnNoteLine || [], "return");
+  
+    return rows;
+  };
+  //   const noteLines =
+  //     historyRow.type === "exit"
+  //       ? historyRow.exitNoteLine
+  //       : historyRow.receiptNoteLine;
+
+  //   const filteredLines = noteLines?.filter(
+  //     (line) =>
+  //       line.articleId === Number(articleId) ||
+  //       line.Article?.id === Number(articleId)
+  //   );
+  //   const firstLine =
+  //     filteredLines && filteredLines.length > 0 ? filteredLines[0] : null;
+  //   const quantity = firstLine?.quantity || "N/A";
+  //   const price = firstLine?.price !== null ? firstLine?.price : "N/A";
+  //   const totalPrice =
+  //     firstLine && firstLine.price !== null && firstLine.quantity
+  //       ? (firstLine.price * firstLine.quantity).toFixed(2)
+  //       : "N/A";
+
+  //   return {
+  //     id: i,
+  //     date: historyRow.exitDate || historyRow.receiptDate,
+  //     customer: historyRow.client?.fullName || "X",
+  //     fournisseur: historyRow.provider?.nameProvider || "X",
+  //     type: historyRow.type,
+  //     transfer: historyRow.transferNote,
+  //     quantity: quantity,
+  //     price: price,
+  //     totalPrice: totalPrice,
+  //     discount: firstLine?.discount ? `${firstLine.discount} %` : "0%",
+  //     totalAmount: historyRow.totalAmount || "N/A",
+  //   };
+  // });
 
   const columns = [
     {
@@ -157,7 +154,7 @@ export default function ArticleHistory() {
       }}
     >
       <Typography variant="h5" mb={3} gutterBottom sx={{ fontWeight: "bold" }}>
-        Historique de l'Article : {articleName}
+        Historique de l'Article :
       </Typography>
       <div style={{ width: "100%", height: 500 }}>
         <DataGrid
