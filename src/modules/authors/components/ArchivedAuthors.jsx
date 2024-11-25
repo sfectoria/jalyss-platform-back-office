@@ -4,12 +4,10 @@ import { DataGrid, GridToolbar, GridActionsCellItem } from "@mui/x-data-grid";
 import Typography from "@mui/material/Typography";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import Tooltip from '@mui/material/Tooltip';
-import ArchiveSharpIcon from "@mui/icons-material/ArchiveSharp";
+import UnarchiveSharpIcon from '@mui/icons-material/UnarchiveSharp';
 import ArchiveAuthorSnackBar from "../../authors/components/ArchiveAuthorSnackBar";
 import Avatar from "@mui/material/Avatar";
 import { grey } from "@mui/material/colors";
-import { MdOutlinePersonAdd } from "react-icons/md";
-import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
 import CustomNoResultsOverlay from "../../../style/NoResultStyle";
 import Item from "../../../style/ItemStyle";
@@ -17,12 +15,12 @@ import Modal from "react-bootstrap/Modal";
 import { ip } from "../../../constants/ip";
 import axios from "axios";
 import CustomNoRowsOverlay from "../../../style/NoRowsStyle";
-import ArchiveAuthor from "../../authors/components/ArchiveAuthorPopUp";
+import UnarchiveAuthorPopUp from "./UnarchiveAuthorPopUp";
 
-
-export default function AuthorsList() {
-  const [authors, setAuthors] = useState([]);
-  const [archivePopUp, setArchivePopUp] = useState(false);
+export default function ArchivedAuthors  ()  {
+ 
+   const [authors, setAuthors] = useState([]);
+  const [unarchivePopUp, setUnarchivePopUp] = useState(false);
   const [authorId,setAuthorId] = useState(0)
   const [refresh, setRefresh] = useState(true);
   const [openSnack, setOpenSnack] = useState(false);
@@ -34,9 +32,8 @@ export default function AuthorsList() {
     const fetchData = async () => {
       try {
         const response = await axios.get(`${ip}/author`);
-        console.log("Authors fetched:", response.data);
-        const filteredAuthors = response.data.filter((author) => !author.archived);
-        setAuthors(filteredAuthors);
+        const archivedAuthors = response.data.filter((author) => author.archived);
+        setAuthors(archivedAuthors);
       } catch (error) {
         console.log("Error fetching data:", error);
       }
@@ -48,14 +45,11 @@ export default function AuthorsList() {
     navigate(`${id}`);
   };
 
-  const navigateToArchivedAuthors = () => {
-    navigate("/articles/authors/archivedauthors");
-  };
 
-  const handleArchiveAuthor = (id) => {
+  const handleUnarchiveAuthor = (id) => {
     setAuthorId(id);
-    setArchivePopUp(true);
-    setMessage("Author archived");
+    setUnarchivePopUp(true);
+    setMessage("Author Unarchived");
     setRefresh((prev) => !prev);
   };
 
@@ -111,10 +105,10 @@ export default function AuthorsList() {
           </Tooltip>
           <Tooltip title="Archive Author">
             <GridActionsCellItem
-              icon={<ArchiveSharpIcon />}
+              icon={<UnarchiveSharpIcon />}
               label="Archive"
-              onClick={() => handleArchiveAuthor(params.id)}
-              style={{ color: "red" }}
+              onClick={() => handleUnarchiveAuthor(params.id)}
+              style={{ color: "green" }}
             />
           </Tooltip>
         </>
@@ -125,57 +119,26 @@ export default function AuthorsList() {
   return (
 <Box sx={{ bgcolor: "background.default", mx: 3, mt: 3 }}>
   <Item sx={{ pt: 7, pb: 1, px: 7, borderRadius: 10 }} elevation={5}>
-
+    <div className="d-flex justify-content-between align-items-center">
       <Typography
         variant="h5"
         mb={3}
         gutterBottom
-        sx={{
-          fontWeight: "bold",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between", 
-        }}
+        sx={{ fontWeight: "bold" }}
       >
-        Authors
-        <Button
-            variant="contained"
-            color="primary"
-            onClick={navigateToArchivedAuthors}
-            sx={{
-              backgroundColor: "#701583",
-              flexShrink: 0, 
-              ml: "auto",
-              marginBottom: { xs: 2, sm: 0 }, 
-            }}
-          >
-            Archived Authors
-          </Button>
-     
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: 1,
-          borderRadius: "40%",
-          cursor: "pointer",
-        }}
-        onClick={() => navigate("/articles/add-author")}
-      >
-        <MdOutlinePersonAdd size={54} />
-      </Box>
-      </Typography>
+       Archived Authors
+        </Typography>
+    </div>
 
     <div style={{ width: "100%", height: 500 }}>
-    {archivePopUp && (
-            <ArchiveAuthor
+    {unarchivePopUp && (
+            <UnarchiveAuthorPopUp
               refresh={refresh}
               setRefresh={setRefresh}
               setOpenSnack={setOpenSnack}
               authorId={authorId}
-              status={archivePopUp}
-              setStatus={setArchivePopUp}
+              status={unarchivePopUp}
+              setStatus={setUnarchivePopUp}
             />
           )}
       <DataGrid
@@ -223,3 +186,4 @@ export default function AuthorsList() {
 
   );
 }
+
