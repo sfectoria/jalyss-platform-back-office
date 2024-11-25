@@ -1,56 +1,72 @@
-import React, { useEffect, useState } from 'react';
-import Box from '@mui/material/Box';
-import Button from "@mui/material/Button";
-import { DataGrid, GridToolbar, GridActionsCellItem } from '@mui/x-data-grid';
-import Typography from '@mui/material/Typography';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import { useNavigate } from 'react-router-dom';
-import CustomNoResultsOverlay from '../../../style/NoResultStyle';
-import ArchiveIcon from '@mui/icons-material/Archive';
-import Item from '../../../style/ItemStyle';
-import Avatar from '@mui/material/Avatar';
-import { deepOrange } from '@mui/material/colors';
-import CustomNoRowsOverlay from '../../../style/NoRowsStyle';
-import MoveToInboxIcon from '@mui/icons-material/MoveToInbox';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import Box from "@mui/material/Box";
+import { DataGrid, GridToolbar, GridActionsCellItem } from "@mui/x-data-grid";
+import Typography from "@mui/material/Typography";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import { useNavigate } from "react-router-dom";
+import CustomNoResultsOverlay from "../../../style/NoResultStyle";
+import ArchiveIcon from "@mui/icons-material/Archive";
+import Item from "../../../style/ItemStyle";
+import Avatar from "@mui/material/Avatar";
+import { deepOrange } from "@mui/material/colors";
+import CustomNoRowsOverlay from "../../../style/NoRowsStyle";
+import UnarchiveSharpIcon from "@mui/icons-material/UnarchiveSharp";
+import Tooltip from "@mui/material/Tooltip";
+import axios from "axios";
 import { ip } from "../../../constants/ip";
+import ArchivePopUp from "../Components/ArchivePopup";
+import { SnackbarNotification } from "../Components/SnackBarNotification";
 
 export default function FournisseursList() {
-  const [fournisseur, setFournisseur] = useState([]);
+  const [fournisseurs, setFournisseurs] = useState([]);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [refresh, setRefresh] = useState(true);
   const [fournisseurToArchiveId, setFournisseurToArchiveId] = useState(null);
+  const [snackOpen, setSnackOpen] = useState(false);
+  const [message, setSnackMessage] = useState("");
   const navigate = useNavigate();
-
+  
+  const handleDetails = (id) => {
+    navigate(`${id}`);
+  };
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${ip}/provider`); 
-        const nonArchived = response.data.filter(element => !element.archived); 
-        setFournisseur(nonArchived);
-        console.log("Non-archived Fournisseurs:", nonArchived);
+        const response = await axios.get(`${ip}/provider`);
+        const nonArchived = response.data.filter((element) => !element.archived);
+        setFournisseurs(nonArchived);
+        if (!refresh) {
+          setSnackMessage("Fournisseur archived successfully!");
+          setSnackOpen(true);
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
+        setSnackMessage("Failed to fetch fournisseurs.");
+        setSnackOpen(true);
       }
     };
+  
     fetchData();
-  }, []);
+  }, [refresh]); 
   
   const handleArchive = async () => {
     if (!fournisseurToArchiveId) return;
     try {
-      await axios.patch(`${ip}/provider/${fournisseurToArchiveId}`, { archived: true });
-      setFournisseur((prev) => prev.filter((item) => item.id !== fournisseurToArchiveId));
-      console.log("here",fournisseurToArchiveId);
+      const response = await axios.patch(`${ip}/provider/${fournisseurToArchiveId}`, {
+        archived: true,
+      });
+      setFournisseurs((prev) =>
+        prev.filter((item) => item.id !== fournisseurToArchiveId)
+      );
       setConfirmDelete(false);
-      console.log("Fournisseur archived successfully");
     } catch (error) {
       console.error("Error archiving fournisseur:", error);
+      setSnackMessage("Failed to archive fournisseur.");
+    } finally {
+      setSnackOpen(true);
     }
   };
-
-  const handleDetails = (id) => {
-    navigate(`${id}`);
-  };
+  
 
   const columns = [
     {
@@ -66,11 +82,11 @@ export default function FournisseursList() {
         </Avatar>
       ),
     },
-    { field: 'nameProvider', headerName: 'Fournisseur Name', width: 200 },
-    { field: 'registrationNumber', headerName: 'Registration Number', width: 200 },
-    { field: 'email', headerName: 'Fournisseur Email', width: 220 },
-    { field: 'phoneNumber', headerName: 'Phone Number', width: 150 },
-    { field: 'adresse', headerName: 'Address', width: 190 },
+    { field: "nameProvider", headerName: "Fournisseur Name", width: 200 },
+    { field: "registrationNumber", headerName: "Registration Number", width: 200 },
+    { field: "email", headerName: "Fournisseur Email", width: 220 },
+    { field: "phoneNumber", headerName: "Phone Number", width: 150 },
+    { field: "adresse", headerName: "Address", width: 190 },
     {
       field: "actions",
       headerName: "Actions",
@@ -83,40 +99,51 @@ export default function FournisseursList() {
             label="Details"
             onClick={() => handleDetails(params.id)}
           />
-          <GridActionsCellItem
-            icon={<MoveToInboxIcon />}
-            label="Archive"
-            onClick={() => {
-              setFournisseurToArchiveId(params.id);
-              setConfirmDelete(true);
-            }}
-            style={{ color: "green" }}
-          />
+          <Tooltip title="Archive Fournisseur">
+            <GridActionsCellItem
+              icon={<UnarchiveSharpIcon />}
+              label="Archive"
+              onClick={() => {
+                setFournisseurToArchiveId(params.id);
+                setConfirmDelete(true);
+              }}
+              style={{ color: "red" }}
+            />
+          </Tooltip>
         </>
       ),
     },
   ];
 
-  const HandleFournissuer =()=>{
-    navigate("fournisseur-archived")
-  }
+  const handleArchivedFournisseurs = () => {
+    navigate("fournisseur-archived");
+  };
+
   return (
-    <Box sx={{ bgcolor: 'background.default', mx: 3, mt: 3 }}>
+    <Box sx={{ bgcolor: "background.default", mx: 3, mt: 3 }}>
       <Item sx={{ pt: 7, pb: 1, px: 7, borderRadius: 10 }} elevation={5}>
-        <Typography variant="h5" mb={1} gutterBottom sx={{ fontWeight: 'bold' }}>
+        <Typography
+          variant="h5"
+          mb={1}
+          gutterBottom
+          sx={{ fontWeight: "bold" }}
+        >
           Fournisseurs
         </Typography>
-          < ArchiveIcon sx={{fontSize:"50px",color:"red"}} onClick={HandleFournissuer}/> 
-        <div style={{ width: '100%', height: 500 }}>
+        <ArchiveIcon
+          sx={{ fontSize: "50px", color: "red", cursor: "pointer" }}
+          onClick={handleArchivedFournisseurs}
+        />
+        <div style={{ width: "100%", height: 500 }}>
           <DataGrid
             pageSizeOptions={[7, 10, 20]}
             sx={{
               boxShadow: 0,
               border: 0,
-              borderColor: 'primary.light',
-              '& .MuiDataGrid-cell:hover': { color: 'primary.main' },
+              borderColor: "primary.light",
+              "& .MuiDataGrid-cell:hover": { color: "primary.main" },
             }}
-            rows={fournisseur}
+            rows={fournisseurs}
             columns={columns}
             slots={{
               noRowsOverlay: CustomNoRowsOverlay,
@@ -131,65 +158,20 @@ export default function FournisseursList() {
         </div>
       </Item>
       {confirmDelete && (
-        <Box
-          sx={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-            zIndex: 999,
-          }}
-          onClick={() => setConfirmDelete(false)}
-        >
-          <Box
-            sx={{
-              backgroundColor: "#16a34a",
-              padding: "20px",
-              borderRadius: "8px",
-              boxShadow: "0 0 10px rgba(0,0,0,0.1)",
-              position: "fixed",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              zIndex: 1000,
-            }}
-          >
-            <span style={{ color: "white",fontSize: 25 }}>Archive Confirmation</span>
-            <Typography sx={{ fontSize: 20, mb: 2, color: "white" }}>
-            Are you sure you want to archive this article? This action will move
-            the article to the archived section.
-            </Typography>
-            <Box sx={{ mt: 2, display: "flex", gap: 2 }}>
-              <Button
-                variant="contained"
-                color="error"
-                onClick={handleArchive}
-                sx={{
-                  backgroundColor: "white",
-                  color: "#16a34a",
-                  "&:hover": { backgroundColor: "#16a34a", color: "white" },
-                }}
-              >
-                Yes, Archive
-              </Button>
-              <Button
-                variant="contained"
-                color="error"
-                onClick={() => setConfirmDelete(false)}
-                sx={{
-                  backgroundColor: "white",
-                  color: "#16a34a",
-                  "&:hover": { backgroundColor: "#16a34a", color: "white" },
-                }}
-              >
-                Cancel
-              </Button>
-            </Box>
-          </Box>
-        </Box>
+        <ArchivePopUp
+          setRefresh={setRefresh}
+          refresh={refresh}
+          FournisseurId={fournisseurToArchiveId}
+          status={confirmDelete}
+          setStatus={setConfirmDelete}
+          handleArchive={handleArchive}
+        />
       )}
+      <SnackbarNotification
+        open={snackOpen}
+        setOpen={setSnackOpen}
+        message={message}
+      />
     </Box>
   );
 }
