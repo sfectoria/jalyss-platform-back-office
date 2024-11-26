@@ -173,28 +173,20 @@ export default function ArchivedArticles() {
     },
 
     {
-      field: "details",
-      headerName: "Details",
-      width: 110,
-      type: "actions",
-      renderCell: (params) => (
-        
-        <>
-          <GridActionsCellItem
-            icon={<VisibilityIcon />}
-            label="Details"
-            onClick={() => handleDetails(params.id)}
-          />
-        </>
-      ),
-    },
-    {
       field: "actions",
       headerName: "Actions",
       width: 110,
       type: "actions",
       renderCell: (params) => (
         <>
+          <Tooltip title="View Details">
+            <GridActionsCellItem
+              icon={<VisibilityIcon />}
+              label="Details"
+              onClick={() => handleDetails(params.id)}
+            />
+          </Tooltip>
+
         <Tooltip title="Unarchive Article" >
           <GridActionsCellItem
             icon={<UnarchiveSharpIcon />}

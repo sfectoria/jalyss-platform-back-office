@@ -5,68 +5,48 @@ import Typography from "@mui/material/Typography";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { useNavigate } from "react-router-dom";
 import CustomNoResultsOverlay from "../../../style/NoResultStyle";
-import ArchiveIcon from "@mui/icons-material/Archive";
+import UnarchiveIcon from "@mui/icons-material/Unarchive";
 import Item from "../../../style/ItemStyle";
 import Avatar from "@mui/material/Avatar";
 import { deepOrange } from "@mui/material/colors";
 import CustomNoRowsOverlay from "../../../style/NoRowsStyle";
-import UnarchiveSharpIcon from "@mui/icons-material/UnarchiveSharp";
-import Tooltip from "@mui/material/Tooltip";
 import axios from "axios";
+import Tooltip from "@mui/material/Tooltip";
 import { ip } from "../../../constants/ip";
-import ArchivePopUp from "../Components/ArchivePopup";
-import { SnackbarNotification } from "../Components/SnackBarNotification";
+import UnarchiveSharpIcon from "@mui/icons-material/UnarchiveSharp";
+import UnarchivePopUp from "./UnarchivePopUp";
+import { SnackBar } from "./SnackBar";
 
-export default function FournisseursList() {
-  const [fournisseurs, setFournisseurs] = useState([]);
-  const [confirmDelete, setConfirmDelete] = useState(false);
-  const [refresh, setRefresh] = useState(true);
-  const [fournisseurToArchiveId, setFournisseurToArchiveId] = useState(null);
+export const ArchivedFournisseur = () => {
+  const [archivedFournissuer, setArchivedFournisseur] = useState([]);
+  const [confirmToArchive, setConfirmToArchive] = useState(false);
+  const [fournisseurToUnarchiveId, setFournisseurToUnarchiveId] = useState(null);
+  const [refresh, setRefresh] = useState(false);
   const [snackOpen, setSnackOpen] = useState(false);
   const [message, setSnackMessage] = useState("");
   const navigate = useNavigate();
-  
+
+  const getArchived = async () => {
+    try {
+      const response = await axios.get(`${ip}/provider`);
+      const archived = response.data.filter((element) => element.archived);
+      setArchivedFournisseur(archived);
+      if (refresh) {
+        setSnackMessage("Fournisseur Unarchived successfully!");
+        setSnackOpen(true);
+      }
+    } catch (error) {
+      console.error("Error fetching archived fournisseurs:", error);
+    }
+  };
+
+  useEffect(() => {
+    getArchived();
+  }, [refresh]);
+
   const handleDetails = (id) => {
     navigate(`${id}`);
   };
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`${ip}/provider`);
-        const nonArchived = response.data.filter((element) => !element.archived);
-        setFournisseurs(nonArchived);
-        if (!refresh) {
-          setSnackMessage("Fournisseur archived successfully!");
-          setSnackOpen(true);
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setSnackMessage("Failed to fetch fournisseurs.");
-        setSnackOpen(true);
-      }
-    };
-  
-    fetchData();
-  }, [refresh]); 
-  
-  const handleArchive = async () => {
-    if (!fournisseurToArchiveId) return;
-    try {
-      const response = await axios.patch(`${ip}/provider/${fournisseurToArchiveId}`, {
-        archived: true,
-      });
-      setFournisseurs((prev) =>
-        prev.filter((item) => item.id !== fournisseurToArchiveId)
-      );
-      setConfirmDelete(false);
-    } catch (error) {
-      console.error("Error archiving fournisseur:", error);
-      setSnackMessage("Failed to archive fournisseur.");
-    } finally {
-      setSnackOpen(true);
-    }
-  };
-  
 
   const columns = [
     {
@@ -99,15 +79,15 @@ export default function FournisseursList() {
             label="Details"
             onClick={() => handleDetails(params.id)}
           />
-          <Tooltip title="Archive Fournisseur">
+          <Tooltip title="Unarchive Fournisseur">
             <GridActionsCellItem
               icon={<UnarchiveSharpIcon />}
-              label="Archive"
+              label="Unarchive"
               onClick={() => {
-                setFournisseurToArchiveId(params.id);
-                setConfirmDelete(true);
+                setFournisseurToUnarchiveId(params.id);
+                setConfirmToArchive(true);
               }}
-              style={{ color: "red" }}
+              style={{ color: "green" }}
             />
           </Tooltip>
         </>
@@ -115,24 +95,19 @@ export default function FournisseursList() {
     },
   ];
 
-  const handleArchivedFournisseurs = () => {
-    navigate("fournisseur-archived");
+  const handleBackToFournisseurs = () => {
+    navigate("/fournisseurs");
   };
 
   return (
     <Box sx={{ bgcolor: "background.default", mx: 3, mt: 3 }}>
       <Item sx={{ pt: 7, pb: 1, px: 7, borderRadius: 10 }} elevation={5}>
-        <Typography
-          variant="h5"
-          mb={1}
-          gutterBottom
-          sx={{ fontWeight: "bold" }}
-        >
-          Fournisseurs
+        <Typography variant="h5" mb={1} gutterBottom sx={{ fontWeight: "bold" }}>
+          Archived Fournisseurs
         </Typography>
-        <ArchiveIcon
-          sx={{ fontSize: "50px", color: "red", cursor: "pointer" }}
-          onClick={handleArchivedFournisseurs}
+        <UnarchiveIcon
+          sx={{ fontSize: "50px", color: "green", cursor: "pointer" }}
+          onClick={handleBackToFournisseurs}
         />
         <div style={{ width: "100%", height: 500 }}>
           <DataGrid
@@ -143,7 +118,7 @@ export default function FournisseursList() {
               borderColor: "primary.light",
               "& .MuiDataGrid-cell:hover": { color: "primary.main" },
             }}
-            rows={fournisseurs}
+            rows={archivedFournissuer}
             columns={columns}
             slots={{
               noRowsOverlay: CustomNoRowsOverlay,
@@ -157,21 +132,18 @@ export default function FournisseursList() {
           />
         </div>
       </Item>
-      {confirmDelete && (
-        <ArchivePopUp
-          setRefresh={setRefresh}
+      {confirmToArchive && (
+        <UnarchivePopUp
+          FournisseurId={fournisseurToUnarchiveId}
+          isOpen={confirmToArchive}
+          setIsOpen={setConfirmToArchive}
           refresh={refresh}
-          FournisseurId={fournisseurToArchiveId}
-          status={confirmDelete}
-          setStatus={setConfirmDelete}
-          handleArchive={handleArchive}
+          setRefresh={setRefresh}
+          setSnackMessage={setSnackMessage}
+          setSnackOpen={setSnackOpen}
         />
       )}
-      <SnackbarNotification
-        open={snackOpen}
-        setOpen={setSnackOpen}
-        message={message}
-      />
+      <SnackBar open={snackOpen} setOpen={setSnackOpen} message={message} />
     </Box>
   );
-}
+};

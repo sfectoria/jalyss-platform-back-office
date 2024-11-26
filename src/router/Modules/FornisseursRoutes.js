@@ -4,6 +4,7 @@ import FournisseurModule from "../../modules/fournisseur/FournisseurModule";
 import FournisseursList from "../../modules/fournisseur/views/FournisseursList";
 import AddFournisseur from "../../modules/fournisseur/views/AddFournisseur";
 import FournisseurInfo from "../../modules/fournisseur/views/FournisseurInfo";
+import { ArchivedFournisseur } from "../../modules/fournisseur/Components/ArchivedFournisseur";
 
 function FornisseursRoutes() {
   return [
@@ -19,6 +20,7 @@ function FornisseursRoutes() {
         element={<AddFournisseur />}
       />
        <Route path=":id" key="fournisseur-details" element={<FournisseurInfo />} />
+      <Route  path="fournisseur-archived" key="archived" element={<ArchivedFournisseur />}  />
     </Route>,
   ];
 }
