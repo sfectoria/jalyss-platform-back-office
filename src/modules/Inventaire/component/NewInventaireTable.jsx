@@ -27,6 +27,7 @@ import CustomNoRowsOverlay from '../../../style/NoRowsStyle';
 export default function NewInventaireTable() {
   const [rows, setRows] = useState([]);
   const [showAlert, setShowAlert] = useState(false);
+  const [showAlertSu, setShowAlertSu] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
   const [count, setCount] = useState(10);
   const [page, setPage] = useState(0);
@@ -101,7 +102,41 @@ export default function NewInventaireTable() {
       event.defaultMuiPrevented = true;
     }
   };
-
+  const handleSaveAll = async () => {
+    const rowsToSave = Object.keys(rowModesModel)
+      .filter((key) => rowModesModel[key].mode === GridRowModes.Edit)
+      .map((key) => rows.find((row) => row.id === Number(key)));
+  
+    if (rowsToSave.length === 0) {
+      setMsg("No rows to save");
+      setShowAlert(true);
+      return;
+    }
+  
+    try {
+      const updatedRows = await Promise.all(
+        rowsToSave.map(async (row) => {
+          const updatedRow = await processRowUpdate(row);
+          return updatedRow;
+        })
+      );
+  
+      setRows((prevRows) =>
+        prevRows.map((row) =>
+          updatedRows.find((updatedRow) => updatedRow.id === row.id) || row
+        )
+      );
+  
+      setRowModesModel({});
+      setMsg("All rows saved successfully!");
+      setShowAlertSu(true);
+    } catch (error) {
+      console.error("Error saving rows:", error);
+      setMsg("Failed to save some rows");
+      setShowAlert(true);
+    }
+  };
+  
   const handleEditClick = (id) => () => {
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
   };
@@ -238,6 +273,7 @@ export default function NewInventaireTable() {
 
   const handelShow =()=>{
     setShowAlert(false)
+    setShowAlertSu(false)
   }
 
   return (
@@ -253,6 +289,7 @@ export default function NewInventaireTable() {
       }}
     >
      { showAlert&&<AlertAdding showAlert={showAlert} handelShow={handelShow} msg={msg} status={'error'}/>}
+     { showAlertSu&&<AlertAdding showAlert={showAlertSu} handelShow={handelShow} msg={msg} status={'success'}/>}
       <Box  style = {{height : 500}}  >
         <DataGrid
         rowHeight={80}
@@ -294,6 +331,7 @@ export default function NewInventaireTable() {
             toolbar: {
               showQuickFilter: true,
               onDoneClick: handleDoneClick,
+              onSaveAllClick: handleSaveAll,
             },
           }}
         />

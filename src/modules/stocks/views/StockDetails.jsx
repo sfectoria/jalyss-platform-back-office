@@ -21,6 +21,14 @@ import StockInvontaire from "../component/StockInvontaire";
 import AddInventaire from "../component/AddInventaire";
 import axios from "axios";
 import { ip } from "../../../constants/ip";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import IconButton from "@mui/material/IconButton";
+import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
+import { Button } from "@mui/material";
+import ArchiveStockPopUp from "../component/ArchiveStockPopUp";
+import SimpleDialog from "../component/ChannelsListOfStock";
+
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -129,6 +137,9 @@ function FullWidthTabs({ stockInfo }) {
 
 export default function StockDetails() {
   const [stockInfo, setStockInfo] = useState({});
+  const [more, setMore] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [selectedValue, setSelectedValue] = useState("");
   const params = useParams();
   useEffect(() => {
     fetchStockDetails();
@@ -137,6 +148,13 @@ export default function StockDetails() {
   const fetchStockDetails = async () => {
     const response = await axios.get(`${ip}/stocks/${params.id}`);
     setStockInfo(response.data.data);
+  };
+  const handelChannelsList = () => {
+    console.log("hello");
+    setOpen(true);
+  };
+  const handleClose = (value) => {
+    setOpen(false);
   };
   return (
     <Box
@@ -147,7 +165,14 @@ export default function StockDetails() {
       }}
     >
       <Item sx={{ pt: 7, pb: 1, px: 7, borderRadius: 10 }} elevation={5}>
-        <div role="presentation">
+        <div
+          role="presentation"
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            marginRight: "50px",
+          }}
+        >
           <Breadcrumbs aria-label="breadcrumb">
             <Link
               underline="hover"
@@ -167,7 +192,30 @@ export default function StockDetails() {
             </Typography>
           </Breadcrumbs>
         </div>
+          <Box sx={{ mx: 4 }}>
+            <Typography variant="h2" color="initial" gutterBottom>
+              {stockInfo.name} informations
+            </Typography>
+            <Typography variant="body1" color={"initial"} gutterBottom>
+              {stockInfo.name} managed by ({stockInfo?.employee?.firstName+" "+stockInfo?.employee?.lastName})
+            </Typography>
+            <Button
+              variant="contained"
+              color="secondary"
+              endIcon={<RemoveRedEyeIcon />}
+              sx={{ width: "20%" }}
+              onClick={() => handelChannelsList()}
+            >
+              View Channels
+            </Button>
+          </Box>
         <FullWidthTabs stockInfo={stockInfo} />
+        <SimpleDialog
+          info={stockInfo?.salesChannels}
+          selectedValue={selectedValue}
+          open={open}
+          onClose={handleClose}
+        />
       </Item>
     </Box>
   );
