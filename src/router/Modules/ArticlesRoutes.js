@@ -15,6 +15,7 @@ import AddAuthors from "../../modules/articles/views/AddAuthors";
 import AddPublishingHouse from "../../modules/articles/views/AddPublishingHouse";
 import ArticlesArchived from "../../modules/articles/component/ArticlesArchived.jsx";
 import ArchivedAuthors from "../../modules/authors/components/ArchivedAuthors.jsx";
+import { ArchivedPublishingHouses } from "../../modules/articles/views/ArchivedPublishingHouses.jsx";
 
 
 export default function ArticleRoutes() {
@@ -26,6 +27,7 @@ export default function ArticleRoutes() {
       <Route path=":id" key="article-details" element={<ArticleDetails />} />
       <Route key="index" path=":articleId/stocks/:stocksIds/full-history" element={<ArticleHistory />} />
       <Route path="publishingHouses" key="publishing-houses" element={<PublishingHouse />} />
+      <Route path="publishingHouses/archivedpublishingHouses" key="archivedpublishingHouses" element={<ArchivedPublishingHouses />} />
       <Route path="publishingHouses/:id" key="publishing-houses-details"element={<PublishingHouseDetails />}/>
       <Route path="add-publishingHouses" key="add-publishingHouses"element={<AddPublishingHouse />}/>
       <Route path="authors" key="authors" element={<AuthorsList />} />
