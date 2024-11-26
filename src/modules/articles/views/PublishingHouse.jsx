@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import {
   DataGrid,
@@ -11,6 +10,10 @@ import {
   useGridSelector,
 } from "@mui/x-data-grid";
 import MuiPagination from "@mui/material/Pagination";
+import Tooltip from "@mui/material/Tooltip";
+import AddIcon from "@mui/icons-material/Add";
+import Fab from "@mui/material/Fab";
+import ArchiveSharpIcon from "@mui/icons-material/ArchiveSharp";
 import Typography from "@mui/material/Typography";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -20,10 +23,11 @@ import ImagePopUp from "../../../components/ImagePopUp";
 import axios from "axios";
 import { ip } from "../../../constants/ip";
 import CustomNoRowsOverlay from "../../../style/NoRowsStyle";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import Avatar from "@mui/material/Avatar";
 import { grey } from "@mui/material/colors";
-import { MdOutlinePersonAdd } from "react-icons/md";
+import ArchiveIcon from "@mui/icons-material/Archive";
+import ArchivePublishingHouseSnackBar from "./ArchiveP.houseSnackBar";
+import ArchivePublishingHouse from "./ArchiveP.housePopUp";
 
 const getPageFromUrl = () => {
   const params = new URLSearchParams(window.location.search);
@@ -44,8 +48,11 @@ export default function PublishingHousesList() {
   const [page, setPage] = useState(getPageFromUrl);
   const [pageSize, setPageSize] = useState(getPageSizeFromUrl());
   const [text, setText] = useState(null);
-  const [confirmDelete, setConfirmDelete] = useState(false);
-  const [publishingHouseToDelete, setPublishingHouseToDelete] = useState(null);
+  const [openSnack, setOpenSnack] = useState(false);
+  const [archivePopUp, setArchivePopUp] = useState(false);
+  const [message, setMessage] = useState("");
+  const [publishingHouseId, setPublishingHouseId] = useState(0);
+  const [refresh, setRefresh] = useState(true);
 
   function Pagination({ onPageChange, className }) {
     const apiRef = useGridApiContext();
@@ -76,31 +83,20 @@ export default function PublishingHousesList() {
     navigate(`${id}`);
   };
 
-  const handleDeleteClick = (id) => {
-    setPublishingHouseToDelete(id);
-    setConfirmDelete(true);
+  const navigateToArchivedPublishingHouses = () => {
+    navigate("/articles/publishingHouses/archivedpublishingHouses");
   };
 
-  const handleDelete = async () => {
-    try {
-      const response = await axios.delete(
-        `${ip}/publishingHouses/${publishingHouseToDelete}`
-      );
-      console.log(response.data);
-      setPublishingHouses((prevHouses) =>
-        prevHouses.filter((house) => house.id !== publishingHouseToDelete)
-      );
-      setConfirmDelete(false);
-      setPublishingHouseToDelete(null);
-      await fetchData();
-    } catch (error) {
-      console.log("Error deleting publishing house:", error);
-    }
+  const handleArchivePublishingHouse = (id) => {
+    setPublishingHouseId(id);
+    setArchivePopUp(true);
+    setMessage("Publishing House archived");
+    setRefresh((prev) => !prev);
   };
 
   useEffect(() => {
     fetchData();
-  }, [location, text]);
+  }, [location, text, refresh]);
 
   useEffect(() => {
     updateUrlParams();
@@ -116,9 +112,12 @@ export default function PublishingHousesList() {
       const response = await axios.get(ip + "/publishingHouses/all", {
         params,
       });
-      console.log(response.data);
-      setPublishingHouses(response.data);
-      setCount(response.data.length);
+      const filteredPublishingHouses = response.data.filter(
+        (publishingHouse) => !publishingHouse.archived
+      );
+      setPublishingHouses(filteredPublishingHouses);
+      console.log(filteredPublishingHouses);
+      setCount(filteredPublishingHouses.length);
     } catch (err) {
       console.error("API Fetch Error:", err);
       setError(true);
@@ -175,72 +174,92 @@ export default function PublishingHousesList() {
     { field: "email", headerName: "Email", width: 210 },
     {
       field: "details",
-      headerName: "Details",
-      width: 75,
+      headerName: "Actions",
+      width: 100,
       type: "actions",
       renderCell: (params) => [
         <>
-          <GridActionsCellItem
-            icon={<VisibilityIcon />}
-            label="Details"
-            onClick={() => handleDetails(params.id)}
-          />
-          <GridActionsCellItem
-            icon={<DeleteOutlineIcon />}
-            label="Delete"
-            onClick={() => handleDeleteClick(params.id)}
-            style={{ color: "red" }}
-          />
+          <Tooltip title="View Details">
+            <GridActionsCellItem
+              icon={<VisibilityIcon />}
+              label="Details"
+              onClick={() => handleDetails(params.id)}
+            />
+          </Tooltip>
+          <Tooltip title="Archive Publishing House">
+            <GridActionsCellItem
+              icon={<ArchiveSharpIcon />}
+              label="Archive"
+              onClick={() => handleArchivePublishingHouse(params.id)}
+              style={{ color: "red" }}
+            />
+          </Tooltip>
         </>,
       ],
     },
   ];
 
   return (
-    <Box
-      sx={{
-        bgcolor: "background.default",
-        mx: 3,
-        mt: 3,
-        position: "relative",
-      }}
-    >
+    <>
       <Box
         sx={{
-          filter: confirmDelete ? "blur(2px)" : "none",
+          bgcolor: "background.default",
+          mx: 3,
+          mt: 3,
         }}
       >
         <Item sx={{ pt: 7, pb: 1, px: 7, borderRadius: 10 }} elevation={5}>
-        <Box
-  sx={{
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between", 
-    mb: 3,
-  }}
->
-          <Typography
-            variant="h5"
-            mb={3}
-            gutterBottom
-            sx={{ fontWeight: "bold" }}
-          >
-            Publishing Houses
-          </Typography>
           <Box
             sx={{
               display: "flex",
-              justifyContent: "flex-end",
-              padding: 1,
-              borderRadius: "50%",
-              cursor: "pointer",
+              alignItems: "center",
+              justifyContent: "space-between",
+              mb: 3,
             }}
-            onClick={() => navigate("/articles/add-publishingHouses")}
           >
-            <MdOutlinePersonAdd size={53} />
-            </Box>
+            <Typography
+              variant="h5"
+              mb={3}
+              gutterBottom
+              sx={{ fontWeight: "bold" }}
+            >
+              Publishing Houses
+            </Typography>
+
+            <Tooltip title="Archived Publishing Houses">
+              <ArchiveIcon
+                variant="contained"
+                color="primary"
+                onClick={navigateToArchivedPublishingHouses}
+                sx={{
+                  flexShrink: 0,
+                  ml: "auto",
+                  marginBottom: { xs: 2, sm: 0 },
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: 1,
+                  cursor: "pointer",
+                  fontSize: "55px",
+                  color: "#701583",
+                }}
+              >
+                Archived Publishing Houses
+              </ArchiveIcon>
+            </Tooltip>
           </Box>
-          <div style={{ width: "100%", color: "red", height: 500 }}>
+
+          <div style={{ width: "100%", height: 500 }}>
+            {archivePopUp && (
+              <ArchivePublishingHouse
+                refresh={refresh}
+                setRefresh={setRefresh}
+                setOpenSnack={setOpenSnack}
+                publishingHouseId={publishingHouseId}
+                status={archivePopUp}
+                setStatus={setArchivePopUp}
+              />
+            )}
             <DataGrid
               rowHeight={70}
               pageSizeOptions={[7, 10, 20, 100]}
@@ -283,79 +302,31 @@ export default function PublishingHousesList() {
                 },
               }}
             />
+            <ArchivePublishingHouseSnackBar
+              openSnack={openSnack}
+              setOpenSnack={setOpenSnack}
+              message={message}
+            />
           </div>
         </Item>
       </Box>
 
-      {confirmDelete && (
-        <>
-          <Box
-            sx={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              backgroundColor: "rgba(0, 0, 0, 0.5)",
-              zIndex: 999,
-            }}
-            onClick={() => setConfirmDelete(false)}
-          />
-
-          <Box
-            sx={{
-              backgroundColor: "#dc2626",
-              padding: "20px",
-              borderRadius: "8px",
-              boxShadow: "0 0 10px rgba(0,0,0,0.1)",
-              position: "fixed",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              zIndex: 1000,
-            }}
-          >
-            <Typography sx={{ fontSize: 20, mb: 2, color: "white" }}>
-              Do you want to delete this PublishingHouse?
-            </Typography>
-            <span style={{ color: "white" }}>This action is irreversible!</span>
-
-            <Box sx={{ mt: 2, display: "flex", gap: 2 }}>
-              <Button
-                variant="contained"
-                color="error"
-                onClick={handleDelete}
-                sx={{
-                  backgroundColor: "white",
-                  color: "red",
-                  "&:hover": {
-                    backgroundColor: "red",
-                    color: "white",
-                  },
-                }}
-              >
-                Yes, Delete
-              </Button>
-
-              <Button
-                variant="contained"
-                color="error"
-                onClick={() => setConfirmDelete(false)}
-                sx={{
-                  backgroundColor: "white",
-                  color: "red",
-                  "&:hover": {
-                    backgroundColor: "red",
-                    color: "white",
-                  },
-                }}
-              >
-                Cancel
-              </Button>
-            </Box>
-          </Box>
-        </>
-      )}
-    </Box>
+      <Box
+        sx={{
+          height: 50,
+          position: "fixed",
+          bottom: 70,
+          right: 50,
+          zIndex: 1000,
+        }}
+        onClick={() => navigate("/articles/add-publishingHouses")}
+      >
+        <Fab color="secondary" aria-label="edit">
+          <Tooltip title="Add new Publishing House">
+            <AddIcon />
+          </Tooltip>
+        </Fab>
+      </Box>
+    </>
   );
 }
