@@ -148,6 +148,8 @@ export default function StockDetails() {
   const fetchStockDetails = async () => {
     const response = await axios.get(`${ip}/stocks/${params.id}`);
     setStockInfo(response.data.data);
+    console.log("hereeeee",response.data.data);
+    
   };
   const handelChannelsList = () => {
     console.log("hello");
