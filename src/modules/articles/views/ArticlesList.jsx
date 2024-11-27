@@ -10,7 +10,6 @@ import {
   useGridApiContext,
   useGridSelector,
 } from "@mui/x-data-grid";
-import Avatar from "@mui/material/Avatar";
 import Tooltip from '@mui/material/Tooltip';
 import MuiPagination from "@mui/material/Pagination";
 import Typography from "@mui/material/Typography";
@@ -18,7 +17,9 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import { useLocation, useNavigate } from "react-router-dom";
 import CustomNoResultsOverlay from "../../../style/NoResultStyle";
 import ArchiveSharpIcon from "@mui/icons-material/ArchiveSharp";
+import UnarchiveSharpIcon from "@mui/icons-material/UnarchiveSharp";
 import ArchiveArticle from "../component/ArchiveArticlePopUp";
+import UnarchiveArticlePopUp from "../component/UnarchiveArticlePopUp";
 import ArchiveArticleSnackBar from "../component/ArchiveArticleSnackBar";
 import Item from "../../../style/ItemStyle";
 import ImagePopUp from "../../../components/ImagePopUp";
@@ -43,6 +44,7 @@ export default function ArticlesList() {
   const [loading, setLoading] = useState(true);
   const [articleId, setArticleId] = useState(0);
   const [archivePopUp, setArchivePopUp] = useState(false);
+  const [unarchivePopUp, setUnarchivePopUp] = useState(false);
   const location = useLocation();
   const [page, setPage] = useState(getPageFromUrl);
   const [pageSize, setPageSize] = useState(getPageSizeFromUrl());
@@ -146,17 +148,28 @@ export default function ArticlesList() {
       field: "image",
       headerName: "Image",
       width: 90,
-      renderCell: (params) => (
-        <Avatar
-        src={params.row.cover?.path || ""}
-        sx={{ bgcolor: "transparent", width: 35, height: 35, color: "black" }}
-      >
-        {params.row.title?.charAt(0).toUpperCase()}
-      </Avatar>
-      
-      ),
+      renderCell: (value) => {
+        const imagePath = value?.row?.cover?.path;
+        return imagePath ? (
+          <ImagePopUp image={imagePath} />
+        ) : (
+          <div
+            style={{
+              height: "50px",
+              width: "50px",
+              backgroundColor: "white", 
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              border: "1px solid #ccc", 
+            }}
+          >
+           {value?.row.title?.charAt(0)}
+          </div>
+        );
+      },
     },
-  
+    
     { field: "title", headerName: "Title", width: 210 },
     { field: "code", headerName: "Bar Code", width: 120 },
     { field: "quantity", headerName: "Quantity", width: 90 },
@@ -200,7 +213,7 @@ export default function ArticlesList() {
           </Tooltip>
           <Tooltip title="Archive Article">
             <GridActionsCellItem
-              icon={<ArchiveSharpIcon />}
+              icon={<UnarchiveSharpIcon />}
               label="Archive"
               onClick={() => handleArchiveArticle(params.id)}
               style={{ color: "red" }}
