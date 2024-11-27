@@ -25,10 +25,11 @@ export default function FournisseursList() {
   const [snackOpen, setSnackOpen] = useState(false);
   const [message, setSnackMessage] = useState("");
   const navigate = useNavigate();
-  
+
   const handleDetails = (id) => {
     navigate(`${id}`);
   };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -44,14 +45,14 @@ export default function FournisseursList() {
         setSnackOpen(true);
       }
     };
-  
+
     fetchData();
-  }, [refresh]); 
-  
+  }, [refresh]);
+
   const handleArchive = async () => {
     if (!fournisseurToArchiveId) return;
     try {
-      const response = await axios.patch(`${ip}/provider/${fournisseurToArchiveId}`, {
+      await axios.patch(`${ip}/provider/${fournisseurToArchiveId}`, {
         archived: true,
       });
       setFournisseurs((prev) =>
@@ -65,7 +66,6 @@ export default function FournisseursList() {
       setSnackOpen(true);
     }
   };
-  
 
   const columns = [
     {
@@ -106,7 +106,7 @@ export default function FournisseursList() {
                 setFournisseurToArchiveId(params.id);
                 setConfirmDelete(true);
               }}
-              style={{ color: "red" }}
+              sx={{ color: "red" }}
             />
           </Tooltip>
         </>
@@ -121,26 +121,33 @@ export default function FournisseursList() {
   return (
     <Box sx={{ bgcolor: "background.default", mx: 3, mt: 3 }}>
       <Item sx={{ pt: 7, pb: 1, px: 7, borderRadius: 10 }} elevation={5}>
-      <Box
-      sx={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        mb: 2,
-      }}
-    >
-        <Typography
-          variant="h5"
-          mb={1}
-          gutterBottom
-          sx={{ fontWeight: "bold" }}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 2,
+          }}
         >
-          Fournisseurs
-        </Typography>
-        <ArchiveIcon
-          sx={{ fontSize: "50px", color: "red", cursor: "pointer" }}
-          onClick={handleArchivedFournisseurs}
-        />
+          <Typography variant="h5" gutterBottom sx={{ fontWeight: "bold" }}>
+            Fournisseurs
+          </Typography>
+          <Tooltip title="Archived fournisseur">
+            <ArchiveIcon
+              onClick={handleArchivedFournisseurs}
+              sx={{
+                flexShrink: 0,
+                ml: "auto",
+                marginBottom: { xs: 2, sm: 0 },
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: 1,
+                cursor: "pointer",
+                fontSize: "55px",
+                color: "#701583",}}
+            />
+          </Tooltip>
         </Box>
         <div style={{ width: "100%", height: 500 }}>
           <DataGrid

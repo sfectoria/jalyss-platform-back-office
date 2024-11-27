@@ -9,6 +9,7 @@ import {
   useGridApiContext,
   useGridSelector,
 } from "@mui/x-data-grid";
+import UnarchiveIcon from "@mui/icons-material/Unarchive";
 import Tooltip from '@mui/material/Tooltip';
 import MuiPagination from "@mui/material/Pagination";
 import Typography from "@mui/material/Typography";
@@ -201,6 +202,10 @@ export default function ArchivedArticles() {
     },
   ];
 
+const navigateToArticles= ()=>{
+  navigate('/articles')
+}
+
   return (
     <Box
       sx={{
@@ -210,14 +215,35 @@ export default function ArchivedArticles() {
       }}
     >
       <Item sx={{ pt: 7, pb: 1, px: 7, borderRadius: 10 }} elevation={5}>
-        <Typography
-          variant="h5"
-          mb={3}
-          gutterBottom
-          sx={{ fontWeight: "bold" }}
+          <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 2,
+          }}
         >
-          Archived Articles
-        </Typography>
+       <Typography variant="h5" gutterBottom sx={{ fontWeight: "bold" }}>
+       Archived Articles
+          </Typography>
+          <Tooltip title="Articles">
+            <UnarchiveIcon
+               onClick={navigateToArticles}
+              sx={{
+                  flexShrink: 0,
+                  ml: "auto",
+                  marginBottom: { xs: 2, sm: 0 },
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: 1,
+                  cursor: "pointer",
+                  fontSize: "55px",
+                  color: "#701583",
+              }}
+            />
+          </Tooltip>
+        </Box>
         <div style={{ width: "100%", color: "red", height: 500 }}>
           {unarchivePopUp && (
             <UnarchiveArticlePopUp
