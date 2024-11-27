@@ -10,6 +10,7 @@ import {
   useGridApiContext,
   useGridSelector,
 } from "@mui/x-data-grid";
+import Avatar from "@mui/material/Avatar";
 import Tooltip from '@mui/material/Tooltip';
 import MuiPagination from "@mui/material/Pagination";
 import Typography from "@mui/material/Typography";
@@ -148,10 +149,17 @@ export default function ArticlesList() {
       field: "image",
       headerName: "Image",
       width: 90,
-      renderCell: (value) => {
-        return <ImagePopUp image={value?.row?.cover?.path} />;
-      },
+      renderCell: (params) => (
+        <Avatar
+        src={params.row.cover?.path || ""}
+        sx={{ bgcolor: "transparent", width: 35, height: 35, color: "black" }}
+      >
+        {params.row.title?.charAt(0).toUpperCase()}
+      </Avatar>
+      
+      ),
     },
+  
     { field: "title", headerName: "Title", width: 210 },
     { field: "code", headerName: "Bar Code", width: 120 },
     { field: "quantity", headerName: "Quantity", width: 90 },

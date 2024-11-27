@@ -3,10 +3,11 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import ModeEditOutlineIcon from "@mui/icons-material/ModeEditOutline";
 import UpdateArticle from "../views/UpdateArticle";
+import Avatar from "@mui/material/Avatar";
 
 export default function ArticleDescription({ data }) {
   const [isEditMode, setIsEditMode] = useState(false);
-  const category= (data.articleByCategory?.map((i) => i.categoryArticle.name))
+  const category = data.articleByCategory?.map((i) => ","+ i.categoryArticle.name ).join(" ");
 
 
 
@@ -179,12 +180,19 @@ console.log("here",category )
             </Box>
           </Box>
           <Box sx={{ textAlign: "center", marginTop: 3 }}>
-            <img
-              width={270}
-              src={data?.cover?.path}
-              alt={"article img"}
-              loading="lazy"
-            />
+          {data?.cover?.path ? (
+  <img
+    width={270}
+    src={data.cover.path}
+    alt={"article img"}
+  />
+) : (
+  <Avatar
+    sx={{ width: 270, height: 270, bgcolor: "purple" }}
+  >
+    {data?.title?.charAt(0).toUpperCase()}
+  </Avatar>
+)}
 
             <Box
               sx={{

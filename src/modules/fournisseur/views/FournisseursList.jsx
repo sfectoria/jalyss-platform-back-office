@@ -41,7 +41,6 @@ export default function FournisseursList() {
         }
       } catch (error) {
         console.error("Error fetching data:", error);
-        setSnackMessage("Failed to fetch fournisseurs.");
         setSnackOpen(true);
       }
     };
@@ -122,6 +121,14 @@ export default function FournisseursList() {
   return (
     <Box sx={{ bgcolor: "background.default", mx: 3, mt: 3 }}>
       <Item sx={{ pt: 7, pb: 1, px: 7, borderRadius: 10 }} elevation={5}>
+      <Box
+      sx={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        mb: 2,
+      }}
+    >
         <Typography
           variant="h5"
           mb={1}
@@ -134,6 +141,7 @@ export default function FournisseursList() {
           sx={{ fontSize: "50px", color: "red", cursor: "pointer" }}
           onClick={handleArchivedFournisseurs}
         />
+        </Box>
         <div style={{ width: "100%", height: 500 }}>
           <DataGrid
             pageSizeOptions={[7, 10, 20]}
