@@ -83,6 +83,18 @@ const InvoiceModal = ({
   }, []);
   console.log(idChannel, modalId, mode);
 
+  const calculateSubtotal = () => {
+    return items.reduce((acc, item) => {
+      
+      const discountedPrice = item.price - (item.price * (item.discount / 100));
+      
+      
+      return acc + (discountedPrice * item.quantity);
+    }, 0);
+  };
+  const subtotal = calculateSubtotal();
+
+
   const fetchModalDataExit = async () => {
     const response = await axios.get(`${ip}/exitNote/${modalId}`);
     console.log(response.data);
@@ -507,19 +519,20 @@ const InvoiceModal = ({
                         SUBTOTAL
                       </td>
                       <td className="text-end" style={{ width: "100px" }}>
-                        {subTotall} {currency}
+                        {subtotal} {currency}
                       </td>
                     </tr>
                   </>
                 )}
-                {discountAmount !== "0.00" && (
+                {discountAmount !== "0" && title !== "Bon de Transfer" && (
                   <tr className="text-end">
                     <td></td>
                     <td className="fw-bold" style={{ width: "100px" }}>
                       DISCOUNT
                     </td>
                     <td className="text-end" style={{ width: "100px" }}>
-                      {discountAmount} {currency}
+                   
+                    {((subtotal - totall) / subtotal * 100).toFixed(2)} % 
                     </td>
                   </tr>
                 )}
