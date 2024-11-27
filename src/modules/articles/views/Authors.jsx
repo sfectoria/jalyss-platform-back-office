@@ -155,7 +155,6 @@ export default function AuthorsList() {
                   color: "#701583",
                 }}
               >
-                Archived Authors
               </ArchiveIcon>
             </Tooltip>
           </Typography>

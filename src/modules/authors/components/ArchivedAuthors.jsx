@@ -136,7 +136,7 @@ const HandleButton = () =>{
           <Typography variant="h5" gutterBottom sx={{ fontWeight: "bold" }}>
             Archived Authors
           </Typography>
-          <Tooltip title="Archived fournisseur">
+          <Tooltip title="Authors">
             <UnarchiveIcon
               onClick={HandleButton}
               sx={{
