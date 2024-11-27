@@ -112,12 +112,12 @@ export default function StockInvontaire() {
       width: 180,
       valueGetter: (value, row) => {
         return (
-          (row?.createur?.Employee.firstName
-            ? row?.createur?.Employee.firstName
+          (row?.createur?.Employee?.firstName
+            ? row?.createur?.Employee?.firstName
             : "") +
           " " +
-          (row?.createur?.Employee.lastName
-            ? row?.createur?.Employee.lastName
+          (row?.createur?.Employee?.lastName
+            ? row?.createur?.Employee?.lastName
             : "")
         );
       },
@@ -127,7 +127,7 @@ export default function StockInvontaire() {
       headerName: "Creator number",
       width: 170,
       valueGetter: (value, row) => {
-        return row?.createur?.Employee.phoneNumber;
+        return row?.createur?.Employee?.phoneNumber;
       },
     },
     { field: "status", headerName: "Status", width: 100 },

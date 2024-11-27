@@ -8,92 +8,63 @@ import { useParams } from "react-router-dom";
 import CustomNoRowsOverlay from "../../../style/NoRowsStyle";
 
 export default function ArticleHistory() {
-  const [rows, setRows] = useState([]);
-  const [articleName, setArticleName] = useState("");
+  const [history, setHistory] = useState([]);
 
-
-
+  const { stocksIds, articleId } = useParams();
+  console.log(articleId, "article");
+  console.log(stocksIds, "stocks");
   const fetchHistory = async () => {
     try {
+      const params = {};
+
+      if (stocksIds) {
+        params.stocksIds = stocksIds.split(",").map((id) => id.trim()); // Transformation en array
+      }
+      if (articleId) {
+        params.articleId = articleId;
+      }
+
       const response = await axios.get(
-        `http://localhost:3000/articles/${stocksIds}/${articleId}`
+        "http://localhost:3000/movements/getAll2",
+        { params }
       );
-      setHistory(response.data);
-      console.log(response.data, ".data");
+      setHistory(response.data.data);
     } catch (error) {
-      console.log("Error fetching history:", error.message);
+      console.error("Erreur lors de la récupération des données:", error);
     }
   };
+  console.log(history, "History");
   useEffect(() => {
-    if (history) {
-      setRows(formatHistoryRows());
-    }
+    fetchHistory();
   }, [stocksIds, articleId]);
 
-  const formatHistoryRows = () => {
-    const rows = [];
-  
-    const addRows = (noteLines, type) => {
-      noteLines.forEach((line) => {
-        rows.push({
-          id: line.id,
-          date: line.createdAt,
-          type,
-          quantity: line.quantity || "N/A",
-          price: line.price !== null ? line.price : "N/A",
-          totalPrice:
-            line.price !== null && line.quantity
-              ? (line.price * line.quantity).toFixed(2)
-              : "N/A",
-          discount: line.discount ? `${line.discount} %` : "0%",
-          customer: type === "exit" ? history.client?.fullName || "N/A" : "N/A",
-          fournisseur:
-            type === "receipt" ? history.provider?.nameProvider || "N/A" : "N/A",
-          transfer: type === "transfer" ? true : false,
-        });
-      });
+  const rows = history.map((historyRow, i) => {
+    const noteLines =
+      historyRow.type === "exit"
+        ? historyRow.exitNoteLine
+        : historyRow.receiptNoteLine;
+    const firstLine = noteLines && noteLines.length > 0 ? noteLines[0] : null;
+    return {
+      id: i,
+      date: historyRow.exitDate || historyRow.receiptDate,
+      customer: historyRow.client?.fullName || "X",
+      fournisseur: historyRow.provider?.nameProvider  || "X",
+      type: historyRow.type,
+      transfer: historyRow.transferNote, // Stocker la valeur booléenne
+      quantity: firstLine ? firstLine.quantity : "N/A",
+      price: firstLine
+        ? firstLine.price !== null
+          ? firstLine.price
+          : "N/A"
+        : "N/A",
+      totalPrice:
+        firstLine && firstLine.price !== null && firstLine.quantity
+          ? (firstLine.price * firstLine.quantity).toFixed(2)
+          : "N/A",
+          discount: firstLine?.discount ? `${firstLine.discount} %` : "0%",
+          totalAmount : historyRow.totalAmount || "N/A"
     };
-  
-    addRows(history.exitNoteLine || [], "exit");
-    addRows(history.receiptNoteLine || [], "receipt");
-    addRows(history.transferNoteLine || [], "transfer");
-    addRows(history.ReturnNoteLine || [], "return");
-  
-    return rows;
-  };
-  //   const noteLines =
-  //     historyRow.type === "exit"
-  //       ? historyRow.exitNoteLine
-  //       : historyRow.receiptNoteLine;
-
-  //   const filteredLines = noteLines?.filter(
-  //     (line) =>
-  //       line.articleId === Number(articleId) ||
-  //       line.Article?.id === Number(articleId)
-  //   );
-  //   const firstLine =
-  //     filteredLines && filteredLines.length > 0 ? filteredLines[0] : null;
-  //   const quantity = firstLine?.quantity || "N/A";
-  //   const price = firstLine?.price !== null ? firstLine?.price : "N/A";
-  //   const totalPrice =
-  //     firstLine && firstLine.price !== null && firstLine.quantity
-  //       ? (firstLine.price * firstLine.quantity).toFixed(2)
-  //       : "N/A";
-
-  //   return {
-  //     id: i,
-  //     date: historyRow.exitDate || historyRow.receiptDate,
-  //     customer: historyRow.client?.fullName || "X",
-  //     fournisseur: historyRow.provider?.nameProvider || "X",
-  //     type: historyRow.type,
-  //     transfer: historyRow.transferNote,
-  //     quantity: quantity,
-  //     price: price,
-  //     totalPrice: totalPrice,
-  //     discount: firstLine?.discount ? `${firstLine.discount} %` : "0%",
-  //     totalAmount: historyRow.totalAmount || "N/A",
-  //   };
-  // });
+  });
 
   const columns = [
     {
@@ -102,12 +73,10 @@ export default function ArticleHistory() {
       width: 150,
       valueGetter: (value) => {
         const date = new Date(value);
-        if (
-          date.toISOString().slice(0, 10) ===
-          new Date().toISOString().slice(0, 10)
-        )
+        if (date.toISOString().slice(0, 10) === new Date().toISOString().slice(0, 10))
           return "Today";
-        else return date.toLocaleDateString("fr-TN");
+        else  
+        return date.toLocaleDateString('fr-TN');
       },
     },
     {
@@ -116,10 +85,7 @@ export default function ArticleHistory() {
       width: 100,
       valueGetter: (value, row) => {
         const date = new Date(row?.date);
-        return date.toLocaleTimeString("fr-TN", {
-          hour: "2-digit",
-          minute: "2-digit",
-        });
+        return date.toLocaleTimeString('fr-TN', { hour: '2-digit', minute: '2-digit'}); 
       },
     },
     { field: "customer", headerName: "Customer", width: 150 },
@@ -140,10 +106,9 @@ export default function ArticleHistory() {
     { field: "quantity", headerName: "Quantity", width: 120 },
     { field: "price", headerName: "Price", width: 110 },
     { field: "totalPrice", headerName: "Total Price (Dt)", width: 120 },
-    { field: "discount", headerName: "Discount", width: 120 },
+    { field: "discount", headerName: "Discount", width: 120},
     { field: "totalAmount", headerName: "TotalAmount (Dt)", width: 130 },
   ];
-  console.log(history, "history");
 
   return (
     <Box
@@ -154,9 +119,9 @@ export default function ArticleHistory() {
       }}
     >
       <Typography variant="h5" mb={3} gutterBottom sx={{ fontWeight: "bold" }}>
-        Historique de l'Article :
+        Historique des Articles
       </Typography>
-      <div style={{ width: "100%", height: 500 }}>
+      <div style={{ width: "100%" , height : 500}}>
         <DataGrid
           pageSizeOptions={[7, 10, 20]}
           sx={{
