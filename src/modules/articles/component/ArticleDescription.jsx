@@ -7,13 +7,11 @@ import Avatar from "@mui/material/Avatar";
 
 export default function ArticleDescription({ data }) {
   const [isEditMode, setIsEditMode] = useState(false);
-  const category = data.articleByCategory?.map((i) => ","+ i.categoryArticle.name ).join(" ");
+  const category = data.articleByCategory
+    ?.map((i, index) => `${index === 0 ? "" : ", "}${i.categoryArticle.name}`)
+    .join(" ");
 
-
-
-console.log("here",category )
-;
-
+  console.log("here", category);
 
   const handleEditClick = () => {
     setIsEditMode(true);
@@ -90,15 +88,14 @@ console.log("here",category )
               </Typography>
             </Box>
             <Box
-             sx={{
-              display: "flex",
-              gap: 2,
-              alignItems: "center",
-              justifyContent: "end",
-            }}>
-            <Typography sx={{ fontWeight: "bold"}}>
-            {category} 
-              </Typography>
+              sx={{
+                display: "flex",
+                gap: 2,
+                alignItems: "center",
+                justifyContent: "end",
+              }}
+            >
+              <Typography sx={{ fontWeight: "bold" }}>{category}</Typography>
               <Typography
                 color="black"
                 variant="h5"
@@ -175,24 +172,28 @@ console.log("here",category )
                 gutterBottom
                 sx={{ fontWeight: "bold" }}
               >
-               : وصف 
+                : وصف
               </Typography>
             </Box>
           </Box>
           <Box sx={{ textAlign: "center", marginTop: 3 }}>
-          {data?.cover?.path ? (
-  <img
-    width={270}
-    src={data.cover.path}
-    alt={"article img"}
-  />
-) : (
-  <Avatar
-    sx={{ width: 270, height: 270, bgcolor: "purple" }}
-  >
-    {data?.title?.charAt(0).toUpperCase()}
-  </Avatar>
-)}
+            {data?.cover?.path ? (
+              <img width={270} src={data.cover.path} alt={"article img"} />
+            ) : (
+              <div
+              style={{
+                height: "10cm",
+                width: "6cm",
+                backgroundColor: "white", 
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                border: "1px solid #ccc", 
+              }}
+            >
+                <p style={{fontSize:"2cm"}}>{data.title?.charAt(0)}</p>
+              </div>
+            )}
 
             <Box
               sx={{
