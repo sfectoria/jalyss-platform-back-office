@@ -9,6 +9,7 @@ import {
   useGridApiContext,
   useGridSelector,
 } from "@mui/x-data-grid";
+import UnarchiveIcon from "@mui/icons-material/Unarchive";
 import MuiPagination from "@mui/material/Pagination";
 import Tooltip from "@mui/material/Tooltip";
 import UnarchiveSharpIcon from '@mui/icons-material/UnarchiveSharp';
@@ -195,6 +196,11 @@ export const ArchivedPublishingHouses = () => {
       },
     ];
   
+const navigateToPHouse =()=>{
+  navigate('/articles/publishingHouses')
+}
+
+
     return (
       <>
       <Box
@@ -222,6 +228,24 @@ export const ArchivedPublishingHouses = () => {
             >
                   Archived Publishing Houses
                   </Typography>
+                  <Tooltip title="Articles">
+            <UnarchiveIcon
+               onClick={navigateToPHouse}
+              sx={{
+                  flexShrink: 0,
+                  ml: "auto",
+                  marginBottom: { xs: 2, sm: 0 },
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: 1,
+                  cursor: "pointer",
+                  fontSize: "55px",
+                  color: "#701583",
+              }}
+            />
+          </Tooltip>
+
               </Box>
             
             

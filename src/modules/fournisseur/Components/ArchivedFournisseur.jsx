@@ -103,20 +103,33 @@ export const ArchivedFournisseur = () => {
     <Box sx={{ bgcolor: "background.default", mx: 3, mt: 3 }}>
       <Item sx={{ pt: 7, pb: 1, px: 7, borderRadius: 10 }} elevation={5}>
       <Box
-      sx={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        mb: 2,
-      }}
-    >
-        <Typography variant="h5" mb={1} gutterBottom sx={{ fontWeight: "bold" }}>
-          Archived Fournisseurs
-        </Typography>
-        <UnarchiveIcon
-          sx={{ fontSize: "50px", color: "green", cursor: "pointer" }}
-          onClick={handleBackToFournisseurs}
-        />
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 2,
+          }}
+        >
+          <Typography variant="h5" gutterBottom sx={{ fontWeight: "bold" }}>
+            Archived Fournisseurs
+          </Typography>
+          <Tooltip title="Archived fournisseur">
+            <UnarchiveIcon
+              onClick={handleBackToFournisseurs}
+              sx={{
+                  flexShrink: 0,
+                  ml: "auto",
+                  marginBottom: { xs: 2, sm: 0 },
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: 1,
+                  cursor: "pointer",
+                  fontSize: "55px",
+                  color: "#701583",
+              }}
+            />
+          </Tooltip>
         </Box>
         <div style={{ width: "100%", height: 500 }}>
           <DataGrid

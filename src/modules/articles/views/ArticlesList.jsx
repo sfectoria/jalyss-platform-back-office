@@ -10,16 +10,15 @@ import {
   useGridApiContext,
   useGridSelector,
 } from "@mui/x-data-grid";
+import UnarchiveIcon from "@mui/icons-material/Unarchive";
 import Tooltip from '@mui/material/Tooltip';
 import MuiPagination from "@mui/material/Pagination";
 import Typography from "@mui/material/Typography";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { useLocation, useNavigate } from "react-router-dom";
 import CustomNoResultsOverlay from "../../../style/NoResultStyle";
-import ArchiveSharpIcon from "@mui/icons-material/ArchiveSharp";
 import UnarchiveSharpIcon from "@mui/icons-material/UnarchiveSharp";
 import ArchiveArticle from "../component/ArchiveArticlePopUp";
-import UnarchiveArticlePopUp from "../component/UnarchiveArticlePopUp";
 import ArchiveArticleSnackBar from "../component/ArchiveArticleSnackBar";
 import Item from "../../../style/ItemStyle";
 import ImagePopUp from "../../../components/ImagePopUp";
@@ -233,22 +232,35 @@ export default function ArticlesList() {
       }}
     >
       <Item sx={{ pt: 7, pb: 1, px: 7, borderRadius: 10 }} elevation={5}>
-        <Typography
-          variant="h5"
-          mb={3}
-          gutterBottom
-          sx={{ fontWeight: "bold", display: "flex", alignItems: "center" }}
+      <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 2,
+          }}
         >
-          Articles
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={navigateToArchivedArticles}
-            sx={{ position: "absolute", right: 90, backgroundColor: "#701583" }}
-          >
-            Archived Articles
-          </Button>
-        </Typography>
+       <Typography variant="h5" gutterBottom sx={{ fontWeight: "bold" }}>
+            Articles
+          </Typography>
+          <Tooltip title="Articles">
+            <UnarchiveIcon
+              onClick={navigateToArchivedArticles}
+              sx={{
+                  flexShrink: 0,
+                  ml: "auto",
+                  marginBottom: { xs: 2, sm: 0 },
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: 1,
+                  cursor: "pointer",
+                  fontSize: "55px",
+                  color: "#701583",
+              }}
+            />
+          </Tooltip>
+        </Box>
         <div style={{ width: "100%", color: "red", height: 500 }}>
           {archivePopUp && (
             <ArchiveArticle
