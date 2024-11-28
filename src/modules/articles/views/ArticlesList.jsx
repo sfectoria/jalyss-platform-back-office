@@ -10,7 +10,7 @@ import {
   useGridApiContext,
   useGridSelector,
 } from "@mui/x-data-grid";
-import UnarchiveIcon from "@mui/icons-material/Unarchive";
+import ArchiveIcon from "@mui/icons-material/Archive";
 import Tooltip from '@mui/material/Tooltip';
 import MuiPagination from "@mui/material/Pagination";
 import Typography from "@mui/material/Typography";
@@ -77,17 +77,13 @@ export default function ArticlesList() {
   const handleDetails = (ids) => {
     navigate(`/articles/${ids}`);
   };
-
-  const navigateToArchivedArticles = () => {
-    navigate("/articles/articlesarchived");
-  };
   useEffect(() => {
     fetchData();
   }, [location, text, refresh]);
   useEffect(() => {
     updateUrlParams();
   }, [page]);
-
+  
   const fetchData = async () => {
     try {
       let queryParams = new URLSearchParams(location.search);
@@ -119,7 +115,7 @@ export default function ArticlesList() {
     const newUrl = `${location.pathname}?${params.toString()}`;
     navigate(newUrl);
   };
-
+  
   const handlePageChange = (newPageInfo) => {
     if (pageSize === newPageInfo.pageSize) {
       setPage(newPageInfo.page);
@@ -134,14 +130,14 @@ export default function ArticlesList() {
       navigate(newUrl);
     }
   };
-
+  
   const handleArchiveArticle = (id) => {
     setArticleId(id);
     setArchivePopUp(true);
     setMessage("Article archived");
     setRefresh((prev) => !prev);
   };
-
+  
   const columns = [
     {
       field: "image",
@@ -153,15 +149,15 @@ export default function ArticlesList() {
           <ImagePopUp image={imagePath} />
         ) : (
           <div
-            style={{
-              height: "50px",
-              width: "50px",
-              backgroundColor: "white", 
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              border: "1px solid #ccc", 
-            }}
+          style={{
+            height: "50px",
+            width: "50px",
+            backgroundColor: "white", 
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            border: "1px solid #ccc", 
+          }}
           >
            {value?.row.title?.charAt(0)}
           </div>
@@ -208,7 +204,7 @@ export default function ArticlesList() {
               icon={<VisibilityIcon />}
               label="Details"
               onClick={() => handleDetails(params.id)}
-            />
+              />
           </Tooltip>
           <Tooltip title="Archive Article">
             <GridActionsCellItem
@@ -216,13 +212,17 @@ export default function ArticlesList() {
               label="Archive"
               onClick={() => handleArchiveArticle(params.id)}
               style={{ color: "red" }}
-            />
+              />
           </Tooltip>
         </>
       ),
     },
   ];
-
+  
+    const navigateToArchivedArticles = () => {
+      navigate("/articles/articlesarchived");
+    };
+  
   return (
     <Box
       sx={{
@@ -232,21 +232,24 @@ export default function ArticlesList() {
       }}
     >
       <Item sx={{ pt: 7, pb: 1, px: 7, borderRadius: 10 }} elevation={5}>
-      <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 2,
-          }}
-        >
-       <Typography variant="h5" gutterBottom sx={{ fontWeight: "bold" }}>
+      <Typography
+            variant="h5"
+            mb={3}
+            gutterBottom
+            sx={{
+              fontWeight: "bold",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
             Articles
-          </Typography>
-          <Tooltip title="Articles">
-            <UnarchiveIcon
-              onClick={navigateToArchivedArticles}
-              sx={{
+            <Tooltip title="Archived Articles">
+              <ArchiveIcon
+                variant="contained"
+                color="primary"
+                onClick={navigateToArchivedArticles}
+                sx={{
                   flexShrink: 0,
                   ml: "auto",
                   marginBottom: { xs: 2, sm: 0 },
@@ -257,10 +260,11 @@ export default function ArticlesList() {
                   cursor: "pointer",
                   fontSize: "55px",
                   color: "#701583",
-              }}
-            />
-          </Tooltip>
-        </Box>
+                }}
+              >
+              </ArchiveIcon>
+            </Tooltip>
+          </Typography>
         <div style={{ width: "100%", color: "red", height: 500 }}>
           {archivePopUp && (
             <ArchiveArticle

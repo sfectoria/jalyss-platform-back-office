@@ -228,7 +228,7 @@ const navigateToPHouse =()=>{
             >
                   Archived Publishing Houses
                   </Typography>
-                  <Tooltip title="Articles">
+                  <Tooltip title="Publishing House">
             <UnarchiveIcon
                onClick={navigateToPHouse}
               sx={{
