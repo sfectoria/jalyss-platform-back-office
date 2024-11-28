@@ -93,11 +93,13 @@ export default function FournisseursList() {
       type: "actions",
       renderCell: (params) => (
         <>
+          <Tooltip title="View Details">
           <GridActionsCellItem
             icon={<VisibilityIcon />}
             label="Details"
             onClick={() => handleDetails(params.id)}
           />
+          </Tooltip>
           <Tooltip title="Archive Fournisseur">
             <GridActionsCellItem
               icon={<UnarchiveSharpIcon />}
