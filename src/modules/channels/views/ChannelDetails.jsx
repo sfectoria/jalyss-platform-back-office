@@ -166,17 +166,15 @@ function FullWidthTabs({ channelInfo }) {
 export default function ChannelDetails() {
   const [channel, setChannel] = useState({});
   const [isOpen, setIsOpen] = useState(false);
-  const [name, setName] = useState('');
+  const [name, setName] = useState("");
   const [stocks, setStocks] = useState([]);
   const [stock, setStock] = useState({});
-  const [managers, setManagers] = useState([]);
-  const [manager, setManager] = useState({});
+  const [employees, setEmployees] = useState([]);
+  const [employee, setEmployee] = useState({});
+  const [managerPhone, setManagerPhone] = useState("");
   const [refresh, setRefresh] = useState({});
   const navigate = useNavigate();
-  console.log(channel.idStock);
-  console.log(stock);
-  console.log(name);
- 
+
   const params = useParams();
 
   let { id } = params;
@@ -189,15 +187,18 @@ export default function ChannelDetails() {
     const responseEmp = await axios.get(`${ip}/employees/all`);
 
     setStocks(responseStocks.data);
-    setManagers(responseEmp.data);
+    setEmployees(responseEmp.data);
+    console.log(employee);
   };
 
   const fetchStockDetails = async () => {
     const response = await axios.get(`${ip}/selling/${id}`);
     setChannel(response.data);
     setStock(response.data.stock);
-    console.log("stock", stock, response.data.stock);
-  };
+    setEmployee(response.data.Employee);
+    setManagerPhone(response.data.Employee?.phoneNumber);
+    //console.log("stock", stock, response.data.stock,response.data.Employee);
+  }
 
   const handleChangeName = (event) => {
     setName(event.target.value);
@@ -205,22 +206,24 @@ export default function ChannelDetails() {
   const handleChange = (event, newValue) => {
     setStock(newValue);
   };
+
   const handleChangeEmp = (event, newValue) => {
-    setManager(newValue);
+    setEmployee(newValue);
+    setManagerPhone(newValue?.phoneNumber || "");
   };
 
-  const handelModify=async()=>{
-   const obj={
-        name:name?name:channel.name,
-        idStock:stock.id
-    }
-    console.log(stock);
-    const modifyChannel=await axios.patch(`${ip}/selling/${channel.id}`,obj)
-    console.log(modifyChannel);
-    
-    setIsOpen(false)
-    setRefresh(!refresh)
-  }
+  const handelModify = async () => {
+    const obj = {
+      name: name ? name : channel.name,
+      idStock: stock.id,
+      employeeId: employee ? employee.id : channel.employeeId,
+    };
+    console.log(obj);
+    const modifyChannel = await axios.patch(`${ip}/selling/${channel.id}`, obj);
+    //console.log(modifyChannel);
+    setIsOpen(false);
+    setRefresh(!refresh);
+  };
   return (
     <Box
       sx={{
@@ -296,10 +299,10 @@ export default function ChannelDetails() {
               />
               <Autocomplete
                 style={{ width: "40%" }}
-                value={stock} 
-                onChange={handleChange} 
+                value={stock}
+                onChange={handleChange}
                 options={stocks}
-                getOptionLabel={(option) => option.name} 
+                getOptionLabel={(option) => option.name}
                 renderInput={(params) => (
                   <TextField {...params} label="Stock" />
                 )}
@@ -316,10 +319,12 @@ export default function ChannelDetails() {
             <Box sx={{ display: "flex", gap: 4, my: 3 }}>
               <Autocomplete
                 style={{ width: "40%" }}
-                value={manager} 
-                onChange={handleChangeEmp} 
-                options={managers}
-                getOptionLabel={(option) => option.firstName&&option?.firstName +' '+option?.lastName} 
+                value={employee}
+                onChange={handleChangeEmp}
+                options={employees}
+                getOptionLabel={(option) =>
+                  option.firstName && option?.firstName + " " + option?.lastName
+                }
                 renderInput={(params) => (
                   <TextField {...params} label="Manager" />
                 )}
@@ -344,7 +349,13 @@ export default function ChannelDetails() {
                 }}
                 id="outlined-helperText"
                 label="Manager Phone"
-                defaultValue={""}
+                value={managerPhone}
+                InputProps={{
+                  readOnly: true,
+                }}
+                InputLabelProps={{
+                  shrink: true, 
+                }}
               />
             </Box>
           </Box>
@@ -355,7 +366,7 @@ export default function ChannelDetails() {
             </Typography>
             <Typography variant="body1" color={"initial"} gutterBottom>
               {channel.name} is located in stock ({stock?.name}) managed by
-              (foulen fouleni)
+              {""} {employee?.firstName || "N/A"} {employee?.lastName || ""}
             </Typography>
             <Button
               variant="contained"
