@@ -74,11 +74,13 @@ export const ArchivedFournisseur = () => {
       type: "actions",
       renderCell: (params) => (
         <>
+          <Tooltip title="View Details">
           <GridActionsCellItem
             icon={<VisibilityIcon />}
             label="Details"
             onClick={() => handleDetails(params.id)}
           />
+          </Tooltip>
           <Tooltip title="Unarchive Fournisseur">
             <GridActionsCellItem
               icon={<UnarchiveSharpIcon />}

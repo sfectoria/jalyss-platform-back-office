@@ -77,17 +77,21 @@ export default function StockList() {
       type: "actions",
       renderCell: (params) => (
         <>
+          <Tooltip title="View Details">
           <GridActionsCellItem
             icon={<VisibilityIcon />}
             label="Details"
             onClick={() => handleDetails(params.id)}
           />
+          </Tooltip>
+            <Tooltip title="Unarchive Stock">
           <GridActionsCellItem
             icon={<ArchiveSharpIcon />}
-            label="Delete"
+            label="Unarchive"
             onClick={() => handelArchiveStock(params.id)}
             style={{ color: "green" }}
           />
+          </Tooltip>
         </>
       ),
     },
