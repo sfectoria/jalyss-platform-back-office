@@ -19,6 +19,7 @@ import axios from "axios";
 import { ip } from "../../../constants/ip";
 import { useParams } from "react-router-dom";
 import CustomNoRowsOverlay from "../../../style/NoRowsStyle";
+import { Box } from "@mui/material";
 
 export default function Devis() {
   const [isOpen, setIsOpen] = useState(false);
@@ -34,7 +35,7 @@ export default function Devis() {
   function Pagination({ onPageChange, className }) {
     const apiRef = useGridApiContext();
     const pageCount = useGridSelector(apiRef, gridPageCountSelector);
-    console.log(page);
+    // console.log(page);
 
     return (
       <MuiPagination
@@ -51,7 +52,7 @@ export default function Devis() {
   }
   useEffect(() => {
     fetchData();
-  }, [refresh]);
+  }, [page, pageSize]);
 
   const fetchData = async () => {
     let params = {
@@ -64,6 +65,8 @@ export default function Devis() {
     });
     if (response.data.data.length) {
       setRows(response.data.data);
+      console.log("rows devis", response.data.data);
+
       setCount(response.data.count);
     }
   };
@@ -86,29 +89,6 @@ export default function Devis() {
       setRefresh(!refresh);
     }
   };
-  const items = [
-    {
-      id: (+new Date() + Math.floor(Math.random() * 999999)).toString(36),
-      name: "hhhh",
-      description: "a  book",
-      price: "1.00",
-      quantity: 7,
-    },
-    {
-      id: (+new Date() + Math.floor(Math.random() * 999999)).toString(36),
-      name: "halima",
-      description: "a  book",
-      price: "1.00",
-      quantity: 1,
-    },
-    {
-      id: (+new Date() + Math.floor(Math.random() * 999999)).toString(36),
-      name: "nooo",
-      description: "a  book",
-      price: "4.00",
-      quantity: 5,
-    },
-  ];
 
   const openModal = (event) => {
     event.preventDefault();
@@ -120,29 +100,56 @@ export default function Devis() {
   };
 
   const columns = [
-    { field: "date", headerName: "Date", width: 200 ,valueGetter:(value)=>{
-      const date = new Date(value);
-      if (date.toISOString().slice(0, 10) === new Date().toISOString().slice(0, 10))
-        return "Today";
-      else  
-      return date.toLocaleDateString('fr-TN');
-    }},
-    { field: "time", headerName: "Time", width: 200 ,valueGetter:(value,row)=>{
-      const date = new Date(row?.date);
-      return date.toLocaleTimeString('fr-TN', { hour: '2-digit', minute: '2-digit'}); 
-    }},
+    {
+      field: "date",
+      headerName: "Date",
+      width: 240,
+      valueGetter: (value) => {
+        const date = new Date(value);
+        if (
+          date.toISOString().slice(0, 10) ===
+          new Date().toISOString().slice(0, 10)
+        )
+          return "Today";
+        else return date.toLocaleDateString("fr-TN");
+      },
+    },
+    {
+      field: "time",
+      headerName: "Time",
+      width: 220,
+      valueGetter: (value, row) => {
+        const date = new Date(row?.date);
+        return date.toLocaleTimeString("fr-TN", {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      },
+    },
     {
       field: "customerName",
       headerName: "Customer",
-      width: 270,
-      renderCell: (params) => (
-        <MouseOverPopover name={params.row.customerName} />
-      ),
+      width: 90,
+      renderCell: (params) => {
+        const client = params.row?.client || {};
+        return (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100%",
+            }}
+          >
+            <MouseOverPopover name={client} />
+          </Box>
+        );
+      },
     },
     {
       field: "details",
       headerName: "Details",
-      width: 110,
+      width: 250,
       type: "actions",
       getActions: ({ id }) => [
         <GridActionsCellItem
@@ -157,78 +164,8 @@ export default function Devis() {
     },
   ];
 
-  const rowss = [
-    {
-      id: 1,
-      date: "07/23/2024 6:56 PM",
-      customerName: null,
-      fournisseurName: "Salim sfexi",
-      managerNumber: "+216 28527345",
-      details: "fff",
-      bl: true,
-    },
-    {
-      id: 2,
-      date: "07/23/2024 6:56 PM",
-      customerName: "Hamida midawi",
-      fournisseurName: null,
-      ticket: true,
-    },
-    {
-      id: 3,
-      date: "07/23/2024 6:56 PM",
-      customerName: null,
-      fournisseurName: "Wael ben sahloul",
-      f: true,
-    },
-    {
-      id: 4,
-      date: "07/23/2024 6:56 PM",
-      customerName: null,
-      fournisseurName: "Stock Gabes",
-      br: true,
-      blf: true,
-    },
-    {
-      id: 5,
-      date: "07/23/2024 6:56 PM",
-      customerName: "Daenerys",
-      fournisseurName: null,
-      bl: true,
-    },
-    {
-      id: 6,
-      date: "07/23/2024 6:56 PM",
-      customerName: "houssem ben ammar",
-      fournisseurName: null,
-      ticket: true,
-    },
-    {
-      id: 7,
-      date: "07/23/2024 6:56 PM",
-      customerName: null,
-      fournisseurName: "Ferrara",
-      f: true,
-    },
-    {
-      id: 8,
-      date: "07/23/2024 6:56 PM",
-      customerName: "Stock Nabeul",
-      fournisseurName: null,
-      bs: true,
-      blf: true,
-    },
-    {
-      id: 9,
-      date: "07/23/2024 6:56 PM",
-      customerName: "Harvey",
-      fournisseurName: null,
-      bl: true,
-    },
-  ];
-
   return (
-    <div style={{ width: "100%", height : 500 }}>
+    <div style={{ width: "100%", height: 500 }}>
       <DataGrid
         pageSizeOptions={[7, 10, 20]}
         sx={{
@@ -271,17 +208,17 @@ export default function Devis() {
       />
       {isOpen && (
         <InvoiceModal
-        showModal={isOpen}
-        closeModal={closeModal}
-        modalId={modalId}
-        idChannel={param.id}
-        currency={"DT"}
-        subTotal={0}
-        // taxAmount={0}
-        discountAmount={0}
-        total={0}
-        mode="viewer"
-        type="devis"
+          showModal={isOpen}
+          closeModal={closeModal}
+          modalId={modalId}
+          idChannel={param.id}
+          currency={"DT"}
+          subTotal={0}
+          // taxAmount={0}
+          discountAmount={0}
+          total={0}
+          mode="viewer"
+          type="devis"
         />
       )}
     </div>
