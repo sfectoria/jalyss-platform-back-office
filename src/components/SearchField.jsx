@@ -76,8 +76,11 @@ const SearchField = ({
           `${ip}/stocks/${findStockResponse.data.idStock}`,
           { params }
         );
-        console.log("hello from search Field", response.data.data.stockArticle);
-        const result = response.data.data.stockArticle.reduce(
+        console.log("hello from search Field", response.data.data);
+        console.log("hello from search Field 1", response.data.data.stockArticle[0].article.archived);
+        const result = response.data.data.stockArticle
+        .filter(e => e.article.archived === false)
+        .reduce(
           (acc, item) => {
             acc.data.push({
               id: item.articleId,
@@ -88,8 +91,7 @@ const SearchField = ({
                 ? item.article?.articleByAuthor[0]?.author?.nameAr
                 : null,
               publisher: item.article?.articleByPublishingHouse.length
-                ? item.article?.articleByPublishingHouse[0]?.publishingHouse
-                    ?.nameAr
+                ? item.article?.articleByPublishingHouse[0]?.publishingHouse?.nameAr
                 : null,
               quantity: item.quantity,
               price: 0,
@@ -102,7 +104,7 @@ const SearchField = ({
             ids: [],
           }
         );
-
+      
         const responsePriceByChannel = await axios.get(
           `http://localhost:3000/price-By-Channel/getAll`,
           { params: { salesChannelIds: [info.sender], articleIds: result.ids } }
@@ -375,3 +377,4 @@ const SearchField = ({
 };
 
 export default SearchField;
+

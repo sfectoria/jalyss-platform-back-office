@@ -28,8 +28,9 @@ import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import { Button } from "@mui/material";
 import ArchiveStockPopUp from "../component/ArchiveStockPopUp";
 import SimpleDialog from "../component/ChannelsListOfStock";
-import KeyboardBackspaceOutlinedIcon from "@mui/icons-material/KeyboardBackspaceOutlined";
+import { TbArrowBackUp } from "react-icons/tb";
 import Tooltip from "@mui/material/Tooltip";
+
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -175,11 +176,21 @@ const retour =()=>{
     }}
   >
     <Item sx={{ pt: 7, pb: 1, px: 7, borderRadius: 10 }} elevation={5}>
-        <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" ,color:"red"}}>
-        <Tooltip title="Go Back">
-          <KeyboardBackspaceOutlinedIcon onClick={retour} sx={{ cursor: "pointer", fontSize: "40px" }} />
-        </Tooltip>
-      </Box>
+    <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end", color: "grey" }}>
+  <Tooltip title="Go Back" placement="top">
+    <Box
+      sx={{
+        display: "inline-flex",
+        alignItems: "center",
+        cursor: "pointer",
+      }}
+      onClick={retour}
+    >
+      <TbArrowBackUp size={40} sx={{ fontSize: "40px" }} />
+    </Box>
+  </Tooltip>
+</Box>
+
       <div
         role="presentation"
         style={{

@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Typography,
-  Avatar,
-  Tab,
-  Tabs,
-  Tooltip,
-} from "@mui/material";
+import { Box, Typography, Avatar, Tab, Tabs, Tooltip } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
@@ -14,6 +7,7 @@ import { ip } from "../../../constants/ip";
 import UpdateAuthor from "./UpdateAuthor";
 import KeyboardBackspaceOutlinedIcon from "@mui/icons-material/KeyboardBackspaceOutlined";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
+import { TbArrowBackUp } from "react-icons/tb";
 
 export default function AuthorDetails() {
   const { id } = useParams();
@@ -21,7 +15,6 @@ export default function AuthorDetails() {
   const [tabIndex, setTabIndex] = useState(0);
   const navigate = useNavigate();
 
-  // Fetch author details
   const getOneAuthor = async () => {
     try {
       const response = await axios.get(`${ip}/author/${id}`);
@@ -101,22 +94,34 @@ export default function AuthorDetails() {
         </Tabs>
 
         {tabIndex === 0 && (
-          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "flex-start",
-                  width: "100%",
-                  mb: 2,
-                }}
-              >
-                <Tooltip title="Go Back">
-                <KeyboardBackspaceOutlinedIcon
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "flex-start",
+                width: "100%",
+                mb: 2,
+              }}
+            >
+              <Tooltip title="Go Back">
+                <Box
                   onClick={retour}
-                  sx={{ cursor: "pointer", fontSize: "40px",color:"red" }}
-                />
-            </Tooltip>
-              </Box>
+                  sx={{
+                    cursor: "pointer",
+                    display: "inline-flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <TbArrowBackUp size={50} color="grey" />
+                </Box>
+              </Tooltip>
+            </Box>
 
             {theAuthor?.Media?.path ? (
               <Avatar
@@ -148,7 +153,9 @@ export default function AuthorDetails() {
               {theAuthor.nameAr}
             </Typography>
 
-            <Box sx={{ display: "flex", justifyContent: "space-between", my: 4 }}>
+            <Box
+              sx={{ display: "flex", justifyContent: "space-between", my: 4 }}
+            >
               <Box sx={{ width: "48%" }}>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                   <LibraryBooksIcon />
