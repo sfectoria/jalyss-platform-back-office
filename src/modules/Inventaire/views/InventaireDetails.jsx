@@ -91,7 +91,7 @@ export default function InventaireDetails() {
     },
     {
       field: "title",
-      headerName: "Titel",
+      headerName: "Title",
       width: 270,
       valueGetter: (value, row) => {
         return row?.article?.title;

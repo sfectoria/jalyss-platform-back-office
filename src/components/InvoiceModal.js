@@ -97,7 +97,7 @@ const InvoiceModal = ({
 
   const fetchModalDataExit = async () => {
     const response = await axios.get(`${ip}/exitNote/${modalId}`);
-    console.log(response.data);
+    console.log("hne",response.data);
 
     let e = response.data;
     setPStatus(e.paymentStatus);

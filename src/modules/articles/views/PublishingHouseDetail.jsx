@@ -25,6 +25,8 @@ import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import React, { useEffect, useState } from "react";
 import Item from "../../../style/ItemStyle";
+import KeyboardBackspaceOutlinedIcon from "@mui/icons-material/KeyboardBackspaceOutlined";
+import Tooltip from "@mui/material/Tooltip";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { ip } from "../../../constants/ip";
@@ -45,7 +47,7 @@ export default function PublishingHouseDetails() {
     },
   });
 
-  const [tabValue, setTabValue] = useState(0); 
+  const [tabValue, setTabValue] = useState(0);
   const [successAlert, setSuccessAlert] = useState(false);
   const [errorAlert, setErrorAlert] = useState(false);
   const [uploadedImage, setUploadedImage] = useState(null);
@@ -72,7 +74,7 @@ export default function PublishingHouseDetails() {
     try {
       const response = await axios.get(`${ip}/publishingHouses/${id}`);
       const data = response.data;
-      console.log(data);
+      console.log("hna ya mrabet", data);
 
       setFormData({
         nameAr: data.nameAr || "No Arabic Name",
@@ -193,6 +195,10 @@ export default function PublishingHouseDetails() {
     setTabValue(newValue);
   };
 
+  const retour = () => {
+    navigate("/articles/publishingHouses");
+  };
+
   return (
     <ThemeProvider theme={defaultTheme}>
       <Paper elevation={3} sx={{ m: 2, p: 2 }}>
@@ -208,9 +214,23 @@ export default function PublishingHouseDetails() {
         </Box>
 
         <TabPanel value={tabValue} index={0}>
+          <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
+            <Tooltip title="Go Back">
+              <KeyboardBackspaceOutlinedIcon
+                onClick={retour}
+                sx={{
+                  cursor: "pointer",
+                  fontSize: "40px",
+                  color:"red"
+                }}
+              />
+            </Tooltip>
+          </Box>
+
           <Box
             sx={{
               display: "flex",
+              marginTop:"-1cm",
               flexDirection: "column",
               gap: 2,
             }}
@@ -258,9 +278,12 @@ export default function PublishingHouseDetails() {
                   badgeContent={
                     <IconButton
                       component="label"
-                      sx={{ bgcolor: "#48184C", color: "white" ,
+                      sx={{
+                        bgcolor: "#48184C",
+                        color: "white",
                         "&:hover": {
-                          bgcolor: "#6A1B9A"},
+                          bgcolor: "#6A1B9A",
+                        },
                       }}
                     >
                       <input
