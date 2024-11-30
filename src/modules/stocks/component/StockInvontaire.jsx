@@ -87,7 +87,7 @@ export default function StockInvontaire() {
   };
 
   const columns = [
-    { field: "name", headerName: "Invontaire Title", width: 200 },
+    { field: "name", headerName: "Inventaire Title", width: 200 },
     {
       field: "date",
       headerName: "Date",
