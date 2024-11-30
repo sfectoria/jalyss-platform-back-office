@@ -127,7 +127,11 @@ export default function NewInventaireTable() {
         )
       );
   
-      setRowModesModel({});
+      const updatedRowModesModel = { ...rowModesModel };
+      rowsToSave.forEach((row) => {
+        updatedRowModesModel[row.id] = { mode: GridRowModes.View };
+      });
+      setRowModesModel(updatedRowModesModel);
       setMsg("All rows saved successfully!");
       setShowAlertSu(true);
     } catch (error) {
@@ -145,31 +149,32 @@ export default function NewInventaireTable() {
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
   };
 
+ 
   const processRowUpdate = async(newRow) => {
     const {quantity,reelQuantity,id}=newRow
     console.log('here',newRow);
-    const verify=rows.find((row) => row.id === id);
-    console.log(verify);
-    
-    if(verify.quantity){
-      const postInventoryLine=await axios.patch(`${ip}/inventory/line/${verify.idLine}`,{quantity:quantity})
-     console.log(postInventoryLine,'test');
-    }
-    else{
-    const obj={
-      inventoryId:param.idInv,
-      quantity,
-      reelQuantity:reelQuantity,
-      articleId:id
-    }
-     const postInventoryLine=await axios.post(`${ip}/inventory/createLine`,obj)
-     console.log(postInventoryLine,'test');
-    }
-    const updatedRow = { ...newRow, isNew: false };
-    setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
-    return updatedRow;
-  };
+    try {
+      if (newRow.idLine) {
+        const postInventoryLine=await axios.patch(`${ip}/inventory/line/${newRow.idLine}`,{quantity:quantity});
+        console.log('test',postInventoryLine);
+      } else{
+        const obj={
+          inventoryId:param.idInv,
+          quantity,
+          reelQuantity:reelQuantity,
+          articleId:id
+        }
+        const postInventoryLine = await axios.post(`${ip}/inventory/createLine`,obj);
+        console.log('test',postInventoryLine);
+        newRow.idLine = postInventoryLine.data.id; 
+      }
 
+      return { ...newRow, isNew: false };
+    } catch (error) {
+      console.error("Error processing row update:", error);
+      throw error;
+    }
+  };
   const handleRowModesModelChange = (newRowModesModel) => {
     setRowModesModel(newRowModesModel);
   };
