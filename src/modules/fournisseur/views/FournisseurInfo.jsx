@@ -9,6 +9,7 @@ import UpdateFournisseur from './UpdateFournisseur';
 import Tooltip from "@mui/material/Tooltip";
 import KeyboardBackspaceOutlinedIcon from '@mui/icons-material/KeyboardBackspaceOutlined';
 import { useNavigate } from 'react-router-dom';
+import { TbArrowBackUp } from "react-icons/tb";
 
 export default function FournisseurInfo() {
   const [oneFournisseur, setFournisseur] = useState(null);
@@ -102,25 +103,35 @@ const Retour =() =>{
     marginBottom: '10px', 
   }}
 >
-  <Tooltip title="Go Back">
-  <KeyboardBackspaceOutlinedIcon onClick={Retour}
-    fontSize="large" 
-    sx={{
-      cursor: 'pointer',
-      color: 'Red',
-    }}
-  />
+  <Tooltip title="Go Back" placement="top">
+    <Box
+      sx={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        cursor: 'pointer',
+      }}
+      onClick={Retour}
+    >
+      <TbArrowBackUp size={32} />
+    </Box>
   </Tooltip>
-  <Tooltip title="Edit Profile">
-  <EditIcon 
-    onClick={handleEdit}
-    sx={{ 
-      cursor: 'pointer',
-      fontSize: 32,
-      color: '#48184C' 
-    }}
-  />
-   </Tooltip>
+  <Tooltip title="Edit Profile" placement="top">
+    <Box
+      sx={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        cursor: 'pointer',
+      }}
+      onClick={handleEdit}
+    >
+      <EditIcon 
+        sx={{ 
+          fontSize: 32, 
+          color: '#48184C' 
+        }} 
+      />
+    </Box>
+  </Tooltip>
 </Box>
 
   <Box>

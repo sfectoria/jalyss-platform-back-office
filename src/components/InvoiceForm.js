@@ -442,7 +442,7 @@ const InvoiceForm = () => {
       }
       setItems(doubleQ);
     } else {
-      console.log(obj);
+      console.log("taw",obj);
 
       const newItem = {
         id: obj.id,
