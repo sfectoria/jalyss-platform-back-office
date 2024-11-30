@@ -45,7 +45,7 @@ const SearchField = ({
       fetchDataChannel();
     }
   }, [refresh, info]);
-  console.log(info, type);
+  console.log("from BL",info, type);
 
   const mergeAndSortByDate = (exitNotes, receiptNotes) => {
     const combined = [
@@ -76,7 +76,7 @@ const SearchField = ({
           `${ip}/stocks/${findStockResponse.data.idStock}`,
           { params }
         );
-        console.log("hello ", response.data.data.stockArticle);
+        console.log("hello from search Field", response.data.data.stockArticle);
         const result = response.data.data.stockArticle.reduce(
           (acc, item) => {
             acc.data.push({
@@ -118,7 +118,7 @@ const SearchField = ({
         });
         console.log("result", result);
         setRows(result.data);
-        console.log(result.data);
+        console.log("hereto",result.data);
       }
     }
   };
