@@ -6,12 +6,15 @@ import Box from '@mui/material/Box';
 import { ip } from '../../../constants/ip';
 import EditIcon from '@mui/icons-material/Edit';
 import UpdateFournisseur from './UpdateFournisseur';
+import Tooltip from "@mui/material/Tooltip";
+import KeyboardBackspaceOutlinedIcon from '@mui/icons-material/KeyboardBackspaceOutlined';
+import { useNavigate } from 'react-router-dom';
 
 export default function FournisseurInfo() {
   const [oneFournisseur, setFournisseur] = useState(null);
   const [isEditing, setIsEditing] = useState(false);  
   const { id } = useParams();
-
+const naviagte =useNavigate()
   const fetchData = async () => {
     try {
       const res = await axios.get(`${ip}/provider/${id}`);
@@ -29,7 +32,9 @@ export default function FournisseurInfo() {
   const handleEdit = () => {
     setIsEditing(true);  
   };
-
+const Retour =() =>{
+  naviagte('/fournisseurs')
+}
   return (
     <Box sx={{ paddingTop: '3cm', display: 'flex', justifyContent: 'center', gap: '30px' }}>
       {isEditing ? (
@@ -89,16 +94,35 @@ export default function FournisseurInfo() {
     position: 'relative'
   }}
 >
+<Box
+  sx={{
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '10px', 
+  }}
+>
+  <Tooltip title="Go Back">
+  <KeyboardBackspaceOutlinedIcon onClick={Retour}
+    fontSize="large" 
+    sx={{
+      cursor: 'pointer',
+      color: 'Red',
+    }}
+  />
+  </Tooltip>
+  <Tooltip title="Edit Profile">
   <EditIcon 
     onClick={handleEdit}
     sx={{ 
       cursor: 'pointer',
       fontSize: 32,
-      alignSelf: 'flex-end',
-      marginBottom: '10px',
       color: '#48184C' 
     }}
   />
+   </Tooltip>
+</Box>
+
   <Box>
     <h2 style={{ marginBottom: '10px', color: '#48184C' }}>Fournisseur Information</h2>
   </Box>

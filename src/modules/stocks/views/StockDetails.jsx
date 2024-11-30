@@ -14,7 +14,7 @@ import StockArticles from "../component/StockArticleTable";
 import StockHistory from "../component/StockHistory";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Link from "@mui/material/Link";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import AddButton from "../../../components/AddOp";
 import RuleIcon from "@mui/icons-material/Rule";
 import StockInvontaire from "../component/StockInvontaire";
@@ -28,6 +28,8 @@ import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import { Button } from "@mui/material";
 import ArchiveStockPopUp from "../component/ArchiveStockPopUp";
 import SimpleDialog from "../component/ChannelsListOfStock";
+import KeyboardBackspaceOutlinedIcon from "@mui/icons-material/KeyboardBackspaceOutlined";
+import Tooltip from "@mui/material/Tooltip";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -141,6 +143,7 @@ export default function StockDetails() {
   const [open, setOpen] = useState(false);
   const [selectedValue, setSelectedValue] = useState("");
   const params = useParams();
+  const navigate =useNavigate()
   useEffect(() => {
     fetchStockDetails();
   }, []);
@@ -158,67 +161,85 @@ export default function StockDetails() {
   const handleClose = (value) => {
     setOpen(false);
   };
+
+const retour =()=>{
+  navigate('/stock')
+}
+
   return (
     <Box
-      sx={{
-        bgcolor: "background.default",
-        mx: 3,
-        mt: 3,
-      }}
-    >
-      <Item sx={{ pt: 7, pb: 1, px: 7, borderRadius: 10 }} elevation={5}>
-        <div
-          role="presentation"
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            marginRight: "50px",
-          }}
-        >
-          <Breadcrumbs aria-label="breadcrumb">
-            <Link
-              underline="hover"
-              variant="h5"
-              sx={{ fontWeight: "bold" }}
-              color="inherit"
-              href="/stock"
-            >
-              Stock
-            </Link>
-            <Typography
-              variant="h5"
-              sx={{ fontWeight: "bold" }}
-              color="text.primary"
-            >
-              {stockInfo.name}
-            </Typography>
-          </Breadcrumbs>
-        </div>
-          <Box sx={{ mx: 4 }}>
-            <Typography variant="h2" color="initial" gutterBottom>
-              {stockInfo.name} informations
-            </Typography>
-            <Typography variant="body1" color={"initial"} gutterBottom>
-              {stockInfo.name} managed by ({stockInfo?.employee?.firstName+" "+stockInfo?.employee?.lastName})
-            </Typography>
-            <Button
-              variant="contained"
-              color="secondary"
-              endIcon={<RemoveRedEyeIcon />}
-              sx={{ width: "20%" }}
-              onClick={() => handelChannelsList()}
-            >
-              View Channels
-            </Button>
-          </Box>
-        <FullWidthTabs stockInfo={stockInfo} />
-        <SimpleDialog
-          info={stockInfo?.salesChannels}
-          selectedValue={selectedValue}
-          open={open}
-          onClose={handleClose}
-        />
-      </Item>
-    </Box>
+    sx={{
+      bgcolor: "background.default",
+      mx: 3,
+      mt: 3,
+    }}
+  >
+    <Item sx={{ pt: 7, pb: 1, px: 7, borderRadius: 10 }} elevation={5}>
+        <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" ,color:"red"}}>
+        <Tooltip title="Go Back">
+          <KeyboardBackspaceOutlinedIcon onClick={retour} sx={{ cursor: "pointer", fontSize: "40px" }} />
+        </Tooltip>
+      </Box>
+      <div
+        role="presentation"
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          marginRight: "50px",
+          marginTop:"-2cm"
+        }}
+      >
+        <Breadcrumbs aria-label="breadcrumb">
+          <Link
+            underline="hover"
+            variant="h5"
+            sx={{ fontWeight: "bold" }}
+            color="inherit"
+            href="/stock"
+          >
+            Stock
+          </Link>
+          <Typography
+            variant="h5"
+            sx={{ fontWeight: "bold" }}
+            color="text.primary"
+          >
+            {stockInfo.name}
+          </Typography>
+        </Breadcrumbs>
+      </div>
+  
+      <Box sx={{ mx: 4 }}>
+        <Typography variant="h2" color="initial" gutterBottom>
+          {stockInfo.name} informations
+        </Typography>
+        <Typography variant="body1" color={"initial"} gutterBottom>
+          {stockInfo.name} managed by ({stockInfo?.employee?.firstName +
+            " " +
+            stockInfo?.employee?.lastName})
+        </Typography>
+        <Box sx={{ display: "flex", justifyContent: "flex-start", mt: 2 }}>
+          <Button
+            variant="contained"
+            color="secondary"
+            endIcon={<RemoveRedEyeIcon />}
+            sx={{ width: "20%" }}
+            onClick={() => handelChannelsList()}
+          >
+            View Channels
+          </Button>
+        </Box>
+      </Box>
+  
+      <FullWidthTabs stockInfo={stockInfo} />
+      <SimpleDialog
+        info={stockInfo?.salesChannels}
+        selectedValue={selectedValue}
+        open={open}
+        onClose={handleClose}
+      />
+    </Item>
+  </Box>
+  
   );
 }
