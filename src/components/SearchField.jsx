@@ -77,7 +77,7 @@ const SearchField = ({
           { params }
         );
         console.log("hello from search Field", response.data.data);
-        console.log("hello from search Field 1", response.data.data.stockArticle[0].article.archived);
+        console.log("hello from search Field 1", response.data?.data?.stockArticle[0]?.article?.archived);
         const result = response.data.data.stockArticle
         .filter(e => e.article.archived === false)
         .reduce(
