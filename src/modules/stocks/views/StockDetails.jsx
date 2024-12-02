@@ -225,7 +225,7 @@ const retour =()=>{
     }}
   >
     <Item sx={{ pt: 7, pb: 1, px: 7, borderRadius: 10 }} elevation={5}>
-    <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end", color: "grey" }}>
+        <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end", color: "grey" }}>
   <Tooltip title="Go Back" placement="top">
     <Box
       sx={{
@@ -235,7 +235,10 @@ const retour =()=>{
       }}
       onClick={retour}
     >
-      <Item sx={{ pt: 7, pb: 1, px: 7, borderRadius: 10 }} elevation={5}>
+       <TbArrowBackUp size={40} sx={{ fontSize: "40px" }} />
+    </Box>
+  </Tooltip>
+</Box>
         <div
           role="presentation"
           style={{
@@ -392,12 +395,6 @@ const retour =()=>{
           open={open}
           onClose={handleClose}
         />
-      </Item>
-      <TbArrowBackUp size={40} sx={{ fontSize: "40px" }} />
-    </Box>
-  </Tooltip>
-</Box>
-
       <div
         role="presentation"
         style={{
