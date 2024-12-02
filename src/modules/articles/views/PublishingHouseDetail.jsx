@@ -158,6 +158,13 @@ export default function PublishingHouseDetails() {
     setIsEdit(true);
     setTabValue(1);
   };
+  const handleDeleteImage = () => {
+    setUploadedImage(null);
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      logoId: null,
+    }));
+  };
 
   const handleCancel = () => {
     setIsEdit(false);
@@ -289,42 +296,57 @@ export default function PublishingHouseDetails() {
           <form onSubmit={handleSubmit}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
-                <Badge
-                  overlap="circular"
-                  anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                  badgeContent={
-                    <IconButton
-                      component="label"
-                      sx={{
-                        bgcolor: "#48184C",
-                        color: "white",
-                        "&:hover": {
-                          bgcolor: "#6A1B9A",
-                        },
-                      }}
-                    >
-                      <input
-                        hidden
-                        accept="image/*"
-                        type="file"
-                        onChange={handleFileUpload}
-                      />
-                      <EditIcon />
-                    </IconButton>
-                  }
-                >
-                  <Avatar
-                    src={uploadedImage || logoPath}
-                    sx={{
-                      width: 100,
-                      height: 100,
-                      bgcolor: "#48184C",
-                      fontSize: "40px",
-                    }}
-                  >
-                    {!uploadedImage && !logoPath && formData.nameEn?.charAt(0)}
-                  </Avatar>
-                </Badge>
+
+              <Badge
+  overlap="circular"
+  anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+  badgeContent={
+    <IconButton
+      sx={{
+        bgcolor: "#48184C",
+        color: "white",
+        width: "30px",
+        height: "30px",
+        "&:hover": { bgcolor: "#3a143e" },
+      }}
+      onClick={handleDeleteImage}
+    >
+      <DeleteIcon fontSize="small" />
+    </IconButton>
+  }
+>
+  <IconButton
+    component="label"
+    sx={{
+      borderRadius: "50%",
+      padding: 0,
+      width: 100,
+      height: 100,
+    }}
+  >
+    <input
+      hidden
+      accept="image/*"
+      type="file"
+      onChange={handleFileUpload}
+    />
+    <Avatar
+      src={uploadedImage || logoPath}
+      sx={{
+        width: 100,
+        height: 100,
+        bgcolor: "#48184C",
+        fontSize: "40px",
+        objectFit : "cover"
+      }}
+    >
+      {!uploadedImage && !logoPath && formData.nameEn?.charAt(0)}
+    </Avatar>
+  </IconButton>
+</Badge>
+
+
+
               </Grid>
               {["nameAr", "nameEn", "address", "email", "phone_number"].map(
                 (field) => (

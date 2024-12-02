@@ -81,7 +81,7 @@ export const ArchivedPublishingHouses = () => {
   
     const handleDetails = (id) => {
       console.log("Navigating to details for ID:", id);
-      navigate(`${id}`);
+      navigate(`/articles/publishingHouses/${id}`);
     };
   
    

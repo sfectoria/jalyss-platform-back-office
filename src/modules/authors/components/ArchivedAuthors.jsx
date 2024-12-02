@@ -43,7 +43,7 @@ export default function ArchivedAuthors  ()  {
   }, [refresh]);
 
   const handleDetails = (id) => {
-    navigate(`${id}`);
+    navigate(`/articles/authors/${id}`);
   };
 
 

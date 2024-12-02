@@ -785,6 +785,7 @@ const InvoiceForm = () => {
               as="textarea"
               className="my-2"
               rows={1}
+              disabled
             />
           </Card>
         </Col>
