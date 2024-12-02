@@ -395,64 +395,6 @@ const retour =()=>{
           open={open}
           onClose={handleClose}
         />
-      <div
-        role="presentation"
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          marginRight: "50px",
-          marginTop:"-2cm"
-        }}
-      >
-        <Breadcrumbs aria-label="breadcrumb">
-          <Link
-            underline="hover"
-            variant="h5"
-            sx={{ fontWeight: "bold" }}
-            color="inherit"
-            href="/stock"
-          >
-            Stock
-          </Link>
-          <Typography
-            variant="h5"
-            sx={{ fontWeight: "bold" }}
-            color="text.primary"
-          >
-            {stockInfo.name}
-          </Typography>
-        </Breadcrumbs>
-      </div>
-  
-      <Box sx={{ mx: 4 }}>
-        <Typography variant="h2" color="initial" gutterBottom>
-          {stockInfo.name} informations
-        </Typography>
-        <Typography variant="body1" color={"initial"} gutterBottom>
-          {stockInfo.name} managed by ({stockInfo?.employee?.firstName +
-            " " +
-            stockInfo?.employee?.lastName})
-        </Typography>
-        <Box sx={{ display: "flex", justifyContent: "flex-start", mt: 2 }}>
-          <Button
-            variant="contained"
-            color="secondary"
-            endIcon={<RemoveRedEyeIcon />}
-            sx={{ width: "20%" }}
-            onClick={() => handelChannelsList()}
-          >
-            View Channels
-          </Button>
-        </Box>
-      </Box>
-  
-      <FullWidthTabs stockInfo={stockInfo} />
-      <SimpleDialog
-        info={stockInfo?.salesChannels}
-        selectedValue={selectedValue}
-        open={open}
-        onClose={handleClose}
-      />
     </Item>
   </Box>
   
