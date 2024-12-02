@@ -25,13 +25,82 @@ export default function StockArticles() {
   const [refresh, setRefresh] = useState(false);
   const param = useParams();
   const navigate = useNavigate();
+
   useEffect(() => {
     fetchData();
-  }, [refresh]);
+  }, [refresh, page, pageSize]);
+
+  const fetchData = async () => {
+    let params = { take: pageSize, skip: page * pageSize, notNullQuan: 1 };
+    try {
+      const response = await axios.get(`${ip}/stocks/${param.id}`, { params });
+      const filteredData = response.data.data.stockArticle.filter(
+        (e) => e.article.archived === false
+      );
+
+      setData(filteredData);
+      setCount(response.data.count);
+    } catch (error) {
+      console.error("Error fetching data", error);
+    }
+  };
+
+  const handlePageChange = (newPageInfo) => {
+    setPage(newPageInfo.page);
+    setPageSize(newPageInfo.pageSize);
+    setRefresh(!refresh);
+  };
+
+  const columns = [
+    {
+      field: "image",
+      headerName: "Image",
+      width: 90,
+      renderCell: ({ value, row }) => <ImagePopUp image={row?.article?.cover?.path} />,
+    },
+    {
+      field: "name",
+      headerName: "Title",
+      width: 220,
+      valueGetter: (value, row) => row?.article?.title,
+    },
+    {
+      field: "quantity",
+      headerName: "Quantity",
+      width: 90,
+    },
+    {
+      field: "author",
+      headerName: "Author",
+      width: 220,
+      valueGetter: (value, row) => row?.article.articleByAuthor[0]?.author?.nameAr,
+    },
+    {
+      field: "publisher",
+      headerName: "Publisher",
+      width: 220,
+      valueGetter: (value, row) =>
+        row?.article.articleByPublishingHouse[0]?.publishingHouse?.nameAr,
+    },
+    {
+      field: "history",
+      headerName: "History",
+      width: 110,
+      type: "actions",
+      getActions: (params) => [
+        <GridActionsCellItem
+          icon={<RequestQuoteIcon />}
+          onClick={() => navigate(`articles/${params.row.articleId}/full-history`)}
+          label="View"
+        />,
+      ],
+    },
+  ];
+
   function Pagination({ onPageChange, className }) {
     const apiRef = useGridApiContext();
     const pageCount = useGridSelector(apiRef, gridPageCountSelector);
-    console.log(page);
+
     return (
       <MuiPagination
         color="secondary"
@@ -39,7 +108,7 @@ export default function StockArticles() {
         count={pageCount}
         page={page + 1}
         onChange={(event, newPage) => {
-          setPage(newPage - 1, page);
+          setPage(newPage - 1);
           onPageChange(event, newPage - 1);
         }}
       />
@@ -50,82 +119,8 @@ export default function StockArticles() {
     return <GridPagination ActionsComponent={Pagination} {...props} />;
   }
 
-  const fetchData = async () => {
-    let params = { take: pageSize, skip: page * pageSize ,notNullQuan :1};
-    const response = await axios.get(`${ip}/stocks/${param.id}`, { params });
-    console.log(response.data.data.stockArticle, response.data.count);
-    setData(response.data.data.stockArticle);
-    setCount(response.data.count);
-  };
-  console.log("id",data)
-
-  const handlePageChange = (newPageInfo) => {
-    console.log(newPageInfo, "pagesize");
-    console.log(pageSize === newPageInfo.pageSize);
-
-    if (pageSize === newPageInfo.pageSize) {
-      setPage(newPageInfo.page);
-      setRefresh(!refresh);
-    }
-    if (pageSize !== newPageInfo.pageSize) {
-      setPageSize(newPageInfo.pageSize);
-      setPage(0);
-      setRefresh(!refresh);
-    }
-  };
-
-  const columns = [
-    {
-      field: "image",
-      headerName: "Image",
-      width: 90,
-      renderCell: ({ value, row }) => {
-        return <ImagePopUp image={row?.article?.cover?.path} />;
-        console.log("row",row)
-      },
-    },
-    {
-      field: "name",
-      headerName: "Title",
-      width: 220,
-      valueGetter: (value, row) => {
-        return row?.article?.title;
-      },
-    },
-    { field: "quantity", headerName: "Quantity", width: 90 },
-    {
-      field: "author",
-      headerName: "Author",
-      width: 220,
-      valueGetter: (value, row) => {
-        return row?.article.articleByAuthor[0]?.author?.nameAr;
-      },
-    },
-    {
-      field: "publisher",
-      headerName: "Publisher",
-      width: 220,
-      valueGetter: (value, row) => {
-        return row?.article.articleByPublishingHouse[0]?.publishingHouse
-          ?.nameAr;
-      },
-    },
-    {
-      field: "history",
-      headerName: "History",
-      width: 110,
-      type: "actions",
-    getActions: (params) => [
-        <GridActionsCellItem
-          icon={<RequestQuoteIcon />}
-          onClick={() => navigate(`articles/${params.row.articleId}/full-history`)}
-          label="View"
-        />,
-      ],
-    },
-  ];
   return (
-    <div style={{ width: "100%", color: "red"  , height : 500 }}>
+    <div style={{ width: "100%", height: 500 }}>
       <DataGrid
         rowHeight={70}
         pageSizeOptions={[7, 10, 20]}
@@ -139,9 +134,6 @@ export default function StockArticles() {
         }}
         rows={data}
         columns={columns}
-        onPaginationModelChange={(event) => {
-          handlePageChange(event);
-        }}
         pagination
         pageSize={pageSize}
         paginationMode="server"
@@ -152,6 +144,7 @@ export default function StockArticles() {
           toolbar: GridToolbar,
           pagination: CustomPagination,
         }}
+        onPaginationModelChange={handlePageChange}
         initialState={{
           pagination: { paginationModel: { pageSize: 10 } },
           filter: {
