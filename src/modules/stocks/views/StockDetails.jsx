@@ -14,7 +14,7 @@ import StockArticles from "../component/StockArticleTable";
 import StockHistory from "../component/StockHistory";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Link from "@mui/material/Link";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import AddButton from "../../../components/AddOp";
 import RuleIcon from "@mui/icons-material/Rule";
 import StockInvontaire from "../component/StockInvontaire";
@@ -31,6 +31,9 @@ import SimpleDialog from "../component/ChannelsListOfStock";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import SaveAsIcon from "@mui/icons-material/SaveAs";
 import Autocomplete from "@mui/material/Autocomplete";
+import { TbArrowBackUp } from "react-icons/tb";
+import Tooltip from "@mui/material/Tooltip";
+
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -152,6 +155,7 @@ export default function StockDetails() {
   const [managerPhone, setManagerPhone] = useState("");
   const [refresh, setRefresh] = useState({});
   const params = useParams();
+  const navigate =useNavigate()
   useEffect(() => {
     fetchStockDetails();
     fetchAllInfoData();
@@ -208,13 +212,28 @@ export default function StockDetails() {
     setIsOpen(false);
     setRefresh(!refresh);
   };
+const retour =()=>{
+  navigate('/stock')
+}
+
   return (
     <Box
+    sx={{
+      bgcolor: "background.default",
+      mx: 3,
+      mt: 3,
+    }}
+  >
+    <Item sx={{ pt: 7, pb: 1, px: 7, borderRadius: 10 }} elevation={5}>
+    <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end", color: "grey" }}>
+  <Tooltip title="Go Back" placement="top">
+    <Box
       sx={{
-        bgcolor: "background.default",
-        mx: 3,
-        mt: 3,
+        display: "inline-flex",
+        alignItems: "center",
+        cursor: "pointer",
       }}
+      onClick={retour}
     >
       <Item sx={{ pt: 7, pb: 1, px: 7, borderRadius: 10 }} elevation={5}>
         <div
@@ -374,6 +393,71 @@ export default function StockDetails() {
           onClose={handleClose}
         />
       </Item>
+      <TbArrowBackUp size={40} sx={{ fontSize: "40px" }} />
     </Box>
+  </Tooltip>
+</Box>
+
+      <div
+        role="presentation"
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          marginRight: "50px",
+          marginTop:"-2cm"
+        }}
+      >
+        <Breadcrumbs aria-label="breadcrumb">
+          <Link
+            underline="hover"
+            variant="h5"
+            sx={{ fontWeight: "bold" }}
+            color="inherit"
+            href="/stock"
+          >
+            Stock
+          </Link>
+          <Typography
+            variant="h5"
+            sx={{ fontWeight: "bold" }}
+            color="text.primary"
+          >
+            {stockInfo.name}
+          </Typography>
+        </Breadcrumbs>
+      </div>
+  
+      <Box sx={{ mx: 4 }}>
+        <Typography variant="h2" color="initial" gutterBottom>
+          {stockInfo.name} informations
+        </Typography>
+        <Typography variant="body1" color={"initial"} gutterBottom>
+          {stockInfo.name} managed by ({stockInfo?.employee?.firstName +
+            " " +
+            stockInfo?.employee?.lastName})
+        </Typography>
+        <Box sx={{ display: "flex", justifyContent: "flex-start", mt: 2 }}>
+          <Button
+            variant="contained"
+            color="secondary"
+            endIcon={<RemoveRedEyeIcon />}
+            sx={{ width: "20%" }}
+            onClick={() => handelChannelsList()}
+          >
+            View Channels
+          </Button>
+        </Box>
+      </Box>
+  
+      <FullWidthTabs stockInfo={stockInfo} />
+      <SimpleDialog
+        info={stockInfo?.salesChannels}
+        selectedValue={selectedValue}
+        open={open}
+        onClose={handleClose}
+      />
+    </Item>
+  </Box>
+  
   );
 }

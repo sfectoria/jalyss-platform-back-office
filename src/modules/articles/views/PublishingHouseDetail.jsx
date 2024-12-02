@@ -25,6 +25,8 @@ import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import React, { useEffect, useState } from "react";
 import Item from "../../../style/ItemStyle";
+import { TbArrowBackUp } from "react-icons/tb";
+import Tooltip from "@mui/material/Tooltip";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { ip } from "../../../constants/ip";
@@ -45,7 +47,7 @@ export default function PublishingHouseDetails() {
     },
   });
 
-  const [tabValue, setTabValue] = useState(0); 
+  const [tabValue, setTabValue] = useState(0);
   const [successAlert, setSuccessAlert] = useState(false);
   const [errorAlert, setErrorAlert] = useState(false);
   const [uploadedImage, setUploadedImage] = useState(null);
@@ -72,7 +74,7 @@ export default function PublishingHouseDetails() {
     try {
       const response = await axios.get(`${ip}/publishingHouses/${id}`);
       const data = response.data;
-      console.log(data);
+      console.log("hna ya mrabet", data);
 
       setFormData({
         nameAr: data.nameAr || "No Arabic Name",
@@ -200,6 +202,10 @@ export default function PublishingHouseDetails() {
     setTabValue(newValue);
   };
 
+  const retour = () => {
+    navigate("/articles/publishingHouses");
+  };
+
   return (
     <ThemeProvider theme={defaultTheme}>
       <Paper elevation={3} sx={{ m: 2, p: 2 }}>
@@ -215,50 +221,82 @@ export default function PublishingHouseDetails() {
         </Box>
 
         <TabPanel value={tabValue} index={0}>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 2,
-            }}
-          >
-            <Badge
-              overlap="circular"
-              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-            >
-              <Avatar
-                src={uploadedImage || logoPath}
-                sx={{
-                  width: 100,
-                  height: 100,
-                  bgcolor: "#48184C",
-                  fontSize: "40px",
-                }}
-              >
-                {!uploadedImage && !logoPath && formData.nameEn?.charAt(0)}
-              </Avatar>
-            </Badge>
-            <Typography variant="h4">{formData.nameEn}</Typography>
-            <Typography variant="h5">{formData.nameAr}</Typography>
-            <Grid container spacing={2}>
-              {["address", "email", "phone_number"].map((field) => (
-                <Grid item xs={12} key={field}>
-                  <Typography variant="body1">
-                    <strong>
-                      {field.charAt(0).toUpperCase() + field.slice(1)}:
-                    </strong>{" "}
-                    {formData[field]}
-                  </Typography>
-                </Grid>
-              ))}
-            </Grid>
-          </Box>
-        </TabPanel>
+  <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 1 }}>
+    <Tooltip title="Go Back">
+      <Box
+        onClick={retour}
+        sx={{ cursor: "pointer", display: "inline-flex", alignItems: "center" }}
+      >
+        <TbArrowBackUp size={40} color="grey" />
+      </Box>
+    </Tooltip>
+  </Box>
+  <Box
+    sx={{
+      display: "flex",
+      flexDirection: "row",
+      justifyContent: "center",
+      alignItems: "center",
+      gap: 2,
+      mt: "-0.5cm", 
+    }}
+  >
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 1,
+      }}
+    >
+      <Badge
+        overlap="circular"
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        <Avatar
+          src={uploadedImage || logoPath}
+          sx={{
+            width: 100, 
+            height: 100,
+            bgcolor: "#48184C",
+            fontSize: "36px",
+          }}
+        >
+          {!uploadedImage && !logoPath && formData.nameEn?.charAt(0)}
+        </Avatar>
+      </Badge>
+      <Typography variant="h5">{formData.nameEn}</Typography>
+      <Typography variant="body1">{formData.nameAr}</Typography>
+    </Box>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 1, 
+        textAlign: "center",
+      }}
+    >
+      <Grid container spacing={1}>
+        {["address", "email", "phone_number"].map((field) => (
+          <Grid item xs={12} key={field}>
+            <Typography variant="body2"> 
+              <strong>
+                {field.charAt(0).toUpperCase() + field.slice(1)}:
+              </strong>{" "}
+              {formData[field]}
+            </Typography>
+          </Grid>
+        ))}
+      </Grid>
+    </Box>
+  </Box>
+</TabPanel>
 
         <TabPanel value={tabValue} index={1}>
           <form onSubmit={handleSubmit}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
+
               <Badge
   overlap="circular"
   anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
@@ -306,6 +344,7 @@ export default function PublishingHouseDetails() {
     </Avatar>
   </IconButton>
 </Badge>
+
 
 
               </Grid>

@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, Avatar, Tab, Tabs } from "@mui/material";
+import { Box, Typography, Avatar, Tab, Tabs, Tooltip } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { ip } from "../../../constants/ip";
 import UpdateAuthor from "./UpdateAuthor";
+import KeyboardBackspaceOutlinedIcon from "@mui/icons-material/KeyboardBackspaceOutlined";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
+import { TbArrowBackUp } from "react-icons/tb";
 
 export default function AuthorDetails() {
   const { id } = useParams();
   const [theAuthor, setTheAuthor] = useState({});
-  const [isEdit, setIsEdit] = useState(false);
   const [tabIndex, setTabIndex] = useState(0);
+  const navigate = useNavigate();
 
   const getOneAuthor = async () => {
     try {
@@ -27,9 +29,9 @@ export default function AuthorDetails() {
     getOneAuthor();
   }, [id]);
 
-  const handleTabChange = (event, newValue) => {
-    setTabIndex(newValue);
-  };
+  const handleTabChange = (event, newValue) => setTabIndex(newValue);
+
+  const retour = () => navigate("/articles/authors");
 
   const columns = [
     {
@@ -46,17 +48,26 @@ export default function AuthorDetails() {
       ),
     },
     { field: "title", headerName: "Article Title", width: 200 },
-    { field: "shortDescriptionEn", headerName: "Short Description (EN)", width: 220 },
-    { field: "shortDescriptionAr", headerName: "Short Description (AR)", width: 220 },
+    {
+      field: "shortDescriptionEn",
+      headerName: "Short Description (EN)",
+      width: 220,
+    },
+    {
+      field: "shortDescriptionAr",
+      headerName: "Short Description (AR)",
+      width: 220,
+    },
   ];
 
-  const rowsWithId = theAuthor.ArticleByAuthor?.map((article) => ({
-    id: article.articleId, 
-    cover: article.article?.cover,
-    title: article.article?.title,
-    shortDescriptionEn: article.article?.shortDescriptionEn,
-    shortDescriptionAr: article.article?.shortDescriptionAr,
-  })) || [];
+  const rowsWithId =
+    theAuthor.ArticleByAuthor?.map((article) => ({
+      id: article.articleId,
+      cover: article.article?.cover,
+      title: article.article?.title,
+      shortDescriptionEn: article.article?.shortDescriptionEn,
+      shortDescriptionAr: article.article?.shortDescriptionAr,
+    })) || [];
 
   return (
     <Box sx={{ mx: 3, my: 6, display: "flex", justifyContent: "center" }}>
@@ -67,7 +78,6 @@ export default function AuthorDetails() {
           border: "2px solid #e0e0e0",
           borderRadius: 2,
           maxWidth: "800px",
-          height: "25cm",
           width: "100%",
         }}
       >
@@ -89,10 +99,30 @@ export default function AuthorDetails() {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              mb: 4,
-              mt: "1cm",
             }}
           >
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "flex-start",
+                width: "100%",
+                mb: 2,
+              }}
+            >
+              <Tooltip title="Go Back">
+                <Box
+                  onClick={retour}
+                  sx={{
+                    cursor: "pointer",
+                    display: "inline-flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <TbArrowBackUp size={50} color="grey" />
+                </Box>
+              </Tooltip>
+            </Box>
+
             {theAuthor?.Media?.path ? (
               <Avatar
                 alt="author avatar"
@@ -109,7 +139,10 @@ export default function AuthorDetails() {
                 }}
               >
                 {theAuthor.nameEn
-                  ? theAuthor.nameEn.split(" ").map((namePart) => namePart[0]).join("")
+                  ? theAuthor.nameEn
+                      .split(" ")
+                      .map((namePart) => namePart[0])
+                      .join("")
                   : "?"}
               </Avatar>
             )}
@@ -119,7 +152,10 @@ export default function AuthorDetails() {
             <Typography sx={{ fontSize: 26, fontWeight: "bold", mt: 1 }}>
               {theAuthor.nameAr}
             </Typography>
-            <Box sx={{ display: "flex", marginTop:"1cm", justifyContent: "space-between", mb: 2 }}>
+
+            <Box
+              sx={{ display: "flex", justifyContent: "space-between", my: 4 }}
+            >
               <Box sx={{ width: "48%" }}>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                   <LibraryBooksIcon />
@@ -172,7 +208,7 @@ export default function AuthorDetails() {
 
         {tabIndex === 1 && (
           <Box sx={{ mt: 3, display: "flex", justifyContent: "center" }}>
-            <UpdateAuthor setIsEdit={setIsEdit} />
+            <UpdateAuthor theAuthor={theAuthor} />
           </Box>
         )}
       </Box>

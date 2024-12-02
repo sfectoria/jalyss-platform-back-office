@@ -4,9 +4,15 @@ import Typography from "@mui/material/Typography";
 import ModeEditOutlineIcon from "@mui/icons-material/ModeEditOutline";
 import UpdateArticle from "../views/UpdateArticle";
 import Avatar from "@mui/material/Avatar";
+import Tooltip from "@mui/material/Tooltip";
+import KeyboardBackspaceOutlinedIcon from "@mui/icons-material/KeyboardBackspaceOutlined";
+import { useNavigate } from "react-router-dom";
+import { TbArrowBackUp } from "react-icons/tb";
 
 export default function ArticleDescription({ data }) {
   const [isEditMode, setIsEditMode] = useState(false);
+  const navigate = useNavigate();
+
   const category = data.articleByCategory
     ?.map((i, index) => `${index === 0 ? "" : ", "}${i.categoryArticle.name}`)
     .join(" ");
@@ -15,6 +21,10 @@ export default function ArticleDescription({ data }) {
 
   const handleEditClick = () => {
     setIsEditMode(true);
+  };
+
+  const retour = () => {
+    navigate("/articles");
   };
 
   return (
@@ -28,10 +38,47 @@ export default function ArticleDescription({ data }) {
       ) : (
         <>
           <Box>
-            <ModeEditOutlineIcon
-              onClick={handleEditClick}
-              sx={{ cursor: "pointer" }}
-            />
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: "10px",
+                marginBottom: "16px",
+                gap: "10px",
+              }}
+            >
+              <Tooltip title="Go Back" placement="top">
+                <Box
+                  sx={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    cursor: "pointer",
+                  }}
+                  onClick={retour}
+                >
+                  <TbArrowBackUp size={40} />
+                </Box>
+              </Tooltip>
+              <Tooltip title="Edit" placement="top">
+                <Box
+                  sx={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    cursor: "pointer",
+                  }}
+                  onClick={handleEditClick}
+                >
+                  <ModeEditOutlineIcon
+                    sx={{
+                      fontSize: 40,
+                      color: "#48184C",
+                      padding: "4px",
+                    }}
+                  />
+                </Box>
+              </Tooltip>
+            </Box>
           </Box>
 
           <Box>
@@ -181,17 +228,17 @@ export default function ArticleDescription({ data }) {
               <img width={270} src={data.cover.path} alt={"article img"} />
             ) : (
               <div
-              style={{
-                height: "10cm",
-                width: "6cm",
-                backgroundColor: "white", 
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                border: "1px solid #ccc", 
-              }}
-            >
-                <p style={{fontSize:"2cm"}}>{data.title?.charAt(0)}</p>
+                style={{
+                  height: "10cm",
+                  width: "6cm",
+                  backgroundColor: "white",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  border: "1px solid #ccc",
+                }}
+              >
+                <p style={{ fontSize: "2cm" }}>{data.title?.charAt(0)}</p>
               </div>
             )}
 

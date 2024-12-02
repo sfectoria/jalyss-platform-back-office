@@ -6,12 +6,16 @@ import Box from '@mui/material/Box';
 import { ip } from '../../../constants/ip';
 import EditIcon from '@mui/icons-material/Edit';
 import UpdateFournisseur from './UpdateFournisseur';
+import Tooltip from "@mui/material/Tooltip";
+import KeyboardBackspaceOutlinedIcon from '@mui/icons-material/KeyboardBackspaceOutlined';
+import { useNavigate } from 'react-router-dom';
+import { TbArrowBackUp } from "react-icons/tb";
 
 export default function FournisseurInfo() {
   const [oneFournisseur, setFournisseur] = useState(null);
   const [isEditing, setIsEditing] = useState(false);  
   const { id } = useParams();
-
+const naviagte =useNavigate()
   const fetchData = async () => {
     try {
       const res = await axios.get(`${ip}/provider/${id}`);
@@ -29,7 +33,9 @@ export default function FournisseurInfo() {
   const handleEdit = () => {
     setIsEditing(true);  
   };
-
+const Retour =() =>{
+  naviagte('/fournisseurs')
+}
   return (
     <Box sx={{ paddingTop: '3cm', display: 'flex', justifyContent: 'center', gap: '30px' }}>
       {isEditing ? (
@@ -89,16 +95,45 @@ export default function FournisseurInfo() {
     position: 'relative'
   }}
 >
-  <EditIcon 
-    onClick={handleEdit}
-    sx={{ 
-      cursor: 'pointer',
-      fontSize: 32,
-      alignSelf: 'flex-end',
-      marginBottom: '10px',
-      color: '#48184C' 
-    }}
-  />
+<Box
+  sx={{
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '10px', 
+  }}
+>
+  <Tooltip title="Go Back" placement="top">
+    <Box
+      sx={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        cursor: 'pointer',
+      }}
+      onClick={Retour}
+    >
+      <TbArrowBackUp size={32} />
+    </Box>
+  </Tooltip>
+  <Tooltip title="Edit Profile" placement="top">
+    <Box
+      sx={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        cursor: 'pointer',
+      }}
+      onClick={handleEdit}
+    >
+      <EditIcon 
+        sx={{ 
+          fontSize: 32, 
+          color: '#48184C' 
+        }} 
+      />
+    </Box>
+  </Tooltip>
+</Box>
+
   <Box>
     <h2 style={{ marginBottom: '10px', color: '#48184C' }}>Fournisseur Information</h2>
   </Box>
