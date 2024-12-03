@@ -160,6 +160,7 @@ export default function PublishingHouseDetails() {
   };
   const handleDeleteImage = () => {
     setUploadedImage(null);
+    setLogoPath("")
     setFormData((prevFormData) => ({
       ...prevFormData,
       logoId: null,
