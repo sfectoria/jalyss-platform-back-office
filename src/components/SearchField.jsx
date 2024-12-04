@@ -153,8 +153,10 @@ const SearchField = ({
   const fetchDataStockBtOrBs = async () => {
     if (!!info.sender) {
       const response = await axios.get(`${ip}/stocks/${info.sender}`,{params:{notNullQuan:1}});
-      console.log("hhh", response.data.data.stockArticle);
-      const result = response.data.data.stockArticle.reduce((acc, item) => {
+      console.log("im here mrabet", response.data.data.stockArticle);
+      const result = response.data.data.stockArticle
+      .filter(item => item?.article.archived === false) 
+      .reduce((acc, item) => {
         acc.push({
           id: item.articleId,
           name: item?.article?.title,
@@ -167,7 +169,7 @@ const SearchField = ({
         });
         return acc;
       }, []);
-      setRows(result);
+      setRows(result); 
     }
   };
   const handleInputChange = (event, value) => {
