@@ -81,7 +81,7 @@ export default function PublishingHouseDetails() {
         nameEn: data.nameEn || "No English Name",
         address: data.address || "No Address Available",
         email: data.email || "No Email Available",
-        phone_number: data.phone_number || null,
+        phone_number: data.phone_number || "No Phone Number Available",
         logoId: data.logo?.id || null,
       });
 
@@ -94,10 +94,21 @@ export default function PublishingHouseDetails() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: name === "phone_number" ? Number(value) : value,
+    setFormData((prev) => ({
+      ...prev,
+      [name]: name === "phone_number" ? value : value,
     }));
+  };
+  const isVerified = () => {
+    const { phone_number } = formData;
+    if (phone_number && phone_number.length !== 8) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        phone_number: "Phone number must be 8 digits",
+      }));
+      return false;
+    }
+    return true;
   };
 
   const validateForm = () => {
@@ -105,8 +116,9 @@ export default function PublishingHouseDetails() {
     if (!formData.nameEn) {
       newErrors.nameEn = "Name in English is required";
     }
+
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return Object.keys(newErrors).length === 0 && isVerified();
   };
 
   const handleSubmit = async (e) => {
@@ -118,6 +130,9 @@ export default function PublishingHouseDetails() {
       try {
         const response = await axios.patch(`${ip}/publishingHouses/${id}`, {
           ...formData,
+          phone_number: formData.phone_number
+          ? String(formData.phone_number)
+          : null,
           logoId: formData.logoId,
         });
         console.log("Response:", response.data);
@@ -160,6 +175,7 @@ export default function PublishingHouseDetails() {
   };
   const handleDeleteImage = () => {
     setUploadedImage(null);
+    setLogoPath("")
     setFormData((prevFormData) => ({
       ...prevFormData,
       logoId: null,
