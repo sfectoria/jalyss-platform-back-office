@@ -62,10 +62,18 @@ export default function AddPublishingHouse() {
 
   const isVerified = () => {
     const { phone_number } = formData;
-    if (phone_number && phone_number.length !== 8) {
+  
+    if (
+      phone_number &&
+      !(
+        /^\d{8}$/.test(phone_number) || 
+        /^\d{3,5}\d{8}$/.test(phone_number) 
+      )
+    ) {
       setErrors((prevErrors) => ({
         ...prevErrors,
-        phone_number: "Phone number must be 8 digits",
+        phone_number:
+          "Phone number must be 8 digits or in the format CountryCode",
       }));
       return false;
     }
@@ -75,8 +83,11 @@ export default function AddPublishingHouse() {
   const validateForm = () => {
     const newErrors = {};
     if (!formData.nameEn) newErrors.nameEn = "English Name is required";
+    if (!isVerified()) {
+      newErrors.phone_number = "Invalid phone number";
+    }
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0 && isVerified();
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
