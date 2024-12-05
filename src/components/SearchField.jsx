@@ -15,6 +15,7 @@ const SearchField = ({
   const [searchText, setSearchText] = useState("");
   const [text, setText] = useState("");
   const [rows, setRows] = useState([]);
+  const [allData,setData]=useState([])
   const [refresh, setRefresh] = useState(false);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -68,7 +69,7 @@ const SearchField = ({
   const fetchDataChannel = async () => {
     if (info.sender !== 0 && info.sender !== "0") {
       const findStockResponse = await axios.get(`${ip}/selling/${info.sender}`);
-      console.log("this is me ", findStockResponse.data);
+      console.log("this is me 0", findStockResponse.data);
       if (findStockResponse.data) {
         let params = {notNullQuan:1};
         if (text) params["text"] = text;
@@ -78,6 +79,7 @@ const SearchField = ({
         );
         console.log("hello from search Field", response.data.data);
         console.log("hello from search Field 1", response.data.data.stockArticle[0].article.archived);
+        const res = response.data.data
         const result = response.data.data.stockArticle
         .filter(e => e.article.archived === false)
         .reduce(
@@ -120,7 +122,9 @@ const SearchField = ({
         });
         console.log("result", result);
         setRows(result.data);
+        setData(res)
         console.log("hereto",result.data);
+        console.log("hereto 2",res);
       }
     }
   };
@@ -130,7 +134,7 @@ const SearchField = ({
     const findArticleResponse = await axios.get(`${ip}/articles/getAll`, {
       params,
     });
-    console.log("this is me ", findArticleResponse.data.data);
+    console.log("this is me 1", findArticleResponse.data.data);
     const result = findArticleResponse.data.data.reduce((acc, item) => {
       acc.push({
         id: item.id,
@@ -148,7 +152,8 @@ const SearchField = ({
       return acc;
     }, []);
     setRows(result);
-    console.log(result);
+    setData(result)
+    console.log("notlike this",result);
   };
   const fetchDataStockBtOrBs = async () => {
     if (!!info.sender) {
