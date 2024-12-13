@@ -79,9 +79,9 @@ export default function Retour() {
     {
       field: "time",
       headerName: "Time",
-      width: 100,
+      width: 140,
       valueGetter: (value, row) => {
-        const date = new Date(row?.date);
+        const date = new Date(row?.returnDate);
         return date.toLocaleTimeString('fr-TN', { hour: '2-digit', minute: '2-digit'}); 
       },
     },
