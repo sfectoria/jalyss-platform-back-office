@@ -25,7 +25,6 @@ const SearchField = ({
   useEffect(() => {
     if (
       info.type === "BR" ||
-      info.type === "BRe" ||
       info.type === "Bl" ||
       info.type === "Blf" ||
       info.type === "f" ||
@@ -38,6 +37,7 @@ const SearchField = ({
       fetchDataOfAllChannels()
     } else if (
       info.type === "BL" ||
+      info.type === "BRe" ||
       info.type === "BLF" ||
       info.type === "F" ||
       info.type === "Ticket" ||
@@ -110,7 +110,7 @@ const SearchField = ({
       
         const responsePriceByChannel = await axios.get(
           `http://localhost:3000/price-By-Channel/getAll`,
-          { params: { salesChannelIds: [info.sender], articleIds: result.ids } }
+          { params: { salesChannelIds: info.type === "BRe" ? [info.receiver] : [info.sender], articleIds: result.ids } }
         );
 
         result.data.forEach((article) => {
@@ -123,7 +123,7 @@ const SearchField = ({
         });
         console.log("result", result);
         setRows(result.data);
-        console.log("hereto",result.data);
+        console.log("Result after fetching prices:",result.data);
       }
     }
   };
@@ -256,7 +256,8 @@ const SearchField = ({
       type === "Ticket" ||
       type === "Devis" ||
       type === "BC" ||
-      type === "BT"
+      type === "BT" ||
+      type === "BRe"
     ) {
       if (!!event.target.value) {
         const response = await axios.get(
