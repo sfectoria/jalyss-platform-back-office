@@ -20,6 +20,7 @@ import { ip } from "../../../constants/ip";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import CustomNoRowsOverlay from "../../../style/NoRowsStyle";
+import { Box } from "@mui/material";
 
 export default function StockHistory() {
   const [rows, setRows] = useState([]);
@@ -125,14 +126,40 @@ export default function StockHistory() {
       field: "clientName",
       headerName: "Client",
       width: 230,
-      renderCell: (params) =>params.row.client ? (<MouseOverPopover name={params.row.client} />): 'X',
+      renderCell: (params) =>params.row.client ? (
+        <Box
+        sx={{
+          display: "flex",
+          justifyContent: "start",
+          alignItems: "center",
+          height: "100%",
+          width: "100%",
+        }}
+      >
+      <MouseOverPopover name={params.row.client} />
+      </Box>): 'X',
     },
     {
       field: "fournisseurName",
       headerName: "Fournisseur",
       width: 230,
-      renderCell: (params) => params.row?.provider ? (
-        <MouseOverPopoverFou name={params.row?.provider} />): 'X',
+      renderCell: (params) => (
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            height: "100%",
+            width: "100%", 
+          }}
+        >
+          {params.row?.provider ? (
+            <MouseOverPopoverFou name={params.row?.provider} />
+          ) : (
+            "X"
+          )}
+        </Box>
+      ),
     },
     {
       field: "br",
@@ -195,6 +222,7 @@ export default function StockHistory() {
           sx={{
             boxShadow: 0,
             border: 0,
+            
             borderColor: "primary.light",
             "& .MuiDataGrid-cell:hover": {
               color: "primary.main",
