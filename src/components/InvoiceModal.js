@@ -287,7 +287,7 @@ const InvoiceModal = ({
   const fetchModalDataCommand = async () => {
     const response = await axios.get(`${ip}/purchaseOrder/${modalId}`);
     let e = response.data;
-    console.log(e);
+    console.log("ya weldi",e);
     setTitle("Bon de Commande");
     setStatus("Vente");
     setDate(e.date);
@@ -304,7 +304,7 @@ const InvoiceModal = ({
     setTotal(e.totalAmount || 0);
     setItems(
       response.data.purchaseOrderLine.map((el) => {
-        console.log(el);
+        console.log("hne ya mrabet",el);
         el.author = el?.article?.articleByAuthor.length
           ? el?.article?.articleByAuthor[0]?.author?.nameAr
           : null;
@@ -337,7 +337,7 @@ const InvoiceModal = ({
     });
     setItems(
       response.data.estimateLine.map((el) => {
-        console.log(el);
+        console.log("hna",el);
         el.author = el?.Article?.articleByAuthor.length
           ? el?.Article?.articleByAuthor[0]?.author?.nameAr
           : null;
