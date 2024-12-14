@@ -69,9 +69,13 @@ const SearchField = ({
     return combined.sort((a, b) => a.date - b.date);
   };
   const fetchDataChannel = async () => {
-    if (info.sender !== 0 && info.sender !== "0") {
-      const findStockResponse = await axios.get(`${ip}/selling/${info.sender}`);
-      console.log("this is me ", findStockResponse.data);
+    const isSenderValid = info.sender !== 0 && info.sender !== "0";
+    const isReceiverValid = info.type === "BRe" && info.receiver !== 0 && info.receiver !== "0";
+  
+    if (isSenderValid || isReceiverValid) {
+      const stockId = isReceiverValid ? info.receiver : info.sender;
+      const findStockResponse = await axios.get(`${ip}/selling/${stockId}`);
+      console.log("This is me", findStockResponse.data);
       if (findStockResponse.data) {
         let params = {notNullQuan:1};
         if (text) params["text"] = text;
