@@ -24,6 +24,7 @@ import Item from "../../../style/ItemStyle";
 import { Box, Typography } from "@mui/material";
 import AddButton from "../../../components/AddOp";
 import CustomNoRowsOverlay from "../../../style/NoRowsStyle";
+import PartPayedDialog from "../../../components/PartPayedDialog";
 
 function VentList() {
   const [isOpen, setIsOpen] = useState(false);
@@ -34,8 +35,10 @@ function VentList() {
   const [count, setCount] = useState(0);
   const [refresh, setRefresh] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
-  const [editedStatus, setEditedStatus] = useState(""); 
-  const [text, setText] = useState('');
+  const [editedStatus, setEditedStatus] = useState("");
+  const [text, setText] = useState("");
+  const [openPartPay, setOpenPartPay] = useState(false);
+  const [rowInfo, setRowInfo] = useState({});
 
   const param = useParams();
 
@@ -65,32 +68,32 @@ function VentList() {
   useEffect(() => {
     fetchData();
   }, [refresh]);
-  const channelInfo = {id:0}
+  const channelInfo = { id: 0 };
   const fetchData = async () => {
     let params = {
       take: pageSize,
       skip: page * pageSize,
     };
-    const responseChannels = await axios.get(`${ip}/selling/getAll`)
-    let ids = responseChannels?.data?.map(e=>e.id)
-    params['salesChannelsIds']=ids
+    const responseChannels = await axios.get(`${ip}/selling/getAll`);
+    let ids = responseChannels?.data?.map((e) => e.id);
+    params["salesChannelsIds"] = ids;
     const response = await axios.get(`${ip}/exitNote/all_en`, {
       params,
     });
     if (response.data.data.length) {
       const result = response.data.data.map((e) => {
-        e.type=[]
+        e.type = [];
         if (e.salesDeliveryInvoice.length) {
-          e.type.push("BLF")
+          e.type.push("BLF");
         }
         if (e.salesDeliveryNote.length) {
-          e.type.push("BL")
+          e.type.push("BL");
         }
         if (e.salesInvoice.length) {
-          e.type.push("F")
+          e.type.push("F");
         }
-        if (e.salesReceipt.length){
-         e.type.push("Ticket")
+        if (e.salesReceipt.length) {
+          e.type.push("Ticket");
         }
         return e;
       });
@@ -112,38 +115,44 @@ function VentList() {
   const handleSaveStatus = async (rowId) => {
     const row = rows.find((row) => row.id === rowId);
     const updatedRow = { ...row, paymentStatus: editedStatus };
-    let obj =  {
+    let obj = {
       paymentStatus: editedStatus,
-      modified:true
-    }
+      modified: true,
+    };
     try {
-      await axios.patch(`${ip}/exitNote/${rowId}`,obj);
-      let sale = rows.find((el)=>el.id===rowId)
-      if(sale.type.includes('BL')){
-        let salesId=sale.salesDeliveryNote[0].id
-      await axios.patch(`${ip}/salesDeliveryNote/${salesId}`,obj);
-     }
-      else if(sale.type.includes('BLF')){
-        let salesId=sale.salesDeliveryInvoice[0].id
-      await axios.patch(`${ip}/salesDeliveryInvoice/${salesId}`,obj);
-     }
-      else if(sale.type.includes('F')){
-        let salesId=sale.salesInvoice[0].id
-      await axios.patch(`${ip}/sales-invoices/${salesId}`,obj);
-     }
-      else if(sale.type.includes('Ticket')){
-        let salesId=sale.salesReceipt[0].id
-      await axios.patch(`${ip}/sales-receipt/${salesId}`,obj);
-     }
-      setRows((prevRows) =>
-        prevRows.map((row) => (row.id === rowId ? updatedRow : row))
-      );
-      setRefresh(!refresh)
-      setEditingRowId(null); 
+      if (editedStatus !== "PartiallyPayed") {
+        if (editedStatus === "NotPayed") {
+          obj["payedAmount"] = 0;
+          obj["restedAmount"] = row?.totalAmount;
+        } else if (editedStatus === "Payed") {
+          obj["restedAmount"] = 0;
+          obj["payedAmount"] = row?.totalAmount;
+        }
+        await axios.patch(`${ip}/exitNote/${rowId}`, obj);
+        let sale = rows.find((el) => el.id === rowId);
+        if (sale.type.includes("BL")) {
+          let salesId = sale.salesDeliveryNote[0].id;
+          await axios.patch(`${ip}/salesDeliveryNote/${salesId}`, obj);
+        } else if (sale.type.includes("BLF")) {
+          let salesId = sale.salesDeliveryInvoice[0].id;
+          await axios.patch(`${ip}/salesDeliveryInvoice/${salesId}`, obj);
+        } else if (sale.type.includes("F")) {
+          let salesId = sale.salesInvoice[0].id;
+          await axios.patch(`${ip}/sales-invoices/${salesId}`, obj);
+        } else if (sale.type.includes("Ticket")) {
+          let salesId = sale.salesReceipt[0].id;
+          await axios.patch(`${ip}/sales-receipt/${salesId}`, obj);
+        }
+        setRows((prevRows) =>
+          prevRows.map((row) => (row.id === rowId ? updatedRow : row))
+        );
+        setRefresh(!refresh);
+        setEditingRowId(null);
+      }
     } catch (error) {
       console.error("Error updating status:", error);
     }
-  }
+  };
   const handlePageChange = (newPageInfo) => {
     console.log(newPageInfo, "pagesize");
     console.log(pageSize === newPageInfo.pageSize);
@@ -165,10 +174,12 @@ function VentList() {
       width: 150,
       valueGetter: (value) => {
         const date = new Date(value);
-        if (date.toISOString().slice(0, 10) === new Date().toISOString().slice(0, 10))
+        if (
+          date.toISOString().slice(0, 10) ===
+          new Date().toISOString().slice(0, 10)
+        )
           return "Today";
-        else  
-        return date.toLocaleDateString('fr-TN');
+        else return date.toLocaleDateString("fr-TN");
       },
     },
     {
@@ -177,7 +188,10 @@ function VentList() {
       width: 100,
       valueGetter: (value, row) => {
         const date = new Date(row?.exitDate);
-        return date.toLocaleTimeString('fr-TN', { hour: '2-digit', minute: '2-digit'}); 
+        return date.toLocaleTimeString("fr-TN", {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
       },
     },
     {
@@ -192,8 +206,7 @@ function VentList() {
           client = params.row.salesDeliveryInvoice[0].client;
         } else if (params.row.type.includes("F")) {
           client = params.row.salesInvoice[0].client;
-        }
-        else if (params.row.type.includes("Ticket")) {
+        } else if (params.row.type.includes("Ticket")) {
           client = params.row.salesReceipt[0].client;
         }
         return (
@@ -248,7 +261,7 @@ function VentList() {
       headerName: "Ticket",
       width: 50,
       renderCell: (params) =>
-        params.row.type.includes('Ticket') ? (
+        params.row.type.includes("Ticket") ? (
           <DoneIcon color="success" />
         ) : (
           <ClearIcon color="error" />
@@ -259,7 +272,9 @@ function VentList() {
       headerName: "Payed/Not",
       width: 200,
       renderCell: (params) => {
-        if (params.row.id === editingRowId) {
+        const { id, paymentStatus: status, modified } = params.row;
+
+        if (id === editingRowId) {
           return (
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
               <Select
@@ -272,16 +287,18 @@ function VentList() {
                 <MenuItem value="PartiallyPayed">Partially Payed</MenuItem>
               </Select>
               <IconButton
-                onClick={() => handleSaveStatus(params.row.id)}
+                onClick={() => {
+                  handleSaveStatus(id);
+                  setEditingRowId(null);
+                }}
                 color="primary"
+                aria-label="Save status"
               >
                 <CheckIcon />
               </IconButton>
             </div>
           );
         }
-        let status = params.row.paymentStatus;
-        let modified = params.row.modified
         const color =
           status === "Payed"
             ? "green"
@@ -289,22 +306,22 @@ function VentList() {
             ? "red"
             : "orange";
         return (
-          <div style={{display:"flex" ,gap:3, cursor: "pointer"}}
-          onClick={() => {
-            setEditingRowId(params.row.id);
-            setEditedStatus(params.row.paymentStatus);
-          }}
+          <div
+            style={{ display: "flex", gap: 3, cursor: "pointer" }}
+            onClick={() => {
+              setEditingRowId(params.row.id);
+              setEditedStatus(params.row.paymentStatus);
+              setRowInfo(params.row);
+            }}
           >
-          <div style={{color}}>
-            {status === "Payed"
-              ? "Payed"
-              : status === "NotPayed"
-              ? "Not Payed"
-              : "Partially Payed"}
-          </div>
-          <div style={{color:"gray"}}>
-            {modified&&"(modified)"}
-          </div>
+            <div style={{ color }}>
+              {status === "Payed"
+                ? "Payed"
+                : status === "NotPayed"
+                ? "Not Payed"
+                : "Partially Payed"}
+            </div>
+            <div style={{ color: "gray" }}>{modified && "(modified)"}</div>
           </div>
         );
       },
@@ -332,14 +349,14 @@ function VentList() {
 
   return (
     <Box
-    sx={{
-      bgcolor: "background.default",
-      mx: 3,
-      mt: 3,
-    }}
-  >
-    <Item sx={{ pt: 7, pb: 1, px: 7, borderRadius: 10 }} elevation={5}>
-    <Typography
+      sx={{
+        bgcolor: "background.default",
+        mx: 3,
+        mt: 3,
+      }}
+    >
+      <Item sx={{ pt: 7, pb: 1, px: 7, borderRadius: 10 }} elevation={5}>
+        <Typography
           variant="h5"
           mb={3}
           gutterBottom
@@ -347,7 +364,18 @@ function VentList() {
         >
           Vente List
         </Typography>
-        <div style={{ width: "100%", color: "red" , height : 500 }}>
+        {editedStatus === "PartiallyPayed" && (
+          <PartPayedDialog
+            setPartAmount={"hhh"}
+            setOpenPartPayed={setOpenPartPay}
+            setRefresh={setRefresh}
+            refresh={refresh}
+            openPartPayed={true}
+            rowInfo={rowInfo}
+            setEditingRowId={setEditingRowId}
+          />
+        )}
+        <div style={{ width: "100%", color: "red", height: 500 }}>
           <DataGrid
             rowHeight={70}
             pageSizeOptions={[7, 10, 20]}
@@ -362,7 +390,9 @@ function VentList() {
             onPaginationModelChange={(event) => {
               handlePageChange(event);
             }}
-            onFilterModelChange={(e)=>{setText(e.quickFilterValues.join(' '))}}
+            onFilterModelChange={(e) => {
+              setText(e.quickFilterValues.join(" "));
+            }}
             rows={rows}
             columns={columns}
             pagination
@@ -390,26 +420,26 @@ function VentList() {
               },
             }}
           />
-           {isOpen && (
-        <InvoiceModal
-          showModal={isOpen}
-          closeModal={closeModal}
-          modalId={modalId}
-          idChannel={param.id}
-          currency={"DT"}
-          subTotal={0}
-          // taxAmount={0}
-          discountAmount={0}
-          total={0}
-          mode="viewer"
-          type="exit"
-        />
-      )}
+          {isOpen && (
+            <InvoiceModal
+              showModal={isOpen}
+              closeModal={closeModal}
+              modalId={modalId}
+              idChannel={param.id}
+              currency={"DT"}
+              subTotal={0}
+              // taxAmount={0}
+              discountAmount={0}
+              total={0}
+              mode="viewer"
+              type="exit"
+            />
+          )}
         </div>
-    </Item>
-    <AddButton type={"vente"} info={channelInfo} />
-  </Box>
-  )
+      </Item>
+      <AddButton type={"vente"} info={channelInfo} />
+    </Box>
+  );
 }
 
-export default VentList
+export default VentList;

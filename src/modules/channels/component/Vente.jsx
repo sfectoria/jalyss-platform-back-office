@@ -21,6 +21,7 @@ import axios from "axios";
 import { ip } from "../../../constants/ip";
 import { useParams } from "react-router-dom";
 import CustomNoRowsOverlay from "../../../style/NoRowsStyle";
+import PartPayedDialog from "../../../components/PartPayedDialog";
 
 export default function Vente() {
   const [isOpen, setIsOpen] = useState(false);
@@ -29,9 +30,11 @@ export default function Vente() {
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [count, setCount] = useState(0);
-  const [editingRowId, setEditingRowId] = useState(null); 
-  const [editedStatus, setEditedStatus] = useState(""); 
+  const [editingRowId, setEditingRowId] = useState(null);
+  const [editedStatus, setEditedStatus] = useState("");
   const [refresh, setRefresh] = useState(false);
+  const [openPartPay, setOpenPartPay] = useState(false);
+  const [rowInfo, setRowInfo] = useState({});
 
   const param = useParams();
 
@@ -72,18 +75,18 @@ export default function Vente() {
     });
     if (response.data.data.length) {
       const result = response.data.data.map((e) => {
-        e.type=[]
+        e.type = [];
         if (e.salesDeliveryInvoice.length) {
-          e.type.push("BLF")
+          e.type.push("BLF");
         }
         if (e.salesDeliveryNote.length) {
-          e.type.push("BL")
+          e.type.push("BL");
         }
         if (e.salesInvoice.length) {
-          e.type.push("F")
+          e.type.push("F");
         }
-        if (e.salesReceipt.length){
-         e.type.push("Ticket")
+        if (e.salesReceipt.length) {
+          e.type.push("Ticket");
         }
         return e;
       });
@@ -96,34 +99,40 @@ export default function Vente() {
   const handleSaveStatus = async (rowId) => {
     const row = rows.find((row) => row.id === rowId);
     const updatedRow = { ...row, paymentStatus: editedStatus };
-    let obj =  {
+    let obj = {
       paymentStatus: editedStatus,
-      modified:true
-    }
+      modified: true,
+    };
     try {
-      await axios.patch(`${ip}/exitNote/${rowId}`, obj);
-      let sale = rows.find((el)=>el.id===rowId)
-      if(sale.type.includes('BL')){
-        let salesId=sale.salesDeliveryNote[0].id
-      await axios.patch(`${ip}/salesDeliveryNote/${salesId}`,obj);
-     }
-      else if(sale.type.includes('BLF')){
-        let salesId=sale.salesDeliveryInvoice[0].id
-      await axios.patch(`${ip}/salesDeliveryInvoice/${salesId}`, obj);
-     }
-      else if(sale.type.includes('F')){
-        let salesId=sale.salesInvoice[0].id
-      await axios.patch(`${ip}/sales-invoices/${salesId}`, obj);
-     }
-      else if(sale.type.includes('Ticket')){
-        let salesId=sale.salesReceipt[0].id
-      await axios.patch(`${ip}/sales-receipt/${salesId}`, obj);
-     }
-      setRows((prevRows) =>
-        prevRows.map((row) => (row.id === rowId ? updatedRow : row))
-      );
-      setRefresh(!refresh)
-      setEditingRowId(null); 
+      if (editedStatus !== "PartiallyPayed") {
+        if (editedStatus === "NotPayed") {
+          obj["payedAmount"] = 0;
+          obj["restedAmount"] = row?.totalAmount;
+        } else if (editedStatus === "Payed") {
+          obj["restedAmount"] = 0;
+          obj["payedAmount"] = row?.totalAmount;
+        }
+        await axios.patch(`${ip}/exitNote/${rowId}`, obj);
+        let sale = rows.find((el) => el.id === rowId);
+        if (sale.type.includes("BL")) {
+          let salesId = sale.salesDeliveryNote[0].id;
+          await axios.patch(`${ip}/salesDeliveryNote/${salesId}`, obj);
+        } else if (sale.type.includes("BLF")) {
+          let salesId = sale.salesDeliveryInvoice[0].id;
+          await axios.patch(`${ip}/salesDeliveryInvoice/${salesId}`, obj);
+        } else if (sale.type.includes("F")) {
+          let salesId = sale.salesInvoice[0].id;
+          await axios.patch(`${ip}/sales-invoices/${salesId}`, obj);
+        } else if (sale.type.includes("Ticket")) {
+          let salesId = sale.salesReceipt[0].id;
+          await axios.patch(`${ip}/sales-receipt/${salesId}`, obj);
+        }
+        setRows((prevRows) =>
+          prevRows.map((row) => (row.id === rowId ? updatedRow : row))
+        );
+        setRefresh(!refresh);
+        setEditingRowId(null);
+      }
     } catch (error) {
       console.error("Error updating status:", error);
     }
@@ -159,10 +168,12 @@ export default function Vente() {
       width: 150,
       valueGetter: (value) => {
         const date = new Date(value);
-        if (date.toISOString().slice(0, 10) === new Date().toISOString().slice(0, 10))
+        if (
+          date.toISOString().slice(0, 10) ===
+          new Date().toISOString().slice(0, 10)
+        )
           return "Today";
-        else  
-        return date.toLocaleDateString('fr-TN');
+        else return date.toLocaleDateString("fr-TN");
       },
     },
     {
@@ -171,7 +182,10 @@ export default function Vente() {
       width: 100,
       valueGetter: (value, row) => {
         const date = new Date(row?.exitDate);
-        return date.toLocaleTimeString('fr-TN', { hour: '2-digit', minute: '2-digit'}); 
+        return date.toLocaleTimeString("fr-TN", {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
       },
     },
     {
@@ -187,8 +201,7 @@ export default function Vente() {
           client = params.row.salesDeliveryInvoice[0].client;
         } else if (params.row.type.includes("F")) {
           client = params.row.salesInvoice[0].client;
-        }
-        else if (params.row.type.includes("Ticket")) {
+        } else if (params.row.type.includes("Ticket")) {
           client = params.row.salesReceipt[0].client;
         }
         return (
@@ -244,7 +257,7 @@ export default function Vente() {
       headerName: "Ticket",
       width: 50,
       renderCell: (params) =>
-        params.row.type.includes('Ticket') ? (
+        params.row.type.includes("Ticket") ? (
           <DoneIcon color="success" />
         ) : (
           <ClearIcon color="error" />
@@ -255,7 +268,9 @@ export default function Vente() {
       headerName: "Payed/Not",
       width: 200,
       renderCell: (params) => {
-        if (params.row.id === editingRowId) {
+        const { id, paymentStatus: status, modified } = params.row;
+
+        if (id === editingRowId) {
           return (
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
               <Select
@@ -268,16 +283,18 @@ export default function Vente() {
                 <MenuItem value="PartiallyPayed">Partially Payed</MenuItem>
               </Select>
               <IconButton
-                onClick={() => handleSaveStatus(params.row.id)}
+                onClick={() => {
+                  handleSaveStatus(id);
+                  setEditingRowId(null);
+                }}
                 color="primary"
+                aria-label="Save status"
               >
                 <CheckIcon />
               </IconButton>
             </div>
           );
         }
-        let status = params.row.paymentStatus;
-        let modified = params.row.modified
         const color =
           status === "Payed"
             ? "green"
@@ -285,22 +302,22 @@ export default function Vente() {
             ? "red"
             : "orange";
         return (
-          <div style={{display:"flex" ,gap:3, cursor: "pointer"}}
-          onClick={() => {
-            setEditingRowId(params.row.id);
-            setEditedStatus(params.row.paymentStatus);
-          }}
+          <div
+            style={{ display: "flex", gap: 3, cursor: "pointer" }}
+            onClick={() => {
+              setEditingRowId(params.row.id);
+              setEditedStatus(params.row.paymentStatus);
+              setRowInfo(params.row);
+            }}
           >
-          <div style={{color}}>
-            {status === "Payed"
-              ? "Payed"
-              : status === "NotPayed"
-              ? "Not Payed"
-              : "Partially Payed"}
-          </div>
-          <div style={{color:"gray"}}>
-            {modified&&"(modified)"}
-          </div>
+            <div style={{ color }}>
+              {status === "Payed"
+                ? "Payed"
+                : status === "NotPayed"
+                ? "Not Payed"
+                : "Partially Payed"}
+            </div>
+            <div style={{ color: "gray" }}>{modified && "(modified)"}</div>
           </div>
         );
       },
@@ -327,7 +344,18 @@ export default function Vente() {
   ];
 
   return (
-    <div style={{ width: "100%" , height : 500}}>
+    <div style={{ width: "100%", height: 500 }}>
+      {editedStatus === "PartiallyPayed" && (
+          <PartPayedDialog
+            setPartAmount={"hhh"}
+            setOpenPartPayed={setOpenPartPay}
+            setRefresh={setRefresh}
+            refresh={refresh}
+            openPartPayed={true}
+            rowInfo={rowInfo}
+            setEditingRowId={setEditingRowId}
+          />
+        )}
       <DataGrid
         pageSizeOptions={[7, 10, 20]}
         sx={{
