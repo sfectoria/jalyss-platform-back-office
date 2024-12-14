@@ -25,7 +25,6 @@ const SearchField = ({
   useEffect(() => {
     if (
       info.type === "BR" ||
-      info.type === "BRe" ||
       info.type === "Bl" ||
       info.type === "Blf" ||
       info.type === "f" ||
@@ -34,14 +33,17 @@ const SearchField = ({
       fetchDataStock();
     } else if (info.type === "BT" || info.type === "BS") {
       fetchDataStockBtOrBs()
-    } else if (info.type === "BC") {
-      fetchDataOfAllChannels()
+    // } else if (info.type === "BC") {
+    //   fetchDataOfAllChannels()
     } else if (
       info.type === "BL" ||
+      info.type === "BRe" ||
       info.type === "BLF" ||
       info.type === "F" ||
       info.type === "Ticket" ||
-      info.type === "Devis"
+      info.type === "Devis" ||
+      info.type === "BC"
+    
       //  ||info.type === "BC"
     ) {
       fetchDataChannel();
@@ -80,7 +82,7 @@ const SearchField = ({
           { params }
         );
         console.log("hello from search Field", response.data.data);
-        // console.log("hello from search Field 1", response.data.data.stockArticle[0].article.archived);
+        console.log("hello from search Field 1", response.data?.data?.stockArticle[0]?.article?.archived);
         const result = response.data.data.stockArticle
         .filter(e => e.article.archived === false)
         .reduce(
@@ -110,7 +112,7 @@ const SearchField = ({
       
         const responsePriceByChannel = await axios.get(
           `http://localhost:3000/price-By-Channel/getAll`,
-          { params: { salesChannelIds: [info.sender], articleIds: result.ids } }
+          { params: { salesChannelIds: info.type === "BRe" ? [info.receiver] : [info.sender], articleIds: result.ids } }
         );
 
         result.data.forEach((article) => {
@@ -123,7 +125,7 @@ const SearchField = ({
         });
         console.log("result", result);
         setRows(result.data);
-        console.log("hereto",result.data);
+        console.log("Result after fetching prices:",result.data);
       }
     }
   };
@@ -154,32 +156,32 @@ const SearchField = ({
     console.log(result);
   };
   
-  const fetchDataOfAllChannels = async () => {
-    let params = {};
-    if (text) params["text"] = text;
-    const findArticleResponse = await axios.get(`${ip}/articles/getAll`, {
-      params,
-    });
-    console.log("this is me ", findArticleResponse.data.data);
-    const result = findArticleResponse.data.data.reduce((acc, item) => {
-      acc.push({
-        id: item.id,
-        name: item?.title,
-        code: item?.code,
-        image: item.cover && item?.cover?.path,
-        author: item?.articleByAuthor?.length
-          ? item?.articleByAuthor[0]?.author?.nameAr
-          : null,
-        publisher: item.articleByPublishingHouse.length
-          ? item.articleByPublishingHouse[0].publishingHouse.nameAr
-          : null,
-        // quantity: item.quantity,
-      });
-      return acc;
-    }, []);
-    setRows(result);
-    console.log(result);
-  };
+  // const fetchDataOfAllChannels = async () => {
+  //   let params = {};
+  //   if (text) params["text"] = text;
+  //   const findArticleResponse = await axios.get(`${ip}/articles/getAll`, {
+  //     params,
+  //   });
+  //   console.log("this is me ", findArticleResponse.data.data);
+  //   const result = findArticleResponse.data.data.reduce((acc, item) => {
+  //     acc.push({
+  //       id: item.id,
+  //       name: item?.title,
+  //       code: item?.code,
+  //       image: item.cover && item?.cover?.path,
+  //       author: item?.articleByAuthor?.length
+  //         ? item?.articleByAuthor[0]?.author?.nameAr
+  //         : null,
+  //       publisher: item.articleByPublishingHouse.length
+  //         ? item.articleByPublishingHouse[0].publishingHouse.nameAr
+  //         : null,
+  //       // quantity: item.quantity,
+  //     });
+  //     return acc;
+  //   }, []);
+  //   setRows(result);
+  //   console.log(result);
+  // };
 
 
   const fetchDataStockBtOrBs = async () => {
@@ -256,7 +258,8 @@ const SearchField = ({
       type === "Ticket" ||
       type === "Devis" ||
       type === "BC" ||
-      type === "BT"
+      type === "BT" ||
+      type === "BRe"
     ) {
       if (!!event.target.value) {
         const response = await axios.get(

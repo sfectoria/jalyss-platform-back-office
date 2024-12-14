@@ -16,14 +16,14 @@ import ClearIcon from "@mui/icons-material/Clear";
 import CheckIcon from "@mui/icons-material/Check";
 import { MenuItem, Select, IconButton } from "@mui/material";
 import InvoiceModal from "../../../components/InvoiceModal";
-import MouseOverPopover from "./../../channels/component/cosOrForPopUp";
 import axios from "axios";
-import { ip } from "../../../constants/ip";
+import { ip } from "../../../constants/ip.js";
 import { useParams } from "react-router-dom";
 import Item from "../../../style/ItemStyle";
 import { Box, Typography } from "@mui/material";
 import AddButton from "../../../components/AddOp";
 import CustomNoRowsOverlay from "../../../style/NoRowsStyle";
+import PartPayedDialog from "../components/PartPayedDialog.jsx";
 
 function SalesList() {
   const [isOpen, setIsOpen] = useState(false);
@@ -32,10 +32,12 @@ function SalesList() {
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [count, setCount] = useState(0);
+  const [rowInfo, setRowInfo] = useState({});
   const [editingRowId, setEditingRowId] = useState(null); 
   const [editedStatus, setEditedStatus] = useState(""); 
   const [refresh, setRefresh] = useState(false);
   const [text, setText] = useState('');
+  const [openPartPay, setOpenPartPay] = useState(false);
   const param = useParams();
 
   function Pagination({ onPageChange, className }) {
@@ -98,7 +100,17 @@ function SalesList() {
       paymentStatus: editedStatus,
       modified:true
     }
+
     try {
+      if (editedStatus!=="PartiallyPayed") {
+        if(editedStatus==="NotPayed"){
+          obj["payedAmount"]=0
+          obj["restedAmount"]=row?.totalAmount
+        }
+        else if(editedStatus==="Payed"){
+          obj["restedAmount"]=0
+          obj["payedAmount"]=row?.totalAmount
+        }
       await axios.patch(`${ip}/receiptNote/${rowId}`,obj);
       let purchase = rows.find((el)=>el.id===rowId)
       if(purchase.type.includes('BL')){
@@ -118,6 +130,7 @@ function SalesList() {
       );
       setRefresh(!refresh);
       setEditingRowId(null); 
+    }
     } catch (error) {
       console.error("Error updating status:", error);
     }
@@ -236,7 +249,9 @@ function SalesList() {
       headerName: "Payed/Not",
       width: 200,
       renderCell: (params) => {
-        if (params.row.id === editingRowId) {
+        const { id, paymentStatus: status, modified } = params.row;
+    
+        if (id === editingRowId) {
           return (
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
               <Select
@@ -249,45 +264,50 @@ function SalesList() {
                 <MenuItem value="PartiallyPayed">Partially Payed</MenuItem>
               </Select>
               <IconButton
-                onClick={() => handleSaveStatus(params.row.id)}
+                onClick={() => {
+                  handleSaveStatus(id);
+                  setEditingRowId(null);
+                }}
                 color="primary"
+                aria-label="Save status"
               >
                 <CheckIcon />
               </IconButton>
             </div>
           );
         }
-        let status = params.row.paymentStatus;
-        let modified = params.row.modified
+    
         const color =
           status === "Payed"
             ? "green"
             : status === "NotPayed"
             ? "red"
             : "orange";
+    
         return (
-          <div style={{display:"flex" ,gap:3, cursor: "pointer"}}
-          onClick={() => {
-            setEditingRowId(params.row.id);
-            setEditedStatus(params.row.paymentStatus);
-          }}
+          <div
+            style={{ display: "flex", gap: 3, cursor: "pointer" }}
+            onClick={() => {
+              setEditingRowId(id);
+              setEditedStatus(status);
+              setRowInfo(params.row); 
+            }}
+            title={modified ? "Status has been modified" : "Click to edit"}
           >
-          <div style={{color}}>
-            {status === "Payed"
-              ? "Payed"
-              : status === "NotPayed"
-              ? "Not Payed"
-              : "Partially Payed"}
-          </div>
-          <div style={{color:"gray"}}>
-            {modified&&"(modified)"}
-          </div>
+            <div style={{ color }}>
+              {status === "Payed"
+                ? "Payed"
+                : status === "NotPayed"
+                ? "Not Payed"
+                : "Partially Payed"}
+            </div>
+            {modified && <div style={{ color: "gray" }}>(modified)</div>}
           </div>
         );
       },
-    },
+    },    
     { field: "totalAmount", headerName: "Total Amount", width: 100 },
-    {
+    { 
       field: "details",
       headerName: "Details",
       width: 110,
@@ -325,6 +345,7 @@ function SalesList() {
         >
           Achat List
         </Typography>
+       {editedStatus==="PartiallyPayed" && <PartPayedDialog setPartAmount={"hhh"} setOpenPartPayed={setOpenPartPay} setRefresh={setRefresh} refresh={refresh} openPartPayed={true} rowInfo={rowInfo} setEditingRowId={setEditingRowId} />}
         <div style={{ width: "100%", color: "red", height : 500 }}>
           <DataGrid
             rowHeight={70}
