@@ -25,9 +25,12 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import IconButton from "@mui/material/IconButton";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
-import { Button } from "@mui/material";
+import { Button ,TextField} from "@mui/material";
 import ArchiveStockPopUp from "../component/ArchiveStockPopUp";
 import SimpleDialog from "../component/ChannelsListOfStock";
+import EditNoteIcon from "@mui/icons-material/EditNote";
+import SaveAsIcon from "@mui/icons-material/SaveAs";
+import Autocomplete from "@mui/material/Autocomplete";
 import { TbArrowBackUp } from "react-icons/tb";
 import Tooltip from "@mui/material/Tooltip";
 
@@ -140,20 +143,41 @@ function FullWidthTabs({ stockInfo }) {
 
 export default function StockDetails() {
   const [stockInfo, setStockInfo] = useState({});
+  const [isOpen, setIsOpen] = useState(false);
   const [more, setMore] = useState(false);
   const [open, setOpen] = useState(false);
   const [selectedValue, setSelectedValue] = useState("");
+  const [employees, setEmployees] = useState([]);
+  const [stocks, setStocks] = useState([]);
+  const [location, setLocation] = useState("");
+  const [employee, setEmployee] = useState({});
+  const [name, setName] = useState("");
+  const [managerPhone, setManagerPhone] = useState("");
+  const [refresh, setRefresh] = useState({});
   const params = useParams();
   const navigate =useNavigate()
   useEffect(() => {
     fetchStockDetails();
-  }, []);
+    fetchAllInfoData();
+  }, [refresh]);
+  
+
+  const fetchAllInfoData = async () => {
+    const responseStocks = await axios.get(`${ip}/stocks/getAll`);
+    const responseEmp = await axios.get(`${ip}/employees/all`);
+
+    setStocks(responseStocks.data);
+    setEmployees(responseEmp.data);
+    console.log(employee);
+  };
 
   const fetchStockDetails = async () => {
     const response = await axios.get(`${ip}/stocks/${params.id}`);
     setStockInfo(response.data.data);
     console.log("hereeeee",response.data.data);
-    
+    setLocation(response.data.data.location)
+    setEmployee(response.data.data.employee);
+    setManagerPhone(response.data.data.employee?.phoneNumber);
   };
   const handelChannelsList = () => {
     console.log("hello");
@@ -163,6 +187,31 @@ export default function StockDetails() {
     setOpen(false);
   };
 
+  const handleChangeName = (event) => {
+    setName(event.target.value);
+  };
+  const handleChangeLocation = (event, newValue) => {
+    setLocation(event.target.value);
+  };
+
+  const handleChangeEmp = (event, newValue) => {
+    setEmployee(newValue);
+    setManagerPhone(newValue?.phoneNumber || "");
+  };
+
+  const handelModify = async () => {
+    const obj = {
+      name: name ? name : stockInfo.name,
+      idEmployee: employee ? employee.id : stockInfo.employeeId,
+      location : location ? location : stockInfo.location
+    };
+    console.log(obj);
+    const modifyStock = await axios.patch(`${ip}/stocks/${stockInfo.id}`, obj);
+    console.log(modifyStock);
+   
+    setIsOpen(false);
+    setRefresh(!refresh);
+  };
 const retour =()=>{
   navigate('/stock')
 }
@@ -176,7 +225,7 @@ const retour =()=>{
     }}
   >
     <Item sx={{ pt: 7, pb: 1, px: 7, borderRadius: 10 }} elevation={5}>
-    <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end", color: "grey" }}>
+        <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end", color: "grey" }}>
   <Tooltip title="Go Back" placement="top">
     <Box
       sx={{
@@ -186,69 +235,166 @@ const retour =()=>{
       }}
       onClick={retour}
     >
-      <TbArrowBackUp size={40} sx={{ fontSize: "40px" }} />
+       <TbArrowBackUp size={40} sx={{ fontSize: "40px" }} />
     </Box>
   </Tooltip>
 </Box>
-
-      <div
-        role="presentation"
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          marginRight: "50px",
-          marginTop:"-2cm"
-        }}
-      >
-        <Breadcrumbs aria-label="breadcrumb">
-          <Link
-            underline="hover"
-            variant="h5"
-            sx={{ fontWeight: "bold" }}
-            color="inherit"
-            href="/stock"
+        <div
+          role="presentation"
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            marginRight: "50px",
+          }}
+        >
+          <Box
+            sx={{
+              position: "absolute",
+              right: 100,
+            }}
           >
-            Stock
-          </Link>
-          <Typography
-            variant="h5"
-            sx={{ fontWeight: "bold" }}
-            color="text.primary"
-          >
-            {stockInfo.name}
-          </Typography>
-        </Breadcrumbs>
-      </div>
-  
-      <Box sx={{ mx: 4 }}>
-        <Typography variant="h2" color="initial" gutterBottom>
-          {stockInfo.name} informations
-        </Typography>
-        <Typography variant="body1" color={"initial"} gutterBottom>
-          {stockInfo.name} managed by ({stockInfo?.employee?.firstName +
-            " " +
-            stockInfo?.employee?.lastName})
-        </Typography>
-        <Box sx={{ display: "flex", justifyContent: "flex-start", mt: 2 }}>
-          <Button
-            variant="contained"
-            color="secondary"
-            endIcon={<RemoveRedEyeIcon />}
-            sx={{ width: "20%" }}
-            onClick={() => handelChannelsList()}
-          >
-            View Channels
-          </Button>
-        </Box>
-      </Box>
-  
-      <FullWidthTabs stockInfo={stockInfo} />
-      <SimpleDialog
-        info={stockInfo?.salesChannels}
-        selectedValue={selectedValue}
-        open={open}
-        onClose={handleClose}
-      />
+           {isOpen ? (
+              <IconButton
+                aria-label="delete"
+                size="large"
+                color="primary"
+                onClick={() => handelModify()}
+              >
+                <SaveAsIcon fontSize="inherit" />
+              </IconButton>
+            ) : (
+              <IconButton
+                aria-label="delete"
+                size="large"
+                color="secondary"
+                onClick={() => setIsOpen(true)}
+              >
+                <EditNoteIcon fontSize="inherit" />
+              </IconButton>
+            )}
+            </Box>
+          <Breadcrumbs aria-label="breadcrumb">
+            <Link
+              underline="hover"
+              variant="h5"
+              sx={{ fontWeight: "bold" }}
+              color="inherit"
+              href="/stock"
+            >
+              Stocks
+            </Link>
+            <Typography
+              variant="h5"
+              sx={{ fontWeight: "bold" }}
+              color="text.primary"
+            >
+              {stockInfo.name}
+            </Typography>
+          </Breadcrumbs>
+        </div>
+        {isOpen ? (
+          <Box sx={{ mx: 4, my: 1 }}>
+            <Box sx={{ display: "flex", gap: 4, my: 3 }}>
+              <TextField
+                sx={{
+                  width: "40%",
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: "1px",
+                    "& fieldset": {
+                      borderRadius: "7px",
+                    },
+                  },
+                }}
+                id="outlined-helperText"
+                label="Stock Name"
+                onChange={handleChangeName}
+                defaultValue={stockInfo.name}
+              />
+             <TextField
+                sx={{
+                  width: "40%",
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: "1px",
+                    "& fieldset": {
+                      borderRadius: "7px",
+                    },
+                  },
+                }}
+                id="outlined-helperText"
+                label="Location"
+                onChange={handleChangeLocation}
+                defaultValue={stockInfo.location}
+              />
+            </Box>
+            <Box sx={{ display: "flex", gap: 4, my: 3 }}>
+              <Autocomplete
+                style={{ width: "40%" }}
+                value={employee}
+                onChange={handleChangeEmp}
+                options={employees}
+                getOptionLabel={(option) =>
+                  option.firstName && option?.firstName + " " + option?.lastName
+                }
+                renderInput={(params) => (
+                  <TextField {...params} label="Manager" />
+                )}
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: "7px",
+                    "& fieldset": {
+                      borderRadius: "7px",
+                    }, // Modify border radius here
+                  },
+                }}
+              />
+              <TextField
+                sx={{
+                  width: "40%",
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: "1px",
+                    "& fieldset": {
+                      borderRadius: "7px",
+                    },
+                  },
+                }}
+                id="outlined-helperText"
+                label="Manager Phone"
+                value={managerPhone}
+                InputProps={{
+                  readOnly: true,
+                }}
+                InputLabelProps={{
+                  shrink: true, 
+                }}
+              />
+            </Box>
+          </Box>
+        ) : (
+          <Box sx={{ mx: 4 }}>
+            <Typography variant="h2" color="initial" gutterBottom>
+              {stockInfo.name} informations
+            </Typography>
+            <Typography variant="body1" color={"initial"} gutterBottom>
+              {stockInfo.name} managed by {stockInfo?.employee?.firstName|| "N/A"} {stockInfo?.employee?.lastName || "N/A"} located in {stockInfo?.location|| "N/A"}
+            </Typography>
+            <Button
+              variant="contained"
+              color="secondary"
+              endIcon={<RemoveRedEyeIcon />}
+              sx={{ width: "20%" }}
+              onClick={() => handelChannelsList()}
+            >
+              View Channels
+            </Button>
+          </Box>
+           )}
+        <FullWidthTabs stockInfo={stockInfo} />
+        <SimpleDialog
+          info={stockInfo?.salesChannels}
+          selectedValue={selectedValue}
+          open={open}
+          onClose={handleClose}
+        />
     </Item>
   </Box>
   

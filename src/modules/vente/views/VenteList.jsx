@@ -209,7 +209,18 @@ function VentList() {
         } else if (params.row.type.includes("Ticket")) {
           client = params.row.salesReceipt[0].client;
         }
-        return <MouseOverPopover name={client} />;
+        return (
+          <Box
+          sx={{
+            display: "flex",
+            justifyContent: "start",
+            alignItems: "center",
+            height: "100%",
+            width: "100%",
+          }}
+        >
+        <MouseOverPopover name={client} />
+        </Box>);
       },
     },
     {

@@ -81,7 +81,7 @@ export default function PublishingHouseDetails() {
         nameEn: data.nameEn || "No English Name",
         address: data.address || "No Address Available",
         email: data.email || "No Email Available",
-        phone_number: data.phone_number || null,
+        phone_number: data.phone_number || "No Phone Number Available",
         logoId: data.logo?.id || null,
       });
 
@@ -94,16 +94,38 @@ export default function PublishingHouseDetails() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: name === "phone_number" ? Number(value) : value,
+    setFormData((prev) => ({
+      ...prev,
+      [name]: name === "phone_number" ? value : value,
     }));
+  };
+  const isVerified = () => {
+    const { phone_number } = formData;
+  
+    if (
+      phone_number &&
+      !(
+        /^\d{8}$/.test(phone_number) || 
+        /^\d{3,5}\d{8}$/.test(phone_number) 
+      )
+    ) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        phone_number:
+          "Phone number must be 8 digits or in the format CountryCode",
+      }));
+      return false;
+    }
+    return true;
   };
 
   const validateForm = () => {
     const newErrors = {};
     if (!formData.nameEn) {
       newErrors.nameEn = "Name in English is required";
+    }
+    if (!isVerified()) {
+      newErrors.phone_number = "Invalid phone number";
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -118,6 +140,9 @@ export default function PublishingHouseDetails() {
       try {
         const response = await axios.patch(`${ip}/publishingHouses/${id}`, {
           ...formData,
+          phone_number: formData.phone_number
+          ? String(formData.phone_number)
+          : null,
           logoId: formData.logoId,
         });
         console.log("Response:", response.data);
@@ -157,6 +182,14 @@ export default function PublishingHouseDetails() {
   const handleEdit = () => {
     setIsEdit(true);
     setTabValue(1);
+  };
+  const handleDeleteImage = () => {
+    setUploadedImage(null);
+    setLogoPath("")
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      logoId: null,
+    }));
   };
 
   const handleCancel = () => {
@@ -289,42 +322,57 @@ export default function PublishingHouseDetails() {
           <form onSubmit={handleSubmit}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
-                <Badge
-                  overlap="circular"
-                  anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                  badgeContent={
-                    <IconButton
-                      component="label"
-                      sx={{
-                        bgcolor: "#48184C",
-                        color: "white",
-                        "&:hover": {
-                          bgcolor: "#6A1B9A",
-                        },
-                      }}
-                    >
-                      <input
-                        hidden
-                        accept="image/*"
-                        type="file"
-                        onChange={handleFileUpload}
-                      />
-                      <EditIcon />
-                    </IconButton>
-                  }
-                >
-                  <Avatar
-                    src={uploadedImage || logoPath}
-                    sx={{
-                      width: 100,
-                      height: 100,
-                      bgcolor: "#48184C",
-                      fontSize: "40px",
-                    }}
-                  >
-                    {!uploadedImage && !logoPath && formData.nameEn?.charAt(0)}
-                  </Avatar>
-                </Badge>
+
+              <Badge
+  overlap="circular"
+  anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+  badgeContent={
+    <IconButton
+      sx={{
+        bgcolor: "#48184C",
+        color: "white",
+        width: "30px",
+        height: "30px",
+        "&:hover": { bgcolor: "#3a143e" },
+      }}
+      onClick={handleDeleteImage}
+    >
+      <DeleteIcon fontSize="small" />
+    </IconButton>
+  }
+>
+  <IconButton
+    component="label"
+    sx={{
+      borderRadius: "50%",
+      padding: 0,
+      width: 100,
+      height: 100,
+    }}
+  >
+    <input
+      hidden
+      accept="image/*"
+      type="file"
+      onChange={handleFileUpload}
+    />
+    <Avatar
+      src={uploadedImage || logoPath}
+      sx={{
+        width: 100,
+        height: 100,
+        bgcolor: "#48184C",
+        fontSize: "40px",
+        objectFit : "cover"
+      }}
+    >
+      {!uploadedImage && !logoPath && formData.nameEn?.charAt(0)}
+    </Avatar>
+  </IconButton>
+</Badge>
+
+
+
               </Grid>
               {["nameAr", "nameEn", "address", "email", "phone_number"].map(
                 (field) => (

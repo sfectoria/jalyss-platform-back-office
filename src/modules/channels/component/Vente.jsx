@@ -15,7 +15,7 @@ import DoneIcon from "@mui/icons-material/Done";
 import ClearIcon from "@mui/icons-material/Clear";
 import InvoiceModal from "../../../components/InvoiceModal";
 import CheckIcon from "@mui/icons-material/Check";
-import { MenuItem, Select, IconButton } from "@mui/material";
+import { MenuItem, Select, IconButton, Box } from "@mui/material";
 import MouseOverPopover from "./cosOrForPopUp";
 import axios from "axios";
 import { ip } from "../../../constants/ip";
@@ -193,6 +193,7 @@ export default function Vente() {
       headerName: "Client Name",
       width: 270,
       renderCell: (params) => {
+        
         let client = {};
         if (params.row.type.includes("BL")) {
           client = params.row.salesDeliveryNote[0].client;
@@ -203,7 +204,19 @@ export default function Vente() {
         } else if (params.row.type.includes("Ticket")) {
           client = params.row.salesReceipt[0].client;
         }
-        return <MouseOverPopover name={client} />;
+        return (
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "start",
+              height: "100%", 
+              width: "100%", 
+            }}
+          >
+            <MouseOverPopover name={client || "Unknown Client"} />
+          </Box>
+        );;
       },
     },
     {

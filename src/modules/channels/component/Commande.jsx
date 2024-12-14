@@ -9,23 +9,26 @@ import axios from "axios";
 import { ip } from "../../../constants/ip";
 import { useParams } from "react-router-dom";
 import CustomNoRowsOverlay from "../../../style/NoRowsStyle";
+import { Box } from "@mui/material";
 
 export default function Commande() {
   const [isOpen, setIsOpen] = useState(false);
-  const [rows,setRows]=useState([])
-  const [count,setCount]=useState(0)
+  const [rows, setRows] = useState([]);
+  const [count, setCount] = useState(0);
   const [modalId, setModalId] = useState(0);
-  const param = useParams()
+  const param = useParams();
 
-  useEffect(()=>{
-    fetchData()
-  },[])
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-  const fetchData=async()=>{
-    const response=await axios.get(`${ip}/purchaseOrder/getAll`,{params:{salesChannelsIds:[param.id]}})
-    console.log("res",response.data.data);
+  const fetchData = async () => {
+    const response = await axios.get(`${ip}/purchaseOrder/getAll`, {
+      params: { salesChannelsIds: [param.id] },
+    });
+    console.log("res", response.data.data);
     setRows(response.data.data);
-  }
+  };
 
   const openModal = (event) => {
     event.preventDefault();
@@ -43,10 +46,12 @@ export default function Commande() {
       width: 150,
       valueGetter: (value) => {
         const date = new Date(value);
-        if (date.toISOString().slice(0, 10) === new Date().toISOString().slice(0, 10))
+        if (
+          date.toISOString().slice(0, 10) ===
+          new Date().toISOString().slice(0, 10)
+        )
           return "Today";
-        else  
-        return date.toLocaleDateString('fr-TN');
+        else return date.toLocaleDateString("fr-TN");
       },
     },
     {
@@ -55,7 +60,10 @@ export default function Commande() {
       width: 100,
       valueGetter: (value, row) => {
         const date = new Date(row?.date);
-        return date.toLocaleTimeString('fr-TN', { hour: '2-digit', minute: '2-digit'}); 
+        return date.toLocaleTimeString("fr-TN", {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
       },
     },
     {
@@ -63,16 +71,33 @@ export default function Commande() {
       headerName: "Customer",
       width: 250,
       renderCell: (params) => (
-       <MouseOverPopover name={params.row?.client} />
-      )
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "start",
+            alignItems: "center",
+            height: "100%",
+            width: "100%",
+          }}
+        >
+          <MouseOverPopover name={params.row?.client} />
+        </Box>
+      ),
     },
     {
       field: "state",
       headerName: "State",
       width: 400,
       renderCell: (params) => (
-        <ColorToggleButton state={params.row?.status?.toLowerCase()}  idPurchaseOrder={params.row.id} saleChannelId={params.row.salesChannelsId} idClient={params.row.idClient} deliveryDate={params.row.orderDate} purchaseOrderLine={params.row.purchaseOrderLine} />
-      )
+        <ColorToggleButton
+          state={params.row?.status?.toLowerCase()}
+          idPurchaseOrder={params.row.id}
+          saleChannelId={params.row.salesChannelsId}
+          idClient={params.row.idClient}
+          deliveryDate={params.row.orderDate}
+          purchaseOrderLine={params.row.purchaseOrderLine}
+        />
+      ),
     },
     {
       field: "details",
@@ -83,9 +108,9 @@ export default function Commande() {
         <GridActionsCellItem
           icon={<VisibilityIcon />}
           onClick={(e) => {
-              openModal(e);
-              setModalId(id);
-            }}
+            openModal(e);
+            setModalId(id);
+          }}
           label=""
         />,
       ],
@@ -93,7 +118,7 @@ export default function Commande() {
   ];
 
   return (
-    <div style={{ width: "100%" , height : 500}}>
+    <div style={{ width: "100%", height: 500 }}>
       <DataGrid
         pageSizeOptions={[7, 10, 20]}
         sx={{
@@ -126,19 +151,21 @@ export default function Commande() {
           },
         }}
       />
-      {isOpen&&<InvoiceModal
-       showModal={isOpen}
-       closeModal={closeModal}
-       modalId={modalId}
-       idChannel={param.id}
-       currency={"DT"}
-       subTotal={0}
-       // taxAmount={0}
-       discountAmount={0}
-       total={0}
-       mode="viewer"
-       type="command"
-      />}
+      {isOpen && (
+        <InvoiceModal
+          showModal={isOpen}
+          closeModal={closeModal}
+          modalId={modalId}
+          idChannel={param.id}
+          currency={"DT"}
+          subTotal={0}
+          // taxAmount={0}
+          discountAmount={0}
+          total={0}
+          mode="viewer"
+          type="command"
+        />
+      )}
     </div>
   );
 }

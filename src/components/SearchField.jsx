@@ -25,7 +25,6 @@ const SearchField = ({
   useEffect(() => {
     if (
       info.type === "BR" ||
-      info.type === "BRe" ||
       info.type === "Bl" ||
       info.type === "Blf" ||
       info.type === "f" ||
@@ -33,19 +32,25 @@ const SearchField = ({
     ) {
       fetchDataStock();
     } else if (info.type === "BT" || info.type === "BS") {
-      fetchDataStockBtOrBs();
+      fetchDataStockBtOrBs()
+    // } else if (info.type === "BC") {
+    //   fetchDataOfAllChannels()
     } else if (
       info.type === "BL" ||
+      info.type === "BRe" ||
       info.type === "BLF" ||
       info.type === "F" ||
       info.type === "Ticket" ||
       info.type === "Devis" ||
       info.type === "BC"
+    
+      //  ||info.type === "BC"
     ) {
       fetchDataChannel();
     }
   }, [refresh, info]);
   console.log("from BL",info, type);
+  console.log("from ",type);
 
   const mergeAndSortByDate = (exitNotes, receiptNotes) => {
     const combined = [
@@ -77,7 +82,7 @@ const SearchField = ({
           { params }
         );
         console.log("hello from search Field", response.data.data);
-        console.log("hello from search Field 1", response.data.data.stockArticle[0].article.archived);
+        console.log("hello from search Field 1", response.data?.data?.stockArticle[0]?.article?.archived);
         const result = response.data.data.stockArticle
         .filter(e => e.article.archived === false)
         .reduce(
@@ -107,7 +112,7 @@ const SearchField = ({
       
         const responsePriceByChannel = await axios.get(
           `http://localhost:3000/price-By-Channel/getAll`,
-          { params: { salesChannelIds: [info.sender], articleIds: result.ids } }
+          { params: { salesChannelIds: info.type === "BRe" ? [info.receiver] : [info.sender], articleIds: result.ids } }
         );
 
         result.data.forEach((article) => {
@@ -120,7 +125,7 @@ const SearchField = ({
         });
         console.log("result", result);
         setRows(result.data);
-        console.log("hereto",result.data);
+        console.log("Result after fetching prices:",result.data);
       }
     }
   };
@@ -150,11 +155,44 @@ const SearchField = ({
     setRows(result);
     console.log(result);
   };
+  
+  // const fetchDataOfAllChannels = async () => {
+  //   let params = {};
+  //   if (text) params["text"] = text;
+  //   const findArticleResponse = await axios.get(`${ip}/articles/getAll`, {
+  //     params,
+  //   });
+  //   console.log("this is me ", findArticleResponse.data.data);
+  //   const result = findArticleResponse.data.data.reduce((acc, item) => {
+  //     acc.push({
+  //       id: item.id,
+  //       name: item?.title,
+  //       code: item?.code,
+  //       image: item.cover && item?.cover?.path,
+  //       author: item?.articleByAuthor?.length
+  //         ? item?.articleByAuthor[0]?.author?.nameAr
+  //         : null,
+  //       publisher: item.articleByPublishingHouse.length
+  //         ? item.articleByPublishingHouse[0].publishingHouse.nameAr
+  //         : null,
+  //       // quantity: item.quantity,
+  //     });
+  //     return acc;
+  //   }, []);
+  //   setRows(result);
+  //   console.log(result);
+  // };
+
+
   const fetchDataStockBtOrBs = async () => {
     if (!!info.sender) {
+      console.log("here the info sender",info.sender);
+      
       const response = await axios.get(`${ip}/stocks/${info.sender}`,{params:{notNullQuan:1}});
-      console.log("hhh", response.data.data.stockArticle);
-      const result = response.data.data.stockArticle.reduce((acc, item) => {
+      console.log("im here mrabet", response.data.data.stockArticle);
+      const result = response.data.data.stockArticle
+      .filter(item => item?.article.archived === false) 
+      .reduce((acc, item) => {
         acc.push({
           id: item.articleId,
           name: item?.article?.title,
@@ -167,7 +205,7 @@ const SearchField = ({
         });
         return acc;
       }, []);
-      setRows(result);
+      setRows(result); 
     }
   };
   const handleInputChange = (event, value) => {
@@ -220,7 +258,8 @@ const SearchField = ({
       type === "Ticket" ||
       type === "Devis" ||
       type === "BC" ||
-      type === "BT"
+      type === "BT" ||
+      type === "BRe"
     ) {
       if (!!event.target.value) {
         const response = await axios.get(
@@ -377,4 +416,3 @@ const SearchField = ({
 };
 
 export default SearchField;
-

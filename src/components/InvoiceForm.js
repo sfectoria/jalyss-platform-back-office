@@ -264,7 +264,7 @@ const InvoiceForm = () => {
           const idArticle = id;
           return { idArticle, quantity, price, discount };
         });
-        console.log(itemsWithIdArticle);
+        console.log("why",itemsWithIdArticle);
 
         const obj = {
           idClient: billToId,
@@ -785,6 +785,7 @@ const InvoiceForm = () => {
               as="textarea"
               className="my-2"
               rows={1}
+              disabled
             />
           </Card>
         </Col>

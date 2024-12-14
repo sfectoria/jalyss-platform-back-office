@@ -54,15 +54,38 @@ export default function AddPublishingHouse() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: name === "phone_number" ? Number(value) : value,
+    setFormData((prev) => ({
+      ...prev,
+      [name]: name === "phone_number" ? value : value, 
     }));
+  };
+
+  const isVerified = () => {
+    const { phone_number } = formData;
+  
+    if (
+      phone_number &&
+      !(
+        /^\d{8}$/.test(phone_number) || 
+        /^\d{3,5}\d{8}$/.test(phone_number) 
+      )
+    ) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        phone_number:
+          "Phone number must be 8 digits or in the format CountryCode",
+      }));
+      return false;
+    }
+    return true;
   };
 
   const validateForm = () => {
     const newErrors = {};
     if (!formData.nameEn) newErrors.nameEn = "English Name is required";
+    if (!isVerified()) {
+      newErrors.phone_number = "Invalid phone number";
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -73,7 +96,7 @@ export default function AddPublishingHouse() {
       const submissionData = {
         ...formData,
         phone_number: formData.phone_number
-          ? Number(formData.phone_number)
+          ? String(formData.phone_number)
           : null,
       };
       try {
@@ -100,7 +123,7 @@ export default function AddPublishingHouse() {
       nameAr: "",
       nameEn: "",
       address: "",
-      phone_number: "",
+      phone_number: null,
       email: "",
       logoId: null,
     });
@@ -160,7 +183,7 @@ export default function AddPublishingHouse() {
                   anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
                   badgeContent={
                     <IconButton
-                      sx={{ height: "60px", width: "60px",bgcolor:"red" , "&:hover": { bgcolor: "red" }}}
+                      sx={{ height: "48px", width: "48px", bgcolor:"red" , "&:hover": { bgcolor: "red" }}}
                       onClick={() => setUploadedImage(null)}
                     >
                       <DeleteIcon sx={{ color: "white"}} />
