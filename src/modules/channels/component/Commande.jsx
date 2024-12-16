@@ -26,8 +26,8 @@ export default function Commande() {
     const response = await axios.get(`${ip}/purchaseOrder/getAll`, {
       params: { salesChannelsIds: [param.id] },
     });
-    console.log("res", response.data.data);
     setRows(response.data.data);
+    console.log("res", response.data.data);
   };
 
   const openModal = (event) => {

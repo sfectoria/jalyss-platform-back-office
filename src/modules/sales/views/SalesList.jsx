@@ -88,7 +88,7 @@ function SalesList() {
         return e;
       });
       setRows(result);
-      console.log(result);
+      console.log("ahna",result);
       setCount(response.data.count);
     }
   };
@@ -181,24 +181,32 @@ function SalesList() {
         return date.toLocaleTimeString('fr-TN', { hour: '2-digit', minute: '2-digit'}); 
       },
     },
+    // {
+    //   field: "customerName",
+    //   headerName: "Provider Name",
+    //   width: 270,
+    //   // renderCell: (params) => {
+    //   //   let client = {};
+    //   //   if (params.row.type.includes("BL")) {
+    //   //     client = params.row.salesDeliveryNote[0].client;
+    //   //   } else if (params.row.type.includes("BLF")) {
+    //   //     client = params.row.salesDeliveryInvoice[0].client;
+    //   //   } else if (params.row.type.includes("F")) {
+    //   //     client = params.row.salesInvoice[0].client;
+    //   //   }
+    //   //   else if (params.row.type.includes("Ticket")) {
+    //   //     client = params.row.salesReceipt[0].client;
+    //   //   }
+    //   //   return <MouseOverPopover name={client} />;
+    //   // },
+    // },
     {
       field: "customerName",
       headerName: "Provider Name",
       width: 270,
-      // renderCell: (params) => {
-      //   let client = {};
-      //   if (params.row.type.includes("BL")) {
-      //     client = params.row.salesDeliveryNote[0].client;
-      //   } else if (params.row.type.includes("BLF")) {
-      //     client = params.row.salesDeliveryInvoice[0].client;
-      //   } else if (params.row.type.includes("F")) {
-      //     client = params.row.salesInvoice[0].client;
-      //   }
-      //   else if (params.row.type.includes("Ticket")) {
-      //     client = params.row.salesReceipt[0].client;
-      //   }
-      //   return <MouseOverPopover name={client} />;
-      // },
+      renderCell: (params) => {
+        return params?.row?.provider?.nameProvider 
+      },
     },
     {
       field: "bl",

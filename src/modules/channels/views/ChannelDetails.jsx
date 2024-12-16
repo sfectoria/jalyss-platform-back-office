@@ -193,7 +193,7 @@ export default function ChannelDetails() {
 
   const fetchStockDetails = async () => {
     const response = await axios.get(`${ip}/selling/${id}`);
-    setChannel(response.data);
+    setChannel(response.data);    
     setStock(response.data.stock);
     setEmployee(response.data.Employee);
     setManagerPhone(response.data.Employee?.phoneNumber);
