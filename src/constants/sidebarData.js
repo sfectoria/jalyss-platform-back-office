@@ -32,9 +32,14 @@ export const sidebarData = [
         icon: <SvgBumpChartIcon />,
         link: "/bump",
       },
+      // {
+      //   title: "Calendar Chart",
+      //   link: "/calendar",
+      //   icon: <ViewCompactIcon />,
+      // },
       {
-        title: "Calendar Chart",
-        link: "/calendar",
+        title: "Stats",
+        link: "/Statistique",
         icon: <ViewCompactIcon />,
       },
     ],

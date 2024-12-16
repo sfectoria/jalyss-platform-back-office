@@ -80,6 +80,8 @@ function VentList() {
     const response = await axios.get(`${ip}/exitNote/all_en`, {
       params,
     });
+    console.log("there123",response.data);
+    
     if (response.data.data.length) {
       const result = response.data.data.map((e) => {
         e.type = [];
