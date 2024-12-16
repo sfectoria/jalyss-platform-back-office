@@ -33,15 +33,17 @@ const SearchField = ({
       fetchDataStock();
     } else if (info.type === "BT" || info.type === "BS") {
       fetchDataStockBtOrBs()
-    } else if (info.type === "BC") {
-      fetchDataOfAllChannels()
+    // } else if (info.type === "BC") {
+    //   fetchDataOfAllChannels()
     } else if (
       info.type === "BL" ||
       info.type === "BRe" ||
       info.type === "BLF" ||
       info.type === "F" ||
       info.type === "Ticket" ||
-      info.type === "Devis"
+      info.type === "Devis" ||
+      info.type === "BC"
+    
       //  ||info.type === "BC"
     ) {
       fetchDataChannel();
@@ -84,7 +86,7 @@ const SearchField = ({
           { params }
         );
         console.log("hello from search Field", response.data.data);
-        // console.log("hello from search Field 1", response.data.data.stockArticle[0].article.archived);
+        console.log("hello from search Field 1", response.data?.data?.stockArticle[0]?.article?.archived);
         const result = response.data.data.stockArticle
         .filter(e => e.article.archived === false)
         .reduce(
@@ -158,32 +160,32 @@ const SearchField = ({
     console.log(result);
   };
   
-  const fetchDataOfAllChannels = async () => {
-    let params = {};
-    if (text) params["text"] = text;
-    const findArticleResponse = await axios.get(`${ip}/articles/getAll`, {
-      params,
-    });
-    console.log("this is me ", findArticleResponse.data.data);
-    const result = findArticleResponse.data.data.reduce((acc, item) => {
-      acc.push({
-        id: item.id,
-        name: item?.title,
-        code: item?.code,
-        image: item.cover && item?.cover?.path,
-        author: item?.articleByAuthor?.length
-          ? item?.articleByAuthor[0]?.author?.nameAr
-          : null,
-        publisher: item.articleByPublishingHouse.length
-          ? item.articleByPublishingHouse[0].publishingHouse.nameAr
-          : null,
-        // quantity: item.quantity,
-      });
-      return acc;
-    }, []);
-    setRows(result);
-    console.log(result);
-  };
+  // const fetchDataOfAllChannels = async () => {
+  //   let params = {};
+  //   if (text) params["text"] = text;
+  //   const findArticleResponse = await axios.get(`${ip}/articles/getAll`, {
+  //     params,
+  //   });
+  //   console.log("this is me ", findArticleResponse.data.data);
+  //   const result = findArticleResponse.data.data.reduce((acc, item) => {
+  //     acc.push({
+  //       id: item.id,
+  //       name: item?.title,
+  //       code: item?.code,
+  //       image: item.cover && item?.cover?.path,
+  //       author: item?.articleByAuthor?.length
+  //         ? item?.articleByAuthor[0]?.author?.nameAr
+  //         : null,
+  //       publisher: item.articleByPublishingHouse.length
+  //         ? item.articleByPublishingHouse[0].publishingHouse.nameAr
+  //         : null,
+  //       // quantity: item.quantity,
+  //     });
+  //     return acc;
+  //   }, []);
+  //   setRows(result);
+  //   console.log(result);
+  // };
 
 
   const fetchDataStockBtOrBs = async () => {
