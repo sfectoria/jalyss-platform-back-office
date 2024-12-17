@@ -23,6 +23,8 @@ function Stats() {
         const result = await res.json();
         setBncmmde(result.data);
         setcbn(result.data);
+        console.log("hna1",result.data);
+        
       } catch (error) {
         console.error("Error fetching receipt notes:", error);
         setBncmmde([]); 
@@ -70,32 +72,36 @@ function Stats() {
     fetchArticles();
   }, []);
 
-  useEffect(() => {
-    const fetchbnCommande = async () => {
-      try {
-        const res = await fetch(`${ip}/purchaseOrder/getAll`);
-        if (!res.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const data = await res.json();
-        setCommande(data.data);
-      } catch (error) {
-        console.error('Error fetching bnCommande data:', error);
-        setCommande([]);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchbnCommande = async () => {
+  //     try {
+  //       const res = await fetch(`${ip}/purchaseOrder/getAll`);
+  //       if (!res.ok) {
+  //         throw new Error('Network response was not ok');
+  //       }
+  //       const data = await res.json();
+  //       setCommande(data.data);
+  //       console.log("hna bn commande",data.data);
+        
+  //     } catch (error) {
+  //       console.error('Error fetching bnCommande data:', error);
+  //       setCommande([]);
+  //     }
+  //   };
 
-    fetchbnCommande();
-  }, []);
+  //   fetchbnCommande();
+  // }, []);
 
   const typeRetour = bncmmde.filter((e) => e.typeReceipt=== "retour");
   const sommederetour = typeRetour.length
+// console.log("hna retour",typeRetour);
 
   const typeTransfer = bncmmde.filter((e) => e.typeReceipt=== "transfer");
   const sommedetransfer = typeTransfer.length
   
   const typeAchat = bncmmde.filter((e) => e.typeReceipt=== "achat");  
   const sommedeachat = typeAchat.length
+// console.log("hna",typeAchat);
 
 useEffect(() => {
   const fetchTopArticles = async () => {
@@ -114,7 +120,6 @@ useEffect(() => {
         }
       });    
       const ordered = [...uniqueById].sort((a, b) => (b.quantity || 0) - (a.quantity || 0));
-      console.log("Unique:", ordered);
       const top3Ids = ordered.slice(0, 3).map(item => item.idArticle);
       console.log("Top 3 Article IDs:", top3Ids);
       const articleRequests = top3Ids.map(id =>
@@ -142,7 +147,7 @@ useEffect(() => {
   return (
     <main className="main-container">
       <h1 style={{ color: 'black', paddingTop:"1cm",paddingLeft:"1cm",fontSize: '1.5rem', fontWeight: '700', marginBottom: '1.5rem' }}>
-        Top 3 Selling Articles
+        Top 3 Selling Articles for Stocks
       </h1>
       <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '0.75rem', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' }}>
         <ul style={{ listStyleType: 'none', paddingLeft: '0' }}>
@@ -210,13 +215,6 @@ useEffect(() => {
             <BsFillGrid3X3GapFill className='card_icon' />
           </div>
           <h1>{bnVente?.data ? bnVente.data.length : "No Data"}</h1>
-        </div>
-         <div className='card'>
-          <div className='card-inner'>
-            <h3>Bon de Commande</h3>
-            <BsFillGrid3X3GapFill className='card_icon' />
-          </div>
-          <h1>{bnCommande.length}</h1>
         </div>
         </div>
 
