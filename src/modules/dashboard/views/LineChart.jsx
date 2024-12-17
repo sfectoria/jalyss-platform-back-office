@@ -1,30 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import {
-  BsFillGrid3X3GapFill
-} from 'react-icons/bs';
+import { BsFillGrid3X3GapFill } from 'react-icons/bs';
 import axios from 'axios';
 import { ip } from '../../../constants/ip';
 
 function StatForClient() {
-  const [article, setArticles] = useState([]);
-  const [bnCommande, setCommande] = useState([]);
-  const [topClients, setTopClients] = useState([]);
-
-  useEffect(() => {
-    const fetchArticles = async () => {
-      try {
-        const res = await fetch(`${ip}/articles/getAll`);
-        if (!res.ok) throw new Error('Network response was not ok');
-        const data = await res.json();
-        setArticles(data.data);
-      } catch (error) {
-        console.error('Error fetching article data:', error);
-        setArticles([]);
-      }
-    };
-
-    fetchArticles();
-  }, []);
+  const [bnCommande, setCommande] = useState([]); 
+  const [topClients, setTopClients] = useState([]); 
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchbnCommande = async () => {
@@ -41,10 +23,10 @@ function StatForClient() {
     };
 
     fetchbnCommande();
-  }, []);
+  }, []); 
 
-  // Filter Bon de Commande data
-  const BndecommdeClientConfirmed = bnCommande.filter((e) => e.status === "Confirmed");
+
+  const BndecommdeClientConfirmed = bnCommande?.filter((e) => e.status === "Confirmed");
   const sommeBndecommandeClientConfirmed = BndecommdeClientConfirmed.length;
   const BndecommdeClientPending = bnCommande.filter((e) => e.status === "Pending");
   const sommeBndecommandeClientPending = BndecommdeClientPending.length;
@@ -52,38 +34,53 @@ function StatForClient() {
   const sommeBndecommandeClientCanceled = BndecommdeClientCanceled.length;
 
   useEffect(() => {
+    console.log("Effect triggered. BndecommdeClientConfirmed:", BndecommdeClientConfirmed);
+    if (BndecommdeClientConfirmed.length === 0) {
+      console.log("No data available to fetch top clients.");
+      setTopClients([]); 
+      return;
+    }
+
     const fetchTopClients = async () => {
       const clientOrders = {};
+      for (let i = 0; i < BndecommdeClientConfirmed?.length; i++) {
+        const order = BndecommdeClientConfirmed[i];
+        if (clientOrders[order.idClient]) {
+          clientOrders[order.idClient]++;
+        } else {
+          clientOrders[order.idClient] = 1;
+        }
+      }
 
-      // Count the orders per client
-      BndecommdeClientConfirmed.forEach((order) => {
-        clientOrders[order.idClient] = (clientOrders[order.idClient] || 0) + 1;
-      });
-
-      // Sort clients by order count
-      const sortedClients = Object.entries(clientOrders)
-        .sort(([, countA], [, countB]) => countB - countA)
-        .slice(0, 3);
-
-      // Fetch details for the top clients
-      const topClientDetails = await Promise.all(
-        sortedClients.map(async ([idClient, orderCount]) => {
-          try {
-            const res = await axios.get(`${ip}/clients/${idClient}`);
-            const clientData = res.data;
-            return { ...clientData, orderCount };
-          } catch (error) {
-            console.error(`Error fetching client data for ID ${idClient}:`, error);
-            return { idClient, orderCount, name: "Unknown" };
-          }
-        })
-      );
-
-      setTopClients(topClientDetails);
+      try {
+        setLoading(true);
+        const sortedClients = Object.entries(clientOrders)
+          .sort(([, countA], [, countB]) => countB - countA)
+          .slice(0, 3);
+        console.log('Top clients sorted:', sortedClients);
+        const topClientDetails = await Promise.all(
+          sortedClients?.map(async ([idClient, orderCount]) => {
+            try {
+              const res = await axios.get(`${ip}/clients/${idClient}`);
+              const clientData = res.data;
+              return { ...clientData, orderCount };
+            } catch (error) {
+              console.error(`Error fetching client data for ID ${idClient}:`, error);
+              return { idClient, orderCount, name: "Unknown" };
+            }
+          })
+        );
+        setTopClients(topClientDetails);
+        console.log("Fetched top clients:", topClientDetails);
+      } catch (error) {
+        console.error("Error fetching top clients:", error);
+      } finally {
+        setLoading(false);
+      }
     };
-
     fetchTopClients();
-  }, [BndecommdeClientConfirmed]);
+
+  }, [bnCommande]); 
 
   return (
     <main className="main-container">
@@ -136,7 +133,7 @@ function StatForClient() {
               >
                 {client.fullName || `NO DATA`}
               </span>
-              <span   style={{
+              <span style={{
                   color: 'rgb(55, 65, 81)',
                   fontWeight: '700',
                   fontSize: '1.25rem'

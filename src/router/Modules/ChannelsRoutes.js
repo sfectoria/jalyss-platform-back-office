@@ -6,11 +6,13 @@ import NewSale from "../../modules/channels/views/NewSale";
 import AddChannel from "../../modules/channels/views/AddChannel";
 import ChannelDetails from "../../modules/channels/views/ChannelDetails";
 import ChannelHistoryDetails from "../../modules/channels/component/ChannelHistoryDetails";
+import UnarchivedListChannel from "../../modules/channels/views/UnarchivedListChannel";
 
 function ChannelsRoutes() {
   return [
     <Route path="channels" key="channels-module" element={<ChannelModule />}>
       <Route index key="channels-list" element={<ChannelsList />} />
+      <Route index path="Archived" element={<UnarchivedListChannel />} />
       <Route path="add-channel" element={<AddChannel />} />
       <Route
         key="details"

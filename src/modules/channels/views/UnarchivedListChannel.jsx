@@ -9,7 +9,7 @@ import {
   useGridApiContext,
   useGridSelector,
 } from "@mui/x-data-grid";
-import ArchiveIcon from "@mui/icons-material/Archive";
+import UnarchiveIcon from "@mui/icons-material/Unarchive";
 import UnarchiveSharpIcon from "@mui/icons-material/UnarchiveSharp";
 import Tooltip from '@mui/material/Tooltip';
 import Typography from "@mui/material/Typography";
@@ -22,6 +22,8 @@ import axios from "axios";
 import CustomNoRowsOverlay from "../../../style/NoRowsStyle";
 import ArchiveChannels from "./ArchiveChannels";
 import ArchiveChannelSnackBar from "./ArchiveChannelSnackBar";
+import UnarchiveChannelSnackBar from "./UnarchiveChannelSnackBar";
+import UnarchiveChannels from "./UnarchiveChannels";
 
 const getPageFromUrl = () => {
   const params = new URLSearchParams(window.location.search);
@@ -33,7 +35,7 @@ const getPageSizeFromUrl = () => {
   return +params.get("take") || 10;
 };
 
-const ChannelsList = () => {
+const UnarchivedListChannel = () => {
   const [rows, setRows] = useState([]);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -59,9 +61,10 @@ const [openSnack, setOpenSnack] = useState(false);
       console.log(response.data);
   
       if (response.data) {
-        const filtered = response.data.filter((item) => item.archived === false);
-        setRows(filtered);
-        console.log("th",filtered);     
+        const filteredData = response.data.filter((item) => item.archived === true);
+        setRows(filteredData);
+        console.log("th1",filteredData);
+        
       } else {
         setRows([]);
       }
@@ -77,12 +80,12 @@ const [openSnack, setOpenSnack] = useState(false);
   const handleArchiveChannel = (id) => {
     setChannelId(id);
     setArchivePopUp(true);
-    setMessage("Channel archived");
+    setMessage("Channel Unarchived");
     setRefresh((prev) => !prev);
   };
 
-  const navigateToArchivedArticles = () => {
-    navigate("Archived");
+  const navigateToUnarchivedChannel = () => {
+    navigate("/channels");
   };
 
   const columns = [
@@ -118,7 +121,7 @@ const [openSnack, setOpenSnack] = useState(false);
               onClick={() => handleDetails(params.id)}
               />
           </Tooltip>
-          <Tooltip title="Archive Channel">
+          <Tooltip title="Unarchive Channel">
             <GridActionsCellItem
               icon={<UnarchiveSharpIcon />}
               label="Archive"
@@ -151,12 +154,12 @@ const [openSnack, setOpenSnack] = useState(false);
               justifyContent: "space-between",
             }}
         >
-          Channels
-          <Tooltip title="Archived Channel">
-              <ArchiveIcon
+          Archived Channels
+          <Tooltip title="Channels">
+              <UnarchiveIcon
                 variant="contained"
                 color="primary"
-                onClick={navigateToArchivedArticles}
+                onClick={navigateToUnarchivedChannel}
                 sx={{
                   flexShrink: 0,
                   ml: "auto",
@@ -169,13 +172,13 @@ const [openSnack, setOpenSnack] = useState(false);
                   fontSize: "55px",
                   color: "#701583",
                 }}
-              >
-              </ArchiveIcon>
+             />
+             
             </Tooltip>
         </Typography>
         <div style={{ width: "100%", height: 500 }}>
              {archivePopUp && (
-                      <ArchiveChannels
+                      <UnarchiveChannels
                         refresh={refresh}
                         setRefresh={setRefresh}
                         setOpenSnack={setOpenSnack}
@@ -217,7 +220,7 @@ const [openSnack, setOpenSnack] = useState(false);
               },
             }}
           />
-             <ArchiveChannelSnackBar
+             <UnarchiveChannelSnackBar
                       openSnack={openSnack}
                       setOpenSnack={setOpenSnack}
                       message={message}
@@ -228,4 +231,4 @@ const [openSnack, setOpenSnack] = useState(false);
   );
 };
 
-export default ChannelsList;
+export default UnarchivedListChannel;
