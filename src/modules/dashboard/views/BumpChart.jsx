@@ -366,6 +366,7 @@
 import React, { useEffect, useState } from 'react';
 import { BsFillArchiveFill, BsFillGrid3X3GapFill, BsPeopleFill, BsFillBellFill } from 'react-icons/bs';
 import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from 'recharts';
+import { ip } from '../../../constants/ip';
 
 function  MyResponsiveBump() {
   const [Employe, setEmployee] = useState([]);
@@ -373,16 +374,17 @@ function  MyResponsiveBump() {
   const [Provider, setProviders] = useState([]); 
   const [channels,SetChannels] = useState([])
   const [publishing,SetPublishing] = useState([])
+  const [stock,SetStock] = useState([])
 
-  const data = [
-    { name: 'Page A', uv: Employe.length, pv:clients.length, amt: channels.length },
-    { name: 'Page B', uv: 3000, pv: 1398, amt: 2210 },
-    { name: 'Page C', uv: 2000, pv: 9800, amt: 2290 },
-    { name: 'Page D', uv: 2780, pv: 3908, amt: 2000 },
-    { name: 'Page E', uv: 1890, pv: 4800, amt: 2181 },
-    { name: 'Page F', uv: 2390, pv: 3800, amt: 2500 },
-    { name: 'Page G', uv: 3490, pv: 4300, amt: 2100 },
-  ];
+  // const data = [
+  //   { name: 'Page A', uv: Employe.length, pv:clients.length, amt: channels.length },
+  //   { name: 'Page B', uv: 3000, pv: 1398, amt: 2210 },
+  //   { name: 'Page C', uv: 2000, pv: 9800, amt: 2290 },
+  //   { name: 'Page D', uv: 2780, pv: 3908, amt: 2000 },
+  //   { name: 'Page E', uv: 1890, pv: 4800, amt: 2181 },
+  //   { name: 'Page F', uv: 2390, pv: 3800, amt: 2500 },
+  //   { name: 'Page G', uv: 3490, pv: 4300, amt: 2100 },
+  // ];
 
  
   useEffect(() => {
@@ -401,6 +403,24 @@ function  MyResponsiveBump() {
     };
 
     fetEmployees();
+  }, []);
+
+  useEffect(() => {
+    const fetchStocks = async () => {
+      try {
+        const res = await fetch(`${ip}/stocks/getAll`);
+        if (!res.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await res.json();
+        SetStock(data); 
+      } catch (error) {
+        console.error('Error fetching customer data:', error);
+        SetStock([]); 
+      }
+    };
+
+    fetchStocks();
   }, []);
 
 
@@ -476,6 +496,13 @@ function  MyResponsiveBump() {
         </div>
         <div className='card'>
           <div className='card-inner'>
+            <h3>Stocks</h3>
+            <BsPeopleFill className='card_icon' />
+          </div>
+          <h1>{stock.length}</h1>
+        </div>
+        <div className='card'>
+          <div className='card-inner'>
             <h3>Channels</h3>
             <BsPeopleFill className='card_icon' />
           </div>
@@ -490,7 +517,7 @@ function  MyResponsiveBump() {
         </div>
       </div>
 
-      <div className='charts'>
+      {/* <div className='charts'>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             width={500}
@@ -534,7 +561,7 @@ function  MyResponsiveBump() {
             <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
           </LineChart>
         </ResponsiveContainer>
-      </div>
+      </div> */}
     </main>
   );
 }

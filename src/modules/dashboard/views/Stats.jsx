@@ -11,36 +11,6 @@ function Stats() {
   const [bn, setcbn] = useState([]);
   const [bnCommande, setCommande] = useState([]);
   const [topArticles, setTopArticles] = useState([]);
-  const [quan, setQuantity] = useState([]);
-
-  useEffect(() => {
-    const fetchTopArticles = async () => {
-      try {
-        const n = bn[0]?.receiptNoteLine || [];        
-        const orderedByQuantity = [...n].sort((a, b) => (b.quantity || 0) - (a.quantity || 0));
-        setQuantity(orderedByQuantity);
-        const top3Ids = orderedByQuantity.slice(0, 3).map(item => item.idArticle);
-        console.log("Top 3 Article IDs:", top3Ids);
-        const articleRequests = top3Ids.map(id =>
-          axios.get(`http://localhost:3000/articles/${id}`)
-        );
-        const articleResponses = await Promise.all(articleRequests);
-        const articles = articleResponses.map(res => res.data);
-        const articlesWithQuantity = top3Ids.map(id => {
-          const article = articles.find(art => art.id === id);
-          const quantity = orderedByQuantity.find(item => item.idArticle === id)?.quantity || 0;
-          return { ...article, quantity };
-        });
-
-        setTopArticles(articlesWithQuantity);
-      } catch (error) {
-        console.error("Error fetching top articles:", error);
-        setTopArticles([]);
-      }
-    };
-
-    fetchTopArticles();
-  }, [bn]);
 
 
   useEffect(() => {
@@ -61,6 +31,8 @@ function Stats() {
 
     fetchBn();
   }, []);
+
+
 
   useEffect(() => {
     const fetchVente = async () => {
@@ -124,6 +96,47 @@ function Stats() {
   
   const typeAchat = bncmmde.filter((e) => e.typeReceipt=== "achat");  
   const sommedeachat = typeAchat.length
+
+useEffect(() => {
+  const fetchTopArticles = async () => {
+    try {
+      const allReceiptNotes = [];
+      typeAchat.forEach((i) => allReceiptNotes.push(...i.receiptNoteLine));
+      console.log("All Receipt Notes:", allReceiptNotes);
+      const orderedByQuantity = [...allReceiptNotes].sort((a, b) => (b.quantity || 0) - (a.quantity || 0));
+      const uniqueById = [];
+      const idsSet = new Set();
+      
+      orderedByQuantity.forEach((item) => {
+        if (!idsSet.has(item.idArticle)) {
+          uniqueById.push(item);
+          idsSet.add(item.idArticle);
+        }
+      });    
+      const ordered = [...uniqueById].sort((a, b) => (b.quantity || 0) - (a.quantity || 0));
+      console.log("Unique:", ordered);
+      const top3Ids = ordered.slice(0, 3).map(item => item.idArticle);
+      console.log("Top 3 Article IDs:", top3Ids);
+      const articleRequests = top3Ids.map(id =>
+        axios.get(`http://localhost:3000/articles/${id}`)
+      );
+      const articleResponses = await Promise.all(articleRequests);
+      const articles = articleResponses.map(res => res.data);
+      const articlesWithQuantity = top3Ids.map(id => {
+        const article = articles.find(art => art.id === id);
+        const quantity = orderedByQuantity.find(item => item.idArticle === id)?.quantity || 0;
+        return { ...article, quantity };
+      });
+
+      setTopArticles(articlesWithQuantity);
+    } catch (error) {
+      console.error("Error fetching top articles:", error);
+      setTopArticles([]);
+    }
+  };
+
+  fetchTopArticles();
+}, [bn]);
 
 
   return (
